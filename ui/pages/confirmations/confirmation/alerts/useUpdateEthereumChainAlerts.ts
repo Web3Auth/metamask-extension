@@ -9,6 +9,7 @@ import { Severity } from '../../../../helpers/constants/design-system';
 import {
   ApprovalsMetaMaskState,
   getApprovalsByOrigin,
+  getPermissionsRequests,
 } from '../../../../selectors';
 import { useI18nContext } from '../../../../hooks/useI18nContext';
 
@@ -26,14 +27,20 @@ export function useUpdateEthereumChainAlerts(
       pendingConfirmation?.origin,
     ),
   );
-
+  const permissionsRequests = useSelector(getPermissionsRequests);
+  const permissionsRequest = permissionsRequests.find(
+    (req) =>
+      (req.metadata as Record<string, string>)?.id === pendingConfirmation?.id,
+  );
   const t = useI18nContext();
+
   return useMemo(() => {
     if (
       pendingConfirmationsFromOrigin?.length <= 1 ||
-      !VALIDATED_APPROVAL_TYPES.includes(
-        pendingConfirmation?.type as ApprovalType,
-      )
+      (!VALIDATED_APPROVAL_TYPES.includes(
+        pendingConfirmation.type as ApprovalType,
+      ) &&
+        !permissionsRequest?.isLegacySwitchEthereumChain)
     ) {
       return [];
     }
