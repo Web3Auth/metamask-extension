@@ -212,16 +212,16 @@ export async function switchChain(
       const ethChainIds = getPermittedEthChainIds(caip25Caveat.value);
 
       if (!ethChainIds.includes(chainId)) {
-        let options;
+        let metadata;
         if (isSwitchFlow) {
-          options = {
+          metadata = {
             isSwitchEthereumChain: true,
           };
         }
         await requestPermittedChainsPermissionIncrementalForOrigin({
           chainId,
           autoApprove,
-          options,
+          metadata,
         });
       } else if (hasApprovalRequestsForOrigin?.() && !isAddFlow) {
         await requestUserApproval({
