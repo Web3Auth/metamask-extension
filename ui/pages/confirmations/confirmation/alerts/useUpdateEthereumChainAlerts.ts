@@ -1,5 +1,6 @@
 import { ApprovalRequest } from '@metamask/approval-controller';
 import { ApprovalType } from '@metamask/controller-utils';
+import { Json } from '@metamask/utils';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -9,7 +10,6 @@ import { Severity } from '../../../../helpers/constants/design-system';
 import {
   ApprovalsMetaMaskState,
   getApprovalsByOrigin,
-  getPermissionsRequests,
 } from '../../../../selectors';
 import { useI18nContext } from '../../../../hooks/useI18nContext';
 
@@ -19,7 +19,7 @@ const VALIDATED_APPROVAL_TYPES = [
 ];
 
 export function useUpdateEthereumChainAlerts(
-  pendingConfirmation: ApprovalRequest<{ id: string }>,
+  pendingConfirmation: ApprovalRequest<Record<string, Json>>,
 ): Alert[] {
   const pendingConfirmationsFromOrigin = useSelector((state) =>
     getApprovalsByOrigin(
@@ -27,20 +27,17 @@ export function useUpdateEthereumChainAlerts(
       pendingConfirmation?.origin,
     ),
   );
-  const permissionsRequests = useSelector(getPermissionsRequests);
-  const permissionsRequest = permissionsRequests.find(
-    (req) =>
-      (req.metadata as Record<string, string>)?.id === pendingConfirmation?.id,
-  );
   const t = useI18nContext();
 
+  console.log(' pendingConfirmation = ', pendingConfirmation);
   return useMemo(() => {
     if (
       pendingConfirmationsFromOrigin?.length <= 1 ||
       (!VALIDATED_APPROVAL_TYPES.includes(
         pendingConfirmation.type as ApprovalType,
       ) &&
-        !permissionsRequest?.isLegacySwitchEthereumChain)
+        (pendingConfirmation?.requestData?.metadata as Record<string, boolean>)
+          ?.isSwitchEthereumChain !== true)
     ) {
       return [];
     }
@@ -64,5 +61,10 @@ export function useUpdateEthereumChainAlerts(
         severity: Severity.Warning,
       },
     ];
-  }, [pendingConfirmation?.type, pendingConfirmationsFromOrigin?.length, t]);
+  }, [
+    pendingConfirmation?.type,
+    pendingConfirmation?.requestData?.metadata,
+    pendingConfirmationsFromOrigin?.length,
+    t,
+  ]);
 }

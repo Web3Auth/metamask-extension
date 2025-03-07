@@ -24,8 +24,10 @@ const PENDING_APPROVAL_MOCK = {
 
 const PERMISSION_MOCK = {
   id: 'testApprovalId',
-  isLegacySwitchEthereumChain: true,
-  requestData: { testProperty: 'testValue' },
+  requestData: {
+    testProperty: 'testValue',
+    metadata: { isSwitchEthereumChain: true },
+  },
   type: ApprovalType.WalletRequestPermissions,
   origin: 'https://metamask.github.io',
   // TODO: Replace `any` with type
