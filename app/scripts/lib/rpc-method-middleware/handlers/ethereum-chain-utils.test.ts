@@ -201,7 +201,7 @@ describe('Ethereum Chain Utils', () => {
         ).toHaveBeenCalledWith({
           chainId: '0x1',
           autoApprove: false,
-          options: {
+          metadata: {
             isSwitchEthereumChain: true,
           },
         });
