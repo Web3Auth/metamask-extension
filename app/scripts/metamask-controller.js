@@ -2129,6 +2129,10 @@ export default class MetamaskController extends EventEmitter {
           addTransactionBatch: this.txController.addTransactionBatch.bind(
             this.txController,
           ),
+          getDisabledAccountUpgradeChains:
+            this.preferencesController.getDisabledAccountUpgradeChains.bind(
+              this.preferencesController,
+            ),
         },
         this.controllerMessenger,
       ),
@@ -2140,6 +2144,10 @@ export default class MetamaskController extends EventEmitter {
         isAtomicBatchSupported: this.txController.isAtomicBatchSupported.bind(
           this.txController,
         ),
+        getDisabledAccountUpgradeChains:
+          this.preferencesController.getDisabledAccountUpgradeChains.bind(
+            this.preferencesController,
+          ),
       }),
     });
 
@@ -4845,9 +4853,8 @@ export default class MetamaskController extends EventEmitter {
    * @returns string label
    */
   getAccountLabel(name, index, hdPathDescription) {
-    return `${name[0].toUpperCase()}${name.slice(1)} ${
-      parseInt(index, 10) + 1
-    } ${hdPathDescription || ''}`.trim();
+    return `${name[0].toUpperCase()}${name.slice(1)} ${parseInt(index, 10) + 1
+      } ${hdPathDescription || ''}`.trim();
   }
 
   /**
@@ -7202,10 +7209,10 @@ export default class MetamaskController extends EventEmitter {
       params:
         newAccounts.length < 2
           ? // If the length is 1 or 0, the accounts are sorted by definition.
-            newAccounts
+          newAccounts
           : // If the length is 2 or greater, we have to execute
-            // `eth_accounts` vi this method.
-            this.getPermittedAccounts(origin),
+          // `eth_accounts` vi this method.
+          this.getPermittedAccounts(origin),
     });
 
     this.permissionLogController.updateAccountsHistory(origin, newAccounts);
@@ -7257,7 +7264,7 @@ export default class MetamaskController extends EventEmitter {
 
       const blockExplorerUrl =
         networkConfiguration?.blockExplorerUrls?.[
-          networkConfiguration?.defaultBlockExplorerUrlIndex
+        networkConfiguration?.defaultBlockExplorerUrlIndex
         ];
 
       rpcPrefs = { blockExplorerUrl };
@@ -7517,7 +7524,7 @@ export default class MetamaskController extends EventEmitter {
       DistributionType.Main;
     const environment =
       environmentMappingForRemoteFeatureFlag[
-        process.env.METAMASK_ENVIRONMENT
+      process.env.METAMASK_ENVIRONMENT
       ] || EnvironmentType.Development;
     return { distribution, environment };
   }
