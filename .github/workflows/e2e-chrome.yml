@@ -8,7 +8,7 @@ jobs:
     uses: ./.github/workflows/run-e2e.yml
     with:
       test-suite-name: test-e2e-chrome
-      build-command: yarn webpack --test
+      build-command: yarn build:test
       test-command: yarn test:e2e:chrome --retries 2
       # matrix-index: ${{ matrix.index }}
       # matrix-total: ${{ strategy.job-total }}
