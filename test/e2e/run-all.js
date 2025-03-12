@@ -305,6 +305,9 @@ async function main() {
     myTestList = testPaths;
   }
 
+  myTestList = [myTestList[0]];
+
+  // TODO: Undo this
   console.log('My test list:', myTestList);
 
   // spawn `run-e2e-test.js` for each test in myTestList

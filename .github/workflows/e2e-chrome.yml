@@ -14,9 +14,27 @@ jobs:
     with:
       test-suite-name: test-e2e-chrome
       build-command: yarn build:test
-      test-command: yarn test:e2e:chrome
+      test-command: yarn test:e2e:chrome --retries 2
       matrix-index: ${{ matrix.index }}
       matrix-total: ${{ strategy.job-total }}
+
+  test-e2e-chrome-results:
+    needs: test-e2e-chrome
+    runs-on: ubuntu-latest
+    if: success() || failure()
+    steps:
+      - name: Download test results
+        uses: actions/download-artifact@v4
+        with:
+          path: ./test/test-results/e2e
+          pattern: test-e2e-chrome-*
+          merge-multiple: true
+
+      - uses: ./.github/actions/test-reporter/action.yml
+        with:
+          name: test-e2e-chrome-results-report
+          path: ./test/test-results/e2e/*.xml
+          reporter: jest-junit
 
   test-e2e-chrome-flask:
     uses: ./.github/workflows/run-e2e.yml
