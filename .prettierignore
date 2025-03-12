@@ -16,3 +16,4 @@ node_modules/**/*
 /test/test-results/**/*
 /test/e2e/send-eth-with-private-key-test/**/*
 /CHANGELOG.md
+/.github/actions/test-reporter/

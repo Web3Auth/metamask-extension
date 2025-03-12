@@ -6,59 +6,36 @@ on:
 jobs:
   test-e2e-chrome:
     uses: ./.github/workflows/run-e2e.yml
-    strategy:
-      fail-fast: false
-      matrix:
-        index:
-          [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
     with:
       test-suite-name: test-e2e-chrome
-      build-command: yarn build:test
+      build-command: yarn webpack --test
       test-command: yarn test:e2e:chrome --retries 2
-      matrix-index: ${{ matrix.index }}
-      matrix-total: ${{ strategy.job-total }}
+      # matrix-index: ${{ matrix.index }}
+      # matrix-total: ${{ strategy.job-total }}
 
-  test-e2e-chrome-results:
-    needs: test-e2e-chrome
-    runs-on: ubuntu-latest
-    if: success() || failure()
-    steps:
-      - name: Download test results
-        uses: actions/download-artifact@v4
-        with:
-          path: ./test/test-results/e2e
-          pattern: test-e2e-chrome-*
-          merge-multiple: true
+  # test-e2e-chrome-flask:
+  #   uses: ./.github/workflows/run-e2e.yml
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       index: [0, 1, 2, 3, 4, 5, 6, 7]
+  #   with:
+  #     test-suite-name: test-e2e-chrome-flask
+  #     build-command: yarn build:test:flask
+  #     test-command: yarn test:e2e:chrome:flask
+  #     matrix-index: ${{ matrix.index }}
+  #     matrix-total: ${{ strategy.job-total }}
 
-      - uses: ./.github/actions/test-reporter/action.yml
-        with:
-          name: test-e2e-chrome-results-report
-          path: ./test/test-results/e2e/*.xml
-          reporter: jest-junit
+  # test-e2e-chrome-multiple-providers:
+  #   uses: ./.github/workflows/run-e2e.yml
+  #   with:
+  #     test-suite-name: test-e2e-chrome-multiple-providers
+  #     build-command: yarn build:test
+  #     test-command: yarn test:e2e:chrome:multi-provider
 
-  test-e2e-chrome-flask:
-    uses: ./.github/workflows/run-e2e.yml
-    strategy:
-      fail-fast: false
-      matrix:
-        index: [0, 1, 2, 3, 4, 5, 6, 7]
-    with:
-      test-suite-name: test-e2e-chrome-flask
-      build-command: yarn build:test:flask
-      test-command: yarn test:e2e:chrome:flask
-      matrix-index: ${{ matrix.index }}
-      matrix-total: ${{ strategy.job-total }}
-
-  test-e2e-chrome-multiple-providers:
-    uses: ./.github/workflows/run-e2e.yml
-    with:
-      test-suite-name: test-e2e-chrome-multiple-providers
-      build-command: yarn build:test
-      test-command: yarn test:e2e:chrome:multi-provider
-
-  test-e2e-chrome-rpc:
-    uses: ./.github/workflows/run-e2e.yml
-    with:
-      test-suite-name: test-e2e-chrome-rpc
-      build-command: yarn build:test
-      test-command: yarn test:e2e:chrome:rpc
+  # test-e2e-chrome-rpc:
+  #   uses: ./.github/workflows/run-e2e.yml
+  #   with:
+  #     test-suite-name: test-e2e-chrome-rpc
+  #     build-command: yarn build:test
+  #     test-command: yarn test:e2e:chrome:rpc

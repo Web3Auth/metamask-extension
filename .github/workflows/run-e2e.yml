@@ -30,16 +30,22 @@ on:
 
 jobs:
   run-e2e:
+    name: ${{ inputs.test-suite-name }}
     runs-on: ubuntu-22.04
     container:
       image: cimg/node:22.13-browsers
+    strategy:
+      fail-fast: false
+      matrix:
+        index:
+          [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # For a `pull_request` event, the branch is `github.head_ref``.
       # For a `push` event, the branch is `github.ref_name`.
       BRANCH: ${{ github.head_ref || github.ref_name }}
-      MATRIX_INDEX: ${{ inputs.matrix-index }}
-      MATRIX_TOTAL: ${{ inputs.matrix-total }}
+      MATRIX_INDEX: ${{ matrix.index  }}
+      MATRIX_TOTAL: ${{ strategy.job-total }}
     steps:
       - name: Install dependencies
         run: |
@@ -75,3 +81,23 @@ jobs:
           path: |
             ./test-artifacts
             ./test/test-results/e2e
+
+  collate-results:
+    needs: run-e2e
+    runs-on: ubuntu-latest
+    if: success() || failure()
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download test results
+        uses: actions/download-artifact@v4
+        with:
+          path: ./test/test-results/e2e
+          pattern: test-e2e-chrome-*
+          merge-multiple: true
+
+      - uses: ./.github/actions/test-reporter
+        with:
+          name: test-e2e-chrome-results-report
+          path: ./test/test-results/e2e/*.xml
+          reporter: jest-junit
