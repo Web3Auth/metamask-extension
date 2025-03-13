@@ -25,6 +25,7 @@ import {
 import {
   setFirstTimeFlowType,
   setTermsOfUseLastAgreed,
+  startOAuthLogin,
 } from '../../../store/actions';
 import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
@@ -225,6 +226,18 @@ export default function OnboardingWelcome() {
               </Text>
             </label>
           </Box>
+        </li>
+
+        <li>
+          <Button onClick={() => dispatch(startOAuthLogin('google'))}>
+            GG auth
+          </Button>
+        </li>
+
+        <li>
+          <Button onClick={() => dispatch(startOAuthLogin('apple'))}>
+            Apple auth
+          </Button>
         </li>
 
         <li>
