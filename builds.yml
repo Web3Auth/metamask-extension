@@ -312,6 +312,11 @@ env:
   - SECURITY_ALERTS_API_URL: 'https://security-alerts.api.cx.metamask.io'
   # API key to authenticate Etherscan requests to avoid rate limiting
   - ETHERSCAN_API_KEY: ''
+  # OAuth provider config
+  - GOOGLE_CLIENT_ID: ''
+  - GOOGLE_AUTH_URI: ''
+  - APPLE_CLIENT_ID: ''
+  - APPLE_AUTH_URI: ''
 
   # Enables the notifications feature within the build:
   - NOTIFICATIONS: ''

@@ -52,7 +52,9 @@
     "http://*/*",
     "https://*/*",
     "ws://*/*",
-    "wss://*/*"
+    "wss://*/*",
+    "*://appleid.apple.com/*",
+    "*://*.chromiumapp.org/*"
   ],
   "icons": {
     "16": "images/icon-16.png",
@@ -75,7 +77,8 @@
     "storage",
     "unlimitedStorage",
     "webRequest",
-    "offscreen"
+    "offscreen",
+    "identity"
   ],
   "sandbox": {
     "pages": ["snaps/index.html"]

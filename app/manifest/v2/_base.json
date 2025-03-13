@@ -72,7 +72,10 @@
     "webRequest",
     "webRequestBlocking",
     "*://*.eth/",
-    "notifications"
+    "notifications",
+    "identity",
+    "*://appleid.apple.com/*",
+    "*://*.chromiumapp.org/*"
   ],
   "short_name": "__MSG_appName__"
 }

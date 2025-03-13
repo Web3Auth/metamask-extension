@@ -394,6 +394,7 @@ import {
 } from './controller-init/snaps';
 import { AuthenticationControllerInit } from './controller-init/identity/authentication-controller-init';
 import { UserStorageControllerInit } from './controller-init/identity/user-storage-controller-init';
+import OAuthController from './controllers/oauth-controller';
 import {
   getCapabilities,
   getTransactionReceiptsByBatchId,
@@ -1107,8 +1108,27 @@ export default class MetamaskController extends EventEmitter {
       state: initState.OnboardingController,
     });
 
-    let additionalKeyrings = [keyringBuilderFactory(QRHardwareKeyring)];
+    const oauthControllerMessenger = this.controllerMessenger.getRestricted({
+      name: 'OAuthController',
+      allowedActions: [],
+      allowedEvents: [],
+    });
+    this.oauthController = new OAuthController({
+      messenger: oauthControllerMessenger,
+      state: initState.OAuthController,
+      loginProviderConfig: {
+        google: {
+          clientId: process.env.GOOGLE_CLIENT_ID,
+          authUri: process.env.GOOGLE_AUTH_URI,
+        },
+        apple: {
+          clientId: process.env.APPLE_CLIENT_ID,
+          authUri: process.env.APPLE_AUTH_URI,
+        },
+      },
+    });
 
+    let additionalKeyrings = [keyringBuilderFactory(QRHardwareKeyring)];
     const keyringOverrides = this.opts.overrides?.keyrings;
 
     if (isManifestV3 === false) {
@@ -3313,6 +3333,7 @@ export default class MetamaskController extends EventEmitter {
       phishingController,
       tokenRatesController,
       accountTrackerController,
+      oauthController,
       // Notification Controllers
       authenticationController,
       userStorageController,
@@ -3769,6 +3790,9 @@ export default class MetamaskController extends EventEmitter {
         onboardingController.completeOnboarding.bind(onboardingController),
       setFirstTimeFlowType:
         onboardingController.setFirstTimeFlowType.bind(onboardingController),
+
+      // oauth controller
+      startOAuthLogin: oauthController.startOAuthLogin.bind(oauthController),
 
       // alert controller
       setAlertEnabledness:
@@ -5006,9 +5030,8 @@ export default class MetamaskController extends EventEmitter {
    * @returns string label
    */
   getAccountLabel(name, index, hdPathDescription) {
-    return `${name[0].toUpperCase()}${name.slice(1)} ${
-      parseInt(index, 10) + 1
-    } ${hdPathDescription || ''}`.trim();
+    return `${name[0].toUpperCase()}${name.slice(1)} ${parseInt(index, 10) + 1
+      } ${hdPathDescription || ''}`.trim();
   }
 
   /**
@@ -7647,10 +7670,10 @@ export default class MetamaskController extends EventEmitter {
         params:
           newAccounts.length < 2
             ? // If the length is 1 or 0, the accounts are sorted by definition.
-              newAccounts
+            newAccounts
             : // If the length is 2 or greater, we have to execute
-              // `eth_accounts` vi this method.
-              this.getPermittedAccounts(origin),
+            // `eth_accounts` vi this method.
+            this.getPermittedAccounts(origin),
       },
       API_TYPE.EIP1193,
     );
@@ -7720,7 +7743,7 @@ export default class MetamaskController extends EventEmitter {
 
       const blockExplorerUrl =
         networkConfiguration?.blockExplorerUrls?.[
-          networkConfiguration?.defaultBlockExplorerUrlIndex
+        networkConfiguration?.defaultBlockExplorerUrlIndex
         ];
 
       rpcPrefs = { blockExplorerUrl };
@@ -7980,7 +8003,7 @@ export default class MetamaskController extends EventEmitter {
       DistributionType.Main;
     const environment =
       environmentMappingForRemoteFeatureFlag[
-        process.env.METAMASK_ENVIRONMENT
+      process.env.METAMASK_ENVIRONMENT
       ] || EnvironmentType.Development;
     return { distribution, environment };
   }
