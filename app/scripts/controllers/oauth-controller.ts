@@ -5,6 +5,8 @@ import {
   RestrictedMessenger,
 } from '@metamask/base-controller';
 
+const GG_VALIDATION_BASE_URL = 'https://www.googleapis.com/oauth2/v3/tokeninfo';
+
 // Unique name for the controller
 const controllerName = 'OAuthController';
 
@@ -134,22 +136,35 @@ export default class OAuthController extends BaseController<
     }
     if (provider === 'google') {
       return this.handleGoogleAuthResponse(redirectUrl);
-    } else {
-      return this.handleAppleAuthResponse(redirectUrl);
     }
+    return this.handleAppleAuthResponse(redirectUrl);
   }
 
   private async handleGoogleAuthResponse(redirectUrl: string): Promise<string> {
     // TODO: handle google auth response and get id token
-    // const accessToken = extractAccessToken(redirectUrl)
-    // console.log('[identity auth accessToken]', accessToken)
-    // const response = await fetch(`${GG_VALIDATION_BASE_URL}?access_token=${accessToken}`)
-    // const data = await response.json()
-    // console.log('[identity auth data]', data)
+    const accessToken = this.extractAccessTokenGoogle(redirectUrl);
+    console.log('[identity auth accessToken]', accessToken);
+    if (!accessToken) {
+      throw new Error('No access token found');
+    }
+    const response = await fetch(
+      `${GG_VALIDATION_BASE_URL}?access_token=${accessToken}`,
+    );
+    const data = await response.json();
+    console.log('[identity auth data]', data);
     return '';
   }
 
-  private async handleAppleAuthResponse(redirectUrl: string): Promise<string> {
+  private extractAccessTokenGoogle(redirectUri: string): string | null {
+    const m = redirectUri.match(/[#?](.*)/u);
+    if (!m || m.length < 1) {
+      return null;
+    }
+    const params = new URLSearchParams(m[1].split('#')[0]);
+    return params.get('access_token');
+  }
+
+  private async handleAppleAuthResponse(_redirectUrl: string): Promise<string> {
     // TODO: handle apple auth response and get id token
     return '';
   }
