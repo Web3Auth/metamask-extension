@@ -25,7 +25,6 @@ import {
 import {
   setFirstTimeFlowType,
   setTermsOfUseLastAgreed,
-  startOAuthLogin,
 } from '../../../store/actions';
 import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
@@ -38,7 +37,9 @@ import { getFirstTimeFlowType, getCurrentKeyring } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { isFlask, isBeta } from '../../../helpers/utils/build-types';
 
-export default function OnboardingWelcome() {
+export default function OnboardingWelcome({
+  handleSocialLogin,
+}) {
   const t = useI18nContext();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -229,13 +230,13 @@ export default function OnboardingWelcome() {
         </li>
 
         <li>
-          <Button onClick={() => dispatch(startOAuthLogin('google'))}>
+          <Button onClick={() => handleSocialLogin('google')}>
             GG auth
           </Button>
         </li>
 
         <li>
-          <Button onClick={() => dispatch(startOAuthLogin('apple'))}>
+          <Button onClick={() => handleSocialLogin('apple')}>
             Apple auth
           </Button>
         </li>

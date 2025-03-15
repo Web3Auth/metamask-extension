@@ -27,6 +27,7 @@ import {
   createNewVaultAndGetSeedPhrase,
   unlockAndGetSeedPhrase,
   createNewVaultAndRestore,
+  startOAuthLogin,
 } from '../../store/actions';
 import { getFirstTimeFlowTypeRouteAfterUnlock } from '../../selectors';
 import { MetaMetricsContext } from '../../contexts/metametrics';
@@ -56,6 +57,7 @@ import MetaMetricsComponent from './metametrics/metametrics';
 const TWITTER_URL = 'https://twitter.com/MetaMask';
 
 export default function OnboardingFlow() {
+  const [idToken, setIdToken] = useState();
   const [secretRecoveryPhrase, setSecretRecoveryPhrase] = useState('');
   const dispatch = useDispatch();
   const { pathname, search } = useLocation();
@@ -95,6 +97,12 @@ export default function OnboardingFlow() {
     pathname,
     history,
   ]);
+
+  const handleSocialLogin = async (provider) => {
+    const idToken = await dispatch(startOAuthLogin(provider));
+    console.log('[handleSocialLogin] idToken', idToken);
+    setIdToken(idToken);
+  }
 
   const handleCreateNewAccount = async (password) => {
     const newSecretRecoveryPhrase = await dispatch(
@@ -186,7 +194,12 @@ export default function OnboardingFlow() {
           />
           <Route
             path={ONBOARDING_WELCOME_ROUTE}
-            component={OnboardingWelcome}
+            render={(routeProps) => (
+              <OnboardingWelcome
+                {...routeProps}
+                handleSocialLogin={handleSocialLogin}
+              />
+            )}
           />
           <Route
             path={ONBOARDING_PIN_EXTENSION_ROUTE}

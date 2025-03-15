@@ -4,19 +4,30 @@ import {
   ControllerStateChangeEvent,
   RestrictedMessenger,
 } from '@metamask/base-controller';
+import log = require('loglevel');
 
 // Unique name for the controller
 const controllerName = 'OAuthController';
 
+export type OAuthProvider = 'google' | 'apple';
+
 /**
  * The state of the {@link OAuthController}
  */
-export type OAuthControllerState = {};
+// TODO: do we actually need the state? If not, remove it
+export type OAuthControllerState = {
+  authLoading: boolean;
+  verifier?: OAuthProvider;
+  idToken?: string;
+  verifier_id?: string;
+};
 
 /**
  * Function to get default state of the {@link OAuthController}.
  */
-export const getDefaultOAuthControllerState = (): OAuthControllerState => ({});
+export const getDefaultOAuthControllerState = (): OAuthControllerState => ({
+  authLoading: false,
+});
 
 export type OAuthControllerGetStateAction = ControllerGetStateAction<
   typeof controllerName,
@@ -50,8 +61,6 @@ export type OAuthControllerMessenger = RestrictedMessenger<
   AllowedEvents['type']
 >;
 
-export type OAuthProvider = 'google' | 'apple';
-
 const defaultProviderScopes = {
   google: ['openid', 'email', 'profile'],
   apple: ['name', 'email'],
@@ -82,7 +91,24 @@ export type OAuthControllerOptions = {
  * using the `persist` flag; and if they can be sent to Sentry or not, using
  * the `anonymous` flag.
  */
-const controllerMetadata = {};
+const controllerMetadata = {
+  authLoading: {
+    persist: false,
+    anonymous: true,
+  },
+  verifier: {
+    persist: true,
+    anonymous: true,
+  },
+  idToken: {
+    persist: false,
+    anonymous: true,
+  },
+  verifier_id: {
+    persist: false,
+    anonymous: true,
+  },
+}
 
 /**
  * Controller responsible for maintaining
@@ -93,7 +119,8 @@ export default class OAuthController extends BaseController<
   OAuthControllerState,
   OAuthControllerMessenger
 > {
-  #loginProviderConfig: LoginProviderConfig;
+  private loginProviderConfig: LoginProviderConfig;
+
 
   constructor({
     state,
@@ -118,44 +145,48 @@ export default class OAuthController extends BaseController<
         config.redirectUri = chrome.identity.getRedirectURL();
       }
     });
-    this.#loginProviderConfig = loginProviderConfig;
+    this.loginProviderConfig = loginProviderConfig;
   }
 
-  async startOAuthLogin(provider: OAuthProvider): Promise<string> {
+  /**
+   * Initiates the OAuth login process for the given provider.
+   * Upon completion, return the id token.
+   * @param provider - The OAuth provider to use.
+   */
+  async startOAuthLogin(provider: OAuthProvider): Promise<string>{
     const authUrl = this.constructAuthUrl(provider);
-    const redirectUrl = await chrome.identity.launchWebAuthFlow({
-      interactive: true,
-      url: authUrl,
+    log.debug('[OAuthController] startOAuthLogin authUrl', authUrl);
+    // TODO: un-comment this when we have byoa server
+    const redirectUrl = "get_from_identity_launchWebAuthFlow";
+    // const redirectUrl = await chrome.identity.launchWebAuthFlow({
+    //   interactive: true,
+    //   url: authUrl,
+    // });
+    // console.log('[identity auth redirectUrl]', redirectUrl);
+    // if (!redirectUrl) {
+    //   console.error('[identity auth redirectUrl is null]');
+    //   throw new Error('No redirect URL found');
+    // }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const idToken = await this.handleOAuthResponse(redirectUrl, provider);
+        resolve(idToken);
+      } catch (error) {
+        log.error('[OAuthController] startOAuthLogin error', error);
+        reject(error);
+      }
     });
-    console.log('[identity auth redirectUrl]', redirectUrl);
-    if (!redirectUrl) {
-      console.error('[identity auth redirectUrl is null]');
-      throw new Error('No redirect URL found');
-    }
-    if (provider === 'google') {
-      return this.handleGoogleAuthResponse(redirectUrl);
-    } else {
-      return this.handleAppleAuthResponse(redirectUrl);
-    }
   }
 
-  private async handleGoogleAuthResponse(redirectUrl: string): Promise<string> {
-    // TODO: handle google auth response and get id token
-    // const accessToken = extractAccessToken(redirectUrl)
-    // console.log('[identity auth accessToken]', accessToken)
-    // const response = await fetch(`${GG_VALIDATION_BASE_URL}?access_token=${accessToken}`)
-    // const data = await response.json()
-    // console.log('[identity auth data]', data)
-    return '';
-  }
-
-  private async handleAppleAuthResponse(redirectUrl: string): Promise<string> {
-    // TODO: handle apple auth response and get id token
-    return '';
+  private async handleOAuthResponse(redirectUrl: string, provider: OAuthProvider): Promise<string> {
+    // TODO: handle google/apple auth response and get id token
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return 'MOCK_ID_TOKEN';
   }
 
   private constructAuthUrl(provider: OAuthProvider): string {
-    const oAuthProviderConfig = this.#loginProviderConfig[provider];
+    const oAuthProviderConfig = this.loginProviderConfig[provider];
     let authURL = oAuthProviderConfig.authUri;
     authURL += `?client_id=${oAuthProviderConfig.clientId}`;
     authURL += `&response_type=${encodeURIComponent(

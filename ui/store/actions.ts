@@ -3320,10 +3320,15 @@ export function startOAuthLogin(
     dispatch(showLoadingIndication());
 
     try {
-      await submitRequestToBackground('startOAuthLogin', [provider]);
+      const idToken = await submitRequestToBackground('startOAuthLogin', [provider]);
+      return idToken;
     } catch (err) {
-      dispatch(displayWarning(err));
-      throw err;
+      dispatch(displayWarning(error));
+      if (isErrorWithMessage(error)) {
+        throw new Error(getErrorMessage(error));
+      } else {
+        throw error;
+      }
     } finally {
       dispatch(hideLoadingIndication());
     }
