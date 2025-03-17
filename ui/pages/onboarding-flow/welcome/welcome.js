@@ -71,6 +71,26 @@ export default function OnboardingWelcome({
   ]);
   const trackEvent = useContext(MetaMetricsContext);
 
+  const onClickSocialLogin = async (provider) => {
+    setNewAccountCreationInProgress(true);
+    dispatch(setFirstTimeFlowType(FirstTimeFlowType.create));
+    handleSocialLogin(provider);
+
+    trackEvent({
+      category: MetaMetricsEventCategory.Onboarding,
+      // TODO: add seedless onboarding event?
+      event: MetaMetricsEventName.OnboardingWalletCreationStarted,
+      properties: {
+        account_type: 'metamask',
+      },
+    });
+    dispatch(setTermsOfUseLastAgreed(new Date().getTime()));
+
+    ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+    history.push(ONBOARDING_METAMETRICS);
+    ///: END:ONLY_INCLUDE_IF
+  }
+
   const onCreateClick = async () => {
     setNewAccountCreationInProgress(true);
     dispatch(setFirstTimeFlowType(FirstTimeFlowType.create));
@@ -230,13 +250,13 @@ export default function OnboardingWelcome({
         </li>
 
         <li>
-          <Button onClick={() => handleSocialLogin('google')}>
+          <Button onClick={() => onClickSocialLogin('google')}>
             GG auth
           </Button>
         </li>
 
         <li>
-          <Button onClick={() => handleSocialLogin('apple')}>
+          <Button onClick={() => onClickSocialLogin('apple')}>
             Apple auth
           </Button>
         </li>

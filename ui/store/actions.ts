@@ -323,7 +323,8 @@ export function createAndBackupSeedPhrase(
 
     try {
       await createNewVault(password);
-      const seedPhrase = await backupSeedPhrase(password, idToken);
+      const seedPhrase = await getSeedPhrase(password);
+      await backupSeedPhrase(seedPhrase, password, idToken);
       return seedPhrase;
     } catch (error) {
       dispatch(displayWarning(error));
@@ -452,6 +453,7 @@ export function tryReverseResolveAddress(
 }
 
 export function backupSeedPhrase(
+  seedPhrase: string,
   password: string,
   oAuthIdToken: string,
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
@@ -459,9 +461,7 @@ export function backupSeedPhrase(
     dispatch(showLoadingIndication());
 
     try {
-      const seedPhrase = await getSeedPhrase(password);
       await submitRequestToBackground('backupSeedPhrase', [oAuthIdToken, password, seedPhrase]);
-      return seedPhrase;
     } catch (error) {
       dispatch(displayWarning(error));
       if (isErrorWithMessage(error)) {
