@@ -6251,6 +6251,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/seedless-onboarding-controller@file:../core/packages/seedless-onboarding-controller::locator=metamask-crx%40workspace%3A.":
+  version: 0.0.1
+  resolution: "@metamask/seedless-onboarding-controller@file:../core/packages/seedless-onboarding-controller#../core/packages/seedless-onboarding-controller::hash=2c2a50&locator=metamask-crx%40workspace%3A."
+  dependencies:
+    "@metamask/base-controller": "npm:^8.0.0"
+    "@metamask/keyring-controller": "npm:^21.0.0"
+  peerDependencies:
+    "@metamask/keyring-controller": ^21.0.0
+  checksum: 10/f86c93832fc3e500f5f3308a2d52106dd4916efed0e5e2a2346576eb18cb355211e8b958f18caaed04774a1a9bdd61c77b37a8cf74ff42e0bf59f06a5f20c445
+  languageName: node
+  linkType: hard
+
 "@metamask/selected-network-controller@npm:^19.0.0":
   version: 19.0.0
   resolution: "@metamask/selected-network-controller@npm:19.0.0"
@@ -27373,6 +27385,7 @@ __metadata:
     "@metamask/rpc-errors": "npm:^7.0.0"
     "@metamask/safe-event-emitter": "npm:^3.1.1"
     "@metamask/scure-bip39": "npm:^2.0.3"
+    "@metamask/seedless-onboarding-controller": ../core/packages/seedless-onboarding-controller
     "@metamask/selected-network-controller": "npm:^19.0.0"
     "@metamask/signature-controller": "npm:^23.1.0"
     "@metamask/smart-transactions-controller": "npm:^16.0.1"

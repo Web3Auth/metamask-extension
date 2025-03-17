@@ -75,6 +75,7 @@ import {
 } from '@metamask/selected-network-controller';
 import { LoggingController, LogType } from '@metamask/logging-controller';
 import { PermissionLogController } from '@metamask/permission-log-controller';
+import { SeedlessOnboardingController } from '@metamask/seedless-onboarding-controller';
 
 import {
   createSnapsMethodMiddleware,
@@ -1251,6 +1252,20 @@ export default class MetamaskController extends EventEmitter {
       },
     );
 
+    const seedlessOnboardingControllerMessenger = this.controllerMessenger.getRestricted({
+      name: 'SeedlessOnboardingController',
+      allowedActions: [
+        'SeedlessOnboardingController:getState',
+      ],
+      allowedEvents: [
+        'KeyringController:stateChange',
+      ],
+    });
+    this.seedlessOnboardingController = new SeedlessOnboardingController({
+      messenger: seedlessOnboardingControllerMessenger,
+      state: {},
+    });
+
     this.permissionController = new PermissionController({
       messenger: this.controllerMessenger.getRestricted({
         name: 'PermissionController',
@@ -2005,6 +2020,7 @@ export default class MetamaskController extends EventEmitter {
       this.gasFeeController,
       this.onboardingController,
       this.keyringController,
+      this.seedlessOnboardingController,
       ///: BEGIN:ONLY_INCLUDE_IF(build-mmi)
       this.transactionUpdateController,
       ///: END:ONLY_INCLUDE_IF
@@ -2229,6 +2245,7 @@ export default class MetamaskController extends EventEmitter {
       MultichainNetworkController: this.multichainNetworkController,
       NetworkController: this.networkController,
       AlertController: this.alertController,
+      SeedlessOnboardingController: this.seedlessOnboardingController,
       OnboardingController: this.onboardingController,
       PermissionController: this.permissionController,
       PermissionLogController: this.permissionLogController,
@@ -3474,6 +3491,9 @@ export default class MetamaskController extends EventEmitter {
       ///: BEGIN:ONLY_INCLUDE_IF(keyring-snaps)
       getAccountsBySnapId: (snapId) => getAccountsBySnapId(this, snapId),
       ///: END:ONLY_INCLUDE_IF
+
+      // seedless onboarding
+      backupSeedPhrase: this.backupSeedPhrase.bind(this),
 
       // hardware wallets
       connectHardware: this.connectHardware.bind(this),
@@ -5159,6 +5179,21 @@ export default class MetamaskController extends EventEmitter {
         ///: END:ONLY_INCLUDE_IF
       ),
     );
+  }
+
+  /**
+   * Backups the seed phrase for the seedless onboarding flow.
+   *
+   * @param {string} oAuthIdToken
+   * @param {string} password
+   * @param {string} seedPhrase
+   * @returns
+   */
+  async backupSeedPhrase(oAuthIdToken, password, seedPhrase) {
+    console.log('[backupSeedPhrase] oAuthIdToken', oAuthIdToken);
+    console.log('[backupSeedPhrase] password', password);
+    console.log('[backupSeedPhrase] seedPhrase', seedPhrase);
+    return this.seedlessOnboardingController.backupSeedPhrase(oAuthIdToken, password, seedPhrase);
   }
 
   /**

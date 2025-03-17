@@ -28,6 +28,7 @@ import {
   unlockAndGetSeedPhrase,
   createNewVaultAndRestore,
   startOAuthLogin,
+  createAndBackupSeedPhrase,
 } from '../../store/actions';
 import { getFirstTimeFlowTypeRouteAfterUnlock } from '../../selectors';
 import { MetaMetricsContext } from '../../contexts/metametrics';
@@ -53,11 +54,13 @@ import OnboardingWelcome from './welcome/welcome';
 import ImportSRP from './import-srp/import-srp';
 import OnboardingPinExtension from './pin-extension/pin-extension';
 import MetaMetricsComponent from './metametrics/metametrics';
+import * as log from 'loglevel';
 
 const TWITTER_URL = 'https://twitter.com/MetaMask';
 
 export default function OnboardingFlow() {
-  const [idToken, setIdToken] = useState();
+  const [oAuthIdToken, setOAuthIdToken] = useState();
+  const [onboardingFlowType, setOnboardingFlowType] = useState('default');
   const [secretRecoveryPhrase, setSecretRecoveryPhrase] = useState('');
   const dispatch = useDispatch();
   const { pathname, search } = useLocation();
@@ -101,14 +104,35 @@ export default function OnboardingFlow() {
   const handleSocialLogin = async (provider) => {
     const idToken = await dispatch(startOAuthLogin(provider));
     console.log('[handleSocialLogin] idToken', idToken);
-    setIdToken(idToken);
+    setOnboardingFlowType('seedless');
+    setOAuthIdToken(idToken);
   }
 
-  const handleCreateNewAccount = async (password) => {
+  const handleDefaultOnboardingFlow = async (password) => {
     const newSecretRecoveryPhrase = await dispatch(
       createNewVaultAndGetSeedPhrase(password),
     );
     setSecretRecoveryPhrase(newSecretRecoveryPhrase);
+  }
+
+  const handleSeedlessOnboardingFlow = async (password) => {
+    if (!oAuthIdToken) {
+      log.warn('No OAuth ID token found');
+      return;
+    }
+
+    const seedPhrase = await dispatch(
+      createAndBackupSeedPhrase(password, oAuthIdToken)
+    );
+    setSecretRecoveryPhrase(seedPhrase);
+  }
+
+  const handleCreateNewAccount = async (password) => {
+    if (onboardingFlowType === 'default') {
+      await handleDefaultOnboardingFlow(password);
+    } else {
+      await handleSeedlessOnboardingFlow(password);
+    }
   };
 
   const handleUnlock = async (password) => {
@@ -146,6 +170,8 @@ export default function OnboardingFlow() {
                 createNewAccount={handleCreateNewAccount}
                 importWithRecoveryPhrase={handleImportWithRecoveryPhrase}
                 secretRecoveryPhrase={secretRecoveryPhrase}
+                onboardingFlowType={onboardingFlowType}
+                oAuthIdToken={oAuthIdToken}
               />
             )}
           />

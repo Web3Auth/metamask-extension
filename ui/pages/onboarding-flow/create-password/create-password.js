@@ -16,6 +16,7 @@ import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
   ONBOARDING_COMPLETION_ROUTE,
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
+  ONBOARDING_WELCOME_ROUTE,
   ///: END:ONLY_INCLUDE_IF
 } from '../../../helpers/constants/routes';
 import FormField from '../../../components/ui/form-field';
@@ -53,6 +54,8 @@ export default function CreatePassword({
   createNewAccount,
   importWithRecoveryPhrase,
   secretRecoveryPhrase,
+  onboardingFlowType,
+  oAuthIdToken,
 }) {
   const t = useI18nContext();
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -106,6 +109,15 @@ export default function CreatePassword({
     firstTimeFlowType,
     newAccountCreationInProgress,
   ]);
+
+  useEffect(() => {
+    // if we are in seedless flow and we don't have an oAuthIdToken,
+    // we should go back to the welcome page
+    if (onboardingFlowType === 'seedless' && !oAuthIdToken) {
+      // or should we show a warning?
+      history.replace(ONBOARDING_WELCOME_ROUTE);
+    }
+  }, [oAuthIdToken, onboardingFlowType]);
 
   const isValid = useMemo(() => {
     if (!password || !confirmPassword || password !== confirmPassword) {

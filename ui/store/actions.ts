@@ -314,6 +314,30 @@ export function createNewVaultAndGetSeedPhrase(
   };
 }
 
+export function createAndBackupSeedPhrase(
+  password: string,
+  idToken: string,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      await createNewVault(password);
+      const seedPhrase = await backupSeedPhrase(password, idToken);
+      return seedPhrase;
+    } catch (error) {
+      dispatch(displayWarning(error));
+      if (isErrorWithMessage(error)) {
+        throw new Error(getErrorMessage(error));
+      } else {
+        throw error;
+      }
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
+  };
+}
+
 export function unlockAndGetSeedPhrase(
   password: string,
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
@@ -424,6 +448,30 @@ export function tryReverseResolveAddress(
         resolve();
       });
     });
+  };
+}
+
+export function backupSeedPhrase(
+  password: string,
+  oAuthIdToken: string,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      const seedPhrase = await getSeedPhrase(password);
+      await submitRequestToBackground('backupSeedPhrase', [oAuthIdToken, password, seedPhrase]);
+      return seedPhrase;
+    } catch (error) {
+      dispatch(displayWarning(error));
+      if (isErrorWithMessage(error)) {
+        throw new Error(getErrorMessage(error));
+      } else {
+        throw error;
+      }
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
   };
 }
 
