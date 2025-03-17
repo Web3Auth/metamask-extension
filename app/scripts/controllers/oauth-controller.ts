@@ -4,7 +4,8 @@ import {
   ControllerStateChangeEvent,
   RestrictedMessenger,
 } from '@metamask/base-controller';
-import log = require('loglevel');
+import log from 'loglevel';
+
 
 // Unique name for the controller
 const controllerName = 'OAuthController';
