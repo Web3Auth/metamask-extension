@@ -8,6 +8,9 @@ export default {
     onAccept: {
       action: 'onAccept',
     },
+    onDecline: {
+      action: 'onDecline',
+    },
   },
 };
 

@@ -24,7 +24,7 @@ import {
 } from '../../../../shared/constants/metametrics';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 
-export default function TermsOfUsePopup({ onAccept }) {
+export default function TermsOfUsePopup({ onAccept, onDecline }) {
   const t = useContext(I18nContext);
   const trackEvent = useContext(MetaMetricsContext);
   const [isTermsOfUseChecked, setIsTermsOfUseChecked] = useState(false);
@@ -67,14 +67,35 @@ export default function TermsOfUsePopup({ onAccept }) {
       popoverRef={popoverRef}
       onScroll={handleScroll}
       showScrollDown={shouldShowScrollButton}
-      title={t('termsOfUseTitle')}
+      title="Review our Terms of Use"
+      centerTitle={true}
       onScrollDownButtonClick={handleScrollDownClick}
       footerProps={{
         justifyContent: AlignItems.center,
         flexDirection: FlexDirection.Column,
+        padding: [4, 0, 6],
       }}
+      onClose={onDecline}
       footer={
         <>
+          <Box
+            flexDirection={FlexDirection.Row}
+            alignItems={AlignItems.flexStart}
+            gap={2}
+            marginBottom={4}
+          >
+            <Checkbox
+              id="terms-of-use__checkbox"
+              className="terms-of-use__checkbox"
+              data-testid="terms-of-use-checkbox"
+              isChecked={isTermsOfUseChecked}
+              onChange={() => {
+                setIsTermsOfUseChecked(!isTermsOfUseChecked);
+              }}
+              label={t('termsOfUseAgreeText')}
+              ref={bottomRef}
+            />
+          </Box>
           <Button
             variant={BUTTON_VARIANT.PRIMARY}
             className="terms-of-use__button"
@@ -1160,25 +1181,6 @@ export default function TermsOfUsePopup({ onAccept }) {
             any information submitted to a blockchain protocol for
             processing.&nbsp;
           </Text>
-          <Box
-            flexDirection={FlexDirection.Row}
-            alignItems={AlignItems.flexStart}
-            marginLeft={3}
-            marginRight={3}
-            gap={2}
-          >
-            <Checkbox
-              id="terms-of-use__checkbox"
-              className="terms-of-use__checkbox"
-              data-testid="terms-of-use-checkbox"
-              isChecked={isTermsOfUseChecked}
-              onChange={() => {
-                setIsTermsOfUseChecked(!isTermsOfUseChecked);
-              }}
-              label={t('termsOfUseAgreeText')}
-              ref={bottomRef}
-            />
-          </Box>
         </Box>
       </Box>
     </Popover>
@@ -1187,4 +1189,5 @@ export default function TermsOfUsePopup({ onAccept }) {
 
 TermsOfUsePopup.propTypes = {
   onAccept: PropTypes.func.isRequired,
+  onDecline: PropTypes.func,
 };

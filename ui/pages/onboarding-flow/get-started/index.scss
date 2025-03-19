@@ -1,0 +1,23 @@
+@use "design-system";
+
+.get-started {
+  &__title {
+    font-size: 104px;
+    font-weight: 400;
+    line-height: 110px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  &__mascot {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -45px;
+  }
+
+  &__button {
+    width: 343px;
+    margin: 0 auto;
+  }
+}
