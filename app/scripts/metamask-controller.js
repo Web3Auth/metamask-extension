@@ -75,8 +75,6 @@ import {
 } from '@metamask/selected-network-controller';
 import { LoggingController, LogType } from '@metamask/logging-controller';
 import { PermissionLogController } from '@metamask/permission-log-controller';
-import { SeedlessOnboardingController } from '@metamask/seedless-onboarding-controller';
-
 import {
   createSnapsMethodMiddleware,
   buildSnapEndowmentSpecifications,
@@ -395,6 +393,7 @@ import {
 } from './controller-init/snaps';
 import { AuthenticationControllerInit } from './controller-init/identity/authentication-controller-init';
 import { UserStorageControllerInit } from './controller-init/identity/user-storage-controller-init';
+import { SeedlessOnboardingControllerInit } from './controller-init/onboarding/seedless-onboarding-controller-init';
 import OAuthController from './controllers/oauth-controller';
 import {
   getCapabilities,
@@ -1252,20 +1251,6 @@ export default class MetamaskController extends EventEmitter {
       },
     );
 
-    const seedlessOnboardingControllerMessenger = this.controllerMessenger.getRestricted({
-      name: 'SeedlessOnboardingController',
-      allowedActions: [
-        'SeedlessOnboardingController:getState',
-      ],
-      allowedEvents: [
-        'KeyringController:stateChange',
-      ],
-    });
-    this.seedlessOnboardingController = new SeedlessOnboardingController({
-      messenger: seedlessOnboardingControllerMessenger,
-      state: {},
-    });
-
     this.permissionController = new PermissionController({
       messenger: this.controllerMessenger.getRestricted({
         name: 'PermissionController',
@@ -2020,7 +2005,6 @@ export default class MetamaskController extends EventEmitter {
       this.gasFeeController,
       this.onboardingController,
       this.keyringController,
-      this.seedlessOnboardingController,
       ///: BEGIN:ONLY_INCLUDE_IF(build-mmi)
       this.transactionUpdateController,
       ///: END:ONLY_INCLUDE_IF
@@ -2046,6 +2030,7 @@ export default class MetamaskController extends EventEmitter {
       MultichainNetworkController: MultichainNetworkControllerInit,
       AuthenticationController: AuthenticationControllerInit,
       UserStorageController: UserStorageControllerInit,
+      SeedlessOnboardingController: SeedlessOnboardingControllerInit,
     };
 
     const {
@@ -2087,6 +2072,7 @@ export default class MetamaskController extends EventEmitter {
       controllersByName.MultichainNetworkController;
     this.authenticationController = controllersByName.AuthenticationController;
     this.userStorageController = controllersByName.UserStorageController;
+    this.seedlessOnboardingController = controllersByName.SeedlessOnboardingController;
 
     this.controllerMessenger.subscribe(
       'TransactionController:transactionStatusUpdated',
@@ -3356,6 +3342,7 @@ export default class MetamaskController extends EventEmitter {
       userStorageController,
       notificationServicesController,
       notificationServicesPushController,
+      seedlessOnboardingController,
     } = this;
 
     return {
@@ -3493,7 +3480,7 @@ export default class MetamaskController extends EventEmitter {
       ///: END:ONLY_INCLUDE_IF
 
       // seedless onboarding
-      backupSeedPhrase: this.backupSeedPhrase.bind(this),
+      backupSeedPhrase: seedlessOnboardingController.backupSeedPhrase.bind(seedlessOnboardingController),
 
       // hardware wallets
       connectHardware: this.connectHardware.bind(this),
@@ -5184,16 +5171,27 @@ export default class MetamaskController extends EventEmitter {
   /**
    * Backups the seed phrase for the seedless onboarding flow.
    *
-   * @param {string} oAuthIdToken
-   * @param {string} password
-   * @param {string} seedPhrase
+   * @param {string} oAuthIdToken - The OAuth ID token from the social login provider.
+   * @param {string} verifier - The social login provider.
+   * @param {string} verifierId - User Id or Email from the social login
+   * @param {string} password - The password used to generate the Seed Phrase
+   * @param {string} seedPhrase - The seed phrase for the seedless onboarding backup.
    * @returns
    */
-  async backupSeedPhrase(oAuthIdToken, password, seedPhrase) {
-    console.log('[backupSeedPhrase] oAuthIdToken', oAuthIdToken);
-    console.log('[backupSeedPhrase] password', password);
-    console.log('[backupSeedPhrase] seedPhrase', seedPhrase);
-    return this.seedlessOnboardingController.backupSeedPhrase(oAuthIdToken, password, seedPhrase);
+  async backupSeedPhrase(
+    oAuthIdToken,
+    verifier,
+    verifierId,
+    password,
+    seedPhrase,
+  ) {
+    return this.seedlessOnboardingController.backupSeedPhrase({
+      idToken: oAuthIdToken,
+      verifier,
+      verifierId,
+      password,
+      seedPhrase,
+    });
   }
 
   /**

@@ -452,27 +452,27 @@ export function tryReverseResolveAddress(
   };
 }
 
-export function backupSeedPhrase(
+export async function backupSeedPhrase(
   seedPhrase: string,
   password: string,
-  oAuthIdToken: string,
-): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
-  return async (dispatch: MetaMaskReduxDispatch) => {
-    dispatch(showLoadingIndication());
-
-    try {
-      await submitRequestToBackground('backupSeedPhrase', [oAuthIdToken, password, seedPhrase]);
-    } catch (error) {
-      dispatch(displayWarning(error));
-      if (isErrorWithMessage(error)) {
-        throw new Error(getErrorMessage(error));
-      } else {
-        throw error;
-      }
-    } finally {
-      dispatch(hideLoadingIndication());
-    }
-  };
+  idToken: string,
+  // TODO: Remove these defaults once we have completed the social login
+  verifier: string = 'google',
+  verifierId: string = 'testuser@gmail.com',
+): Promise<void> {
+  const result = await submitRequestToBackground(
+    'backupSeedPhrase',
+    [
+      {
+        idToken,
+        password,
+        seedPhrase,
+        verifier,
+        verifierId,
+      },
+    ],
+  );
+  console.log('[backupSeedPhrase] result', result);
 }
 
 export function resetAccount(): ThunkAction<

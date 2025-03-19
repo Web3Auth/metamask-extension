@@ -29,6 +29,7 @@ import {
   getAuthenticationControllerMessenger,
   getUserStorageControllerMessenger,
 } from './identity';
+import { getSeedlessOnboardingControllerMessenger } from './onboarding/seedless-onboarding-controller-messenger';
 
 export const CONTROLLER_MESSENGERS = {
   AuthenticationController: {
@@ -92,6 +93,10 @@ export const CONTROLLER_MESSENGERS = {
   },
   UserStorageController: {
     getMessenger: getUserStorageControllerMessenger,
+    getInitMessenger: noop,
+  },
+  SeedlessOnboardingController: {
+    getMessenger: getSeedlessOnboardingControllerMessenger,
     getInitMessenger: noop,
   },
 } as const;

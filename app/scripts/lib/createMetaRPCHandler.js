@@ -3,6 +3,8 @@ import { isStreamWritable } from './stream-utils';
 
 const createMetaRPCHandler = (api, outStream) => {
   return async (data) => {
+    console.log('[createMetaRPCHandler] data', data);
+    console.log('[createMetaRPCHandler] api', api);
     if (!isStreamWritable(outStream)) {
       return;
     }
