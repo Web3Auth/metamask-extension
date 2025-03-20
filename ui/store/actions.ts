@@ -465,7 +465,7 @@ export async function backupSeedPhrase(
   verifierId: string,
 ): Promise<void> {
   const result = await submitRequestToBackground(
-    'backupSeedPhrase',
+    'createSeedPhraseBackup',
     [
       {
         idToken,
