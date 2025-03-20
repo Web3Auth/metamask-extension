@@ -19,6 +19,7 @@ import {
   ONBOARDING_PIN_EXTENSION_ROUTE,
   ONBOARDING_METAMETRICS,
 } from '../../helpers/constants/routes';
+import { OnboardingFlowType } from '../../helpers/constants/onboarding';
 import {
   getCompletedOnboarding,
   getIsUnlocked,
@@ -60,7 +61,7 @@ const TWITTER_URL = 'https://twitter.com/MetaMask';
 
 export default function OnboardingFlow() {
   const [oAuthIdToken, setOAuthIdToken] = useState();
-  const [onboardingFlowType, setOnboardingFlowType] = useState('default');
+  const [onboardingFlowType, setOnboardingFlowType] = useState(OnboardingFlowType.DEFAULT);
   const [secretRecoveryPhrase, setSecretRecoveryPhrase] = useState('');
   const dispatch = useDispatch();
   const { pathname, search } = useLocation();
@@ -103,7 +104,7 @@ export default function OnboardingFlow() {
 
   const handleSocialLogin = async (provider) => {
     const { verifier, idToken, verifierId } = await dispatch(startOAuthLogin(provider));
-    setOnboardingFlowType('seedless');
+    setOnboardingFlowType(OnboardingFlowType.SEEDLESS);
     setOAuthIdToken({
       verifier,
       idToken,
@@ -132,7 +133,7 @@ export default function OnboardingFlow() {
   }
 
   const handleCreateNewAccount = async (password) => {
-    if (onboardingFlowType === 'default') {
+    if (onboardingFlowType === OnboardingFlowType.DEFAULT) {
       await handleDefaultOnboardingFlow(password);
     } else {
       await handleSeedlessOnboardingFlow(password);

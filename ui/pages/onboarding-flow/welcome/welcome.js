@@ -11,6 +11,7 @@ import {
   FontWeight,
   TextColor,
 } from '../../../helpers/constants/design-system';
+import { SocialLoginProvider } from '../../../helpers/constants/onboarding';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
@@ -104,6 +105,8 @@ export default function OnboardingWelcome({
     history.push(ONBOARDING_METAMETRICS);
     ///: END:ONLY_INCLUDE_IF
   };
+
+  // TODO: check if this is still needed somewhere?
   const toggleTermsCheck = () => {
     setTermsChecked((currentTermsChecked) => !currentTermsChecked);
   };
@@ -171,7 +174,7 @@ export default function OnboardingWelcome({
 
       <ul className="onboarding-welcome__buttons">
         <li>
-          <Button icon={<IconGoogle />} type="secondary">
+          <Button icon={<IconGoogle />} type="secondary" onClick={() => onClickSocialLogin(SocialLoginProvider.GOOGLE)}>
             {
               ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
               'Continue with Google'
@@ -180,7 +183,7 @@ export default function OnboardingWelcome({
           </Button>
         </li>
         <li>
-          <Button icon={<IconApple />} type="secondary">
+          <Button icon={<IconApple />} type="secondary" onClick={() => onClickSocialLogin(SocialLoginProvider.APPLE)}>
             {
               ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
               'Continue with Apple'
@@ -199,17 +202,6 @@ export default function OnboardingWelcome({
               OR
             </Text>
           </div>
-        </li>
-        <li>
-          <Button onClick={() => onClickSocialLogin('google')}>
-            GG auth
-          </Button>
-        </li>
-
-        <li>
-          <Button onClick={() => onClickSocialLogin('apple')}>
-            Apple auth
-          </Button>
         </li>
 
         <li>
