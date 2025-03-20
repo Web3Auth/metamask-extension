@@ -3480,7 +3480,9 @@ export default class MetamaskController extends EventEmitter {
       ///: END:ONLY_INCLUDE_IF
 
       // seedless onboarding
-      backupSeedPhrase: seedlessOnboardingController.backupSeedPhrase.bind(seedlessOnboardingController),
+      authenticateOauthUser: seedlessOnboardingController.authenticateOAuthUser.bind(seedlessOnboardingController),
+      createSeedPhraseBackup: seedlessOnboardingController.createSeedPhraseBackup.bind(seedlessOnboardingController),
+      fetchAndRestoreSeedPhraseMetadata: seedlessOnboardingController.fetchAndRestoreSeedPhraseMetadata.bind(seedlessOnboardingController),
 
       // hardware wallets
       connectHardware: this.connectHardware.bind(this),
@@ -5166,32 +5168,6 @@ export default class MetamaskController extends EventEmitter {
         ///: END:ONLY_INCLUDE_IF
       ),
     );
-  }
-
-  /**
-   * Backups the seed phrase for the seedless onboarding flow.
-   *
-   * @param {string} oAuthIdToken - The OAuth ID token from the social login provider.
-   * @param {string} verifier - The social login provider.
-   * @param {string} verifierId - User Id or Email from the social login
-   * @param {string} password - The password used to generate the Seed Phrase
-   * @param {string} seedPhrase - The seed phrase for the seedless onboarding backup.
-   * @returns
-   */
-  async backupSeedPhrase(
-    oAuthIdToken,
-    verifier,
-    verifierId,
-    password,
-    seedPhrase,
-  ) {
-    return this.seedlessOnboardingController.backupSeedPhrase({
-      idToken: oAuthIdToken,
-      verifier,
-      verifierId,
-      password,
-      seedPhrase,
-    });
   }
 
   /**
