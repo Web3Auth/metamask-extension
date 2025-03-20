@@ -2,19 +2,14 @@ import EventEmitter from 'events';
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-import { Carousel } from 'react-responsive-carousel';
-///: END:ONLY_INCLUDE_IF
 import Mascot from '../../../components/ui/mascot';
 import Button from '../../../components/ui/button';
 import { Text } from '../../../components/component-library';
-import CheckBox from '../../../components/ui/check-box';
-import Box from '../../../components/ui/box';
 import {
   TextVariant,
-  AlignItems,
   TextAlign,
   FontWeight,
+  TextColor,
 } from '../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
@@ -36,6 +31,8 @@ import {
 import { getFirstTimeFlowType, getCurrentKeyring } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { isFlask, isBeta } from '../../../helpers/utils/build-types';
+import IconGoogle from '../../../components/ui/icon/icon-google';
+import IconApple from '../../../components/ui/icon/icon-apple';
 
 export default function OnboardingWelcome({
   handleSocialLogin,
@@ -156,99 +153,53 @@ export default function OnboardingWelcome({
 
   return (
     <div className="onboarding-welcome" data-testid="onboarding-welcome">
-      {
-        ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-        <Carousel showThumbs={false} showStatus={false} showArrows>
-          <div>
-            <Text
-              variant={TextVariant.headingLg}
-              as="h2"
-              textAlign={TextAlign.Center}
-              fontWeight={FontWeight.Bold}
-            >
-              {t('welcomeToMetaMask')}
-            </Text>
-            <Text textAlign={TextAlign.Center} marginLeft={6} marginRight={6}>
-              {t('welcomeToMetaMaskIntro')}
-            </Text>
-            <div className="onboarding-welcome__mascot">{renderMascot()}</div>
-          </div>
-          <div>
-            <Text
-              variant={TextVariant.headingLg}
-              as="h2"
-              textAlign={TextAlign.Center}
-              fontWeight={FontWeight.Bold}
-            >
-              {t('welcomeExploreTitle')}
-            </Text>
-            <Text textAlign={TextAlign.Center}>
-              {t('welcomeExploreDescription')}
-            </Text>
-            <div className="onboarding-welcome__image">
-              <img
-                src="/images/onboarding-welcome-say-hello.png"
-                width="200"
-                height="275"
-                style={{
-                  objectFit: 'contain',
-                }}
-                alt="onboarding-welcome-say-hello"
-              />
-            </div>
-          </div>
-          <div>
-            <Text
-              variant={TextVariant.headingLg}
-              as="h2"
-              textAlign={TextAlign.Center}
-              fontWeight={FontWeight.Bold}
-            >
-              {t('welcomeLoginTitle')}
-            </Text>
-            <Text textAlign={TextAlign.Center}>
-              {t('welcomeLoginDescription')}
-            </Text>
-            <div className="onboarding-welcome__image">
-              <img
-                src="/images/onboarding-welcome-decentralised-apps.png"
-                width="200"
-                height="275"
-                alt="onboarding-welcome-decentralised-apps"
-                style={{
-                  objectFit: 'contain',
-                }}
-              />
-            </div>
-          </div>
-        </Carousel>
-        ///: END:ONLY_INCLUDE_IF
-      }
+      {/* <div className="onboarding-welcome__logo">
+        <MetaFoxLogo theme="light" />
+      </div> */}
+      <div className="onboarding-welcome__mascot">{renderMascot()}</div>
+
+      <div className="onboarding-welcome__title">
+        <Text
+          variant={TextVariant.headingLg}
+          as="h2"
+          textAlign={TextAlign.Center}
+          fontWeight={FontWeight.Bold}
+        >
+          {t('welcomeToMetaMask')}!
+        </Text>
+      </div>
 
       <ul className="onboarding-welcome__buttons">
         <li>
-          <Box
-            alignItems={AlignItems.center}
-            className="onboarding__terms-of-use"
-          >
-            <CheckBox
-              id="onboarding__terms-checkbox"
-              className="onboarding__terms-checkbox"
-              dataTestId="onboarding-terms-checkbox"
-              checked={termsChecked}
-              onClick={toggleTermsCheck}
-            />
-            <label
-              className="onboarding__terms-label"
-              htmlFor="onboarding__terms-checkbox"
-            >
-              <Text variant={TextVariant.bodyMd} marginLeft={2} as="span">
-                {termsOfUse}
-              </Text>
-            </label>
-          </Box>
+          <Button icon={<IconGoogle />} type="secondary">
+            {
+              ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+              'Continue with Google'
+              ///: END:ONLY_INCLUDE_IF
+            }
+          </Button>
         </li>
-
+        <li>
+          <Button icon={<IconApple />} type="secondary">
+            {
+              ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+              'Continue with Apple'
+              ///: END:ONLY_INCLUDE_IF
+            }
+          </Button>
+        </li>
+        <li>
+          <div className="onboarding-welcome__or">
+            <Text
+              className="onboarding-welcome__or-text"
+              variant={TextVariant.bodyMd}
+              color={TextColor.textMuted}
+              as="div"
+            >
+              OR
+            </Text>
+          </div>
+        </li>
         <li>
           <Button onClick={() => onClickSocialLogin('google')}>
             GG auth
@@ -266,7 +217,6 @@ export default function OnboardingWelcome({
             data-testid="onboarding-create-wallet"
             type="primary"
             onClick={onCreateClick}
-            disabled={!termsChecked}
           >
             {
               ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
@@ -280,7 +230,6 @@ export default function OnboardingWelcome({
             data-testid="onboarding-import-wallet"
             type="secondary"
             onClick={onImportClick}
-            disabled={!termsChecked}
           >
             {t('onboardingImportWallet')}
           </Button>

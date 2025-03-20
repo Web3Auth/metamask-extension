@@ -6,39 +6,31 @@
 @use "react-responsive-carousel/lib/styles/carousel";
 
 .onboarding-welcome {
-  .control-dots .dot {
-    background: var(--color-icon-muted);
-    box-shadow: none;
+  &__logo {
+    text-align: center;
+  }
 
-    &.selected {
-      background: var(--color-icon-default);
+  &__or {
+    text-align: center;
+    position: relative;
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 1px;
+      background-color: #9CA1AF;
     }
   }
 
-  .slide {
-    min-height: 400px;
-  }
-
-  /* next and previous arrow colors */
-  .carousel.carousel-slider .control-arrow {
-    opacity: 1;
-    color: var(--color-icon-default);
-
-    @include design-system.screen-sm-min {
-      padding: 40px;
-    }
-  }
-
-  .carousel .control-next.control-arrow::before {
-    border-left-color: var(--color-icon-default);
-  }
-
-  .carousel .control-prev.control-arrow::before {
-    border-right-color: var(--color-icon-default);
-  }
-
-  .carousel.carousel-slider .control-arrow:hover {
-    background: none;
+  &__or-text {
+    background-color: #fff;
+    padding: 0 10px;
+    width: fit-content;
+    margin: auto;
+    position: relative;
+    z-index: 1;
   }
 
   &__mascot {
@@ -57,7 +49,7 @@
     margin: 40px auto 0 auto;
 
     li {
-      margin-bottom: 24px;
+      margin-bottom: 16px;
     }
   }
 
