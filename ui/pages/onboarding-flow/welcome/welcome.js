@@ -74,7 +74,7 @@ export default function OnboardingWelcome({
   const onClickSocialLogin = async (provider) => {
     setNewAccountCreationInProgress(true);
     dispatch(setFirstTimeFlowType(FirstTimeFlowType.create));
-    handleSocialLogin(provider);
+    await handleSocialLogin(provider);
 
     trackEvent({
       category: MetaMetricsEventCategory.Onboarding,

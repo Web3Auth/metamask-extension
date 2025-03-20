@@ -154,11 +154,15 @@ export default class OAuthController extends BaseController<
    * Upon completion, return the id token.
    * @param provider - The OAuth provider to use.
    */
-  async startOAuthLogin(provider: OAuthProvider): Promise<string>{
-    const authUrl = this.constructAuthUrl(provider);
-    log.debug('[OAuthController] startOAuthLogin authUrl', authUrl);
+  async startOAuthLogin(provider: OAuthProvider): Promise<{
+    verifier: OAuthProvider;
+    idToken: string;
+    verifierId: string;
+  }>{
+    // const authUrl = this.constructAuthUrl(provider);
+    // log.debug('[OAuthController] startOAuthLogin authUrl', authUrl);
     // TODO: un-comment this when we have byoa server
-    const redirectUrl = "get_from_identity_launchWebAuthFlow";
+    // const redirectUrl = "get_from_identity_launchWebAuthFlow";
     // const redirectUrl = await chrome.identity.launchWebAuthFlow({
     //   interactive: true,
     //   url: authUrl,
@@ -171,8 +175,8 @@ export default class OAuthController extends BaseController<
 
     return new Promise(async (resolve, reject) => {
       try {
-        const idToken = await this.handleOAuthResponse(redirectUrl, provider);
-        resolve(idToken);
+        const tokenInfo = await this.handleOAuthResponse(provider);
+        resolve(tokenInfo);
       } catch (error) {
         log.error('[OAuthController] startOAuthLogin error', error);
         reject(error);
@@ -180,10 +184,40 @@ export default class OAuthController extends BaseController<
     });
   }
 
-  private async handleOAuthResponse(redirectUrl: string, provider: OAuthProvider): Promise<string> {
-    // TODO: handle google/apple auth response and get id token
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return 'MOCK_ID_TOKEN';
+  private async handleOAuthResponse(provider: OAuthProvider): Promise<{
+    verifier: OAuthProvider;
+    idToken: string;
+    verifierId: string;
+  }> {
+    // TODO: handle google/apple auth response with 'code' flow and get id token
+    const authUrl = this.constructAuthUrl(provider);
+    const redirectUrl = await chrome.identity.launchWebAuthFlow({
+      interactive: true,
+      url: authUrl,
+    });
+
+    if (!redirectUrl) {
+      throw new Error('No redirect URL found');
+    }
+
+    const m = redirectUrl.match(/[#?](.*)/)
+    if (!m || m.length < 1) {
+      throw new Error('Invalid redirect URL');
+    }
+    const params = new URLSearchParams(m[1].split('#')[0])
+    const accessToken = params.get('access_token')
+    if (!accessToken) {
+      throw new Error('No access token found');
+    }
+
+    const response = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${accessToken}`)
+    const data = await response.json()
+    console.log('[OAuthController] handleOAuthResponse data', data);
+    return {
+      verifier: provider,
+      idToken: accessToken,
+      verifierId: data.email,
+    }
   }
 
   private constructAuthUrl(provider: OAuthProvider): string {

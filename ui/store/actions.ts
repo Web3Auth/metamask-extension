@@ -316,7 +316,11 @@ export function createNewVaultAndGetSeedPhrase(
 
 export function createAndBackupSeedPhrase(
   password: string,
-  idToken: string,
+  oAuthLoginInfo: {
+    verifier: OAuthProvider;
+    idToken: string;
+    verifierId: string;
+  },
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
   return async (dispatch: MetaMaskReduxDispatch) => {
     dispatch(showLoadingIndication());
@@ -324,7 +328,8 @@ export function createAndBackupSeedPhrase(
     try {
       await createNewVault(password);
       const seedPhrase = await getSeedPhrase(password);
-      await backupSeedPhrase(seedPhrase, password, idToken);
+      const { verifier, idToken, verifierId } = oAuthLoginInfo;
+      await backupSeedPhrase(seedPhrase, password, idToken, verifier, verifierId);
       return seedPhrase;
     } catch (error) {
       dispatch(displayWarning(error));
@@ -456,9 +461,8 @@ export async function backupSeedPhrase(
   seedPhrase: string,
   password: string,
   idToken: string,
-  // TODO: Remove these defaults once we have completed the social login
-  verifier: string = 'google',
-  verifierId: string = 'testuser@gmail.com',
+  verifier: string,
+  verifierId: string,
 ): Promise<void> {
   const result = await submitRequestToBackground(
     'backupSeedPhrase',
@@ -3368,8 +3372,8 @@ export function startOAuthLogin(
     dispatch(showLoadingIndication());
 
     try {
-      const idToken = await submitRequestToBackground('startOAuthLogin', [provider]);
-      return idToken;
+      const tokenInfo = await submitRequestToBackground('startOAuthLogin', [provider]);
+      return tokenInfo;
     } catch (err) {
       dispatch(displayWarning(error));
       if (isErrorWithMessage(error)) {

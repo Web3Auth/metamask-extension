@@ -102,14 +102,17 @@ export default function OnboardingFlow() {
   ]);
 
   const handleSocialLogin = async (provider) => {
-    const idToken = await dispatch(startOAuthLogin(provider));
-    console.log('[handleSocialLogin] idToken', idToken);
+    const { verifier, idToken, verifierId } = await dispatch(startOAuthLogin(provider));
     setOnboardingFlowType('seedless');
-    setOAuthIdToken(idToken);
+    setOAuthIdToken({
+      verifier,
+      idToken,
+      verifierId,
+    });
   }
 
   const handleDefaultOnboardingFlow = async (password) => {
-    console.log('[handleDefaultOnboardingFlow] password', password);
+    setOAuthIdToken(undefined);
     const newSecretRecoveryPhrase = await dispatch(
       createNewVaultAndGetSeedPhrase(password),
     );
@@ -117,7 +120,6 @@ export default function OnboardingFlow() {
   }
 
   const handleSeedlessOnboardingFlow = async (password) => {
-    console.log('[handleSeedlessOnboardingFlow] oAuthIdToken', oAuthIdToken);
     if (!oAuthIdToken) {
       log.warn('No OAuth ID token found');
       return;
@@ -130,7 +132,6 @@ export default function OnboardingFlow() {
   }
 
   const handleCreateNewAccount = async (password) => {
-    console.log('[handleCreateNewAccount] onboardingFlowType', onboardingFlowType);
     if (onboardingFlowType === 'default') {
       await handleDefaultOnboardingFlow(password);
     } else {
