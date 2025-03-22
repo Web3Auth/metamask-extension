@@ -32,6 +32,7 @@ import {
   ///: END:ONLY_INCLUDE_IF
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
   ONBOARDING_COMPLETION_ROUTE,
+  ONBOARDING_UNLOCK_ROUTE,
 } from '../../../helpers/constants/routes';
 import { getFirstTimeFlowType, getCurrentKeyring } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
@@ -73,8 +74,13 @@ export default function OnboardingWelcome({
 
   const onClickSocialLogin = async (provider) => {
     setNewAccountCreationInProgress(true);
-    dispatch(setFirstTimeFlowType(FirstTimeFlowType.create));
-    await handleSocialLogin(provider);
+    dispatch(setFirstTimeFlowType(FirstTimeFlowType.seedless));
+    const isExistingUser = await handleSocialLogin(provider);
+    if (isExistingUser) {
+      // redirect to login page
+      history.push(ONBOARDING_UNLOCK_ROUTE);
+      return;
+    }
 
     trackEvent({
       category: MetaMetricsEventCategory.Onboarding,

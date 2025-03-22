@@ -17,6 +17,7 @@ import {
   ONBOARDING_COMPLETION_ROUTE,
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
   ONBOARDING_WELCOME_ROUTE,
+  ONBOARDING_UNLOCK_ROUTE,
   ///: END:ONLY_INCLUDE_IF
 } from '../../../helpers/constants/routes';
 import FormField from '../../../components/ui/form-field';
@@ -49,13 +50,12 @@ import {
   Text,
 } from '../../../components/component-library';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
+import { selectHasValidEncryptionKey, selectNodeAuthTokens } from '../../../selectors/seedless-onboarding';
 
 export default function CreatePassword({
   createNewAccount,
   importWithRecoveryPhrase,
   secretRecoveryPhrase,
-  onboardingFlowType,
-  oAuthIdToken,
 }) {
   const t = useI18nContext();
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -70,6 +70,8 @@ export default function CreatePassword({
     useState(false);
   const history = useHistory();
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
+  const nodeAuthTokens = useSelector(selectNodeAuthTokens);
+  const hasValidEncryptionKey = useSelector(selectHasValidEncryptionKey);
   const trackEvent = useContext(MetaMetricsContext);
   const currentKeyring = useSelector(getCurrentKeyring);
 
@@ -113,11 +115,17 @@ export default function CreatePassword({
   useEffect(() => {
     // if we are in seedless flow and we don't have an oAuthIdToken,
     // we should go back to the welcome page
-    if (onboardingFlowType === 'seedless' && !oAuthIdToken) {
-      // or should we show a warning?
-      history.replace(ONBOARDING_WELCOME_ROUTE);
+    if (firstTimeFlowType === FirstTimeFlowType.seedless) {
+      if (!nodeAuthTokens) {
+        // or should we show a warning?
+        history.replace(ONBOARDING_WELCOME_ROUTE);
+      } else if (hasValidEncryptionKey) {
+        // user has already setup password and encryption key
+        // redirect to the login page instead
+        history.replace(ONBOARDING_UNLOCK_ROUTE);
+      }
     }
-  }, [oAuthIdToken, onboardingFlowType]);
+  }, [nodeAuthTokens, firstTimeFlowType, hasValidEncryptionKey]);
 
   const isValid = useMemo(() => {
     if (!password || !confirmPassword || password !== confirmPassword) {

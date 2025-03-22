@@ -29,8 +29,9 @@ import {
   createNewVaultAndRestore,
   startOAuthLogin,
   createAndBackupSeedPhrase,
+  fetchAndRestoreSeedPhrase,
 } from '../../store/actions';
-import { getFirstTimeFlowTypeRouteAfterUnlock } from '../../selectors';
+import { getFirstTimeFlowType, getFirstTimeFlowTypeRouteAfterUnlock } from '../../selectors';
 import { MetaMetricsContext } from '../../contexts/metametrics';
 import Button from '../../components/ui/button';
 import RevealSRPModal from '../../components/app/reveal-SRP-modal';
@@ -55,19 +56,21 @@ import ImportSRP from './import-srp/import-srp';
 import OnboardingPinExtension from './pin-extension/pin-extension';
 import MetaMetricsComponent from './metametrics/metametrics';
 import * as log from 'loglevel';
+import { selectNodeAuthTokens } from '../../selectors/seedless-onboarding';
+import { FirstTimeFlowType } from '../../../shared/constants/onboarding';
 
 const TWITTER_URL = 'https://twitter.com/MetaMask';
 
 export default function OnboardingFlow() {
-  const [oAuthIdToken, setOAuthIdToken] = useState();
-  const [onboardingFlowType, setOnboardingFlowType] = useState('default');
   const [secretRecoveryPhrase, setSecretRecoveryPhrase] = useState('');
   const dispatch = useDispatch();
   const { pathname, search } = useLocation();
   const history = useHistory();
   const t = useI18nContext();
   const completedOnboarding = useSelector(getCompletedOnboarding);
+  const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const nextRoute = useSelector(getFirstTimeFlowTypeRouteAfterUnlock);
+  const nodeAuthTokens = useSelector(selectNodeAuthTokens);
   const isFromReminder = new URLSearchParams(search).get('isFromReminder');
   const trackEvent = useContext(MetaMetricsContext);
   const isUnlocked = useSelector(getIsUnlocked);
@@ -102,17 +105,10 @@ export default function OnboardingFlow() {
   ]);
 
   const handleSocialLogin = async (provider) => {
-    const { verifier, idToken, verifierId } = await dispatch(startOAuthLogin(provider));
-    setOnboardingFlowType('seedless');
-    setOAuthIdToken({
-      verifier,
-      idToken,
-      verifierId,
-    });
+    await dispatch(startOAuthLogin(provider));
   }
 
   const handleDefaultOnboardingFlow = async (password) => {
-    setOAuthIdToken(undefined);
     const newSecretRecoveryPhrase = await dispatch(
       createNewVaultAndGetSeedPhrase(password),
     );
@@ -120,29 +116,36 @@ export default function OnboardingFlow() {
   }
 
   const handleSeedlessOnboardingFlow = async (password) => {
-    if (!oAuthIdToken) {
-      log.warn('No OAuth ID token found');
+    if (!nodeAuthTokens) {
+      log.error('Seedless Onboarding authentication failed.');
       return;
     }
 
     const newSecretRecoveryPhrase = await dispatch(
-      createAndBackupSeedPhrase(password, oAuthIdToken)
+      createAndBackupSeedPhrase(password, nodeAuthTokens)
     );
     setSecretRecoveryPhrase(newSecretRecoveryPhrase);
   }
 
   const handleCreateNewAccount = async (password) => {
-    if (onboardingFlowType === 'default') {
-      await handleDefaultOnboardingFlow(password);
-    } else {
+    if (firstTimeFlowType === FirstTimeFlowType.seedless) {
       await handleSeedlessOnboardingFlow(password);
+    } else {
+      await handleDefaultOnboardingFlow(password);
     }
   };
 
   const handleUnlock = async (password) => {
-    const retrievedSecretRecoveryPhrase = await dispatch(
-      unlockAndGetSeedPhrase(password),
-    );
+    let retrievedSecretRecoveryPhrase;
+    if (firstTimeFlowType === FirstTimeFlowType.seedless) {
+      retrievedSecretRecoveryPhrase = await dispatch(
+        fetchAndRestoreSeedPhrase(password),
+      );
+    } else {
+      retrievedSecretRecoveryPhrase = await dispatch(
+        unlockAndGetSeedPhrase(password),
+      );
+    }
     setSecretRecoveryPhrase(retrievedSecretRecoveryPhrase);
     history.push(nextRoute);
   };
@@ -174,8 +177,6 @@ export default function OnboardingFlow() {
                 createNewAccount={handleCreateNewAccount}
                 importWithRecoveryPhrase={handleImportWithRecoveryPhrase}
                 secretRecoveryPhrase={secretRecoveryPhrase}
-                onboardingFlowType={onboardingFlowType}
-                oAuthIdToken={oAuthIdToken}
               />
             )}
           />

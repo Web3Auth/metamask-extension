@@ -25,6 +25,7 @@ import {
   KeyringTypes,
   keyringBuilderFactory,
 } from '@metamask/keyring-controller';
+import { AuthenticationResult } from '@metamask/seedless-onboarding-controller';
 import createFilterMiddleware from '@metamask/eth-json-rpc-filters';
 import createSubscriptionManager from '@metamask/eth-json-rpc-filters/subscriptionManager';
 import { JsonRpcError, providerErrors, rpcErrors } from '@metamask/rpc-errors';
@@ -394,7 +395,7 @@ import {
 import { AuthenticationControllerInit } from './controller-init/identity/authentication-controller-init';
 import { UserStorageControllerInit } from './controller-init/identity/user-storage-controller-init';
 import { SeedlessOnboardingControllerInit } from './controller-init/onboarding/seedless-onboarding-controller-init';
-import OAuthController from './controllers/oauth-controller';
+import OAuthController, { OAuthProvider } from './controllers/oauth-controller';
 import {
   getCapabilities,
   getTransactionReceiptsByBatchId,
@@ -3336,7 +3337,6 @@ export default class MetamaskController extends EventEmitter {
       phishingController,
       tokenRatesController,
       accountTrackerController,
-      oauthController,
       // Notification Controllers
       authenticationController,
       userStorageController,
@@ -3479,10 +3479,12 @@ export default class MetamaskController extends EventEmitter {
       getAccountsBySnapId: (snapId) => getAccountsBySnapId(this, snapId),
       ///: END:ONLY_INCLUDE_IF
 
+      // oauth controller
+      startOAuthLogin: this.startSocialLogin.bind(this),
+
       // seedless onboarding
-      authenticateOauthUser: seedlessOnboardingController.authenticateOAuthUser.bind(seedlessOnboardingController),
-      createSeedPhraseBackup: seedlessOnboardingController.createSeedPhraseBackup.bind(seedlessOnboardingController),
-      fetchAndRestoreSeedPhraseMetadata: seedlessOnboardingController.fetchAndRestoreSeedPhraseMetadata.bind(seedlessOnboardingController),
+      createSeedPhraseBackup: this.createSeedPhraseBackup.bind(this),
+      fetchAndRestoreSeedPhraseMetadata: this.fetchAndRestoreSeedPhraseMetadata.bind(this),
 
       // hardware wallets
       connectHardware: this.connectHardware.bind(this),
@@ -3799,9 +3801,6 @@ export default class MetamaskController extends EventEmitter {
         onboardingController.completeOnboarding.bind(onboardingController),
       setFirstTimeFlowType:
         onboardingController.setFirstTimeFlowType.bind(onboardingController),
-
-      // oauth controller
-      startOAuthLogin: oauthController.startOAuthLogin.bind(oauthController),
 
       // alert controller
       setAlertEnabledness:
@@ -4451,6 +4450,52 @@ export default class MetamaskController extends EventEmitter {
     } catch (e) {
       return null;
     }
+  }
+
+  /**
+   * Login with social login provider and get User Onboarding details.
+   *
+   * AuthenticationResult is an object that contains the temporary Auth token for next step of onboarding flow
+   * and user's onboarding status to indicate whether the user has already completed the seedless onboarding flow.
+   *
+   * @param {OAuthProvider} provider - social login provider, `google` | `apple`
+   * @returns {Promise<AuthenticationResult>} authenticationResult
+   */
+  async startSocialLogin(provider) {
+    const oAuthLoginResult = await this.oauthController.startOAuthLogin(provider);
+    const authenticationResult = await this.seedlessOnboardingController.authenticateOAuthUser(oAuthLoginResult);
+    return authenticationResult;
+  }
+
+  /**
+   * Creates a seed phrase backup for the user.
+   *
+   * Generate Encryption Key from the password using the Threshold OPRF and encrypt the seed phrase with the key.
+   * Save the encrypted seed phrase in the metadata store.
+   *
+   * @param {string} seedPhrase - The seed phrase to backup.
+   * @param {string} password - The user's password.
+   */
+  async createSeedPhraseBackup(seedPhrase, password) {
+    await this.seedlessOnboardingController.createSeedPhraseBackup({
+      seedPhrase,
+      password,
+    });
+  }
+
+  async fetchAndRestoreSeedPhraseMetadata(password) {
+    let { secretData: seedPhrase }  = await this.seedlessOnboardingController.fetchAndRestoreSeedPhraseMetadata(password);
+    if (!seedPhrase) {
+      // if the seed phrase metadata is not found, set up a new password and create a new seed phrase
+      await this.keyringController.createNewVaultAndKeychain(password);
+      seedPhrase = await this.keyringController.exportSeedPhrase(password);
+      // create a new seed phrase backup
+      await this.seedlessOnboardingController.createSeedPhraseBackup({
+        seedPhrase,
+        password,
+      });
+    }
+    return seedPhrase;
   }
 
   //=============================================================================

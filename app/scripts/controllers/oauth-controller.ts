@@ -85,6 +85,14 @@ export type OAuthControllerOptions = {
   loginProviderConfig: LoginProviderConfig;
 };
 
+export type OAuthLoginResult = {
+  verifier: OAuthProvider;
+  idTokens: string[];
+  verifierID: string;
+  endpoints: string[];
+  indexes: number[];
+};
+
 /**
  * {@link OAuthController}'s metadata.
  *
@@ -154,11 +162,7 @@ export default class OAuthController extends BaseController<
    * Upon completion, return the id token.
    * @param provider - The OAuth provider to use.
    */
-  async startOAuthLogin(provider: OAuthProvider): Promise<{
-    verifier: OAuthProvider;
-    idToken: string;
-    verifierId: string;
-  }>{
+  async startOAuthLogin(provider: OAuthProvider): Promise<OAuthLoginResult>{
     // const authUrl = this.constructAuthUrl(provider);
     // log.debug('[OAuthController] startOAuthLogin authUrl', authUrl);
     // TODO: un-comment this when we have byoa server
@@ -184,11 +188,7 @@ export default class OAuthController extends BaseController<
     });
   }
 
-  private async handleOAuthResponse(provider: OAuthProvider): Promise<{
-    verifier: OAuthProvider;
-    idToken: string;
-    verifierId: string;
-  }> {
+  private async handleOAuthResponse(provider: OAuthProvider): Promise<OAuthLoginResult> {
     // TODO: handle google/apple auth response with 'code' flow and get id token
     const authUrl = this.constructAuthUrl(provider);
     const redirectUrl = await chrome.identity.launchWebAuthFlow({
@@ -212,11 +212,13 @@ export default class OAuthController extends BaseController<
 
     const response = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${accessToken}`)
     const data = await response.json()
-    console.log('[OAuthController] handleOAuthResponse data', data);
+
     return {
       verifier: provider,
-      idToken: accessToken,
-      verifierId: data.email,
+      idTokens: [accessToken],
+      verifierID: data.email,
+      endpoints: [authUrl],
+      indexes: [0],
     }
   }
 

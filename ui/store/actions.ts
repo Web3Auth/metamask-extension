@@ -39,6 +39,7 @@ import {
   NetworkConfiguration,
 } from '@metamask/network-controller';
 import { InterfaceState } from '@metamask/snaps-sdk';
+import { NodeAuthTokens } from '@metamask/seedless-onboarding-controller';
 import { KeyringTypes } from '@metamask/keyring-controller';
 import type { NotificationServicesController } from '@metamask/notification-services-controller';
 import { USER_STORAGE_FEATURE_NAMES } from '@metamask/profile-sync-controller/sdk';
@@ -316,11 +317,7 @@ export function createNewVaultAndGetSeedPhrase(
 
 export function createAndBackupSeedPhrase(
   password: string,
-  oAuthLoginInfo: {
-    verifier: OAuthProvider;
-    idToken: string;
-    verifierId: string;
-  },
+  nodeAuthTokens: NodeAuthTokens,
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
   return async (dispatch: MetaMaskReduxDispatch) => {
     dispatch(showLoadingIndication());
@@ -328,8 +325,7 @@ export function createAndBackupSeedPhrase(
     try {
       await createNewVault(password);
       const seedPhrase = await getSeedPhrase(password);
-      const { verifier, idToken, verifierId } = oAuthLoginInfo;
-      await backupSeedPhrase(seedPhrase, password, idToken, verifier, verifierId);
+      await createSeedPhraseBackup(seedPhrase, password, nodeAuthTokens);
       return seedPhrase;
     } catch (error) {
       dispatch(displayWarning(error));
@@ -457,26 +453,48 @@ export function tryReverseResolveAddress(
   };
 }
 
-export async function backupSeedPhrase(
+export async function createSeedPhraseBackup(
   seedPhrase: string,
   password: string,
-  idToken: string,
-  verifier: string,
-  verifierId: string,
+  nodeAuthTokens: NodeAuthTokens,
 ): Promise<void> {
-  const result = await submitRequestToBackground(
+  await submitRequestToBackground(
     'createSeedPhraseBackup',
     [
-      {
-        idToken,
-        password,
-        seedPhrase,
-        verifier,
-        verifierId,
-      },
+      seedPhrase,
+      password,
+      nodeAuthTokens,
     ],
   );
-  console.log('[backupSeedPhrase] result', result);
+}
+
+export async function fetchAndRestoreSeedPhrase(password: string): ThunkAction<
+  Promise<string>,
+  MetaMaskReduxState,
+  unknown,
+  AnyAction
+> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      const seedPhrase = await submitRequestToBackground(
+        'fetchAndRestoreSeedPhraseMetadata',
+        [password],
+      );
+      console.log('[fetchAndRestoreSeedPhrase] seedPhrase', seedPhrase);
+      return seedPhrase;
+    } catch (error) {
+      dispatch(displayWarning(error));
+      if (isErrorWithMessage(error)) {
+        throw new Error(getErrorMessage(error));
+      } else {
+        throw error;
+      }
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
+  };
 }
 
 export function resetAccount(): ThunkAction<
