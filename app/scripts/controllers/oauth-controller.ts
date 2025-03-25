@@ -85,6 +85,7 @@ export type OAuthControllerOptions = {
   messenger: OAuthControllerMessenger;
   loginProviderConfig: LoginProviderConfig;
   byoaServerUrl: string;
+  web3AuthNetwork: string;
 };
 
 export type OAuthLoginResult = {
@@ -136,11 +137,14 @@ export default class OAuthController extends BaseController<
 
   private byoaServerUrl: string;
 
+  private web3AuthNetwork: string;
+
   constructor({
     state,
     messenger,
     loginProviderConfig,
     byoaServerUrl,
+    web3AuthNetwork,
   }: OAuthControllerOptions) {
     super({
       messenger,
@@ -153,6 +157,7 @@ export default class OAuthController extends BaseController<
     });
 
     this.byoaServerUrl = byoaServerUrl;
+    this.web3AuthNetwork = web3AuthNetwork;
 
     Object.entries(loginProviderConfig).forEach(([provider, config]) => {
       if (!config.scopes) {
@@ -162,7 +167,7 @@ export default class OAuthController extends BaseController<
         config.redirectUri = chrome.identity.getRedirectURL();
       }
       if (!config.serverRedirectUri && provider === 'apple') {
-        config.serverRedirectUri = `${this.byoaServerUrl}/api/v1/auth/callback`;
+        config.serverRedirectUri = `${this.byoaServerUrl}/api/v1/oauth/callback`;
       }
     });
     this.loginProviderConfig = loginProviderConfig;
@@ -220,24 +225,22 @@ export default class OAuthController extends BaseController<
     authCode: string,
   ): Promise<OAuthLoginResult> {
     const providerConfig = this.#getProviderConfig(provider);
-    const res = await fetch(
-      `${this.byoaServerUrl}/api/v1/auth/authorization-code`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          code: authCode,
-          client_id: providerConfig.clientId,
-          redirect_uri:
-            provider === 'apple'
-              ? providerConfig.serverRedirectUri
-              : providerConfig.redirectUri,
-          login_provider: provider,
-        }),
+    const res = await fetch(`${this.byoaServerUrl}/api/v1/oauth/token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify({
+        code: authCode,
+        client_id: providerConfig.clientId,
+        redirect_uri:
+          provider === 'apple'
+            ? providerConfig.serverRedirectUri
+            : providerConfig.redirectUri,
+        login_provider: provider,
+        network: this.web3AuthNetwork,
+      }),
+    });
     const data = await res.json();
     return {
       verifier: provider,

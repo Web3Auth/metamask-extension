@@ -10,6 +10,7 @@ GOOGLE_AUTH_URI=https://accounts.google.com/o/oauth2/v2/auth
 APPLE_CLIENT_ID=
 APPLE_AUTH_URI=https://appleid.apple.com/auth/authorize
 BYOA_SERVER_URL=http://localhost:3060
+WEB3AUTH_NETWORK=sapphire_testnet
 
 ; This variable is not required but it's necessary for the storybook
 ; to render stories that use onchain data.
