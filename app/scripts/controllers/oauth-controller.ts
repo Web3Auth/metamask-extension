@@ -90,8 +90,9 @@ export type OAuthControllerOptions = {
 
 export type OAuthLoginResult = {
   verifier: OAuthProvider;
-  idTokens: string[];
-  verifierID: string;
+  idToken: string;
+  /** a map of [aud]: jwt_token */
+  jwtTokens: Record<string, string>;
   endpoints: string[];
   indexes: number[];
 };
@@ -194,8 +195,8 @@ export default class OAuthController extends BaseController<
 
     return new Promise((resolve, reject) => {
       this.#handleOAuthResponse(redirectUrl, provider)
-        .then((idToken) => {
-          resolve(idToken);
+        .then((res) => {
+          resolve(res);
         })
         .catch((error) => {
           log.error('[OAuthController] startOAuthLogin error', error);
@@ -216,8 +217,8 @@ export default class OAuthController extends BaseController<
     if (!authCode) {
       throw new Error('No auth code found');
     }
-    const idToken = await this.#getBYOAIdToken(provider, authCode);
-    return idToken;
+    const res = await this.#getBYOAIdToken(provider, authCode);
+    return res;
   }
 
   async #getBYOAIdToken(
@@ -244,11 +245,11 @@ export default class OAuthController extends BaseController<
     const data = await res.json();
     return {
       verifier: provider,
-      idTokens: [data.id_token],
-      verifierID: data.verifier_id,
+      idToken: data.id_token,
+      jwtTokens: data.jwt_token,
       // TODO: add JWKS endpoint in BYOA server for verification of id token
-      endpoints: [`${this.byoaServerUrl}/.well-known/keys.json`],
-      indexes: [1],
+      endpoints: [`${this.byoaServerUrl}/api/v1/oauth/cert`],
+      indexes: [0],
     };
   }
 
