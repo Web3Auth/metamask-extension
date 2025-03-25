@@ -29,9 +29,12 @@ import {
   createNewVaultAndRestore,
   startOAuthLogin,
   createAndBackupSeedPhrase,
-  fetchAndRestoreSeedPhrase,
+  restoreAndGetSeedPhrase,
 } from '../../store/actions';
-import { getFirstTimeFlowType, getFirstTimeFlowTypeRouteAfterUnlock } from '../../selectors';
+import {
+  getFirstTimeFlowType,
+  getFirstTimeFlowTypeRouteAfterUnlock,
+} from '../../selectors';
 import { MetaMetricsContext } from '../../contexts/metametrics';
 import Button from '../../components/ui/button';
 import RevealSRPModal from '../../components/app/reveal-SRP-modal';
@@ -44,6 +47,7 @@ import {
 import ExperimentalArea from '../../components/app/flask/experimental-area';
 ///: END:ONLY_INCLUDE_IF
 import { submitRequestToBackgroundAndCatch } from '../../components/app/toast-master/utils';
+import { FirstTimeFlowType } from '../../../shared/constants/onboarding';
 import OnboardingFlowSwitch from './onboarding-flow-switch/onboarding-flow-switch';
 import CreatePassword from './create-password/create-password';
 import ReviewRecoveryPhrase from './recovery-phrase/review-recovery-phrase';
@@ -55,9 +59,6 @@ import OnboardingWelcome from './welcome/welcome';
 import ImportSRP from './import-srp/import-srp';
 import OnboardingPinExtension from './pin-extension/pin-extension';
 import MetaMetricsComponent from './metametrics/metametrics';
-import * as log from 'loglevel';
-import { selectNodeAuthTokens } from '../../selectors/seedless-onboarding';
-import { FirstTimeFlowType } from '../../../shared/constants/onboarding';
 
 const TWITTER_URL = 'https://twitter.com/MetaMask';
 
@@ -70,7 +71,6 @@ export default function OnboardingFlow() {
   const completedOnboarding = useSelector(getCompletedOnboarding);
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const nextRoute = useSelector(getFirstTimeFlowTypeRouteAfterUnlock);
-  const nodeAuthTokens = useSelector(selectNodeAuthTokens);
   const isFromReminder = new URLSearchParams(search).get('isFromReminder');
   const trackEvent = useContext(MetaMetricsContext);
   const isUnlocked = useSelector(getIsUnlocked);
@@ -106,26 +106,21 @@ export default function OnboardingFlow() {
 
   const handleSocialLogin = async (provider) => {
     await dispatch(startOAuthLogin(provider));
-  }
+  };
 
   const handleDefaultOnboardingFlow = async (password) => {
     const newSecretRecoveryPhrase = await dispatch(
       createNewVaultAndGetSeedPhrase(password),
     );
     setSecretRecoveryPhrase(newSecretRecoveryPhrase);
-  }
+  };
 
   const handleSeedlessOnboardingFlow = async (password) => {
-    if (!nodeAuthTokens) {
-      log.error('Seedless Onboarding authentication failed.');
-      return;
-    }
-
     const newSecretRecoveryPhrase = await dispatch(
-      createAndBackupSeedPhrase(password, nodeAuthTokens)
+      createAndBackupSeedPhrase(password),
     );
     setSecretRecoveryPhrase(newSecretRecoveryPhrase);
-  }
+  };
 
   const handleCreateNewAccount = async (password) => {
     if (firstTimeFlowType === FirstTimeFlowType.seedless) {
@@ -139,13 +134,14 @@ export default function OnboardingFlow() {
     let retrievedSecretRecoveryPhrase;
     if (firstTimeFlowType === FirstTimeFlowType.seedless) {
       retrievedSecretRecoveryPhrase = await dispatch(
-        fetchAndRestoreSeedPhrase(password),
+        restoreAndGetSeedPhrase(password),
       );
     } else {
       retrievedSecretRecoveryPhrase = await dispatch(
         unlockAndGetSeedPhrase(password),
       );
     }
+
     setSecretRecoveryPhrase(retrievedSecretRecoveryPhrase);
     history.push(nextRoute);
   };

@@ -25,7 +25,6 @@ import {
   KeyringTypes,
   keyringBuilderFactory,
 } from '@metamask/keyring-controller';
-import { AuthenticationResult } from '@metamask/seedless-onboarding-controller';
 import createFilterMiddleware from '@metamask/eth-json-rpc-filters';
 import createSubscriptionManager from '@metamask/eth-json-rpc-filters/subscriptionManager';
 import { JsonRpcError, providerErrors, rpcErrors } from '@metamask/rpc-errors';
@@ -395,7 +394,7 @@ import {
 import { AuthenticationControllerInit } from './controller-init/identity/authentication-controller-init';
 import { UserStorageControllerInit } from './controller-init/identity/user-storage-controller-init';
 import { SeedlessOnboardingControllerInit } from './controller-init/onboarding/seedless-onboarding-controller-init';
-import OAuthController, { OAuthProvider } from './controllers/oauth-controller';
+import OAuthController from './controllers/oauth-controller';
 import {
   getCapabilities,
   getTransactionReceiptsByBatchId,
@@ -2073,7 +2072,8 @@ export default class MetamaskController extends EventEmitter {
       controllersByName.MultichainNetworkController;
     this.authenticationController = controllersByName.AuthenticationController;
     this.userStorageController = controllersByName.UserStorageController;
-    this.seedlessOnboardingController = controllersByName.SeedlessOnboardingController;
+    this.seedlessOnboardingController =
+      controllersByName.SeedlessOnboardingController;
 
     this.controllerMessenger.subscribe(
       'TransactionController:transactionStatusUpdated',
@@ -3342,7 +3342,6 @@ export default class MetamaskController extends EventEmitter {
       userStorageController,
       notificationServicesController,
       notificationServicesPushController,
-      seedlessOnboardingController,
     } = this;
 
     return {
@@ -3484,7 +3483,8 @@ export default class MetamaskController extends EventEmitter {
 
       // seedless onboarding
       createSeedPhraseBackup: this.createSeedPhraseBackup.bind(this),
-      fetchAndRestoreSeedPhraseMetadata: this.fetchAndRestoreSeedPhraseMetadata.bind(this),
+      fetchAndRestoreSeedPhraseMetadata:
+        this.fetchAndRestoreSeedPhraseMetadata.bind(this),
 
       // hardware wallets
       connectHardware: this.connectHardware.bind(this),
@@ -4462,8 +4462,13 @@ export default class MetamaskController extends EventEmitter {
    * @returns {Promise<AuthenticationResult>} authenticationResult
    */
   async startSocialLogin(provider) {
-    const oAuthLoginResult = await this.oauthController.startOAuthLogin(provider);
-    const authenticationResult = await this.seedlessOnboardingController.authenticateOAuthUser(oAuthLoginResult);
+    const oAuthLoginResult = await this.oauthController.startOAuthLogin(
+      provider,
+    );
+    const authenticationResult =
+      await this.seedlessOnboardingController.authenticateOAuthUser(
+        oAuthLoginResult,
+      );
     return authenticationResult;
   }
 
@@ -4483,19 +4488,49 @@ export default class MetamaskController extends EventEmitter {
     });
   }
 
+  /**
+   * Fetches and restores the seed phrase metadata.
+   *
+   * If the seedphrase is not found in the metadata store, it creates new seedphrase and saves it in the metadata store.
+   *
+   * Otherwise, it creates a new vault using the restored seedphrase from metadata store.
+   *
+   * @param {string} password - The user's password.
+   * @returns {Promise<Buffer>} The seed phrase.
+   */
   async fetchAndRestoreSeedPhraseMetadata(password) {
-    let { secretData: seedPhrase }  = await this.seedlessOnboardingController.fetchAndRestoreSeedPhraseMetadata(password);
-    if (!seedPhrase) {
-      // if the seed phrase metadata is not found, set up a new password and create a new seed phrase
-      await this.keyringController.createNewVaultAndKeychain(password);
-      seedPhrase = await this.keyringController.exportSeedPhrase(password);
-      // create a new seed phrase backup
-      await this.seedlessOnboardingController.createSeedPhraseBackup({
-        seedPhrase,
-        password,
-      });
+    try {
+      const { secretData: seedPhrases } =
+        await this.seedlessOnboardingController.fetchAndRestoreSeedPhraseMetadata(
+          password,
+        );
+      let seedPhrase = seedPhrases[0] || null;
+      if (seedPhrase === null) {
+        // if the seed phrase metadata is not found, set up a new password and create a new seed phrase
+        await this.keyringController.createNewVaultAndKeychain(password);
+        seedPhrase = await this.keyringController.exportSeedPhrase(password);
+        // create a new seed phrase backup
+        await this.seedlessOnboardingController.createSeedPhraseBackup({
+          seedPhrase,
+          password,
+        });
+      } else {
+        const encodedSeedPhrase = Array.from(
+          Buffer.from(seedPhrase, 'utf8').values(),
+        );
+        // load the seed phrase from the metadata store
+        await this.createNewVaultAndRestore(password, encodedSeedPhrase);
+      }
+
+      // await this.submitPassword(password);
+      return this._convertEnglishWordlistIndicesToCodepoints(seedPhrase);
+    } catch (error) {
+      log.error(
+        'Error while fetching and restoring seed phrase metadata.',
+        error,
+      );
+      throw error;
     }
-    return seedPhrase;
   }
 
   //=============================================================================
@@ -5084,8 +5119,9 @@ export default class MetamaskController extends EventEmitter {
    * @returns string label
    */
   getAccountLabel(name, index, hdPathDescription) {
-    return `${name[0].toUpperCase()}${name.slice(1)} ${parseInt(index, 10) + 1
-      } ${hdPathDescription || ''}`.trim();
+    return `${name[0].toUpperCase()}${name.slice(1)} ${
+      parseInt(index, 10) + 1
+    } ${hdPathDescription || ''}`.trim();
   }
 
   /**
@@ -7724,10 +7760,10 @@ export default class MetamaskController extends EventEmitter {
         params:
           newAccounts.length < 2
             ? // If the length is 1 or 0, the accounts are sorted by definition.
-            newAccounts
+              newAccounts
             : // If the length is 2 or greater, we have to execute
-            // `eth_accounts` vi this method.
-            this.getPermittedAccounts(origin),
+              // `eth_accounts` vi this method.
+              this.getPermittedAccounts(origin),
       },
       API_TYPE.EIP1193,
     );
@@ -7797,7 +7833,7 @@ export default class MetamaskController extends EventEmitter {
 
       const blockExplorerUrl =
         networkConfiguration?.blockExplorerUrls?.[
-        networkConfiguration?.defaultBlockExplorerUrlIndex
+          networkConfiguration?.defaultBlockExplorerUrlIndex
         ];
 
       rpcPrefs = { blockExplorerUrl };
@@ -8057,7 +8093,7 @@ export default class MetamaskController extends EventEmitter {
       DistributionType.Main;
     const environment =
       environmentMappingForRemoteFeatureFlag[
-      process.env.METAMASK_ENVIRONMENT
+        process.env.METAMASK_ENVIRONMENT
       ] || EnvironmentType.Development;
     return { distribution, environment };
   }
