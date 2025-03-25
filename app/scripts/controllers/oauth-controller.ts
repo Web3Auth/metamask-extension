@@ -6,7 +6,6 @@ import {
 } from '@metamask/base-controller';
 import log from 'loglevel';
 
-
 // Unique name for the controller
 const controllerName = 'OAuthController';
 
@@ -70,6 +69,8 @@ const defaultProviderScopes = {
 export type OAuthProviderConfig = {
   clientId: string;
   redirectUri?: string;
+  /** for apple, we need to redirect to a server endpoint that will handle the post request and redirect back to client */
+  serverRedirectUri?: string;
   authUri: string;
   scopes?: string[];
 };
@@ -83,6 +84,7 @@ export type OAuthControllerOptions = {
   state: Partial<OAuthControllerState>;
   messenger: OAuthControllerMessenger;
   loginProviderConfig: LoginProviderConfig;
+  byoaServerUrl: string;
 };
 
 export type OAuthLoginResult = {
@@ -117,7 +119,9 @@ const controllerMetadata = {
     persist: false,
     anonymous: true,
   },
-}
+};
+
+// const REDIRECT_PATH = '/oauth-redirect';
 
 /**
  * Controller responsible for maintaining
@@ -130,11 +134,13 @@ export default class OAuthController extends BaseController<
 > {
   private loginProviderConfig: LoginProviderConfig;
 
+  private byoaServerUrl: string;
 
   constructor({
     state,
     messenger,
     loginProviderConfig,
+    byoaServerUrl,
   }: OAuthControllerOptions) {
     super({
       messenger,
@@ -146,12 +152,17 @@ export default class OAuthController extends BaseController<
       },
     });
 
+    this.byoaServerUrl = byoaServerUrl;
+
     Object.entries(loginProviderConfig).forEach(([provider, config]) => {
       if (!config.scopes) {
         config.scopes = defaultProviderScopes[provider as OAuthProvider];
       }
       if (!config.redirectUri) {
         config.redirectUri = chrome.identity.getRedirectURL();
+      }
+      if (!config.serverRedirectUri && provider === 'apple') {
+        config.serverRedirectUri = `${this.byoaServerUrl}/api/v1/auth/callback`;
       }
     });
     this.loginProviderConfig = loginProviderConfig;
@@ -160,88 +171,110 @@ export default class OAuthController extends BaseController<
   /**
    * Initiates the OAuth login process for the given provider.
    * Upon completion, return the id token.
+   *
    * @param provider - The OAuth provider to use.
    */
-  async startOAuthLogin(provider: OAuthProvider): Promise<OAuthLoginResult>{
-    // const authUrl = this.constructAuthUrl(provider);
-    // log.debug('[OAuthController] startOAuthLogin authUrl', authUrl);
-    // TODO: un-comment this when we have byoa server
-    // const redirectUrl = "get_from_identity_launchWebAuthFlow";
-    // const redirectUrl = await chrome.identity.launchWebAuthFlow({
-    //   interactive: true,
-    //   url: authUrl,
-    // });
-    // console.log('[identity auth redirectUrl]', redirectUrl);
-    // if (!redirectUrl) {
-    //   console.error('[identity auth redirectUrl is null]');
-    //   throw new Error('No redirect URL found');
-    // }
-
-    return new Promise(async (resolve, reject) => {
-      try {
-        const tokenInfo = await this.handleOAuthResponse(provider);
-        resolve(tokenInfo);
-      } catch (error) {
-        log.error('[OAuthController] startOAuthLogin error', error);
-        reject(error);
-      }
-    });
-  }
-
-  private async handleOAuthResponse(provider: OAuthProvider): Promise<OAuthLoginResult> {
-    // TODO: handle google/apple auth response with 'code' flow and get id token
-    const authUrl = this.constructAuthUrl(provider);
+  async startOAuthLogin(provider: OAuthProvider): Promise<string> {
+    const authUrl = this.#constructAuthUrl(provider);
+    log.debug('[OAuthController] startOAuthLogin authUrl', authUrl);
     const redirectUrl = await chrome.identity.launchWebAuthFlow({
       interactive: true,
       url: authUrl,
     });
-
+    console.log('[identity auth redirectUrl]', redirectUrl);
     if (!redirectUrl) {
+      console.error('[identity auth redirectUrl is null]');
       throw new Error('No redirect URL found');
     }
 
-    const m = redirectUrl.match(/[#?](.*)/)
-    if (!m || m.length < 1) {
-      throw new Error('Invalid redirect URL');
-    }
-    const params = new URLSearchParams(m[1].split('#')[0])
-    const accessToken = params.get('access_token')
-    if (!accessToken) {
-      throw new Error('No access token found');
-    }
-
-    const response = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${accessToken}`)
-    const data = await response.json()
-
-    return {
-      verifier: provider,
-      idTokens: [accessToken],
-      verifierID: data.email,
-      endpoints: [authUrl],
-      indexes: [0],
-    }
+    return new Promise((resolve, reject) => {
+      this.#handleOAuthResponse(redirectUrl, provider)
+        .then((idToken) => {
+          resolve(idToken);
+        })
+        .catch((error) => {
+          log.error('[OAuthController] startOAuthLogin error', error);
+          reject(error);
+        });
+    });
   }
 
-  private constructAuthUrl(provider: OAuthProvider): string {
-    const oAuthProviderConfig = this.loginProviderConfig[provider];
-    let authURL = oAuthProviderConfig.authUri;
-    authURL += `?client_id=${oAuthProviderConfig.clientId}`;
-    authURL += `&response_type=${encodeURIComponent(
-      provider === 'google' ? 'token' : 'code',
-    )}`;
-    authURL += `&redirect_uri=${encodeURIComponent(
-      oAuthProviderConfig.redirectUri || '',
-    )}`;
-    authURL += `&scope=${encodeURIComponent(
+  #getProviderConfig(provider: OAuthProvider): OAuthProviderConfig {
+    return this.loginProviderConfig[provider];
+  }
+
+  async #handleOAuthResponse(
+    redirectUrl: string,
+    provider: OAuthProvider,
+  ): Promise<string> {
+    const authCode = this.#getRedirectUrlAuthCode(redirectUrl);
+    if (!authCode) {
+      throw new Error('No auth code found');
+    }
+    const idToken = await this.#getBYOAIdToken(provider, authCode);
+    return idToken;
+  }
+
+  async #getBYOAIdToken(
+    provider: OAuthProvider,
+    authCode: string,
+  ): Promise<string> {
+    const providerConfig = this.#getProviderConfig(provider);
+    const res = await fetch(
+      `${this.byoaServerUrl}/api/v1/auth/authorization-code`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code: authCode,
+          client_id: providerConfig.clientId,
+          redirect_uri:
+            provider === 'apple'
+              ? providerConfig.serverRedirectUri
+              : providerConfig.redirectUri,
+          login_provider: provider,
+        }),
+      },
+    );
+    const data = await res.json();
+    return data.id_token;
+  }
+
+  #getRedirectUrlAuthCode(redirectUrl: string): string | null {
+    const url = new URL(redirectUrl);
+    return url.searchParams.get('code');
+  }
+
+  #constructAuthUrl(provider: OAuthProvider): string {
+    const oAuthProviderConfig = this.#getProviderConfig(provider);
+    const authURL = new URL(oAuthProviderConfig.authUri);
+    authURL.searchParams.set('client_id', oAuthProviderConfig.clientId);
+    authURL.searchParams.set('response_type', 'code');
+    authURL.searchParams.set(
+      'redirect_uri',
+      provider === 'apple'
+        ? oAuthProviderConfig.serverRedirectUri || ''
+        : oAuthProviderConfig.redirectUri || '',
+    );
+    authURL.searchParams.set(
+      'scope',
       oAuthProviderConfig.scopes?.join(' ') || '',
-    )}`;
+    );
 
     if (provider === 'apple') {
-      authURL += `&response_mode=form_post`;
-      const state = Math.random().toString(36).substring(2, 15);
-      authURL += `&state=${state}`;
+      // apple need to use form post response mode for code response type
+      // https://developer.apple.com/documentation/sign_in_with_apple/incorporating-sign-in-with-apple-into-other-platforms#Handle-the-response
+      authURL.searchParams.set('response_mode', 'form_post');
+      const nonce = Math.random().toString(16).substring(2, 15);
+      const dataState = JSON.stringify({
+        client_redirect_back_uri: oAuthProviderConfig.redirectUri,
+      });
+      authURL.searchParams.set('state', dataState);
+      authURL.searchParams.set('nonce', nonce);
     }
 
-    return authURL;
+    return authURL.href;
   }
 }

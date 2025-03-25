@@ -1126,6 +1126,7 @@ export default class MetamaskController extends EventEmitter {
           authUri: process.env.APPLE_AUTH_URI,
         },
       },
+      byoaServerUrl: process.env.BYOA_SERVER_URL,
     });
 
     let additionalKeyrings = [keyringBuilderFactory(QRHardwareKeyring)];
