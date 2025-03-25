@@ -174,7 +174,7 @@ export default class OAuthController extends BaseController<
    *
    * @param provider - The OAuth provider to use.
    */
-  async startOAuthLogin(provider: OAuthProvider): Promise<string> {
+  async startOAuthLogin(provider: OAuthProvider): Promise<OAuthLoginResult> {
     const authUrl = this.#constructAuthUrl(provider);
     log.debug('[OAuthController] startOAuthLogin authUrl', authUrl);
     const redirectUrl = await chrome.identity.launchWebAuthFlow({
@@ -206,7 +206,7 @@ export default class OAuthController extends BaseController<
   async #handleOAuthResponse(
     redirectUrl: string,
     provider: OAuthProvider,
-  ): Promise<string> {
+  ): Promise<OAuthLoginResult> {
     const authCode = this.#getRedirectUrlAuthCode(redirectUrl);
     if (!authCode) {
       throw new Error('No auth code found');
@@ -218,7 +218,7 @@ export default class OAuthController extends BaseController<
   async #getBYOAIdToken(
     provider: OAuthProvider,
     authCode: string,
-  ): Promise<string> {
+  ): Promise<OAuthLoginResult> {
     const providerConfig = this.#getProviderConfig(provider);
     const res = await fetch(
       `${this.byoaServerUrl}/api/v1/auth/authorization-code`,
@@ -239,7 +239,14 @@ export default class OAuthController extends BaseController<
       },
     );
     const data = await res.json();
-    return data.id_token;
+    return {
+      verifier: provider,
+      idTokens: [data.id_token],
+      verifierID: data.verifier_id,
+      // TODO: add JWKS endpoint in BYOA server for verification of id token
+      endpoints: [`${this.byoaServerUrl}/.well-known/keys.json`],
+      indexes: [1],
+    };
   }
 
   #getRedirectUrlAuthCode(redirectUrl: string): string | null {
