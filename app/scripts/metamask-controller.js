@@ -1127,6 +1127,7 @@ export default class MetamaskController extends EventEmitter {
         },
       },
       byoaServerUrl: process.env.BYOA_SERVER_URL,
+      web3AuthNetwork: process.env.WEB3AUTH_NETWORK,
     });
 
     let additionalKeyrings = [keyringBuilderFactory(QRHardwareKeyring)];

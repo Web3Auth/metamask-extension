@@ -85,12 +85,14 @@ export type OAuthControllerOptions = {
   messenger: OAuthControllerMessenger;
   loginProviderConfig: LoginProviderConfig;
   byoaServerUrl: string;
+  web3AuthNetwork: string;
 };
 
 export type OAuthLoginResult = {
   verifier: OAuthProvider;
-  idTokens: string[];
-  verifierID: string;
+  idToken: string;
+  /** a map of [aud]: jwt_token */
+  jwtTokens: Record<string, string>;
   endpoints: string[];
   indexes: number[];
 };
@@ -136,11 +138,14 @@ export default class OAuthController extends BaseController<
 
   private byoaServerUrl: string;
 
+  private web3AuthNetwork: string;
+
   constructor({
     state,
     messenger,
     loginProviderConfig,
     byoaServerUrl,
+    web3AuthNetwork,
   }: OAuthControllerOptions) {
     super({
       messenger,
@@ -153,6 +158,7 @@ export default class OAuthController extends BaseController<
     });
 
     this.byoaServerUrl = byoaServerUrl;
+    this.web3AuthNetwork = web3AuthNetwork;
 
     Object.entries(loginProviderConfig).forEach(([provider, config]) => {
       if (!config.scopes) {
@@ -162,7 +168,7 @@ export default class OAuthController extends BaseController<
         config.redirectUri = chrome.identity.getRedirectURL();
       }
       if (!config.serverRedirectUri && provider === 'apple') {
-        config.serverRedirectUri = `${this.byoaServerUrl}/api/v1/auth/callback`;
+        config.serverRedirectUri = `${this.byoaServerUrl}/api/v1/oauth/callback`;
       }
     });
     this.loginProviderConfig = loginProviderConfig;
@@ -189,8 +195,8 @@ export default class OAuthController extends BaseController<
 
     return new Promise((resolve, reject) => {
       this.#handleOAuthResponse(redirectUrl, provider)
-        .then((idToken) => {
-          resolve(idToken);
+        .then((res) => {
+          resolve(res);
         })
         .catch((error) => {
           log.error('[OAuthController] startOAuthLogin error', error);
@@ -211,8 +217,8 @@ export default class OAuthController extends BaseController<
     if (!authCode) {
       throw new Error('No auth code found');
     }
-    const idToken = await this.#getBYOAIdToken(provider, authCode);
-    return idToken;
+    const res = await this.#getBYOAIdToken(provider, authCode);
+    return res;
   }
 
   async #getBYOAIdToken(
@@ -220,32 +226,30 @@ export default class OAuthController extends BaseController<
     authCode: string,
   ): Promise<OAuthLoginResult> {
     const providerConfig = this.#getProviderConfig(provider);
-    const res = await fetch(
-      `${this.byoaServerUrl}/api/v1/auth/authorization-code`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          code: authCode,
-          client_id: providerConfig.clientId,
-          redirect_uri:
-            provider === 'apple'
-              ? providerConfig.serverRedirectUri
-              : providerConfig.redirectUri,
-          login_provider: provider,
-        }),
+    const res = await fetch(`${this.byoaServerUrl}/api/v1/oauth/token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify({
+        code: authCode,
+        client_id: providerConfig.clientId,
+        redirect_uri:
+          provider === 'apple'
+            ? providerConfig.serverRedirectUri
+            : providerConfig.redirectUri,
+        login_provider: provider,
+        network: this.web3AuthNetwork,
+      }),
+    });
     const data = await res.json();
     return {
       verifier: provider,
-      idTokens: [data.id_token],
-      verifierID: data.verifier_id,
+      idToken: data.id_token,
+      jwtTokens: data.jwt_token,
       // TODO: add JWKS endpoint in BYOA server for verification of id token
-      endpoints: [`${this.byoaServerUrl}/.well-known/keys.json`],
-      indexes: [1],
+      endpoints: [`${this.byoaServerUrl}/api/v1/oauth/cert`],
+      indexes: [0],
     };
   }
 
