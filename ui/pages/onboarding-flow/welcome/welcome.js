@@ -38,9 +38,7 @@ import { getFirstTimeFlowType, getCurrentKeyring } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { isFlask, isBeta } from '../../../helpers/utils/build-types';
 
-export default function OnboardingWelcome({
-  handleSocialLogin,
-}) {
+export default function OnboardingWelcome({ handleSocialLogin }) {
   const t = useI18nContext();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -95,7 +93,7 @@ export default function OnboardingWelcome({
     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
     history.push(ONBOARDING_METAMETRICS);
     ///: END:ONLY_INCLUDE_IF
-  }
+  };
 
   const onCreateClick = async () => {
     setNewAccountCreationInProgress(true);
@@ -256,9 +254,7 @@ export default function OnboardingWelcome({
         </li>
 
         <li>
-          <Button onClick={() => onClickSocialLogin('google')}>
-            GG auth
-          </Button>
+          <Button onClick={() => onClickSocialLogin('google')}>GG auth</Button>
         </li>
 
         <li>
@@ -295,3 +291,7 @@ export default function OnboardingWelcome({
     </div>
   );
 }
+
+OnboardingWelcome.propTypes = {
+  handleSocialLogin: PropTypes.Func,
+};
