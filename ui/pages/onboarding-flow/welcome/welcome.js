@@ -3,8 +3,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Mascot from '../../../components/ui/mascot';
-import Button from '../../../components/ui/button';
 import {
+  Button,
+  ButtonSize,
+  ButtonVariant,
   Icon,
   IconName,
   IconSize,
@@ -15,6 +17,7 @@ import {
   TextAlign,
   FontWeight,
   TextColor,
+  BlockSize,
   IconColor,
 } from '../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../hooks/useI18nContext';
@@ -37,8 +40,6 @@ import {
 import { getFirstTimeFlowType, getCurrentKeyring } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { isFlask, isBeta } from '../../../helpers/utils/build-types';
-import IconGoogle from '../../../components/ui/icon/icon-google';
-import IconApple from '../../../components/ui/icon/icon-apple';
 
 export default function OnboardingWelcome() {
   const t = useI18nContext();
@@ -129,7 +130,7 @@ export default function OnboardingWelcome() {
 
       <div className="onboarding-welcome__title">
         <Text
-          variant={TextVariant.headingLg}
+          variant={TextVariant.displayMd}
           as="h2"
           textAlign={TextAlign.Center}
           fontWeight={FontWeight.Bold}
@@ -140,22 +141,36 @@ export default function OnboardingWelcome() {
 
       <ul className="onboarding-welcome__buttons">
         <li>
-          <Button icon={<Icon name={IconName.Google} />} type="secondary">
+          <button className="onboarding-welcome__plain-button">
             {
               ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-              'Continue with Google'
+              <div className="onboarding-welcome__plain-button-content">
+                <img
+                  src="images/icons/google.svg"
+                  className="onboarding-welcome__social-icon"
+                  alt="Google icon"
+                />
+                <Text variant={TextVariant.bodyMd}>Continue with Google</Text>
+              </div>
               ///: END:ONLY_INCLUDE_IF
             }
-          </Button>
+          </button>
         </li>
         <li>
-          <Button icon={<Icon name={IconName.Apple} />} type="secondary">
+          <button className="onboarding-welcome__plain-button">
             {
               ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-              'Continue with Apple'
+              <div className="onboarding-welcome__plain-button-content">
+                <Icon
+                  name={IconName.Apple}
+                  color={IconColor.iconDefault}
+                  size={IconSize.Lg}
+                />
+                <Text variant={TextVariant.bodyMd}>Continue with Apple</Text>
+              </div>
               ///: END:ONLY_INCLUDE_IF
             }
-          </Button>
+          </button>
         </li>
         <li>
           <div className="onboarding-welcome__or">
@@ -172,7 +187,9 @@ export default function OnboardingWelcome() {
         <li>
           <Button
             data-testid="onboarding-create-wallet"
-            type="primary"
+            variant={ButtonVariant.Primary}
+            width={BlockSize.Full}
+            size={ButtonSize.Lg}
             onClick={onCreateClick}
           >
             {
@@ -184,8 +201,10 @@ export default function OnboardingWelcome() {
         </li>
         <li>
           <Button
-            data-testid="onboarding-import-wallet"
-            type="secondary"
+            data-testid="onboarding-create-wallet"
+            variant={ButtonVariant.Secondary}
+            width={BlockSize.Full}
+            size={ButtonSize.Lg}
             onClick={onImportClick}
           >
             {t('onboardingImportWallet')}
