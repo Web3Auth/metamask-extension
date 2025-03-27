@@ -3,32 +3,33 @@ import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  TwoStepProgressBar,
-  twoStepStages,
-} from '../../../components/app/step-progress-bar';
-import Box from '../../../components/ui/box';
-import Button from '../../../components/ui/button';
-import Typography from '../../../components/ui/typography';
-import {
-  FONT_WEIGHT,
-  TEXT_ALIGN,
-  TypographyVariant,
+  BlockSize,
+  TextColor,
+  TextVariant,
 } from '../../../helpers/constants/design-system';
 import { ONBOARDING_CREATE_PASSWORD_ROUTE } from '../../../helpers/constants/routes';
-import { useI18nContext } from '../../../hooks/useI18nContext';
-import ZENDESK_URLS from '../../../helpers/constants/zendesk-url';
-import SrpInput from '../../../components/app/srp-input-old';
+// import { useI18nContext } from '../../../hooks/useI18nContext';
+import SrpInput from '../../../components/app/srp-input';
 import { getCurrentKeyring } from '../../../selectors';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
   MetaMetricsEventCategory,
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
+import {
+  Text,
+  Box,
+  Button,
+  Icon,
+  IconName,
+  IconSize,
+} from '../../../components/component-library';
+import Tooltip from '../../../components/ui/tooltip';
 
 export default function ImportSRP({ submitSecretRecoveryPhrase }) {
   const [secretRecoveryPhrase, setSecretRecoveryPhrase] = useState('');
   const history = useHistory();
-  const t = useI18nContext();
+  // const t = useI18nContext();
   const currentKeyring = useSelector(getCurrentKeyring);
 
   useEffect(() => {
@@ -40,58 +41,49 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
 
   return (
     <div className="import-srp" data-testid="import-srp">
-      <TwoStepProgressBar
-        stage={twoStepStages.RECOVERY_PHRASE_CONFIRM}
-        marginBottom={4}
-      />
+      <div className="import-srp__step">
+        <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
+          Step 1 of 2
+        </Text>
+      </div>
       <div className="import-srp__header">
-        <Typography
-          variant={TypographyVariant.H2}
-          fontWeight={FONT_WEIGHT.BOLD}
-        >
-          {t('accessYourWalletWithSRP')}
-        </Typography>
+        <Text variant={TextVariant.headingLg}>Import a wallet</Text>
       </div>
       <div className="import-srp__description">
-        <Typography variant={TypographyVariant.H4}>
-          {t('accessYourWalletWithSRPDescription', [
-            <a
-              key="learnMore"
-              type="link"
-              href={ZENDESK_URLS.SECRET_RECOVERY_PHRASE}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {t('learnMoreUpperCase')}
-            </a>,
-          ])}
-        </Typography>
+        <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
+          Enter your Secret Recovery Phrase
+        </Text>
+        <Tooltip position="top" title="Enter your Secret Recovery Phrase">
+          <Icon
+            name={IconName.Info}
+            size={IconSize.Sm}
+            color={TextColor.textAlternative}
+          />
+        </Tooltip>
       </div>
       <div className="import-srp__actions">
-        <Box textAlign={TEXT_ALIGN.LEFT}>
-          <SrpInput
-            onChange={setSecretRecoveryPhrase}
-            srpText={t('typeYourSRP')}
-          />
-          <Button
-            className="import-srp__confirm-button"
-            type="primary"
-            data-testid="import-srp-confirm"
-            large
-            onClick={() => {
-              submitSecretRecoveryPhrase(secretRecoveryPhrase);
-              trackEvent({
-                category: MetaMetricsEventCategory.Onboarding,
-                event:
-                  MetaMetricsEventName.OnboardingWalletSecurityPhraseConfirmed,
-              });
-              history.replace(ONBOARDING_CREATE_PASSWORD_ROUTE);
-            }}
-            disabled={!secretRecoveryPhrase.trim()}
-          >
-            {t('confirmRecoveryPhrase')}
-          </Button>
+        <Box width={BlockSize.Full}>
+          <SrpInput onChange={setSecretRecoveryPhrase} />
         </Box>
+        <Button
+          width={BlockSize.Full}
+          className="import-srp__confirm-button"
+          type="primary"
+          data-testid="import-srp-confirm"
+          large
+          onClick={() => {
+            submitSecretRecoveryPhrase(secretRecoveryPhrase);
+            trackEvent({
+              category: MetaMetricsEventCategory.Onboarding,
+              event:
+                MetaMetricsEventName.OnboardingWalletSecurityPhraseConfirmed,
+            });
+            history.replace(ONBOARDING_CREATE_PASSWORD_ROUTE);
+          }}
+          disabled={!secretRecoveryPhrase.trim()}
+        >
+          Continue
+        </Button>
       </div>
     </div>
   );

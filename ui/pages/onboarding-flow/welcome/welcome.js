@@ -4,12 +4,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Mascot from '../../../components/ui/mascot';
 import Button from '../../../components/ui/button';
-import { Text } from '../../../components/component-library';
+import {
+  Icon,
+  IconName,
+  IconSize,
+  Text,
+} from '../../../components/component-library';
 import {
   TextVariant,
   TextAlign,
   FontWeight,
   TextColor,
+  IconColor,
 } from '../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
@@ -41,7 +47,6 @@ export default function OnboardingWelcome() {
   const [eventEmitter] = useState(new EventEmitter());
   const currentKeyring = useSelector(getCurrentKeyring);
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
-  const [termsChecked, setTermsChecked] = useState(false);
   const [newAccountCreationInProgress, setNewAccountCreationInProgress] =
     useState(false);
 
@@ -82,20 +87,6 @@ export default function OnboardingWelcome() {
     history.push(ONBOARDING_METAMETRICS);
     ///: END:ONLY_INCLUDE_IF
   };
-  const toggleTermsCheck = () => {
-    setTermsChecked((currentTermsChecked) => !currentTermsChecked);
-  };
-  const termsOfUse = t('agreeTermsOfUse', [
-    <a
-      className="create-new-vault__terms-link"
-      key="create-new-vault__link-text"
-      href="https://metamask.io/terms.html"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      {t('terms')}
-    </a>,
-  ]);
 
   const onImportClick = async () => {
     await dispatch(setFirstTimeFlowType(FirstTimeFlowType.import));
@@ -149,7 +140,7 @@ export default function OnboardingWelcome() {
 
       <ul className="onboarding-welcome__buttons">
         <li>
-          <Button icon={<IconGoogle />} type="secondary">
+          <Button icon={<Icon name={IconName.Google} />} type="secondary">
             {
               ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
               'Continue with Google'
@@ -158,7 +149,7 @@ export default function OnboardingWelcome() {
           </Button>
         </li>
         <li>
-          <Button icon={<IconApple />} type="secondary">
+          <Button icon={<Icon name={IconName.Apple} />} type="secondary">
             {
               ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
               'Continue with Apple'
