@@ -1,74 +1,48 @@
 @use "design-system";
 
-.import-srp {
+.srp-input {
   &__container {
-    display: grid;
-    grid-template-areas:
-      'title dropdown'
-      'paste-tip paste-tip'
-      'input input'
-      'error error'
-      'too-many-words-error too-many-words-error';
-  }
-
-  @include design-system.screen-md-max {
-    &__container {
-      grid-template-areas:
-        'title'
-        'dropdown'
-        'paste-tip'
-        'input'
-        'error'
-        'too-many-words-error';
-    }
-  }
-
-  &__srp-label {
-    grid-area: title;
-    text-align: center;
-  }
-
-  &__number-of-words-dropdown {
-    grid-area: dropdown;
-  }
-
-  &__paste-tip {
-    margin: 24px 0;
-    grid-area: paste-tip;
-    width: auto;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  &__srp {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-area: input;
-  }
-
-  @include design-system.screen-md-max {
-    &__srp {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  &__srp-word {
     display: flex;
-    align-items: center;
-    margin: 8px;
+    flex-direction: column;
+    background-color: var(--color-background-muted);
+    border-radius: 0.5rem;
+    min-height: 264px;
   }
 
-  &__srp-word-label {
-    width: 2em;
+  &__srp-note {
+    flex: 1;
+    padding: 1rem;
   }
 
-  &__srp-error {
-    margin-top: 4px;
-    grid-area: error;
+  &__initial-input {
+    padding: 0;
+    &:focus {
+      outline: none;
+    }
   }
 
-  &__srp-too-many-words-error {
-    margin-top: 4px;
-    grid-area: too-many-words-error;
+  &__srp-container {
+    padding: 1rem;
+  }
+
+  &__words-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+
+  &__actions {
+    height: 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid #fff;
+
+    div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }
+

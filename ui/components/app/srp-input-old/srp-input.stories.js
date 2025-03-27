@@ -2,10 +2,12 @@ import React from 'react';
 import SrpInput from '.';
 
 export default {
-  title: 'Components/App/SrpInputNew',
+  title: 'Components/App/SrpInputOld',
 
   component: SrpInput,
-  argTypes: {},
+  argTypes: {
+    onChange: { action: 'changed' },
+  },
 };
 
 const Template = (args) => {

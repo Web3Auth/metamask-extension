@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import TextField from '../../ui/text-field';
 import { ButtonVariant, Button, Checkbox } from '../../component-library';
-import SrpInput from '../srp-input';
+import SrpInput from '../srp-input-old';
 import { PASSWORD_MIN_LENGTH } from '../../../helpers/constants/common';
 
 export default function CreateNewVault({
