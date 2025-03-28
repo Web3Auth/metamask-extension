@@ -4464,14 +4464,20 @@ export default class MetamaskController extends EventEmitter {
    * @returns {Promise<AuthenticationResult>} authenticationResult
    */
   async startSocialLogin(provider) {
-    const oAuthLoginResult = await this.oauthController.startOAuthLogin(
-      provider,
-    );
-    const authenticationResult =
-      await this.seedlessOnboardingController.authenticateOAuthUser(
-        oAuthLoginResult,
+    try {
+      const oAuthLoginResult = await this.oauthController.startOAuthLogin(
+        provider,
       );
-    return authenticationResult;
+
+      const authenticationResult =
+        await this.seedlessOnboardingController.authenticateOAuthUser(
+          oAuthLoginResult,
+        );
+      return authenticationResult;
+    } catch (error) {
+      log.error('Error while starting social login', error);
+      throw error;
+    }
   }
 
   /**

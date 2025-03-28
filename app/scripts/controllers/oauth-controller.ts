@@ -90,9 +90,8 @@ export type OAuthControllerOptions = {
 
 export type OAuthLoginResult = {
   verifier: OAuthProvider;
-  idToken: string;
-  /** a map of [aud]: jwt_token */
-  jwtTokens: Record<string, string>;
+  verifierID: string;
+  idTokens: string[];
   endpoints: string[];
   indexes: number[];
 };
@@ -139,6 +138,8 @@ export default class OAuthController extends BaseController<
   private byoaServerUrl: string;
 
   private web3AuthNetwork: string;
+
+  private readonly OAUTH_AUD = 'metamask';
 
   constructor({
     state,
@@ -245,11 +246,10 @@ export default class OAuthController extends BaseController<
     const data = await res.json();
     return {
       verifier: provider,
-      idToken: data.id_token,
-      jwtTokens: data.jwt_token,
-      // TODO: add JWKS endpoint in BYOA server for verification of id token
-      endpoints: [`${this.byoaServerUrl}/api/v1/oauth/cert`],
-      indexes: [0],
+      verifierID: data.verifier_id,
+      idTokens: [data.jwt_tokens[this.OAUTH_AUD]],
+      endpoints: [data.endpoints[this.OAUTH_AUD]],
+      indexes: data.indexes,
     };
   }
 
