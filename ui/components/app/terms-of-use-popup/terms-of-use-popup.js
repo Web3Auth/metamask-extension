@@ -1,10 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, createRef } from 'react';
 import PropTypes from 'prop-types';
 import { I18nContext } from '../../../contexts/i18n';
 import {
   Box,
+  ButtonIcon,
   ButtonLink,
   Checkbox,
+  IconName,
+  IconSize,
   Modal,
   ModalContent,
   ModalContentSize,
@@ -20,7 +23,11 @@ import {
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
   AlignItems,
+  BackgroundColor,
+  BorderRadius,
+  Display,
   FlexDirection,
+  IconColor,
   TextColor,
   TextVariant,
 } from '../../../helpers/constants/design-system';
@@ -30,13 +37,18 @@ export default function TermsOfUsePopup({ isOpen, onClose }) {
   const [isTermsOfUseChecked, setIsTermsOfUseChecked] = useState(false);
 
   const trackEvent = useContext(MetaMetricsContext);
-  const bottomRef = React.createRef();
+  const bottomRef = createRef();
 
   const handleScrollDownClick = (e) => {
+    console.log(bottomRef.current);
     e.stopPropagation();
     bottomRef.current.scrollIntoView({
       behavior: 'smooth',
     });
+  };
+
+  const handleScroll = (e) => {
+    console.dir(e.target);
   };
 
   useEffect(() => {
@@ -51,12 +63,20 @@ export default function TermsOfUsePopup({ isOpen, onClose }) {
   }, []);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} className="terms-of-use-popup">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      isClosedOnOutsideClick={false}
+      className="terms-of-use-popup"
+    >
       <ModalOverlay />
       <ModalContent size={ModalContentSize.Md}>
         <ModalHeader onClose={onClose}>Review our Terms of Use</ModalHeader>
-        <Box className="terms-of-use-popup__body-container">
-          <Box className="terms-of-use-popup__body">
+        <Box
+          display={Display.Flex}
+          className="terms-of-use-popup__body-container"
+        >
+          <Box onScroll={handleScroll} className="terms-of-use-popup__body">
             <Text variant={TextVariant.bodySm} marginBottom={4}>
               IMPORTANT NOTICE: THIS AGREEMENT IS SUBJECT TO BINDING ARBITRATION
               AND A WAIVER OF CLASS ACTION RIGHTS AS DETAILED IN SECTION 11.
@@ -1141,7 +1161,7 @@ export default function TermsOfUsePopup({ isOpen, onClose }) {
               “Third-Party Content” means Content made available to you by any
               third party on the Site or in conjunction with the Offerings.
             </Text>
-            <Text variant={TextVariant.bodySm} marginBottom={4}>
+            <Text variant={TextVariant.bodySm} marginBottom={4} ref={bottomRef}>
               “Your Content” means content that you or any End User transfers to
               us, storage or hosting by the Offerings in connection with account
               and any computational results that you or any End User derive from
@@ -1150,6 +1170,18 @@ export default function TermsOfUsePopup({ isOpen, onClose }) {
               processing.&nbsp;
             </Text>
           </Box>
+          <div className="terms-of-use-popup__scroll-button-container">
+            <ButtonIcon
+              backgroundColor={BackgroundColor.primaryMuted}
+              iconName={IconName.ArrowDown}
+              color={IconColor.primaryDefault}
+              borderRadius={BorderRadius.full}
+              iconProps={{ size: IconSize.Md }}
+              onClick={handleScrollDownClick}
+              className="terms-of-use-popup__scroll-button"
+              data-testid="terms-of-use-popup__scroll-button"
+            />
+          </div>
         </Box>
         <ModalFooter onSubmit={onClose}>
           <Box
@@ -1172,7 +1204,6 @@ export default function TermsOfUsePopup({ isOpen, onClose }) {
                   {t('termsOfUseAgreeText')}
                 </Text>
               }
-              ref={bottomRef}
               marginBottom={6}
             />
           </Box>

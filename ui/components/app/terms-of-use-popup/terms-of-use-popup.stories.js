@@ -9,6 +9,11 @@ export default {
   argTypes: {
     isShowingModal: {
       control: 'boolean',
+      defaultValue: true,
+      table: {
+        type: { summary: 'boolean' },
+        defaultValue: { summary: true },
+      },
     },
   },
 };
