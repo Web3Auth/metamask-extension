@@ -18,6 +18,8 @@ export default function SrpInput() {
   const srpInputRef = useRef(null);
 
   // 12, 15, 18, 21, 24
+  // TODO: verify if we don't need this
+  // eslint-disable-next-line no-unused-vars
   const incrementSrpLength = (currentDraftSrp) => {
     let updatedDraftSrp = currentDraftSrp;
     let arrayItemsToAdd = 0;
@@ -44,7 +46,8 @@ export default function SrpInput() {
   };
 
   const setupDraftSrp = (firstWord) => {
-    const updatedDraftSrp = incrementSrpLength(draftSrp);
+    // const updatedDraftSrp = incrementSrpLength(draftSrp);
+    const updatedDraftSrp = [...draftSrp];
     updatedDraftSrp[0] = { word: firstWord, isActive: false };
     updatedDraftSrp[1] = { word: '', isActive: true };
     setDraftSrp(updatedDraftSrp);
@@ -63,7 +66,7 @@ export default function SrpInput() {
   };
 
   const onNextWord = (word, index) => {
-    let updatedDraftSrp = [...draftSrp];
+    const updatedDraftSrp = [...draftSrp];
     let newIndex = index;
     updatedDraftSrp[index] = {
       word,
@@ -77,7 +80,7 @@ export default function SrpInput() {
         word: '',
         isActive: true,
       };
-      updatedDraftSrp = incrementSrpLength(updatedDraftSrp);
+      // updatedDraftSrp = incrementSrpLength(updatedDraftSrp);
     } else {
       newIndex += 1;
       updatedDraftSrp[newIndex] = {
@@ -123,7 +126,7 @@ export default function SrpInput() {
     }
 
     newDraftSrp = newDraftSrp.map((word) => ({ word, isActive: false }));
-    newDraftSrp = incrementSrpLength(newDraftSrp);
+    // newDraftSrp = incrementSrpLength(newDraftSrp);
     newDraftSrp[currentSrpLength - 1] = {
       ...newDraftSrp[currentSrpLength - 1],
       isActive: true,
