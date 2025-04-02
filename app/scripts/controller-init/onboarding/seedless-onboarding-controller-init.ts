@@ -1,6 +1,6 @@
 import {
   SeedlessOnboardingController,
-  SeedlessOnboardingControllerMessenger
+  SeedlessOnboardingControllerMessenger,
 } from '@metamask/seedless-onboarding-controller';
 import { ControllerInitFunction } from '../types';
 
@@ -15,5 +15,5 @@ export const SeedlessOnboardingControllerInit: ControllerInitFunction<
 
   return {
     controller,
-  }
+  };
 };

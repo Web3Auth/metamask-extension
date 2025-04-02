@@ -1,5 +1,4 @@
 import EventEmitter from 'events';
-import PropTypes from 'prop-types';
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -26,6 +25,7 @@ import {
 import {
   setFirstTimeFlowType,
   setTermsOfUseLastAgreed,
+  startOAuthLogin,
 } from '../../../store/actions';
 import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
@@ -39,7 +39,7 @@ import { getFirstTimeFlowType, getCurrentKeyring } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { isFlask, isBeta } from '../../../helpers/utils/build-types';
 
-export default function OnboardingWelcome({ handleSocialLogin }) {
+export default function OnboardingWelcome() {
   const t = useI18nContext();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -74,7 +74,7 @@ export default function OnboardingWelcome({ handleSocialLogin }) {
   const onClickSocialLogin = async (provider) => {
     setNewAccountCreationInProgress(true);
     dispatch(setFirstTimeFlowType(FirstTimeFlowType.seedless));
-    const isExistingUser = await handleSocialLogin(provider);
+    const isExistingUser = await dispatch(startOAuthLogin(provider));
     if (isExistingUser) {
       // redirect to login page
       history.push(ONBOARDING_UNLOCK_ROUTE);
@@ -292,7 +292,3 @@ export default function OnboardingWelcome({ handleSocialLogin }) {
     </div>
   );
 }
-
-OnboardingWelcome.propTypes = {
-  handleSocialLogin: PropTypes.Func,
-};

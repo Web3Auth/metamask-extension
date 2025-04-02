@@ -4461,7 +4461,7 @@ export default class MetamaskController extends EventEmitter {
    * and user's onboarding status to indicate whether the user has already completed the seedless onboarding flow.
    *
    * @param {OAuthProvider} provider - social login provider, `google` | `apple`
-   * @returns {Promise<AuthenticationResult>} authenticationResult
+   * @returns {Promise<boolean>} true if user is already onboarded, false otherwise
    */
   async startSocialLogin(provider) {
     try {
@@ -4473,7 +4473,8 @@ export default class MetamaskController extends EventEmitter {
         await this.seedlessOnboardingController.authenticateOAuthUser(
           oAuthLoginResult,
         );
-      return authenticationResult;
+      const hasUserOnboarded = authenticationResult.hasValidEncKey;
+      return hasUserOnboarded;
     } catch (error) {
       log.error('Error while starting social login', error);
       throw error;
@@ -4490,10 +4491,12 @@ export default class MetamaskController extends EventEmitter {
    * @param {string} password - The user's password.
    */
   async createSeedPhraseBackup(seedPhrase, password) {
-    await this.seedlessOnboardingController.createSeedPhraseBackup({
-      seedPhrase,
-      password,
-    });
+    const { encryptionKey } =
+      await this.seedlessOnboardingController.createSeedPhraseBackup({
+        seedPhrase,
+        password,
+      });
+    console.log('encryptionKey', encryptionKey);
   }
 
   /**

@@ -27,7 +27,6 @@ import {
   createNewVaultAndGetSeedPhrase,
   unlockAndGetSeedPhrase,
   createNewVaultAndRestore,
-  startOAuthLogin,
   createAndBackupSeedPhrase,
   restoreAndGetSeedPhrase,
 } from '../../store/actions';
@@ -103,10 +102,6 @@ export default function OnboardingFlow() {
     pathname,
     history,
   ]);
-
-  const handleSocialLogin = async (provider) => {
-    await dispatch(startOAuthLogin(provider));
-  };
 
   const handleDefaultOnboardingFlow = async (password) => {
     const newSecretRecoveryPhrase = await dispatch(
@@ -221,12 +216,7 @@ export default function OnboardingFlow() {
           />
           <Route
             path={ONBOARDING_WELCOME_ROUTE}
-            render={(routeProps) => (
-              <OnboardingWelcome
-                {...routeProps}
-                handleSocialLogin={handleSocialLogin}
-              />
-            )}
+            component={OnboardingWelcome}
           />
           <Route
             path={ONBOARDING_PIN_EXTENSION_ROUTE}
