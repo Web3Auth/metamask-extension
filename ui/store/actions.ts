@@ -186,6 +186,34 @@ export function tryUnlockMetamask(
 }
 
 /**
+ * Tries to restore seedphrase from metadata store and unlock the metamask.
+ *
+ * @param password - The password.
+ * @returns The updated state of metamask.
+ */
+export function tryRestoreAndUnlockMetamask(
+  password: string,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+    dispatch(unlockInProgress());
+
+    try {
+      await restoreSeedPhrase(password);
+
+      dispatch(unlockSucceeded());
+      return forceUpdateMetamaskState(dispatch);
+    } catch (error) {
+      dispatch(unlockFailed(getErrorMessage(error)));
+      dispatch(displayWarning(error));
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
+    return undefined;
+  };
+}
+
+/**
  * Adds a new account where all data is encrypted using the given password and
  * where all addresses are generated from a given seed phrase.
  *
@@ -316,11 +344,6 @@ export function createNewVaultAndGetSeedPhrase(
 
 export function createAndBackupSeedPhrase(
   password: string,
-  oAuthLoginInfo: {
-    verifier: OAuthProvider;
-    idToken: string;
-    verifierId: string;
-  },
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
   return async (dispatch: MetaMaskReduxDispatch) => {
     dispatch(showLoadingIndication());
@@ -328,8 +351,7 @@ export function createAndBackupSeedPhrase(
     try {
       await createNewVault(password);
       const seedPhrase = await getSeedPhrase(password);
-      const { verifier, idToken, verifierId } = oAuthLoginInfo;
-      await backupSeedPhrase(seedPhrase, password, idToken, verifier, verifierId);
+      await createSeedPhraseBackup(seedPhrase, password);
       return seedPhrase;
     } catch (error) {
       dispatch(displayWarning(error));
@@ -353,6 +375,35 @@ export function unlockAndGetSeedPhrase(
     try {
       await submitPassword(password);
       const seedPhrase = await getSeedPhrase(password);
+      await forceUpdateMetamaskState(dispatch);
+      return seedPhrase;
+    } catch (error) {
+      dispatch(displayWarning(error));
+      if (isErrorWithMessage(error)) {
+        throw new Error(getErrorMessage(error));
+      } else {
+        throw error;
+      }
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
+  };
+}
+
+/**
+ * Fetches and restores the seed phrase from the metadata store and restore the vault using the seed phrase.
+ *
+ * @param password - The password.
+ * @returns The seed phrase.
+ */
+export function restoreAndGetSeedPhrase(
+  password: string,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      const seedPhrase = await restoreSeedPhrase(password);
       await forceUpdateMetamaskState(dispatch);
       return seedPhrase;
     } catch (error) {
@@ -457,26 +508,34 @@ export function tryReverseResolveAddress(
   };
 }
 
-export async function backupSeedPhrase(
+/**
+ * Creates a seed phrase backup in the metadata store for seedless onboarding flow.
+ *
+ * @param seedPhrase - The seed phrase.
+ * @param password - The password.
+ */
+export async function createSeedPhraseBackup(
   seedPhrase: string,
   password: string,
-  idToken: string,
-  verifier: string,
-  verifierId: string,
 ): Promise<void> {
-  const result = await submitRequestToBackground(
-    'createSeedPhraseBackup',
-    [
-      {
-        idToken,
-        password,
-        seedPhrase,
-        verifier,
-        verifierId,
-      },
-    ],
+  await submitRequestToBackground('createSeedPhraseBackup', [
+    seedPhrase,
+    password,
+  ]);
+}
+
+/**
+ * Restores the seed phrase from the metadata store and restore the vault using the seed phrase.
+ *
+ * @param password - The password.
+ * @returns The seed phrase.
+ */
+export async function restoreSeedPhrase(password: string): Promise<string> {
+  const encodedSeedPhrase = await submitRequestToBackground<Buffer>(
+    'fetchAndRestoreSeedPhraseMetadata',
+    [password],
   );
-  console.log('[backupSeedPhrase] result', result);
+  return Buffer.from(encodedSeedPhrase).toString('utf8');
 }
 
 export function resetAccount(): ThunkAction<
@@ -3372,7 +3431,9 @@ export function startOAuthLogin(
     dispatch(showLoadingIndication());
 
     try {
-      const tokenInfo = await submitRequestToBackground('startOAuthLogin', [provider]);
+      const tokenInfo = await submitRequestToBackground('startOAuthLogin', [
+        provider,
+      ]);
       return tokenInfo;
     } catch (err) {
       dispatch(displayWarning(error));

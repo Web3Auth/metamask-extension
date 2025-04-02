@@ -1126,6 +1126,8 @@ export default class MetamaskController extends EventEmitter {
           authUri: process.env.APPLE_AUTH_URI,
         },
       },
+      byoaServerUrl: process.env.BYOA_SERVER_URL,
+      web3AuthNetwork: process.env.WEB3AUTH_NETWORK,
     });
 
     let additionalKeyrings = [keyringBuilderFactory(QRHardwareKeyring)];
@@ -2072,7 +2074,8 @@ export default class MetamaskController extends EventEmitter {
       controllersByName.MultichainNetworkController;
     this.authenticationController = controllersByName.AuthenticationController;
     this.userStorageController = controllersByName.UserStorageController;
-    this.seedlessOnboardingController = controllersByName.SeedlessOnboardingController;
+    this.seedlessOnboardingController =
+      controllersByName.SeedlessOnboardingController;
 
     this.controllerMessenger.subscribe(
       'TransactionController:transactionStatusUpdated',
@@ -2231,6 +2234,7 @@ export default class MetamaskController extends EventEmitter {
       MultichainNetworkController: this.multichainNetworkController,
       NetworkController: this.networkController,
       AlertController: this.alertController,
+      OAuthController: this.oauthController,
       SeedlessOnboardingController: this.seedlessOnboardingController,
       OnboardingController: this.onboardingController,
       PermissionController: this.permissionController,
@@ -2289,6 +2293,8 @@ export default class MetamaskController extends EventEmitter {
         AddressBookController: this.addressBookController,
         CurrencyController: this.currencyRateController,
         AlertController: this.alertController,
+        OAuthController: this.oauthController,
+        SeedlessOnboardingController: this.seedlessOnboardingController,
         OnboardingController: this.onboardingController,
         PermissionController: this.permissionController,
         PermissionLogController: this.permissionLogController,
@@ -3336,13 +3342,11 @@ export default class MetamaskController extends EventEmitter {
       phishingController,
       tokenRatesController,
       accountTrackerController,
-      oauthController,
       // Notification Controllers
       authenticationController,
       userStorageController,
       notificationServicesController,
       notificationServicesPushController,
-      seedlessOnboardingController,
     } = this;
 
     return {
@@ -3479,10 +3483,13 @@ export default class MetamaskController extends EventEmitter {
       getAccountsBySnapId: (snapId) => getAccountsBySnapId(this, snapId),
       ///: END:ONLY_INCLUDE_IF
 
+      // oauth controller
+      startOAuthLogin: this.startSocialLogin.bind(this),
+
       // seedless onboarding
-      authenticateOauthUser: seedlessOnboardingController.authenticateOAuthUser.bind(seedlessOnboardingController),
-      createSeedPhraseBackup: seedlessOnboardingController.createSeedPhraseBackup.bind(seedlessOnboardingController),
-      fetchAndRestoreSeedPhraseMetadata: seedlessOnboardingController.fetchAndRestoreSeedPhraseMetadata.bind(seedlessOnboardingController),
+      createSeedPhraseBackup: this.createSeedPhraseBackup.bind(this),
+      fetchAndRestoreSeedPhraseMetadata:
+        this.fetchAndRestoreSeedPhraseMetadata.bind(this),
 
       // hardware wallets
       connectHardware: this.connectHardware.bind(this),
@@ -3799,9 +3806,6 @@ export default class MetamaskController extends EventEmitter {
         onboardingController.completeOnboarding.bind(onboardingController),
       setFirstTimeFlowType:
         onboardingController.setFirstTimeFlowType.bind(onboardingController),
-
-      // oauth controller
-      startOAuthLogin: oauthController.startOAuthLogin.bind(oauthController),
 
       // alert controller
       setAlertEnabledness:
@@ -4453,6 +4457,102 @@ export default class MetamaskController extends EventEmitter {
     }
   }
 
+  /**
+   * Login with social login provider and get User Onboarding details.
+   *
+   * AuthenticationResult is an object that contains the temporary Auth token for next step of onboarding flow
+   * and user's onboarding status to indicate whether the user has already completed the seedless onboarding flow.
+   *
+   * @param {OAuthProvider} provider - social login provider, `google` | `apple`
+   * @returns {Promise<boolean>} true if user is already onboarded, false otherwise
+   */
+  async startSocialLogin(provider) {
+    try {
+      const oAuthLoginResult = await this.oauthController.startOAuthLogin(
+        provider,
+      );
+
+      const authenticationResult =
+        await this.seedlessOnboardingController.authenticateOAuthUser(
+          oAuthLoginResult,
+        );
+      const hasUserOnboarded = authenticationResult.hasValidEncKey;
+      return hasUserOnboarded;
+    } catch (error) {
+      log.error('Error while starting social login', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Creates a seed phrase backup for the user.
+   *
+   * Generate Encryption Key from the password using the Threshold OPRF and encrypt the seed phrase with the key.
+   * Save the encrypted seed phrase in the metadata store.
+   *
+   * @param {string} seedPhrase - The seed phrase to backup.
+   * @param {string} password - The user's password.
+   */
+  async createSeedPhraseBackup(seedPhrase, password) {
+    const { verifierID, verifier } = this.oauthController.state;
+    await this.seedlessOnboardingController.createSeedPhraseBackup({
+      seedPhrase,
+      password,
+      verifier,
+      verifierID,
+    });
+  }
+
+  /**
+   * Fetches and restores the seed phrase metadata.
+   *
+   * If the seedphrase is not found in the metadata store, it creates new seedphrase and saves it in the metadata store.
+   *
+   * Otherwise, it creates a new vault using the restored seedphrase from metadata store.
+   *
+   * @param {string} password - The user's password.
+   * @returns {Promise<Buffer>} The seed phrase.
+   */
+  async fetchAndRestoreSeedPhraseMetadata(password) {
+    try {
+      const { verifierID, verifier } = this.oauthController.state;
+      const { secretData: seedPhrases } =
+        await this.seedlessOnboardingController.fetchAndRestoreSeedPhraseMetadata(
+          verifier,
+          verifierID,
+          password,
+        );
+      let seedPhrase = seedPhrases[0] || null;
+      if (seedPhrase === null) {
+        // if the seed phrase metadata is not found, set up a new password and create a new seed phrase
+        await this.keyringController.createNewVaultAndKeychain(password);
+        seedPhrase = await this.keyringController.exportSeedPhrase(password);
+        // create a new seed phrase backup
+        await this.seedlessOnboardingController.createSeedPhraseBackup({
+          verifier,
+          verifierID,
+          seedPhrase,
+          password,
+        });
+      } else {
+        const encodedSeedPhrase = Array.from(
+          Buffer.from(seedPhrase, 'utf8').values(),
+        );
+        // load the seed phrase from the metadata store
+        await this.createNewVaultAndRestore(password, encodedSeedPhrase);
+      }
+
+      // await this.submitPassword(password);
+      return this._convertEnglishWordlistIndicesToCodepoints(seedPhrase);
+    } catch (error) {
+      log.error(
+        'Error while fetching and restoring seed phrase metadata.',
+        error,
+      );
+      throw error;
+    }
+  }
+
   //=============================================================================
   // VAULT / KEYRING RELATED METHODS
   //=============================================================================
@@ -5039,8 +5139,9 @@ export default class MetamaskController extends EventEmitter {
    * @returns string label
    */
   getAccountLabel(name, index, hdPathDescription) {
-    return `${name[0].toUpperCase()}${name.slice(1)} ${parseInt(index, 10) + 1
-      } ${hdPathDescription || ''}`.trim();
+    return `${name[0].toUpperCase()}${name.slice(1)} ${
+      parseInt(index, 10) + 1
+    } ${hdPathDescription || ''}`.trim();
   }
 
   /**
@@ -7679,10 +7780,10 @@ export default class MetamaskController extends EventEmitter {
         params:
           newAccounts.length < 2
             ? // If the length is 1 or 0, the accounts are sorted by definition.
-            newAccounts
+              newAccounts
             : // If the length is 2 or greater, we have to execute
-            // `eth_accounts` vi this method.
-            this.getPermittedAccounts(origin),
+              // `eth_accounts` vi this method.
+              this.getPermittedAccounts(origin),
       },
       API_TYPE.EIP1193,
     );
@@ -7752,7 +7853,7 @@ export default class MetamaskController extends EventEmitter {
 
       const blockExplorerUrl =
         networkConfiguration?.blockExplorerUrls?.[
-        networkConfiguration?.defaultBlockExplorerUrlIndex
+          networkConfiguration?.defaultBlockExplorerUrlIndex
         ];
 
       rpcPrefs = { blockExplorerUrl };
@@ -8012,7 +8113,7 @@ export default class MetamaskController extends EventEmitter {
       DistributionType.Main;
     const environment =
       environmentMappingForRemoteFeatureFlag[
-      process.env.METAMASK_ENVIRONMENT
+        process.env.METAMASK_ENVIRONMENT
       ] || EnvironmentType.Development;
     return { distribution, environment };
   }

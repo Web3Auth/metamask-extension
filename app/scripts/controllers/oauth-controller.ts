@@ -6,7 +6,6 @@ import {
 } from '@metamask/base-controller';
 import log from 'loglevel';
 
-
 // Unique name for the controller
 const controllerName = 'OAuthController';
 
@@ -19,8 +18,7 @@ export type OAuthProvider = 'google' | 'apple';
 export type OAuthControllerState = {
   authLoading: boolean;
   verifier?: OAuthProvider;
-  idToken?: string;
-  verifier_id?: string;
+  verifierID?: string;
 };
 
 /**
@@ -70,6 +68,8 @@ const defaultProviderScopes = {
 export type OAuthProviderConfig = {
   clientId: string;
   redirectUri?: string;
+  /** for apple, we need to redirect to a server endpoint that will handle the post request and redirect back to client */
+  serverRedirectUri?: string;
   authUri: string;
   scopes?: string[];
 };
@@ -83,6 +83,16 @@ export type OAuthControllerOptions = {
   state: Partial<OAuthControllerState>;
   messenger: OAuthControllerMessenger;
   loginProviderConfig: LoginProviderConfig;
+  byoaServerUrl: string;
+  web3AuthNetwork: string;
+};
+
+export type OAuthLoginResult = {
+  verifier: OAuthProvider;
+  verifierID: string;
+  idTokens: string[];
+  endpoints: string[];
+  indexes: number[];
 };
 
 /**
@@ -101,15 +111,13 @@ const controllerMetadata = {
     persist: true,
     anonymous: true,
   },
-  idToken: {
-    persist: false,
+  verifierID: {
+    persist: true,
     anonymous: true,
   },
-  verifier_id: {
-    persist: false,
-    anonymous: true,
-  },
-}
+};
+
+// const REDIRECT_PATH = '/oauth-redirect';
 
 /**
  * Controller responsible for maintaining
@@ -122,11 +130,18 @@ export default class OAuthController extends BaseController<
 > {
   private loginProviderConfig: LoginProviderConfig;
 
+  private byoaServerUrl: string;
+
+  private web3AuthNetwork: string;
+
+  private readonly OAUTH_AUD = 'metamask';
 
   constructor({
     state,
     messenger,
     loginProviderConfig,
+    byoaServerUrl,
+    web3AuthNetwork,
   }: OAuthControllerOptions) {
     super({
       messenger,
@@ -138,12 +153,18 @@ export default class OAuthController extends BaseController<
       },
     });
 
+    this.byoaServerUrl = byoaServerUrl;
+    this.web3AuthNetwork = web3AuthNetwork;
+
     Object.entries(loginProviderConfig).forEach(([provider, config]) => {
       if (!config.scopes) {
         config.scopes = defaultProviderScopes[provider as OAuthProvider];
       }
       if (!config.redirectUri) {
         config.redirectUri = chrome.identity.getRedirectURL();
+      }
+      if (!config.serverRedirectUri && provider === 'apple') {
+        config.serverRedirectUri = `${this.byoaServerUrl}/api/v1/oauth/callback`;
       }
     });
     this.loginProviderConfig = loginProviderConfig;
@@ -152,94 +173,120 @@ export default class OAuthController extends BaseController<
   /**
    * Initiates the OAuth login process for the given provider.
    * Upon completion, return the id token.
+   *
    * @param provider - The OAuth provider to use.
    */
-  async startOAuthLogin(provider: OAuthProvider): Promise<{
-    verifier: OAuthProvider;
-    idToken: string;
-    verifierId: string;
-  }>{
-    // const authUrl = this.constructAuthUrl(provider);
-    // log.debug('[OAuthController] startOAuthLogin authUrl', authUrl);
-    // TODO: un-comment this when we have byoa server
-    // const redirectUrl = "get_from_identity_launchWebAuthFlow";
-    // const redirectUrl = await chrome.identity.launchWebAuthFlow({
-    //   interactive: true,
-    //   url: authUrl,
-    // });
-    // console.log('[identity auth redirectUrl]', redirectUrl);
-    // if (!redirectUrl) {
-    //   console.error('[identity auth redirectUrl is null]');
-    //   throw new Error('No redirect URL found');
-    // }
-
-    return new Promise(async (resolve, reject) => {
-      try {
-        const tokenInfo = await this.handleOAuthResponse(provider);
-        resolve(tokenInfo);
-      } catch (error) {
-        log.error('[OAuthController] startOAuthLogin error', error);
-        reject(error);
-      }
-    });
-  }
-
-  private async handleOAuthResponse(provider: OAuthProvider): Promise<{
-    verifier: OAuthProvider;
-    idToken: string;
-    verifierId: string;
-  }> {
-    // TODO: handle google/apple auth response with 'code' flow and get id token
-    const authUrl = this.constructAuthUrl(provider);
+  async startOAuthLogin(provider: OAuthProvider): Promise<OAuthLoginResult> {
+    const authUrl = this.#constructAuthUrl(provider);
+    log.debug('[OAuthController] startOAuthLogin authUrl', authUrl);
     const redirectUrl = await chrome.identity.launchWebAuthFlow({
       interactive: true,
       url: authUrl,
     });
 
     if (!redirectUrl) {
+      console.error('[identity auth redirectUrl is null]');
       throw new Error('No redirect URL found');
     }
 
-    const m = redirectUrl.match(/[#?](.*)/)
-    if (!m || m.length < 1) {
-      throw new Error('Invalid redirect URL');
-    }
-    const params = new URLSearchParams(m[1].split('#')[0])
-    const accessToken = params.get('access_token')
-    if (!accessToken) {
-      throw new Error('No access token found');
-    }
-
-    const response = await fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${accessToken}`)
-    const data = await response.json()
-    console.log('[OAuthController] handleOAuthResponse data', data);
-    return {
-      verifier: provider,
-      idToken: accessToken,
-      verifierId: data.email,
-    }
+    return new Promise((resolve, reject) => {
+      this.#handleOAuthResponse(redirectUrl, provider)
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((error) => {
+          log.error('[OAuthController] startOAuthLogin error', error);
+          reject(error);
+        });
+    });
   }
 
-  private constructAuthUrl(provider: OAuthProvider): string {
-    const oAuthProviderConfig = this.loginProviderConfig[provider];
-    let authURL = oAuthProviderConfig.authUri;
-    authURL += `?client_id=${oAuthProviderConfig.clientId}`;
-    authURL += `&response_type=${encodeURIComponent(
-      provider === 'google' ? 'token' : 'code',
-    )}`;
-    authURL += `&redirect_uri=${encodeURIComponent(
-      oAuthProviderConfig.redirectUri || '',
-    )}`;
-    authURL += `&scope=${encodeURIComponent(
+  #getProviderConfig(provider: OAuthProvider): OAuthProviderConfig {
+    return this.loginProviderConfig[provider];
+  }
+
+  async #handleOAuthResponse(
+    redirectUrl: string,
+    provider: OAuthProvider,
+  ): Promise<OAuthLoginResult> {
+    const authCode = this.#getRedirectUrlAuthCode(redirectUrl);
+    if (!authCode) {
+      throw new Error('No auth code found');
+    }
+    const res = await this.#getBYOAIdToken(provider, authCode);
+    return res;
+  }
+
+  async #getBYOAIdToken(
+    provider: OAuthProvider,
+    authCode: string,
+  ): Promise<OAuthLoginResult> {
+    const providerConfig = this.#getProviderConfig(provider);
+    const res = await fetch(`${this.byoaServerUrl}/api/v1/oauth/token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        code: authCode,
+        client_id: providerConfig.clientId,
+        redirect_uri:
+          provider === 'apple'
+            ? providerConfig.serverRedirectUri
+            : providerConfig.redirectUri,
+        login_provider: provider,
+        network: this.web3AuthNetwork,
+      }),
+    });
+    const data = await res.json();
+
+    this.update((state) => {
+      state.verifier = provider;
+      state.verifierID = data.verifier_id;
+    });
+
+    return {
+      verifier: provider,
+      verifierID: data.verifier_id,
+      idTokens: [data.jwt_tokens[this.OAUTH_AUD]],
+      endpoints: [data.endpoints[this.OAUTH_AUD]],
+      indexes: data.indexes,
+    };
+  }
+
+  #getRedirectUrlAuthCode(redirectUrl: string): string | null {
+    const url = new URL(redirectUrl);
+    return url.searchParams.get('code');
+  }
+
+  #constructAuthUrl(provider: OAuthProvider): string {
+    const oAuthProviderConfig = this.#getProviderConfig(provider);
+    const authURL = new URL(oAuthProviderConfig.authUri);
+    authURL.searchParams.set('client_id', oAuthProviderConfig.clientId);
+    authURL.searchParams.set('response_type', 'code');
+    authURL.searchParams.set(
+      'redirect_uri',
+      provider === 'apple'
+        ? oAuthProviderConfig.serverRedirectUri || ''
+        : oAuthProviderConfig.redirectUri || '',
+    );
+    authURL.searchParams.set(
+      'scope',
       oAuthProviderConfig.scopes?.join(' ') || '',
-    )}`;
+    );
 
     if (provider === 'apple') {
-      authURL += `&response_mode=form_post`;
-      const state = Math.random().toString(36).substring(2, 15);
-      authURL += `&state=${state}`;
+      // apple need to use form post response mode for code response type
+      // https://developer.apple.com/documentation/sign_in_with_apple/incorporating-sign-in-with-apple-into-other-platforms#Handle-the-response
+      authURL.searchParams.set('response_mode', 'form_post');
+      const nonce = Math.random().toString(16).substring(2, 15);
+      const dataState = JSON.stringify({
+        client_redirect_back_uri: oAuthProviderConfig.redirectUri,
+      });
+      authURL.searchParams.set('state', dataState);
+      authURL.searchParams.set('nonce', nonce);
     }
 
-    return authURL;
+    return authURL.href;
   }
 }

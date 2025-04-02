@@ -21,6 +21,7 @@ import {
 import {
   setFirstTimeFlowType,
   setTermsOfUseLastAgreed,
+  startOAuthLogin,
 } from '../../../store/actions';
 import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
@@ -28,6 +29,7 @@ import {
   ///: END:ONLY_INCLUDE_IF
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
   ONBOARDING_COMPLETION_ROUTE,
+  ONBOARDING_UNLOCK_ROUTE,
 } from '../../../helpers/constants/routes';
 import { getFirstTimeFlowType, getCurrentKeyring } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
@@ -35,9 +37,7 @@ import { isFlask, isBeta } from '../../../helpers/utils/build-types';
 import IconGoogle from '../../../components/ui/icon/icon-google';
 import IconApple from '../../../components/ui/icon/icon-apple';
 
-export default function OnboardingWelcome({
-  handleSocialLogin,
-}) {
+export default function OnboardingWelcome() {
   const t = useI18nContext();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -71,8 +71,13 @@ export default function OnboardingWelcome({
 
   const onClickSocialLogin = async (provider) => {
     setNewAccountCreationInProgress(true);
-    dispatch(setFirstTimeFlowType(FirstTimeFlowType.create));
-    await handleSocialLogin(provider);
+    dispatch(setFirstTimeFlowType(FirstTimeFlowType.seedless));
+    const isExistingUser = await dispatch(startOAuthLogin(provider));
+    if (isExistingUser) {
+      // redirect to login page
+      history.push(ONBOARDING_UNLOCK_ROUTE);
+      return;
+    }
 
     trackEvent({
       category: MetaMetricsEventCategory.Onboarding,
@@ -87,7 +92,7 @@ export default function OnboardingWelcome({
     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
     history.push(ONBOARDING_METAMETRICS);
     ///: END:ONLY_INCLUDE_IF
-  }
+  };
 
   const onCreateClick = async () => {
     setNewAccountCreationInProgress(true);
