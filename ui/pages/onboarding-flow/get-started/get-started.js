@@ -29,6 +29,7 @@ import {
 import {
   setFirstTimeFlowType,
   setTermsOfUseLastAgreed,
+  startOAuthLogin,
 } from '../../../store/actions';
 import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
@@ -36,6 +37,7 @@ import {
   ///: END:ONLY_INCLUDE_IF
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
   ONBOARDING_COMPLETION_ROUTE,
+  ONBOARDING_UNLOCK_ROUTE,
 } from '../../../helpers/constants/routes';
 import { getFirstTimeFlowType, getCurrentKeyring } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
@@ -71,6 +73,31 @@ export default function GetStarted() {
     newAccountCreationInProgress,
   ]);
   const trackEvent = useContext(MetaMetricsContext);
+
+  const onClickSocialLogin = async (provider) => {
+    setNewAccountCreationInProgress(true);
+    dispatch(setFirstTimeFlowType(FirstTimeFlowType.seedless));
+    const isExistingUser = await dispatch(startOAuthLogin(provider));
+    if (isExistingUser) {
+      // redirect to login page
+      history.push(ONBOARDING_UNLOCK_ROUTE);
+      return;
+    }
+
+    trackEvent({
+      category: MetaMetricsEventCategory.Onboarding,
+      // TODO: add seedless onboarding event?
+      event: MetaMetricsEventName.OnboardingWalletCreationStarted,
+      properties: {
+        account_type: 'metamask',
+      },
+    });
+    dispatch(setTermsOfUseLastAgreed(new Date().getTime()));
+
+    ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+    history.push(ONBOARDING_METAMETRICS);
+    ///: END:ONLY_INCLUDE_IF
+  };
 
   const onCreateClick = async () => {
     setNewAccountCreationInProgress(true);
@@ -141,7 +168,10 @@ export default function GetStarted() {
 
       <ul className="get-started__buttons">
         <li>
-          <button className="get-started__plain-button">
+          <button
+            className="get-started__plain-button"
+            onClick={() => onClickSocialLogin('google')}
+          >
             {
               ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
               <div className="get-started__plain-button-content">
@@ -157,7 +187,10 @@ export default function GetStarted() {
           </button>
         </li>
         <li>
-          <button className="get-started__plain-button">
+          <button
+            className="get-started__plain-button"
+            onClick={() => onClickSocialLogin('apple')}
+          >
             {
               ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
               <div className="get-started__plain-button-content">
