@@ -18,8 +18,7 @@ export type OAuthProvider = 'google' | 'apple';
 export type OAuthControllerState = {
   authLoading: boolean;
   verifier?: OAuthProvider;
-  idToken?: string;
-  verifier_id?: string;
+  verifierID?: string;
 };
 
 /**
@@ -112,12 +111,8 @@ const controllerMetadata = {
     persist: true,
     anonymous: true,
   },
-  idToken: {
-    persist: false,
-    anonymous: true,
-  },
-  verifier_id: {
-    persist: false,
+  verifierID: {
+    persist: true,
     anonymous: true,
   },
 };
@@ -188,7 +183,7 @@ export default class OAuthController extends BaseController<
       interactive: true,
       url: authUrl,
     });
-    console.log('[identity auth redirectUrl]', redirectUrl);
+
     if (!redirectUrl) {
       console.error('[identity auth redirectUrl is null]');
       throw new Error('No redirect URL found');
@@ -244,6 +239,12 @@ export default class OAuthController extends BaseController<
       }),
     });
     const data = await res.json();
+
+    this.update((state) => {
+      state.verifier = provider;
+      state.verifierID = data.verifier_id;
+    });
+
     return {
       verifier: provider,
       verifierID: data.verifier_id,

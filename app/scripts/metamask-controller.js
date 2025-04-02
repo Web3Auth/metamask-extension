@@ -2234,6 +2234,7 @@ export default class MetamaskController extends EventEmitter {
       MultichainNetworkController: this.multichainNetworkController,
       NetworkController: this.networkController,
       AlertController: this.alertController,
+      OAuthController: this.oauthController,
       SeedlessOnboardingController: this.seedlessOnboardingController,
       OnboardingController: this.onboardingController,
       PermissionController: this.permissionController,
@@ -2292,6 +2293,8 @@ export default class MetamaskController extends EventEmitter {
         AddressBookController: this.addressBookController,
         CurrencyController: this.currencyRateController,
         AlertController: this.alertController,
+        OAuthController: this.oauthController,
+        SeedlessOnboardingController: this.seedlessOnboardingController,
         OnboardingController: this.onboardingController,
         PermissionController: this.permissionController,
         PermissionLogController: this.permissionLogController,
@@ -4491,12 +4494,13 @@ export default class MetamaskController extends EventEmitter {
    * @param {string} password - The user's password.
    */
   async createSeedPhraseBackup(seedPhrase, password) {
-    const { encryptionKey } =
-      await this.seedlessOnboardingController.createSeedPhraseBackup({
-        seedPhrase,
-        password,
-      });
-    console.log('encryptionKey', encryptionKey);
+    const { verifierID, verifier } = this.oauthController.state;
+    await this.seedlessOnboardingController.createSeedPhraseBackup({
+      seedPhrase,
+      password,
+      verifier,
+      verifierID,
+    });
   }
 
   /**
@@ -4511,8 +4515,11 @@ export default class MetamaskController extends EventEmitter {
    */
   async fetchAndRestoreSeedPhraseMetadata(password) {
     try {
+      const { verifierID, verifier } = this.oauthController.state;
       const { secretData: seedPhrases } =
         await this.seedlessOnboardingController.fetchAndRestoreSeedPhraseMetadata(
+          verifier,
+          verifierID,
           password,
         );
       let seedPhrase = seedPhrases[0] || null;
@@ -4522,6 +4529,8 @@ export default class MetamaskController extends EventEmitter {
         seedPhrase = await this.keyringController.exportSeedPhrase(password);
         // create a new seed phrase backup
         await this.seedlessOnboardingController.createSeedPhraseBackup({
+          verifier,
+          verifierID,
           seedPhrase,
           password,
         });
