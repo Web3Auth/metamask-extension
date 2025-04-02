@@ -1,23 +1,81 @@
 @use "design-system";
+// by using @use, and dropping the file extension, sass will inline the
+// stylesheet instead of creating generating an `import(carousel.css)`. This is
+// desirable because it reduces the number of render-blocking requests on app
+// startup.
+@use "react-responsive-carousel/lib/styles/carousel";
 
 .get-started {
-  &__title {
-    font-size: 104px;
-    font-weight: 400;
-    line-height: 110px;
+  &__logo {
     text-align: center;
-    text-transform: uppercase;
+  }
+
+  &__social-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  &__plain-button {
+    width: 100%;
+    height: 48px;
+    border-radius: 24px;
+    background-color: var(--color-background-transparent);
+    border: 1px solid var(--color-border-muted);
+    padding: 0 16px;
+  }
+
+  &__plain-button-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  &__or {
+    text-align: center;
+    position: relative;
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 1px;
+      background-color: var(--color-border-muted);
+    }
+  }
+
+  &__or-text {
+    background-color: var(--color-background-default);
+    padding: 0 10px;
+    width: fit-content;
+    margin: auto;
+    position: relative;
+    z-index: 1;
   }
 
   &__mascot {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: -45px;
+    width: 250px;
+    height: 250px;
+    margin: 20px auto;
   }
 
-  &__button {
-    width: 343px;
-    margin: 0 auto;
+  &__image {
+    text-align: center;
+    margin: 20px auto;
+  }
+
+  &__buttons {
+    max-width: 300px;
+    margin: 40px auto 0 auto;
+
+    li {
+      margin-bottom: 16px;
+    }
+  }
+
+  &__terms-checkbox {
+    margin: 0;
+    align-self: flex-start;
   }
 }

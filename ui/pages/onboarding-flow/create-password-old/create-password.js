@@ -4,21 +4,29 @@ import { useHistory } from 'react-router-dom';
 import zxcvbn from 'zxcvbn';
 import { useSelector } from 'react-redux';
 import { useI18nContext } from '../../../hooks/useI18nContext';
+import Button from '../../../components/ui/button';
 import {
   JustifyContent,
   AlignItems,
   TextVariant,
-  TextColor,
-  BlockSize,
+  TextAlign,
+  FontWeight,
 } from '../../../helpers/constants/design-system';
 import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
   ONBOARDING_COMPLETION_ROUTE,
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
-  ONBOARDING_WELCOME_ROUTE,
-  ONBOARDING_UNLOCK_ROUTE,
   ///: END:ONLY_INCLUDE_IF
 } from '../../../helpers/constants/routes';
+import FormField from '../../../components/ui/form-field';
+///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+import {
+  ThreeStepProgressBar,
+  threeStepStages,
+  TwoStepProgressBar,
+  twoStepStages,
+} from '../../../components/app/step-progress-bar';
+///: END:ONLY_INCLUDE_IF
 import { PASSWORD_MIN_LENGTH } from '../../../helpers/constants/common';
 import ZENDESK_URLS from '../../../helpers/constants/zendesk-url';
 import {
@@ -33,21 +41,13 @@ import {
 } from '../../../../shared/constants/metametrics';
 import {
   Box,
-  Button,
-  ButtonIcon,
-  ButtonSize,
-  ButtonVariant,
+  ButtonLink,
   Checkbox,
-  FormTextField,
-  FormTextFieldSize,
+  Icon,
   IconName,
   Text,
 } from '../../../components/component-library';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
-import {
-  selectHasValidEncryptionKey,
-  selectNodeAuthTokens,
-} from '../../../selectors/seedless-onboarding';
 
 export default function CreatePassword({
   createNewAccount,
@@ -63,13 +63,10 @@ export default function CreatePassword({
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [termsChecked, setTermsChecked] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [newAccountCreationInProgress, setNewAccountCreationInProgress] =
     useState(false);
   const history = useHistory();
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
-  const nodeAuthTokens = useSelector(selectNodeAuthTokens);
-  const hasValidEncryptionKey = useSelector(selectHasValidEncryptionKey);
   const trackEvent = useContext(MetaMetricsContext);
   const currentKeyring = useSelector(getCurrentKeyring);
 
@@ -93,10 +90,7 @@ export default function CreatePassword({
 
   useEffect(() => {
     if (currentKeyring && !newAccountCreationInProgress) {
-      if (
-        firstTimeFlowType === FirstTimeFlowType.import ||
-        firstTimeFlowType === FirstTimeFlowType.seedless
-      ) {
+      if (firstTimeFlowType === FirstTimeFlowType.import) {
         ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
         history.replace(ONBOARDING_COMPLETION_ROUTE);
         ///: END:ONLY_INCLUDE_IF
@@ -105,25 +99,12 @@ export default function CreatePassword({
         history.replace(ONBOARDING_SECURE_YOUR_WALLET_ROUTE);
         ///: END:ONLY_INCLUDE_IF
       }
-    } else if (firstTimeFlowType === FirstTimeFlowType.seedless) {
-      if (!nodeAuthTokens) {
-        // user has not authenticated with the seedless onboarding servers,
-        // redirect back to the welcome page and asks to do social login
-        // Should we show a warning here?
-        history.replace(ONBOARDING_WELCOME_ROUTE);
-      } else if (hasValidEncryptionKey) {
-        // user has already setup password and encryption key
-        // redirect to the login page instead
-        history.replace(ONBOARDING_UNLOCK_ROUTE);
-      }
     }
   }, [
     currentKeyring,
     history,
     firstTimeFlowType,
     newAccountCreationInProgress,
-    nodeAuthTokens,
-    hasValidEncryptionKey,
   ]);
 
   const isValid = useMemo(() => {
@@ -141,7 +122,7 @@ export default function CreatePassword({
   const getPasswordStrengthLabel = (isTooShort, score) => {
     if (isTooShort) {
       return {
-        className: 'create-password__weak',
+        className: 'create-password-old__weak',
         dataTestId: 'short-password-error',
         text: t('passwordNotLongEnough'),
         description: '',
@@ -149,7 +130,7 @@ export default function CreatePassword({
     }
     if (score >= 4) {
       return {
-        className: 'create-password__strong',
+        className: 'create-password-old__strong',
         dataTestId: 'strong-password',
         text: t('strong'),
         description: '',
@@ -157,14 +138,14 @@ export default function CreatePassword({
     }
     if (score === 3) {
       return {
-        className: 'create-password__average',
+        className: 'create-password-old__average',
         dataTestId: 'average-password',
         text: t('average'),
         description: t('passwordStrengthDescription'),
       };
     }
     return {
-      className: 'create-password__weak',
+      className: 'create-password-old__weak',
       dataTestId: 'weak-password',
       text: t('weak'),
       description: t('passwordStrengthDescription'),
@@ -244,78 +225,95 @@ export default function CreatePassword({
   const createPasswordLink = (
     <a
       onClick={(e) => e.stopPropagation()}
-      key="create-password__link-text"
+      key="create-password-old__link-text"
       href={ZENDESK_URLS.PASSWORD_AND_SRP_ARTICLE}
       target="_blank"
       rel="noopener noreferrer"
     >
-      <span className="create-password__link-text">
+      <span className="create-password-old__link-text">
         {t('learnMoreUpperCase')}
       </span>
     </a>
   );
 
   return (
-    <div className="create-password__wrapper" data-testid="create-password">
-      <Box
-        justifyContent={JustifyContent.flexStart}
-        marginBottom={4}
-        width={BlockSize.Full}
+    <div className="create-password-old__wrapper" data-testid="create-password">
+      {
+        ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+        secretRecoveryPhrase &&
+        firstTimeFlowType === FirstTimeFlowType.import ? (
+          <TwoStepProgressBar
+            stage={twoStepStages.PASSWORD_CREATE}
+            marginBottom={4}
+          />
+        ) : (
+          <ThreeStepProgressBar
+            stage={threeStepStages.PASSWORD_CREATE}
+            marginBottom={4}
+          />
+        )
+        ///: END:ONLY_INCLUDE_IF
+      }
+
+      <Text variant={TextVariant.headingLg} marginBottom={3}>
+        {t('createPassword')}
+      </Text>
+
+      <Text
+        variant={TextVariant.headingSm}
+        textAlign={TextAlign.Center}
+        fontWeight={FontWeight.Normal}
       >
-        <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          Step 2 of 2
-        </Text>
-        <Text variant={TextVariant.headingLg}>{t('createPassword')}</Text>
-      </Box>
-      <Box justifyContent={JustifyContent.center}>
-        <form className="create-password__form" onSubmit={handleCreate}>
-          {/* TODO:
-            passwordStrength={passwordStrength}
-            passwordStrengthText={passwordStrengthText} */}
-          <FormTextField
+        {
+          ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+          t('passwordSetupDetails')
+          ///: END:ONLY_INCLUDE_IF
+        }
+      </Text>
+      <Box justifyContent={JustifyContent.center} marginTop={3}>
+        <form className="create-password-old__form" onSubmit={handleCreate}>
+          <FormField
             dataTestId="create-password-new"
             autoFocus
-            placeholder="Use at least 8 characters"
-            label="New password"
-            size={FormTextFieldSize.Lg}
+            passwordStrength={passwordStrength}
+            passwordStrengthText={passwordStrengthText}
+            onChange={handlePasswordChange}
+            password={!showPassword}
+            titleText={t('newPassword')}
             value={password}
-            type={showPassword ? 'text' : 'password'}
-            onChange={(e) => {
-              handlePasswordChange(e.target.value);
-            }}
-            endAccessory={
-              <ButtonIcon
-                iconName={showPassword ? IconName.EyeSlash : IconName.Eye}
+            titleDetail={
+              <ButtonLink
+                variant={TextVariant.bodySm}
                 data-testid="show-password"
+                className="create-password-old__form--password-button"
                 onClick={(e) => {
                   e.preventDefault();
                   setShowPassword(!showPassword);
                 }}
-              />
+                marginBottom={1}
+                // This type="button" prop is needed for <button> to prevent the implicit submit
+                // behavior. Without this and within this form, entering the "Enter" key while
+                // one of the inputs is focused will trigger this button.
+                type="button"
+              >
+                {showPassword ? t('hide') : t('show')}
+              </ButtonLink>
             }
           />
-          <FormTextField
+          <FormField
             dataTestId="create-password-confirm"
-            marginTop={4}
-            placeholder="Re-enter your password"
-            label={t('confirmPassword')}
-            size={FormTextFieldSize.Lg}
+            marginTop={3}
+            onChange={handleConfirmPasswordChange}
+            password={!showPassword}
+            error={confirmPasswordError}
+            titleText={t('confirmPassword')}
             value={confirmPassword}
-            type={showConfirmPassword ? 'text' : 'password'}
-            onChange={(e) => {
-              handleConfirmPasswordChange(e.target.value);
-            }}
-            endAccessory={
-              <ButtonIcon
-                iconName={
-                  showConfirmPassword ? IconName.EyeSlash : IconName.Eye
-                }
-                data-testid="show-password"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowConfirmPassword(!showConfirmPassword);
-                }}
-              />
+            titleDetail={
+              isValid && (
+                <div className="create-password-old__form--checkmark">
+                  <Icon name={IconName.Check} />
+                </div>
+              )
             }
           />
           <Box
@@ -325,7 +323,7 @@ export default function CreatePassword({
             marginBottom={4}
           >
             <Checkbox
-              className="create-password__form__terms-checkbox"
+              className="create-password-old__form__terms-checkbox"
               inputProps={{ 'data-testid': 'create-password-terms' }}
               alignItems={AlignItems.flexStart}
               isChecked={termsChecked}
@@ -337,8 +335,7 @@ export default function CreatePassword({
                 <Text variant={TextVariant.bodyMd} marginLeft={2}>
                   {
                     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-                    // t('passwordTermsWarning', [createPasswordLink])
-                    `MetaMask can’t recover this password. ${createPasswordLink}`
+                    t('passwordTermsWarning', [createPasswordLink])
                     ///: END:ONLY_INCLUDE_IF
                   }
                 </Text>
@@ -349,33 +346,23 @@ export default function CreatePassword({
           {
             ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
             <Button
-              data-testid="create-password-submit"
-              variant={ButtonVariant.Primary}
-              width={BlockSize.Full}
-              size={ButtonSize.Large}
-              className="create-password__form--submit-button"
+              data-testid={
+                secretRecoveryPhrase &&
+                firstTimeFlowType === FirstTimeFlowType.import
+                  ? 'create-password-import'
+                  : 'create-password-wallet'
+              }
+              type="primary"
+              large
+              className="create-password-old__form--submit-button"
               disabled={!isValid || !termsChecked}
+              onClick={handleCreate}
             >
-              Confirm
+              {secretRecoveryPhrase &&
+              firstTimeFlowType === FirstTimeFlowType.import
+                ? t('importMyWallet')
+                : t('createNewWallet')}
             </Button>
-            // <Button
-            //   data-testid={
-            //     secretRecoveryPhrase &&
-            //     firstTimeFlowType === FirstTimeFlowType.import
-            //       ? 'create-password-import'
-            //       : 'create-password-wallet'
-            //   }
-            //   type="primary"
-            //   large
-            //   className="create-password-old__form--submit-button"
-            //   disabled={!isValid || !termsChecked}
-            //   onClick={handleCreate}
-            // >
-            //   {secretRecoveryPhrase &&
-            //   firstTimeFlowType === FirstTimeFlowType.import
-            //     ? t('importMyWallet')
-            //     : t('createNewWallet')}
-            // </Button>
             ///: END:ONLY_INCLUDE_IF
           }
         </form>
@@ -383,7 +370,7 @@ export default function CreatePassword({
       {shouldInjectMetametricsIframe ? (
         <iframe
           src={analyticsIframeUrl}
-          className="create-password__analytics-iframe"
+          className="create-password-old__analytics-iframe"
           data-testid="create-password-iframe"
         />
       ) : null}

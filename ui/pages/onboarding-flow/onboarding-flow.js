@@ -18,6 +18,7 @@ import {
   ONBOARDING_IMPORT_WITH_SRP_ROUTE,
   ONBOARDING_PIN_EXTENSION_ROUTE,
   ONBOARDING_METAMETRICS,
+  ONBOARDING_GET_STARTED_ROUTE,
 } from '../../helpers/constants/routes';
 import { OnboardingFlowType } from '../../helpers/constants/onboarding';
 import {
@@ -55,10 +56,11 @@ import SecureYourWallet from './secure-your-wallet/secure-your-wallet';
 import ConfirmRecoveryPhrase from './recovery-phrase/confirm-recovery-phrase';
 import PrivacySettings from './privacy-settings/privacy-settings';
 import CreationSuccessful from './creation-successful/creation-successful';
-import OnboardingWelcome from './welcome/welcome';
+import Welcome from './welcome/welcome';
 import ImportSRP from './import-srp/import-srp';
 import OnboardingPinExtension from './pin-extension/pin-extension';
 import MetaMetricsComponent from './metametrics/metametrics';
+import GetStarted from './get-started/get-started';
 
 const TWITTER_URL = 'https://twitter.com/MetaMask';
 
@@ -153,13 +155,23 @@ export default function OnboardingFlow() {
     isFromReminder;
 
   return (
-    <div className="onboarding-flow">
+    <div
+      className={`onboarding-flow ${
+        pathname === ONBOARDING_WELCOME_ROUTE ? 'onboarding-flow--welcome' : ''
+      }`}
+    >
       <RevealSRPModal
         setSecretRecoveryPhrase={setSecretRecoveryPhrase}
         onClose={() => history.push(DEFAULT_ROUTE)}
         isOpen={showPasswordModalToAllowSRPReveal}
       />
-      <div className="onboarding-flow__wrapper">
+      <div
+        className={`onboarding-flow__wrapper ${
+          pathname === ONBOARDING_WELCOME_ROUTE
+            ? 'onboarding-flow__wrapper--welcome'
+            : ''
+        }`}
+      >
         <Switch>
           <Route
             path={ONBOARDING_CREATE_PASSWORD_ROUTE}
@@ -215,10 +227,8 @@ export default function OnboardingFlow() {
             path={ONBOARDING_COMPLETION_ROUTE}
             component={CreationSuccessful}
           />
-          <Route
-            path={ONBOARDING_WELCOME_ROUTE}
-            component={OnboardingWelcome}
-          />
+          <Route path={ONBOARDING_WELCOME_ROUTE} component={Welcome} />
+          <Route path={ONBOARDING_GET_STARTED_ROUTE} component={GetStarted} />
           <Route
             path={ONBOARDING_PIN_EXTENSION_ROUTE}
             component={OnboardingPinExtension}

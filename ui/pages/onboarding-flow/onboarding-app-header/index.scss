@@ -10,6 +10,10 @@
   width: 100%;
   flex: 0 0 auto;
 
+  &--welcome {
+    background-color: #EAC2FF;
+  }
+
   @include design-system.screen-sm-max {
     padding: 16px;
     z-index: design-system.$mobile-header-z-index;
