@@ -232,9 +232,13 @@ export default function CreatePassword({
           setNewAccountCreationInProgress(true);
           await createNewAccount(password);
         }
-        ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-        history.push(ONBOARDING_SECURE_YOUR_WALLET_ROUTE);
-        ///: END:ONLY_INCLUDE_IF
+        if (firstTimeFlowType === FirstTimeFlowType.seedless) {
+          history.push(ONBOARDING_COMPLETION_ROUTE);
+        } else {
+          ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+          history.push(ONBOARDING_SECURE_YOUR_WALLET_ROUTE);
+          ///: END:ONLY_INCLUDE_IF
+        }
       } catch (error) {
         setPasswordError(error.message);
       }
@@ -269,10 +273,9 @@ export default function CreatePassword({
       </Box>
       <Box justifyContent={JustifyContent.center}>
         <form className="create-password__form" onSubmit={handleCreate}>
-          {/* TODO:
-            passwordStrength={passwordStrength}
-            passwordStrengthText={passwordStrengthText} */}
           <FormTextField
+            passwordStrength={passwordStrength}
+            passwordStrengthText={passwordStrengthText}
             dataTestId="create-password-new"
             autoFocus
             placeholder="Use at least 8 characters"

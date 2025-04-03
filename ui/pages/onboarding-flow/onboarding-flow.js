@@ -20,7 +20,6 @@ import {
   ONBOARDING_METAMETRICS,
   ONBOARDING_GET_STARTED_ROUTE,
 } from '../../helpers/constants/routes';
-import { OnboardingFlowType } from '../../helpers/constants/onboarding';
 import {
   getCompletedOnboarding,
   getIsUnlocked,
