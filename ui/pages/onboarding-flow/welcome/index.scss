@@ -6,7 +6,7 @@
   }
 
   &__title-text {
-    color: #3D065F;
+    color: var(--brand-colors-purple-purple800);
     font-size: 104px;
     line-height: 110px;
     text-align: center;
@@ -30,6 +30,6 @@
   }
 
   &__button-text {
-    color: #3D065F;
+    color: var(--brand-colors-purple-purple800);
   }
 }
