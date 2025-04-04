@@ -6,6 +6,7 @@
   }
 
   &__title-text {
+    color: #3D065F;
     font-size: 104px;
     line-height: 110px;
     text-align: center;
@@ -26,5 +27,9 @@
 
   &__button {
     background-color: #fff;
+  }
+
+  &__button-text {
+    color: #3D065F;
   }
 }

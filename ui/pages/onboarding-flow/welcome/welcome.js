@@ -77,8 +77,8 @@ export default function Welcome() {
             onClick={() => setShowTermsOfUse(true)}
           >
             <Text
+              className="welcome__button-text"
               variant={TextVariant.bodyMd}
-              color={TextColor.primaryDefault}
               fontWeight={FontWeight.Medium}
             >
               Get started
