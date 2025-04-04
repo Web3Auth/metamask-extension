@@ -10,6 +10,7 @@ import {
   TextColor,
   IconColor,
   BlockSize,
+  TypographyVariant,
 } from '../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
@@ -124,62 +125,80 @@ export default function OnboardingMetametrics() {
       </Text>
       <ul>
         <li>
-          <Box>
+          <Box
+            display={Display.Flex}
+            flexDirection={FlexDirection.Row}
+            paddingBottom={4}
+          >
             <Icon
               marginInlineEnd={2}
               name={IconName.Check}
               size={IconSize.Sm}
               color={IconColor.successDefault}
             />
-            {t('onboardingMetametricsNeverCollect', [
-              <Text
-                variant={TextVariant.inherit}
-                key="never"
-                fontWeight={FontWeight.Bold}
-                marginTop={0}
-              >
-                {t('onboardingMetametricsNeverCollectEmphasis')}
-              </Text>,
-            ])}
+            <Box>
+              {t('onboardingMetametricsNeverCollect', [
+                <Text
+                  variant={TextVariant.inherit}
+                  key="never"
+                  fontWeight={FontWeight.Bold}
+                  marginTop={0}
+                >
+                  {t('onboardingMetametricsNeverCollectEmphasis')}
+                </Text>,
+              ])}
+            </Box>
           </Box>
         </li>
         <li>
-          <Box>
+          <Box
+            display={Display.Flex}
+            flexDirection={FlexDirection.Row}
+            paddingBottom={4}
+          >
             <Icon
               marginInlineEnd={2}
               name={IconName.Check}
               size={IconSize.Sm}
               color={IconColor.successDefault}
             />
-            {t('onboardingMetametricsNeverCollectIP', [
-              <Text
-                variant={TextVariant.inherit}
-                key="never-collect"
-                fontWeight={FontWeight.Bold}
-              >
-                {t('onboardingMetametricsNeverCollectIPEmphasis')}
-              </Text>,
-            ])}
+            <Box>
+              {t('onboardingMetametricsNeverCollectIP', [
+                <Text
+                  variant={TextVariant.inherit}
+                  key="never-collect"
+                  fontWeight={FontWeight.Bold}
+                >
+                  {t('onboardingMetametricsNeverCollectIPEmphasis')}
+                </Text>,
+              ])}
+            </Box>
           </Box>
         </li>
         <li>
-          <Box>
+          <Box
+            display={Display.Flex}
+            flexDirection={FlexDirection.Row}
+            paddingBottom={4}
+          >
             <Icon
               marginInlineEnd={2}
               name={IconName.Check}
               size={IconSize.Sm}
               color={IconColor.successDefault}
             />
-            {t('onboardingMetametricsNeverSellData', [
-              <Text
-                variant={TextVariant.inherit}
-                key="never-sell"
-                fontWeight={FontWeight.Bold}
-              >
-                {t('onboardingMetametricsNeverSellDataEmphasis')}
-              </Text>,
-            ])}
-          </Box>{' '}
+            <Box>
+              {t('onboardingMetametricsNeverSellData', [
+                <Text
+                  variant={TextVariant.inherit}
+                  key="never-sell"
+                  fontWeight={FontWeight.Bold}
+                >
+                  {t('onboardingMetametricsNeverSellDataEmphasis')}
+                </Text>,
+              ])}
+            </Box>
+          </Box>
         </li>
       </ul>
       <Checkbox
@@ -189,8 +208,11 @@ export default function OnboardingMetametrics() {
         onClick={() =>
           dispatch(setDataCollectionForMarketing(!dataCollectionForMarketing))
         }
-        label={t('onboardingMetametricsUseDataCheckbox')}
-        fontWeight={FontWeight.Medium}
+        label={
+          <Text variant={TextVariant.bodySm} fontWeight={FontWeight.Medium}>
+            {t('onboardingMetametricsUseDataCheckbox')}
+          </Text>
+        }
         paddingBottom={3}
       />
       <Text
