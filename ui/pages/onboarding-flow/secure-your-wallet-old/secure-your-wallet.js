@@ -11,7 +11,6 @@ import {
   FlexDirection,
   Display,
   BlockSize,
-  TextColor,
 } from '../../../helpers/constants/design-system';
 import {
   ThreeStepProgressBar,
@@ -30,8 +29,6 @@ import {
   BUTTON_VARIANT,
   BUTTON_SIZES,
   Text,
-  ButtonSize,
-  ButtonVariant,
 } from '../../../components/component-library';
 import SkipSRPBackup from './skip-srp-backup-popover';
 
@@ -68,67 +65,87 @@ export default function SecureYourWallet() {
     <Box
       display={Display.Flex}
       justifyContent={JustifyContent.center}
-      alignItems={AlignItems.flexStart}
+      alignItems={AlignItems.center}
       flexDirection={FlexDirection.Column}
-      className="secure-your-wallet"
+      className="secure-your-wallet-old"
       data-testid="secure-your-wallet"
     >
-      <Box
-        justifyContent={JustifyContent.flexStart}
+      {showSkipSRPBackupPopover && (
+        <SkipSRPBackup handleClose={() => setShowSkipSRPBackupPopover(false)} />
+      )}
+      <ThreeStepProgressBar
+        stage={threeStepStages.RECOVERY_PHRASE_VIDEO}
         marginBottom={4}
-        width={BlockSize.Full}
-      >
-        <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          Step 2 of 3
-        </Text>
-        <Text variant={TextVariant.headingLg}>{t('seedPhraseIntroTitle')}</Text>
-      </Box>
-      <Box
-        className="secure-your-wallet__srp-design-container"
-        marginBottom={6}
-        width={BlockSize.Full}
+      />
+      <Text
+        variant={TextVariant.headingLg}
+        as="h2"
+        marginBottom={4}
         textAlign={TextAlign.Center}
       >
+        {t('seedPhraseIntroTitle')}
+      </Text>
+      <Box className="secure-your-wallet-old__srp-design-container">
         <img
-          className="secure-your-wallet__srp-design-image"
+          className="secure-your-wallet-old__srp-design-image"
           src="./images/srp-lock-design.png"
           alt="SRP Design"
         />
       </Box>
-      <Box marginBottom={6}>
-        <Text variant={TextVariant.bodyMd} marginBottom={6}>
-          Don’t risk losing your funds. Protect your wallet by saving your
-          Secret Recovery Phrase in a place you trust.
-        </Text>
-        <Text variant={TextVariant.bodyMd}>
-          It’s the only way to recover your wallet if you get locked out of the
-          app or get a new device.
-        </Text>
-      </Box>
       <Box
-        className="secure-your-wallet__actions"
+        className="secure-your-wallet-old__actions"
+        marginBottom={8}
         width={BlockSize.Full}
         display={Display.Flex}
-        flexDirection={FlexDirection.Column}
+        flexDirection={[FlexDirection.Column, FlexDirection.Row]}
+        justifyContent={JustifyContent.spaceBetween}
         gap={4}
       >
         <Button
-          data-testid="secure-wallet-recommended"
-          size={ButtonSize.Lg}
-          block
-          onClick={handleClickRecommended}
-        >
-          Get started
-        </Button>
-        <Button
           data-testid="secure-wallet-later"
-          variant={ButtonVariant.Secondary}
-          size={ButtonSize.Lg}
+          variant={BUTTON_VARIANT.SECONDARY}
+          size={BUTTON_SIZES.LG}
           block
           onClick={handleClickNotRecommended}
         >
-          Remind me later
+          {t('seedPhraseIntroNotRecommendedButtonCopy')}
         </Button>
+        <Button
+          data-testid="secure-wallet-recommended"
+          size={BUTTON_SIZES.LG}
+          block
+          onClick={handleClickRecommended}
+        >
+          {t('seedPhraseIntroRecommendedButtonCopy')}
+        </Button>
+      </Box>
+      <Box className="secure-your-wallet-old__description">
+        <Text as="h3" variant={TextVariant.headingSm}>
+          {t('seedPhraseIntroSidebarTitleOne')}
+        </Text>
+        <Text marginBottom={4}>{t('seedPhraseIntroSidebarCopyOne')}</Text>
+        <Text as="h3" variant={TextVariant.headingSm}>
+          {t('seedPhraseIntroSidebarTitleTwo')}
+        </Text>
+        <Box as="ul" className="secure-your-wallet-old__list" marginBottom={4}>
+          <Text as="li">{t('seedPhraseIntroSidebarBulletOne')}</Text>
+          <Text as="li">{t('seedPhraseIntroSidebarBulletTwo')}</Text>
+        </Box>
+        <Text as="h3" variant={TextVariant.headingSm}>
+          {t('seedPhraseIntroSidebarTitleThree')}
+        </Text>
+        <Text as="p" marginBottom={4}>
+          {t('seedPhraseIntroSidebarCopyTwo')}
+        </Text>
+        <Text
+          as="h3"
+          variant={TextVariant.headingSm}
+          backgroundColor={BackgroundColor.primaryMuted}
+          padding={4}
+          borderRadius={BorderRadius.LG}
+        >
+          {t('seedPhraseIntroSidebarCopyThree')}
+        </Text>
       </Box>
     </Box>
   );
