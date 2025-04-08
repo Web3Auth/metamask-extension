@@ -21,7 +21,6 @@ import {
   PRIVACY_POLICY_LINK,
   TRANSACTION_SIMULATIONS_LEARN_MORE_LINK,
 } from '../../../../shared/lib/ui-utils';
-import Button from '../../../components/ui/button';
 
 import {
   Box,
@@ -33,6 +32,8 @@ import {
   ButtonIcon,
   IconSize,
   Icon,
+  ButtonIconSize,
+  FormTextField,
 } from '../../../components/component-library';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
@@ -45,6 +46,7 @@ import {
   JustifyContent,
   FlexDirection,
   BlockSize,
+  BackgroundColor,
 } from '../../../helpers/constants/design-system';
 import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
 import { useI18nContext } from '../../../hooks/useI18nContext';
@@ -86,8 +88,8 @@ export default function PrivacySettings() {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const [showDetail, setShowDetail] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
+  // TODO: set to false when we have the third party settings
+  const [showDetail, setShowDetail] = useState(true);
   const [hiddenClass, setHiddenClass] = useState(true);
 
   const defaultState = useSelector((state) => state.metamask);
@@ -213,8 +215,7 @@ export default function PrivacySettings() {
     }
   };
 
-  const handleItemSelected = (item) => {
-    setSelectedItem(item);
+  const showThirdPartySettings = () => {
     setShowDetail(true);
 
     setTimeout(() => {
@@ -228,12 +229,6 @@ export default function PrivacySettings() {
       setHiddenClass(true);
     }, ANIMATION_TIME);
   };
-
-  const items = [
-    { id: 1, title: t('general'), subtitle: t('generalDescription') },
-    { id: 2, title: t('assets'), subtitle: t('assetsDescription') },
-    { id: 3, title: t('security'), subtitle: t('securityDescription') },
-  ];
 
   return (
     <>
@@ -259,15 +254,10 @@ export default function PrivacySettings() {
                 flexDirection={FlexDirection.Row}
                 justifyContent={JustifyContent.flexStart}
               >
-                <Button
-                  type="inline"
-                  icon={
-                    <Icon
-                      name={IconName.ArrowLeft}
-                      size={IconSize.Lg}
-                      color={IconColor.iconDefault}
-                    />
-                  }
+                <ButtonIcon
+                  iconName={IconName.ArrowLeft}
+                  color={IconColor.iconDefault}
+                  size={ButtonIconSize.Md}
                   data-testid="privacy-settings-back-button"
                   onClick={handleSubmit}
                 />
@@ -277,71 +267,288 @@ export default function PrivacySettings() {
                   justifyContent={JustifyContent.center}
                   width={BlockSize.Full}
                 >
-                  <Text variant={TextVariant.headingLg} as="h2">
-                    {t('defaultSettingsTitle')}
+                  <Text variant={TextVariant.headingMd} as="h2">
+                    Default Settings
                   </Text>
                 </Box>
               </Box>
-              <Text variant={TextVariant.bodyLgMedium} marginTop={5}>
-                {t('defaultSettingsSubTitle')}
+              <Text
+                variant={TextVariant.bodyMd}
+                color={TextColor.textAlternative}
+                marginTop={5}
+              >
+                {t('defaultSettingsSubTitle')}&nbsp;
+                <a
+                  href="https://support.metamask.io/privacy-and-security/privacy-best-practices"
+                  target="_blank"
+                  rel="noreferrer"
+                  key="learnMoreAboutPrivacy"
+                >
+                  {t('learnMoreAboutPrivacy')}
+                </a>
               </Text>
-              <a
-                href="https://support.metamask.io/privacy-and-security/privacy-best-practices"
-                target="_blank"
-                rel="noreferrer"
-                key="learnMoreAboutPrivacy"
-                style={{
-                  fontSize: 'var(--font-size-5)',
-                }}
-              >
-                {t('learnMoreAboutPrivacy')}
-              </a>
-            </Box>
-            <Box>
-              <Box
-                as="ul"
-                marginTop={4}
-                marginBottom={4}
-                style={{ listStyleType: 'none' }}
-                className="privacy-settings__categories-list"
-              >
-                {items.map((item) => (
-                  <Box
-                    marginTop={5}
-                    marginBottom={5}
-                    key={item.id}
-                    className="categories-item"
-                    onClick={() => handleItemSelected(item)}
-                  >
-                    <Box
-                      display={Display.Flex}
-                      alignItems={AlignItems.flexStart}
-                      justifyContent={JustifyContent.spaceBetween}
-                      data-testid={`category-item-${item.title}`}
-                    >
-                      <Text variant={TextVariant.bodyLgMedium}>
-                        {item.title}
-                      </Text>
-                      <Button
-                        type="inline"
-                        icon={
-                          <Icon
-                            name={IconName.ArrowRight}
-                            color={IconColor.iconDefault}
-                          />
-                        }
-                        onClick={() => handleItemSelected(item)}
-                      />
-                    </Box>
+
+              <Box>
+                <Setting
+                  dataTestId="basic-functionality-toggle"
+                  value={externalServicesOnboardingToggleState}
+                  setValue={(toggledValue) => {
+                    if (toggledValue) {
+                      dispatch(onboardingToggleBasicFunctionalityOn());
+                      trackEvent({
+                        category: MetaMetricsEventCategory.Onboarding,
+                        event: MetaMetricsEventName.SettingsUpdated,
+                        properties: {
+                          settings_group: 'onboarding_advanced_configuration',
+                          settings_type: 'basic_functionality',
+                          old_value: false,
+                          new_value: true,
+                          was_profile_syncing_on: false,
+                        },
+                      });
+                    } else {
+                      dispatch(openBasicFunctionalityModal());
+                    }
+                  }}
+                  title={t('basicConfigurationLabel')}
+                  description={
                     <Text
-                      className="description"
-                      variant={TextVariant.bodyMd}
+                      variant={TextVariant.bodySm}
                       color={TextColor.textAlternative}
                     >
-                      {item.subtitle}
+                      This includes basic features like token details and gas
+                      settings. Keep this feature on for the best experience
+                      while using MetaMask. Read our Privacy Policy to learn
+                      more.
                     </Text>
-                  </Box>
-                ))}
+                  }
+                  tags={
+                    <>
+                      <Box
+                        backgroundColor={BackgroundColor.successMuted}
+                        className="privacy-settings__tag"
+                      >
+                        <Text
+                          variant={TextVariant.bodyXsMedium}
+                          color={TextColor.successDefault}
+                        >
+                          MetaMask API
+                        </Text>
+                      </Box>
+                      <Box
+                        backgroundColor={BackgroundColor.warningMuted}
+                        className="privacy-settings__tag"
+                      >
+                        <Text
+                          variant={TextVariant.bodyXsMedium}
+                          color={TextColor.warningDefault}
+                        >
+                          IP Address
+                        </Text>
+                      </Box>
+                    </>
+                  }
+                />
+
+                <Setting
+                  dataTestId="third-party-settings"
+                  title="Third-party APIs"
+                  className="categories-item"
+                  showToggle={false}
+                  description={
+                    <Text
+                      variant={TextVariant.bodySm}
+                      color={TextColor.textAlternative}
+                    >
+                      If you don’t want to share your IP address or Ethereum
+                      address with any third parties, you may want to turn off
+                      features that use them. This will impact your MetaMask
+                      experience.
+                    </Text>
+                  }
+                  tags={
+                    <>
+                      <Box
+                        backgroundColor={BackgroundColor.warningMuted}
+                        className="privacy-settings__tag"
+                      >
+                        <Text
+                          variant={TextVariant.bodyXsMedium}
+                          color={TextColor.warningDefault}
+                        >
+                          Third party
+                        </Text>
+                      </Box>
+                      <Box
+                        backgroundColor={BackgroundColor.warningMuted}
+                        className="privacy-settings__tag"
+                      >
+                        <Text
+                          variant={TextVariant.bodyXsMedium}
+                          color={TextColor.warningDefault}
+                        >
+                          IP Address
+                        </Text>
+                      </Box>
+                      <Box
+                        backgroundColor={BackgroundColor.warningMuted}
+                        className="privacy-settings__tag"
+                      >
+                        <Text
+                          variant={TextVariant.bodyXsMedium}
+                          color={TextColor.warningDefault}
+                        >
+                          Account address
+                        </Text>
+                      </Box>
+                    </>
+                  }
+                  onClick={showThirdPartySettings}
+                />
+
+                <Setting
+                  dataTestId="profile-sync-toggle"
+                  disabled={!externalServicesOnboardingToggleState}
+                  value={isProfileSyncingEnabled}
+                  setValue={handleProfileSyncToggleSetValue}
+                  title={t('profileSync')}
+                  description={
+                    <>
+                      <Text
+                        variant={TextVariant.bodySm}
+                        color={TextColor.textAlternative}
+                        marginBottom={4}
+                      >
+                        Sync settings, messages, and more across MetaMask
+                        Extension, Mobile, and Portfolio. You’ll need a unique
+                        ID to use this feature, which will be created if you
+                        allow data syncing. This makes it possible to sync your
+                        data across platforms. We’ll use your Secret Recovery
+                        Phrase to create this ID.
+                      </Text>
+                      <Text
+                        variant={TextVariant.bodySm}
+                        color={TextColor.textAlternative}
+                      >
+                        Notifications rely on this feature, and won&apos;t be
+                        available when turned off.
+                      </Text>
+                    </>
+                  }
+                />
+
+                <Setting
+                  title={t('onboardingAdvancedPrivacyNetworkTitle')}
+                  showToggle={false}
+                  description={
+                    <>
+                      <Text
+                        variant={TextVariant.bodySm}
+                        color={TextColor.textAlternative}
+                      >
+                        {t('onboardingAdvancedPrivacyNetworkDescription', [
+                          <a
+                            href="https://consensys.io/privacy-policy/"
+                            key="link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {t('privacyMsg')}
+                          </a>,
+                        ])}
+                      </Text>
+
+                      <Box paddingTop={4}>
+                        <Box
+                          display={Display.Flex}
+                          flexDirection={FlexDirection.Column}
+                          gap={5}
+                        >
+                          {Object.values(networkConfigurations)
+                            .filter(
+                              ({ chainId }) => !TEST_CHAINS.includes(chainId),
+                            )
+                            .map((network) => (
+                              <Box
+                                key={network.chainId}
+                                className="privacy-settings__customizable-network"
+                                onClick={() => {
+                                  dispatch(
+                                    setEditedNetwork({
+                                      chainId: network.chainId,
+                                    }),
+                                  );
+                                  dispatch(toggleNetworkMenu());
+                                }}
+                                display={Display.Flex}
+                                alignItems={AlignItems.center}
+                                justifyContent={JustifyContent.spaceBetween}
+                              >
+                                <Box
+                                  display={Display.Flex}
+                                  alignItems={AlignItems.center}
+                                >
+                                  <AvatarNetwork
+                                    src={
+                                      CHAIN_ID_TO_NETWORK_IMAGE_URL_MAP[
+                                        network.chainId
+                                      ]
+                                    }
+                                  />
+                                  <Box
+                                    textAlign={TextAlign.Left}
+                                    marginLeft={3}
+                                  >
+                                    <Text variant={TextVariant.bodySmMedium}>
+                                      {network.name}
+                                    </Text>
+                                    <Text
+                                      variant={TextVariant.bodyXs}
+                                      color={TextColor.textAlternative}
+                                    >
+                                      {
+                                        // Get just the protocol + domain, not the infura key in path
+                                        new URL(
+                                          network?.rpcEndpoints[
+                                            network?.defaultRpcEndpointIndex
+                                          ]?.url,
+                                        )?.origin
+                                      }
+                                    </Text>
+                                  </Box>
+                                </Box>
+                                <ButtonIcon
+                                  iconName={IconName.ArrowRight}
+                                  size={IconSize.Md}
+                                />
+                              </Box>
+                            ))}
+                          <ButtonLink
+                            onClick={() => {
+                              dispatch(
+                                toggleNetworkMenu({
+                                  isAddingNewNetwork: true,
+                                }),
+                              );
+                            }}
+                            justifyContent={JustifyContent.Left}
+                            variant={ButtonVariant.link}
+                          >
+                            <Box
+                              display={Display.Flex}
+                              alignItems={AlignItems.center}
+                            >
+                              <Icon name={IconName.Add} marginRight={3} />
+                              <Text color={TextColor.primaryDefault}>
+                                {t('addANetwork')}
+                              </Text>
+                            </Box>
+                          </ButtonLink>
+                        </Box>
+                      </Box>
+                    </>
+                  }
+                />
               </Box>
             </Box>
           </div>
@@ -354,369 +561,387 @@ export default function PrivacySettings() {
             <Box
               className="privacy-settings__header"
               marginTop={6}
-              marginBottom={5}
+              marginBottom={6}
               display={Display.Flex}
-              flexDirection={FlexDirection.Row}
+              flexDirection={FlexDirection.Column}
               justifyContent={JustifyContent.flexStart}
             >
-              <Button
-                data-testid="category-back-button"
-                type="inline"
-                icon={
-                  <Icon
-                    name={IconName.ArrowLeft}
-                    size={IconSize.Lg}
-                    color={IconColor.iconDefault}
-                  />
-                }
-                onClick={handleBack}
-              />
               <Box
                 display={Display.Flex}
                 alignItems={AlignItems.center}
-                justifyContent={JustifyContent.center}
-                width={BlockSize.Full}
+                flexDirection={FlexDirection.Row}
+                justifyContent={JustifyContent.flexStart}
               >
-                <Text variant={TextVariant.headingLg} as="h2">
-                  {selectedItem?.title}
-                </Text>
+                <ButtonIcon
+                  data-testid="category-back-button"
+                  iconName={IconName.ArrowLeft}
+                  color={IconColor.iconDefault}
+                  size={ButtonIconSize.Md}
+                  onClick={handleBack}
+                />
+                <Box
+                  display={Display.Flex}
+                  alignItems={AlignItems.center}
+                  justifyContent={JustifyContent.center}
+                  width={BlockSize.Full}
+                >
+                  <Text variant={TextVariant.headingMd} as="h2">
+                    Third-party APIs
+                  </Text>
+                </Box>
               </Box>
+              <Text
+                variant={TextVariant.bodyMd}
+                color={TextColor.textAlternative}
+                marginTop={5}
+              >
+                These settings use third-party APIs to work. If you don&apos;t
+                want to share your IP address or Ethereum address with any third
+                parties, you may want to turn off features that use them. This
+                will impact your MetaMask experience.
+              </Text>
             </Box>
-
-            <div
-              className="privacy-settings__settings"
-              data-testid="privacy-settings-settings"
-            >
-              {selectedItem?.id === 1 ? (
-                <>
-                  <Setting
-                    dataTestId="basic-functionality-toggle"
-                    value={externalServicesOnboardingToggleState}
-                    setValue={(toggledValue) => {
-                      if (toggledValue) {
-                        dispatch(onboardingToggleBasicFunctionalityOn());
-                        trackEvent({
-                          category: MetaMetricsEventCategory.Onboarding,
-                          event: MetaMetricsEventName.SettingsUpdated,
-                          properties: {
-                            settings_group: 'onboarding_advanced_configuration',
-                            settings_type: 'basic_functionality',
-                            old_value: false,
-                            new_value: true,
-                            was_profile_syncing_on: false,
-                          },
-                        });
-                      } else {
-                        dispatch(openBasicFunctionalityModal());
-                      }
-                    }}
-                    title={t('basicConfigurationLabel')}
-                    description={t('basicConfigurationDescription', [
-                      <a
-                        href="https://consensys.io/privacy-policy"
-                        key="link"
-                        target="_blank"
-                        rel="noreferrer noopener"
-                      >
-                        {t('privacyMsg')}
-                      </a>,
-                    ])}
-                  />
-
-                  <Setting
-                    dataTestId="profile-sync-toggle"
-                    disabled={!externalServicesOnboardingToggleState}
-                    value={isProfileSyncingEnabled}
-                    setValue={handleProfileSyncToggleSetValue}
-                    title={t('profileSync')}
-                    description={t('profileSyncDescription', [
-                      <a
-                        href="https://support.metamask.io/privacy-and-security/profile-privacy"
-                        key="link"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {t('profileSyncPrivacyLink')}
-                      </a>,
-                    ])}
-                  />
-
-                  {(enableProfileSyncingError ||
-                    disableProfileSyncingError) && (
-                    <Box paddingBottom={4}>
+            <Box>
+              <Setting
+                value={isMultiAccountBalanceCheckerEnabled}
+                setValue={setMultiAccountBalanceCheckerEnabled}
+                title={t('useMultiAccountBalanceChecker')}
+                description={
+                  <Text
+                    variant={TextVariant.bodySm}
+                    color={TextColor.textAlternative}
+                  >
+                    Get balance updates for all your accounts at once. It allows
+                    for a faster and overall better experience for managing
+                    multiple accounts. Turning off this feature means others are
+                    less likely to associate one account with another.
+                  </Text>
+                }
+                tags={
+                  <>
+                    <Box
+                      backgroundColor={BackgroundColor.warningMuted}
+                      className="privacy-settings__tag"
+                    >
                       <Text
-                        as="p"
-                        color={TextColor.errorDefault}
-                        variant={TextVariant.bodySm}
+                        variant={TextVariant.bodyXsMedium}
+                        color={TextColor.warningDefault}
                       >
-                        {t('notificationsSettingsBoxError')}
+                        Third party
                       </Text>
                     </Box>
-                  )}
+                  </>
+                }
+              />
 
-                  <Setting
-                    title={t('onboardingAdvancedPrivacyNetworkTitle')}
-                    showToggle={false}
-                    description={
-                      <>
-                        {t('onboardingAdvancedPrivacyNetworkDescription', [
-                          <a
-                            href="https://consensys.io/privacy-policy/"
-                            key="link"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {t('privacyMsg')}
-                          </a>,
-                        ])}
+              {/* TODO: No setValue yet */}
+              <Setting
+                value={isMultiAccountBalanceCheckerEnabled}
+                title={t('showIncomingTransactions')}
+                description={
+                  <Text
+                    variant={TextVariant.bodySm}
+                    color={TextColor.textAlternative}
+                  >
+                    This relies on different third-party APIs for each network.
+                  </Text>
+                }
+                tags={
+                  <>
+                    <Box
+                      backgroundColor={BackgroundColor.warningMuted}
+                      className="privacy-settings__tag"
+                    >
+                      <Text
+                        variant={TextVariant.bodyXsMedium}
+                        color={TextColor.warningDefault}
+                      >
+                        Third party
+                      </Text>
+                    </Box>
+                    <Box
+                      backgroundColor={BackgroundColor.warningMuted}
+                      className="privacy-settings__tag"
+                    >
+                      <Text
+                        variant={TextVariant.bodyXsMedium}
+                        color={TextColor.warningDefault}
+                      >
+                        IP address
+                      </Text>
+                    </Box>
+                    <Box
+                      backgroundColor={BackgroundColor.warningMuted}
+                      className="privacy-settings__tag"
+                    >
+                      <Text
+                        variant={TextVariant.bodyXsMedium}
+                        color={TextColor.warningDefault}
+                      >
+                        Account address
+                      </Text>
+                    </Box>
+                  </>
+                }
+              />
 
-                        <Box paddingTop={4}>
-                          <Box
-                            display={Display.Flex}
-                            flexDirection={FlexDirection.Column}
-                            gap={5}
-                          >
-                            {Object.values(networkConfigurations)
-                              .filter(
-                                ({ chainId }) => !TEST_CHAINS.includes(chainId),
-                              )
-                              .map((network) => (
-                                <Box
-                                  key={network.chainId}
-                                  className="privacy-settings__customizable-network"
-                                  onClick={() => {
-                                    dispatch(
-                                      setEditedNetwork({
-                                        chainId: network.chainId,
-                                      }),
-                                    );
-                                    dispatch(toggleNetworkMenu());
-                                  }}
-                                  display={Display.Flex}
-                                  alignItems={AlignItems.center}
-                                  justifyContent={JustifyContent.spaceBetween}
-                                >
-                                  <Box
-                                    display={Display.Flex}
-                                    alignItems={AlignItems.center}
-                                  >
-                                    <AvatarNetwork
-                                      src={
-                                        CHAIN_ID_TO_NETWORK_IMAGE_URL_MAP[
-                                          network.chainId
-                                        ]
-                                      }
-                                    />
-                                    <Box
-                                      textAlign={TextAlign.Left}
-                                      marginLeft={3}
-                                    >
-                                      <Text variant={TextVariant.bodySmMedium}>
-                                        {network.name}
-                                      </Text>
-                                      <Text
-                                        variant={TextVariant.bodyXs}
-                                        color={TextColor.textAlternative}
-                                      >
-                                        {
-                                          // Get just the protocol + domain, not the infura key in path
-                                          new URL(
-                                            network?.rpcEndpoints[
-                                              network?.defaultRpcEndpointIndex
-                                            ]?.url,
-                                          )?.origin
-                                        }
-                                      </Text>
-                                    </Box>
-                                  </Box>
-                                  <ButtonIcon
-                                    iconName={IconName.ArrowRight}
-                                    size={IconSize.Md}
-                                  />
-                                </Box>
-                              ))}
-                            <ButtonLink
-                              onClick={() => {
-                                dispatch(
-                                  toggleNetworkMenu({
-                                    isAddingNewNetwork: true,
-                                  }),
-                                );
-                              }}
-                              justifyContent={JustifyContent.Left}
-                              variant={ButtonVariant.link}
-                            >
-                              <Box
-                                display={Display.Flex}
-                                alignItems={AlignItems.center}
-                              >
-                                <Icon name={IconName.Add} marginRight={3} />
-                                <Text color={TextColor.primaryDefault}>
-                                  {t('addANetwork')}
-                                </Text>
-                              </Box>
-                            </ButtonLink>
-                          </Box>
-                        </Box>
-                      </>
-                    }
-                  />
-                </>
-              ) : null}
-              {selectedItem?.id === 2 ? (
-                <>
-                  <Setting
-                    value={turnOnTokenDetection}
-                    setValue={setTurnOnTokenDetection}
-                    title={t('turnOnTokenDetection')}
-                    description={t('useTokenDetectionPrivacyDesc')}
-                  />
-                  <Setting
-                    value={isTransactionSimulationsEnabled}
-                    setValue={setTransactionSimulationsEnabled}
-                    title={t('simulationsSettingSubHeader')}
-                    description={t('simulationsSettingDescription', [
-                      <a
-                        key="learn_more_link"
-                        href={TRANSACTION_SIMULATIONS_LEARN_MORE_LINK}
-                        rel="noreferrer"
-                        target="_blank"
+              <Setting
+                value={isMultiAccountBalanceCheckerEnabled}
+                title={t('useSafeChainsListValidation')}
+                description={
+                  <Text
+                    variant={TextVariant.bodySm}
+                    color={TextColor.textAlternative}
+                  >
+                    MetaMask uses chainid.network to show accurate and
+                    standardized network details. This reduces your chances of
+                    connecting to malicious or incorrect network.
+                  </Text>
+                }
+                tags={
+                  <>
+                    <Box
+                      backgroundColor={BackgroundColor.successMuted}
+                      className="privacy-settings__tag"
+                    >
+                      <Text
+                        variant={TextVariant.bodyXsMedium}
+                        color={TextColor.successDefault}
                       >
-                        {t('learnMoreUpperCase')}
-                      </a>,
-                    ])}
-                  />
-                  <Setting
-                    title={t('onboardingAdvancedPrivacyIPFSTitle')}
-                    showToggle={false}
-                    description={
-                      <>
-                        {t('onboardingAdvancedPrivacyIPFSDescription')}
-                        <Box paddingTop={2}>
-                          <TextField
-                            value={ipfsURL}
-                            style={{ width: '100%' }}
-                            inputProps={{ 'data-testid': 'ipfs-input' }}
-                            onChange={(e) => {
-                              handleIPFSChange(e.target.value);
-                            }}
-                          />
-                          {ipfsURL ? (
-                            <Text
-                              variant={TextVariant.bodySm}
-                              color={
-                                ipfsError
-                                  ? TextColor.errorDefault
-                                  : TextColor.successDefault
-                              }
-                            >
-                              {ipfsError ||
-                                t('onboardingAdvancedPrivacyIPFSValid')}
-                            </Text>
-                          ) : null}
-                        </Box>
-                      </>
-                    }
-                  />
-                  <IncomingTransactionToggle
-                    networkConfigurations={networkConfigurations}
-                    setIncomingTransactionsPreferences={(chainId, value) =>
-                      dispatch(
-                        setIncomingTransactionsPreferences(chainId, value),
-                      )
-                    }
-                    incomingTransactionsPreferences={
-                      incomingTransactionsPreferences
-                    }
-                  />
-                  <Setting
-                    value={turnOnCurrencyRateCheck}
-                    setValue={setTurnOnCurrencyRateCheck}
-                    title={t('currencyRateCheckToggle')}
-                    dataTestId="currency-rate-check-toggle"
-                    description={t('currencyRateCheckToggleDescription', [
-                      <a
-                        key="coingecko_link"
-                        href={COINGECKO_LINK}
-                        rel="noreferrer"
-                        target="_blank"
+                        Improves safety
+                      </Text>
+                    </Box>
+                    <Box
+                      backgroundColor={BackgroundColor.warningMuted}
+                      className="privacy-settings__tag"
+                    >
+                      <Text
+                        variant={TextVariant.bodyXsMedium}
+                        color={TextColor.warningDefault}
                       >
-                        {t('coingecko')}
-                      </a>,
-                      <a
-                        key="cryptocompare_link"
-                        href={CRYPTOCOMPARE_LINK}
-                        rel="noreferrer"
-                        target="_blank"
+                        Third party
+                      </Text>
+                    </Box>
+                    <Box
+                      backgroundColor={BackgroundColor.warningMuted}
+                      className="privacy-settings__tag"
+                    >
+                      <Text
+                        variant={TextVariant.bodyXsMedium}
+                        color={TextColor.warningDefault}
                       >
-                        {t('cryptoCompare')}
-                      </a>,
-                      <a
-                        key="privacy_policy_link"
-                        href={PRIVACY_POLICY_LINK}
-                        rel="noreferrer"
-                        target="_blank"
-                      >
-                        {t('privacyMsg')}
-                      </a>,
-                    ])}
-                  />
-                  <Setting
-                    value={addressBarResolution}
-                    setValue={setAddressBarResolution}
-                    title={t('ensDomainsSettingTitle')}
-                    description={
-                      <>
-                        <Text variant={TextVariant.inherit}>
-                          {t('ensDomainsSettingDescriptionIntroduction')}
-                        </Text>
-                        <Box
-                          as="ul"
-                          marginTop={4}
-                          marginBottom={4}
-                          paddingInlineStart={4}
-                          style={{ listStyleType: 'circle' }}
+                        IP address
+                      </Text>
+                    </Box>
+                  </>
+                }
+              />
+
+              <Setting
+                value={isMultiAccountBalanceCheckerEnabled}
+                title={t('ipfsGateway')}
+                description={
+                  <>
+                    <Text
+                      variant={TextVariant.bodySm}
+                      color={TextColor.textAlternative}
+                    >
+                      MetaMask uses third-party services to show images of your
+                      NFTs stored on IPFS, display information related to ENS
+                      addresses entered in your browser's address bar, and fetch
+                      icons for different tokens.
+                    </Text>
+                    <Box paddingTop={2}>
+                      <FormTextField
+                        id="ipfs-gateway"
+                        label="Choose your preferred IPFS gateway"
+                        value={ipfsURL}
+                        style={{ width: '100%' }}
+                        inputProps={{ 'data-testid': 'ipfs-input' }}
+                        onChange={(e) => {
+                          handleIPFSChange(e.target.value);
+                        }}
+                      />
+                      {ipfsURL ? (
+                        <Text
+                          variant={TextVariant.bodySm}
+                          color={
+                            ipfsError
+                              ? TextColor.errorDefault
+                              : TextColor.successDefault
+                          }
                         >
-                          <Text variant={TextVariant.inherit} as="li">
-                            {t('ensDomainsSettingDescriptionPart1')}
-                          </Text>
-                          <Text variant={TextVariant.inherit} as="li">
-                            {t('ensDomainsSettingDescriptionPart2')}
-                          </Text>
-                        </Box>
-                        <Text variant={TextVariant.inherit}>
-                          {t('ensDomainsSettingDescriptionOutroduction')}
+                          {ipfsError || t('onboardingAdvancedPrivacyIPFSValid')}
                         </Text>
-                      </>
-                    }
-                  />
-                  <Setting
-                    value={isMultiAccountBalanceCheckerEnabled}
-                    setValue={setMultiAccountBalanceCheckerEnabled}
-                    title={t('useMultiAccountBalanceChecker')}
-                    description={t(
-                      'useMultiAccountBalanceCheckerSettingDescription',
-                    )}
-                  />
-                </>
-              ) : null}
-              {selectedItem?.id === 3 ? (
-                <>
-                  <Setting
-                    value={turnOn4ByteResolution}
-                    setValue={setTurnOn4ByteResolution}
-                    title={t('use4ByteResolution')}
-                    description={t('toggleDecodeDescription')}
-                  />
-                  <Setting
-                    value={turnOnPetnames}
-                    setValue={setTurnOnPetnames}
-                    title={t('petnamesEnabledToggle')}
-                    description={t('petnamesEnabledToggleDescription')}
-                  />
-                </>
-              ) : null}
-            </div>
+                      ) : null}
+                    </Box>
+                  </>
+                }
+                tags={
+                  <>
+                    <Box
+                      backgroundColor={BackgroundColor.warningMuted}
+                      className="privacy-settings__tag"
+                    >
+                      <Text
+                        variant={TextVariant.bodyXsMedium}
+                        color={TextColor.warningDefault}
+                      >
+                        Third party
+                      </Text>
+                    </Box>
+                    <Box
+                      backgroundColor={BackgroundColor.warningMuted}
+                      className="privacy-settings__tag"
+                    >
+                      <Text
+                        variant={TextVariant.bodyXsMedium}
+                        color={TextColor.warningDefault}
+                      >
+                        IP address
+                      </Text>
+                    </Box>
+                  </>
+                }
+              />
+
+              <Setting
+                value={isMultiAccountBalanceCheckerEnabled}
+                title={t('displayNftMedia')}
+                description={
+                  <>
+                    <Text
+                      variant={TextVariant.bodySm}
+                      color={TextColor.textAlternative}
+                    >
+                      NFT autodetection relies on this feature.
+                    </Text>
+                  </>
+                }
+                tags={
+                  <>
+                    <Box
+                      backgroundColor={BackgroundColor.warningMuted}
+                      className="privacy-settings__tag"
+                    >
+                      <Text
+                        variant={TextVariant.bodyXsMedium}
+                        color={TextColor.warningDefault}
+                      >
+                        Third party
+                      </Text>
+                    </Box>
+                    <Box
+                      backgroundColor={BackgroundColor.warningMuted}
+                      className="privacy-settings__tag"
+                    >
+                      <Text
+                        variant={TextVariant.bodyXsMedium}
+                        color={TextColor.warningDefault}
+                      >
+                        IP address
+                      </Text>
+                    </Box>
+                  </>
+                }
+              />
+
+              <Setting
+                value={isMultiAccountBalanceCheckerEnabled}
+                title={t('useNftDetection')}
+                description={
+                  <>
+                    <Text
+                      variant={TextVariant.bodySm}
+                      color={TextColor.textAlternative}
+                    >
+                      Displays all NFTs including fake ones airdropped by
+                      scammers.
+                    </Text>
+                  </>
+                }
+                tags={
+                  <>
+                    <Box
+                      backgroundColor={BackgroundColor.warningMuted}
+                      className="privacy-settings__tag"
+                    >
+                      <Text
+                        variant={TextVariant.bodyXsMedium}
+                        color={TextColor.warningDefault}
+                      >
+                        Third party
+                      </Text>
+                    </Box>
+                    <Box
+                      backgroundColor={BackgroundColor.warningMuted}
+                      className="privacy-settings__tag"
+                    >
+                      <Text
+                        variant={TextVariant.bodyXsMedium}
+                        color={TextColor.warningDefault}
+                      >
+                        IP address
+                      </Text>
+                    </Box>
+                    <Box
+                      backgroundColor={BackgroundColor.warningMuted}
+                      className="privacy-settings__tag"
+                    >
+                      <Text
+                        variant={TextVariant.bodyXsMedium}
+                        color={TextColor.warningDefault}
+                      >
+                        Account address
+                      </Text>
+                    </Box>
+                  </>
+                }
+              />
+
+              <Setting
+                value={isMultiAccountBalanceCheckerEnabled}
+                title={t('externalNameSourcesSetting')}
+                description={
+                  <>
+                    <Text
+                      variant={TextVariant.bodySm}
+                      color={TextColor.textAlternative}
+                    >
+                      We’ll fetch proposed nicknames for addresses you interact
+                      with from third-party sources like Etherscan, Infura, and
+                      Lens protocol.
+                    </Text>
+                  </>
+                }
+                tags={
+                  <>
+                    <Box
+                      backgroundColor={BackgroundColor.warningMuted}
+                      className="privacy-settings__tag"
+                    >
+                      <Text
+                        variant={TextVariant.bodyXsMedium}
+                        color={TextColor.warningDefault}
+                      >
+                        Third party
+                      </Text>
+                    </Box>
+                    <Box
+                      backgroundColor={BackgroundColor.warningMuted}
+                      className="privacy-settings__tag"
+                    >
+                      <Text
+                        variant={TextVariant.bodyXsMedium}
+                        color={TextColor.warningDefault}
+                      >
+                        IP address
+                      </Text>
+                    </Box>
+                  </>
+                }
+              />
+            </Box>
           </div>
         </div>
       </div>

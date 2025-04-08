@@ -7,46 +7,9 @@
   align-items: center;
   overflow-x: hidden;
 
-  @include design-system.screen-sm-max {
-    margin-bottom: 24px;
-  }
-
-  &__header {
-    a {
-      color: var(--color-primary-default);
-    }
-  }
-
-  &__settings {
-    display: flex;
-    flex-direction: column;
-    max-width: 620px;
-    margin-bottom: 20px;
-
-    a {
-      color: var(--color-primary-default);
-
-      &:hover {
-        cursor: pointer;
-        color: var(--color-primary-default);
-      }
-    }
-  }
-
-  &__setting {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    text-align: left;
-    max-width: 430px;
-
-    &__toggle {
-      margin-left: 42px;
-    }
-  }
-
-  &__network {
-    position: relative;
+  &__tag {
+    padding: 2px 8px;
+    border-radius: 4px;
   }
 
   .container {
@@ -57,10 +20,6 @@
 
   .hidden {
     display: none;
-  }
-
-  .categories-item {
-    cursor: pointer;
   }
 
   .list-view,

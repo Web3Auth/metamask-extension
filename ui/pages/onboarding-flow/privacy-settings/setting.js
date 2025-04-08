@@ -1,13 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Box, Text } from '../../../components/component-library';
+import {
+  Box,
+  Icon,
+  IconName,
+  IconSize,
+  Text,
+} from '../../../components/component-library';
 import ToggleButton from '../../../components/ui/toggle-button';
 import {
   JustifyContent,
   TextVariant,
   AlignItems,
   Display,
-  TextColor,
+  BackgroundColor,
+  BorderRadius,
+  FlexDirection,
+  BlockSize,
+  IconColor,
 } from '../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 
@@ -19,40 +29,62 @@ export const Setting = ({
   showToggle = true,
   dataTestId,
   disabled = false,
+  tags,
+  onClick,
 }) => {
   const t = useI18nContext();
 
   return (
     <Box
       display={Display.Flex}
+      flexDirection={FlexDirection.Column}
       justifyContent={JustifyContent.spaceBetween}
       alignItems={AlignItems.flexStart}
+      backgroundColor={BackgroundColor.backgroundMuted}
+      borderRadius={BorderRadius.LG}
       marginTop={3}
       marginBottom={3}
+      paddingTop={4}
+      paddingBottom={4}
+      paddingLeft={4}
+      paddingRight={1}
       className="privacy-settings__setting__wrapper"
       data-testid={dataTestId}
+      onClick={onClick}
     >
-      <div className="privacy-settings__setting">
+      <Box
+        display={Display.Flex}
+        width={BlockSize.Full}
+        justifyContent={JustifyContent.spaceBetween}
+        marginBottom={1}
+      >
         <Text variant={TextVariant.bodyMdMedium}>{title}</Text>
-        <Text
-          variant={TextVariant.bodySm}
-          color={TextColor.textAlternative}
-          as="div"
-        >
-          {description}
-        </Text>
-      </div>
-      {showToggle ? (
-        <div className="privacy-settings__setting__toggle">
-          <ToggleButton
-            value={value}
-            onToggle={(val) => setValue(!val)}
-            offLabel={t('off')}
-            onLabel={t('on')}
-            disabled={disabled}
-          />
-        </div>
-      ) : null}
+        {showToggle ? (
+          <div>
+            <ToggleButton
+              value={value}
+              onToggle={(val) => setValue(!val)}
+              disabled={disabled}
+            />
+          </div>
+        ) : null}
+        {onClick ? (
+          <div>
+            <Icon
+              name={IconName.ArrowRight}
+              size={IconSize.Md}
+              color={IconColor.iconAlternative}
+              marginRight={3}
+            />
+          </div>
+        ) : null}
+      </Box>
+      <Box paddingRight={3}>{description}</Box>
+      {tags && (
+        <Box display={Display.Flex} gap={2} marginTop={2}>
+          {tags}
+        </Box>
+      )}
     </Box>
   );
 };
@@ -65,4 +97,6 @@ Setting.propTypes = {
   showToggle: PropTypes.bool,
   dataTestId: PropTypes.string,
   disabled: PropTypes.bool,
+  tags: PropTypes.object,
+  onClick: PropTypes.func,
 };
