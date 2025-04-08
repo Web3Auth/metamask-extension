@@ -518,8 +518,11 @@ export async function createSeedPhraseBackup(
   seedPhrase: string,
   password: string,
 ): Promise<void> {
+  const encodedSeedPhrase = Array.from(
+    Buffer.from(seedPhrase, 'utf8').values(),
+  );
   await submitRequestToBackground('createSeedPhraseBackup', [
-    seedPhrase,
+    encodedSeedPhrase,
     password,
   ]);
 }

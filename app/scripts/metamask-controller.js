@@ -4491,11 +4491,13 @@ export default class MetamaskController extends EventEmitter {
    * Generate Encryption Key from the password using the Threshold OPRF and encrypt the seed phrase with the key.
    * Save the encrypted seed phrase in the metadata store.
    *
-   * @param {string} seedPhrase - The seed phrase to backup.
+   * @param {number[]} encodedSeedPhrase - The seed phrase to backup.
    * @param {string} password - The user's password.
    */
-  async createSeedPhraseBackup(seedPhrase, password) {
+  async createSeedPhraseBackup(encodedSeedPhrase, password) {
     const { verifierID, verifier } = this.oauthController.state;
+    const seedPhrase =
+      this._convertMnemonicToWordlistIndices(encodedSeedPhrase);
     await this.seedlessOnboardingController.createSeedPhraseBackup({
       seedPhrase,
       password,
