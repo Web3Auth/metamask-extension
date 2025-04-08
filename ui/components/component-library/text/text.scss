@@ -37,7 +37,7 @@ $brand-evolution-font-families: (
 @mixin brand-evolution-font($type) {
   $font-family: map-get($brand-evolution-font-families, $type);
 
-  font-family: $font-family, var(--font-family-sans);
+  font-family: $font-family, var(--font-family-default);
 
   @if $type == 'display' or $type == 'heading' {
     font-weight: var(--font-weight-normal);
@@ -46,7 +46,7 @@ $brand-evolution-font-families: (
 
 .mm-text {
   // Set default styles
-  font-family: var(--font-family-sans);
+  font-family: var(--font-family-default);
 
   &:is(strong),
   strong {

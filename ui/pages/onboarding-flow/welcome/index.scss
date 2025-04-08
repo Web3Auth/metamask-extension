@@ -6,6 +6,7 @@
   }
 
   &__title-text {
+    font-family: var(--font-family-hero);
     color: var(--brand-colors-purple-purple800);
     font-size: 104px;
     line-height: 110px;
@@ -17,7 +18,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: -45px;
+    margin-top: -80px;
   }
 
   &__button-container {
