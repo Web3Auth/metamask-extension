@@ -17,7 +17,6 @@ import {
   BlockSize,
   TextVariant,
   TextColor,
-  FontWeight,
 } from '../../../helpers/constants/design-system';
 import { ONBOARDING_GET_STARTED_ROUTE } from '../../../helpers/constants/routes';
 import TermsOfUsePopup from '../../../components/app/terms-of-use-popup';
@@ -78,8 +77,7 @@ export default function Welcome() {
           >
             <Text
               className="welcome__button-text"
-              variant={TextVariant.bodyMd}
-              fontWeight={FontWeight.Medium}
+              variant={TextVariant.bodyMdMedium}
             >
               Get started
             </Text>
