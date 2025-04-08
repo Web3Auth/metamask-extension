@@ -1,19 +1,22 @@
 import React from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import Chip from '../../../components/ui/chip';
-import Box from '../../../components/ui/box';
-import { Text } from '../../../components/component-library';
-import { ChipWithInput } from '../../../components/ui/chip/chip-with-input';
+import {
+  Box,
+  Icon,
+  IconName,
+  IconSize,
+  Text,
+} from '../../../components/component-library';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
   TextVariant,
-  BorderStyle,
   Size,
-  DISPLAY,
-  BorderColor,
-  Color,
+  Display,
+  TextColor,
+  FontWeight,
 } from '../../../helpers/constants/design-system';
+import SrpText from '../../../components/app/srp-input/srp-text';
 
 export default function RecoveryPhraseChips({
   secretRecoveryPhrase,
@@ -28,12 +31,9 @@ export default function RecoveryPhraseChips({
   const hideSeedPhrase = phraseRevealed === false;
   return (
     <Box
-      borderColor={BorderColor.borderMuted}
-      borderStyle={BorderStyle.solid}
       padding={4}
-      borderWidth={1}
-      borderRadius={Size.MD}
-      display={DISPLAY.GRID}
+      borderRadius={Size.LG}
+      display={Display.Grid}
       marginBottom={4}
       className="recovery-phrase__secret"
     >
@@ -44,58 +44,57 @@ export default function RecoveryPhraseChips({
         })}
       >
         {secretRecoveryPhrase.map((word, index) => {
-          if (
+          const isDisabled = !(
             confirmPhase &&
             indicesToCheck &&
             indicesToCheck.includes(index)
-          ) {
-            return (
-              <div className="recovery-phrase__chip-item" key={index}>
-                <div className="recovery-phrase__chip-item__number">
-                  {`${index + 1}.`}
-                </div>
-                <ChipWithInput
-                  dataTestId={`recovery-phrase-input-${index}`}
-                  borderColor={BorderColor.primaryDefault}
-                  className="recovery-phrase__chip--with-input"
-                  inputValue={inputValue[index]}
-                  setInputValue={(value) => {
-                    setInputValue({ ...inputValue, [index]: value });
-                  }}
-                />
-              </div>
-            );
-          }
+          );
+
           return (
-            <div className="recovery-phrase__chip-item" key={index}>
-              <div className="recovery-phrase__chip-item__number">
-                {`${index + 1}.`}
-              </div>
-              <Chip
-                dataTestId={`recovery-phrase-chip-${index}`}
-                className="recovery-phrase__chip"
-                borderColor={BorderColor.borderDefault}
-              >
-                {word}
-              </Chip>
+            <div
+              className={classnames('recovery-phrase__chip-item', {
+                'recovery-phrase__chip-item--revealed-phase': !confirmPhase,
+              })}
+              key={index}
+            >
+              <SrpText
+                dataTestId={`recovery-phrase-input-${index}`}
+                word={{
+                  word: inputValue ? inputValue[index] : word,
+                  isActive: true,
+                }}
+                index={index}
+                disabled={isDisabled}
+                updateWord={(value) => {
+                  setInputValue({ ...inputValue, [index]: value });
+                }}
+              />
             </div>
           );
         })}
       </div>
 
       {hideSeedPhrase && (
-        <div className="recovery-phrase__secret-blocker">
+        <div className="recovery-phrase__secret-blocker-container">
+          <div className="recovery-phrase__secret-blocker" />
           {!hiddenPhrase && (
-            <>
-              <i className="far fa-eye" color="white" />
+            <div className="recovery-phrase__secret-blocker-text">
+              <Icon
+                name={IconName.EyeSlash}
+                color={TextColor.textDefault}
+                size={IconSize.Md}
+              />
               <Text
-                variant={TextVariant.bodySm}
-                color={Color.overlayInverse}
-                className="recovery-phrase__secret-blocker--text"
+                variant={TextVariant.bodyMd}
+                color={TextColor.textDefault}
+                fontWeight={FontWeight.Medium}
               >
-                {t('makeSureNoOneWatching')}
+                Tap to reveal
               </Text>
-            </>
+              <Text variant={TextVariant.bodySm} color={TextColor.textDefault}>
+                Make sure no one is watching your screen.
+              </Text>
+            </div>
           )}
         </div>
       )}

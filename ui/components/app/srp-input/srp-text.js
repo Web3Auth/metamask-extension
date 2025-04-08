@@ -10,6 +10,7 @@ import {
   BlockSize,
   TextVariant,
   TextColor,
+  BorderRadius,
 } from '../../../helpers/constants/design-system';
 
 const SrpText = forwardRef((props, ref) => {
@@ -38,6 +39,8 @@ const SrpText = forwardRef((props, ref) => {
     <TextField
       ref={inputRef}
       value={tempWord}
+      disabled={props.disabled}
+      borderRadius={BorderRadius.LG}
       type={props.word.isActive ? 'text' : 'password'}
       width={BlockSize.Full}
       startAccessory={wordLabel()}
@@ -65,10 +68,11 @@ const SrpText = forwardRef((props, ref) => {
 SrpText.propTypes = {
   word: PropTypes.object.isRequired,
   index: PropTypes.number.isRequired,
-  onNextWord: PropTypes.func.isRequired,
-  onPreviousWord: PropTypes.func.isRequired,
-  updateWord: PropTypes.func.isRequired,
-  setActive: PropTypes.func.isRequired,
+  onNextWord: PropTypes.func,
+  onPreviousWord: PropTypes.func,
+  updateWord: PropTypes.func,
+  setActive: PropTypes.func,
+  disabled: PropTypes.bool,
 };
 
 SrpText.displayName = 'SrpText';
