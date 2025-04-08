@@ -28,6 +28,7 @@ import {
   Display,
   FlexDirection,
   IconColor,
+  TextAlign,
   TextColor,
   TextVariant,
 } from '../../../helpers/constants/design-system';
@@ -71,7 +72,11 @@ export default function TermsOfUsePopup({ isOpen, onClose, onAccept }) {
     >
       <ModalOverlay />
       <ModalContent size={ModalContentSize.Md}>
-        <ModalHeader onClose={onClose}>Review our Terms of Use</ModalHeader>
+        <ModalHeader onClose={onClose}>
+          <Text textAlign={TextAlign.Center} variant={TextVariant.headingMd}>
+            Review our Terms of Use
+          </Text>
+        </ModalHeader>
         <Box
           display={Display.Flex}
           className="terms-of-use-popup__body-container"
