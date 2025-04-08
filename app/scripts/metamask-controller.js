@@ -4476,6 +4476,7 @@ export default class MetamaskController extends EventEmitter {
         await this.seedlessOnboardingController.authenticateOAuthUser(
           oAuthLoginResult,
         );
+      console.log('authenticationResult', authenticationResult);
       const hasUserOnboarded = authenticationResult.hasValidEncKey;
       return hasUserOnboarded;
     } catch (error) {
@@ -4516,14 +4517,13 @@ export default class MetamaskController extends EventEmitter {
   async fetchAndRestoreSeedPhraseMetadata(password) {
     try {
       const { verifierID, verifier } = this.oauthController.state;
-      const { secretData: seedPhrases } =
+      let [seedPhrase] =
         await this.seedlessOnboardingController.fetchAndRestoreSeedPhraseMetadata(
           verifier,
           verifierID,
           password,
         );
-      let seedPhrase = seedPhrases[0] || null;
-      if (seedPhrase === null) {
+      if (seedPhrase === null || seedPhrase === undefined) {
         // if the seed phrase metadata is not found, set up a new password and create a new seed phrase
         await this.keyringController.createNewVaultAndKeychain(password);
         seedPhrase = await this.keyringController.exportSeedPhrase(password);
@@ -4535,11 +4535,8 @@ export default class MetamaskController extends EventEmitter {
           password,
         });
       } else {
-        const encodedSeedPhrase = Array.from(
-          Buffer.from(seedPhrase, 'utf8').values(),
-        );
         // load the seed phrase from the metadata store
-        await this.createNewVaultAndRestore(password, encodedSeedPhrase);
+        await this.createNewVaultAndRestore(password, seedPhrase);
       }
 
       // await this.submitPassword(password);

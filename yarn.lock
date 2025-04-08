@@ -6253,18 +6253,19 @@ __metadata:
 
 "@metamask/seedless-onboarding-controller@file:../core/packages/seedless-onboarding-controller::locator=metamask-crx%40workspace%3A.":
   version: 0.0.1
-  resolution: "@metamask/seedless-onboarding-controller@file:../core/packages/seedless-onboarding-controller#../core/packages/seedless-onboarding-controller::hash=340114&locator=metamask-crx%40workspace%3A."
+  resolution: "@metamask/seedless-onboarding-controller@file:../core/packages/seedless-onboarding-controller#../core/packages/seedless-onboarding-controller::hash=dbc062&locator=metamask-crx%40workspace%3A."
   dependencies:
     "@metamask/base-controller": "npm:^8.0.0"
     "@metamask/browser-passworder": "npm:^4.3.0"
     "@metamask/keyring-controller": "npm:^21.0.0"
     "@metamask/utils": "npm:^11.2.0"
     "@noble/ciphers": "npm:^0.5.2"
+    "@noble/curves": "npm:^1.2.0"
     "@noble/hashes": "npm:^1.4.0"
     async-mutex: "npm:^0.5.0"
   peerDependencies:
     "@metamask/keyring-controller": ^21.0.0
-  checksum: 10/300df6fc6ef8e0d3672c98e63f591d9f8f293388a690bdab8d3cbc3daf771c9f62d66842e2f3c71694e7168598eaddda62022c7e8dcba5af8c38c3194111233c
+  checksum: 10/3b16651430e211bac45c59f74c850ac2c6e3f59b3707043e034d019c7c3d9c5dcb5f380038a685f4f4a7315bd0a050d0b9508c0091e782ed7ac47758ea4a4110
   languageName: node
   linkType: hard
 
