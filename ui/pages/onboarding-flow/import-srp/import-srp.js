@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   BlockSize,
+  IconColor,
   TextColor,
   TextVariant,
 } from '../../../helpers/constants/design-system';
@@ -20,14 +21,15 @@ import {
   Text,
   Box,
   Button,
-  Icon,
   IconName,
-  IconSize,
+  ButtonIcon,
+  ButtonIconSize,
 } from '../../../components/component-library';
-import Tooltip from '../../../components/ui/tooltip';
+import SRPDetailsModal from '../../../components/app/srp-details-modal';
 
 export default function ImportSRP({ submitSecretRecoveryPhrase }) {
   const [secretRecoveryPhrase, setSecretRecoveryPhrase] = useState('');
+  const [showSrpDetailsModal, setShowSrpDetailsModal] = useState(false);
   const history = useHistory();
   const t = useI18nContext();
   const currentKeyring = useSelector(getCurrentKeyring);
@@ -41,6 +43,9 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
 
   return (
     <div className="import-srp" data-testid="import-srp">
+      {showSrpDetailsModal && (
+        <SRPDetailsModal onClose={() => setShowSrpDetailsModal(false)} />
+      )}
       <div className="import-srp__step">
         <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
           {t('stepOf', [1, 2])}
@@ -53,14 +58,12 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
         <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
           {t('typeYourSRP')}
         </Text>
-        {/* TODO: Check the content here */}
-        <Tooltip position="top" title={t('typeYourSRP')}>
-          <Icon
-            name={IconName.Info}
-            size={IconSize.Sm}
-            color={TextColor.textAlternative}
-          />
-        </Tooltip>
+        <ButtonIcon
+          iconName={IconName.Info}
+          size={ButtonIconSize.Sm}
+          color={IconColor.iconAlternative}
+          onClick={() => setShowSrpDetailsModal(true)}
+        />
       </div>
       <div className="import-srp__actions">
         <Box width={BlockSize.Full}>
