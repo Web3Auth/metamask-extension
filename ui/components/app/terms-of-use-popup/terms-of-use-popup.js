@@ -7,15 +7,14 @@ import {
   Button,
   ButtonIcon,
   ButtonLink,
+  ButtonSize,
   ButtonVariant,
   Checkbox,
-  ContainerMaxWidth,
   IconName,
   IconSize,
   Modal,
   ModalContent,
   ModalContentSize,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
@@ -1233,6 +1232,7 @@ export default function TermsOfUsePopup({ isOpen, onClose, onAccept }) {
           <Button
             variant={ButtonVariant.Primary}
             width={BlockSize.Full}
+            size={ButtonSize.Lg}
             disabled={!isTermsOfUseChecked || !isScrolledToBottom}
             onClick={onAccept}
           >
