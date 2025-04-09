@@ -24,6 +24,8 @@ import {
   IconSize,
   ButtonBase,
   Icon,
+  ButtonLink,
+  ButtonLinkSize,
 } from '../../../components/component-library';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
@@ -45,10 +47,12 @@ export default function WalletReady() {
   const trackEvent = useContext(MetaMetricsContext);
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const seedPhraseBackedUp = useSelector(getSeedPhraseBackedUp);
+  // TODO: get from hooks
+  const srpHint = '';
   const learnMoreLink =
     'https://support.metamask.io/hc/en-us/articles/360015489591-Basic-Safety-and-Security-Tips-for-MetaMask';
-  const learnHowToKeepWordsSafe =
-    'https://community.metamask.io/t/what-is-a-secret-recovery-phrase-and-how-to-keep-your-crypto-wallet-secure/3440';
+  // const learnHowToKeepWordsSafe =
+  //   'https://community.metamask.io/t/what-is-a-secret-recovery-phrase-and-how-to-keep-your-crypto-wallet-secure/3440';
 
   const isProfileSyncingEnabled = useSelector(selectIsProfileSyncingEnabled);
 
@@ -91,12 +95,25 @@ export default function WalletReady() {
           />
         </Box>
         <Text variant={TextVariant.bodyMd} marginBottom={6}>
-          If you lose your Secret Recovery Phrase, you won’t be able to use your
-          wallet.
+          {t('walletReadyLoseSrp')}
         </Text>
         <Text variant={TextVariant.bodyMd} marginBottom={6}>
-          Learn how you can keep this phrase safe so you never lose access to
-          your money.
+          {t('walletReadyLearn', [
+            <ButtonLink
+              key="walletReadyLearn"
+              size={ButtonLinkSize.Inherit}
+              textProps={{
+                variant: TextVariant.bodyMd,
+                alignItems: AlignItems.flexStart,
+              }}
+              as="a"
+              href={learnMoreLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t('learnHow')}
+            </ButtonLink>,
+          ])}
         </Text>
       </Box>
 
@@ -107,32 +124,36 @@ export default function WalletReady() {
         className="wallet-ready__settings-actions"
         gap={4}
       >
-        <ButtonBase
-          variant={ButtonVariant.Secondary}
-          borderRadius={BorderRadius.LG}
-          width={BlockSize.Full}
-          onClick={() => history.push(ONBOARDING_PRIVACY_SETTINGS_ROUTE)}
-        >
-          <Box display={Display.Flex} alignItems={AlignItems.center}>
-            <Icon
-              name={IconName.AddSquare}
-              size={IconSize.Md}
-              marginInlineEnd={3}
-            />
-            <Box>
-              <Text variant={TextVariant.bodyLgMedium}>
-                Create a Secret Recovery Phrase hint
-              </Text>
-              <Text
-                variant={TextVariant.bodySm}
-                color={TextColor.textAlternative}
-              >
-                Mom’s room
-              </Text>
+        {seedPhraseBackedUp && (
+          <ButtonBase
+            variant={ButtonVariant.Secondary}
+            borderRadius={BorderRadius.LG}
+            width={BlockSize.Full}
+            onClick={() => history.push(ONBOARDING_PRIVACY_SETTINGS_ROUTE)}
+          >
+            <Box display={Display.Flex} alignItems={AlignItems.center}>
+              <Icon
+                name={IconName.AddSquare}
+                size={IconSize.Md}
+                marginInlineEnd={3}
+              />
+              <Box>
+                <Text variant={TextVariant.bodyLgMedium}>
+                  {t('srpHintCreate')}
+                </Text>
+                {srpHint && (
+                  <Text
+                    variant={TextVariant.bodySm}
+                    color={TextColor.textAlternative}
+                  >
+                    {srpHint}
+                  </Text>
+                )}
+              </Box>
             </Box>
-          </Box>
-          <Icon name={IconName.ArrowRight} size={IconSize.Sm} />
-        </ButtonBase>
+            <Icon name={IconName.ArrowRight} size={IconSize.Sm} />
+          </ButtonBase>
+        )}
         <ButtonBase
           variant={ButtonVariant.Secondary}
           borderRadius={BorderRadius.LG}
@@ -146,7 +167,7 @@ export default function WalletReady() {
               marginInlineEnd={3}
             />
             <Text variant={TextVariant.bodyMd} fontWeight={FontWeight.Medium}>
-              Manage default settings
+              {t('manageDefaultSettings')}
             </Text>
           </Box>
           <Icon name={IconName.ArrowRight} size={IconSize.Sm} />
@@ -159,7 +180,6 @@ export default function WalletReady() {
         flexDirection={FlexDirection.Column}
         justifyContent={JustifyContent.center}
         alignItems={AlignItems.center}
-        marginTop={6}
       >
         <Button
           data-testid="onboarding-complete-done"
