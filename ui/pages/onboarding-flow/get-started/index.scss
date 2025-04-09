@@ -72,6 +72,11 @@
     li {
       margin-bottom: 16px;
     }
+
+    &--modal {
+      margin: 0 16px;
+      max-width: none;
+    }
   }
 
   &__terms-checkbox {

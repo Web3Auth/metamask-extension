@@ -16,23 +16,6 @@
     overflow-y: auto;
   }
 
-  // &__scroll-button {
-  //   position: absolute;
-  //   bottom: 24px;
-  //   right: 32px;
-  //   height: 40px;
-  //   width: 40px;
-  //   border-radius: 50%;
-  //   background: var(--color-primary-muted);
-  //   box-shadow: var(--shadow-size-md) var(--color-shadow-default);
-  //   z-index: 201;
-  //   cursor: pointer;
-  //   opacity: 1;
-
-  //   &:hover {
-  //     opacity: 1;
-  //   }
-  // }
   &__scroll-button-container {
     position: absolute;
     bottom: 24px;
