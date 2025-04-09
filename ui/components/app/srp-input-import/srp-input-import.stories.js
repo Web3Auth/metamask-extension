@@ -1,17 +1,17 @@
 import React from 'react';
-import SrpInput from '.';
+import SrpInputImport from '.';
 
 export default {
-  title: 'Components/App/SrpInputOld',
+  title: 'Components/App/SrpInputImport',
 
-  component: SrpInput,
+  component: SrpInputImport,
   argTypes: {
     onChange: { action: 'changed' },
   },
 };
 
 const Template = (args) => {
-  return <SrpInput {...args} />;
+  return <SrpInputImport {...args} />;
 };
 
 export const DefaultStory = Template.bind({});

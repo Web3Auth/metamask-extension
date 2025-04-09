@@ -1042,6 +1042,9 @@
   "confirmPassword": {
     "message": "Confirm password"
   },
+  "confirmPasswordPlaceholder": {
+    "message": "Re-enter your password"
+  },
   "confirmRecoveryPhrase": {
     "message": "Confirm Secret Recovery Phrase"
   },
@@ -3179,7 +3182,10 @@
     "message": "NFT was successfully added!"
   },
   "newPassword": {
-    "message": "New password (8 characters min)"
+    "message": "New password"
+  },
+  "newPasswordPlaceholder": {
+    "message": "Use at least 8 characters"
   },
   "newPrivacyPolicyActionButton": {
     "message": "Read more"
@@ -3753,7 +3759,7 @@
     "message": "A strong password can improve the security of your wallet should your device be stolen or compromised."
   },
   "passwordTermsWarning": {
-    "message": "I understand that MetaMask cannot recover this password for me. $1"
+    "message": "MetaMask can’t recover this password. $1"
   },
   "passwordsDontMatch": {
     "message": "Passwords don't match"

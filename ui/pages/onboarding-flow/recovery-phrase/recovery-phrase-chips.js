@@ -16,7 +16,7 @@ import {
   TextColor,
   FontWeight,
 } from '../../../helpers/constants/design-system';
-import SrpText from '../../../components/app/srp-input/srp-text';
+import SrpText from '../../../components/app/srp-input-import/srp-text';
 
 export default function RecoveryPhraseChips({
   secretRecoveryPhrase,

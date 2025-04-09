@@ -9,7 +9,7 @@ import {
 } from '../../../helpers/constants/design-system';
 import { ONBOARDING_CREATE_PASSWORD_ROUTE } from '../../../helpers/constants/routes';
 import { useI18nContext } from '../../../hooks/useI18nContext';
-import SrpInput from '../../../components/app/srp-input';
+import SrpInputImport from '../../../components/app/srp-input-import';
 import { getCurrentKeyring } from '../../../selectors';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
@@ -64,7 +64,7 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
       </div>
       <div className="import-srp__actions">
         <Box width={BlockSize.Full}>
-          <SrpInput onChange={setSecretRecoveryPhrase} />
+          <SrpInputImport onChange={setSecretRecoveryPhrase} />
         </Box>
         <Button
           width={BlockSize.Full}

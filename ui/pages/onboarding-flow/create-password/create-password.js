@@ -226,7 +226,7 @@ export default function CreatePassword({
       rel="noopener noreferrer"
     >
       <span className="create-password__link-text">
-        {t('learnMoreUpperCase')}
+        {t('learnMoreUpperCaseWithDot')}
       </span>
     </a>
   );
@@ -239,26 +239,39 @@ export default function CreatePassword({
         width={BlockSize.Full}
       >
         <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          Step 2 of 2
+          {t('stepOf', [2, 2])}
         </Text>
         <Text variant={TextVariant.headingLg}>{t('createPassword')}</Text>
       </Box>
-      <Box justifyContent={JustifyContent.center}>
+      <Box justifyContent={JustifyContent.center} width={BlockSize.Full}>
         <form className="create-password__form" onSubmit={handleCreate}>
-          {/* TODO:
-            passwordStrength={passwordStrength}
-            passwordStrengthText={passwordStrengthText} */}
           <FormTextField
             dataTestId="create-password-new"
             autoFocus
-            placeholder="Use at least 8 characters"
-            label="New password"
+            placeholder={t('newPasswordPlaceholder')}
+            label={t('newPassword')}
             size={FormTextFieldSize.Lg}
             value={password}
             type={showPassword ? 'text' : 'password'}
             onChange={(e) => {
               handlePasswordChange(e.target.value);
             }}
+            helpText={
+              (passwordStrength || passwordStrengthText) && (
+                <Box>
+                  {passwordStrength && (
+                    <Text as="div" variant={TextVariant.inherit}>
+                      {passwordStrength}
+                    </Text>
+                  )}
+                  {passwordStrengthText && (
+                    <Text as="div" variant={TextVariant.inherit}>
+                      {passwordStrengthText}
+                    </Text>
+                  )}
+                </Box>
+              )
+            }
             endAccessory={
               <ButtonIcon
                 iconName={showPassword ? IconName.EyeSlash : IconName.Eye}
@@ -273,9 +286,11 @@ export default function CreatePassword({
           <FormTextField
             dataTestId="create-password-confirm"
             marginTop={4}
-            placeholder="Re-enter your password"
+            placeholder={t('confirmPasswordPlaceholder')}
             label={t('confirmPassword')}
             size={FormTextFieldSize.Lg}
+            error={Boolean(confirmPasswordError)}
+            helpText={confirmPasswordError}
             value={confirmPassword}
             type={showConfirmPassword ? 'text' : 'password'}
             onChange={(e) => {
@@ -295,13 +310,12 @@ export default function CreatePassword({
             }
           />
           <Box
+            className="create-password__terms-container"
             alignItems={AlignItems.center}
             justifyContent={JustifyContent.spaceBetween}
-            marginTop={4}
             marginBottom={4}
           >
             <Checkbox
-              className="create-password__form__terms-checkbox"
               inputProps={{ 'data-testid': 'create-password-terms' }}
               alignItems={AlignItems.flexStart}
               isChecked={termsChecked}
@@ -313,8 +327,7 @@ export default function CreatePassword({
                 <Text variant={TextVariant.bodyMd} marginLeft={2}>
                   {
                     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-                    // t('passwordTermsWarning', [createPasswordLink])
-                    `MetaMask can’t recover this password. ${createPasswordLink}`
+                    t('passwordTermsWarning', [createPasswordLink])
                     ///: END:ONLY_INCLUDE_IF
                   }
                 </Text>
@@ -332,7 +345,7 @@ export default function CreatePassword({
               className="create-password__form--submit-button"
               disabled={!isValid || !termsChecked}
             >
-              Confirm
+              {t('confirm')}
             </Button>
             // <Button
             //   data-testid={

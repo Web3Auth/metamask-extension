@@ -25,29 +25,14 @@
   }
 
   &__form {
-    @include design-system.screen-sm-min {
-      max-width: 320px;
-    }
-
-    &--password-button {
-      color: var(--color-primary-default);
-    }
-
-    &--checkmark {
-      i {
-        color: var(--color-success-default);
-      }
-    }
-
     // override Checkbox
     .mm-checkbox__input-wrapper {
       margin-top: 2px;
     }
+  }
 
-    .form-field__input {
-      height: 50px;
-      width: 100%;
-    }
+  &__terms-container {
+    margin-top: 180px;
   }
 
   &__analytics-iframe {
