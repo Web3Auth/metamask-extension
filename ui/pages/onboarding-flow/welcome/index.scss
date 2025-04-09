@@ -26,10 +26,12 @@
     margin: 0 auto;
   }
 
+  // SRP_OVERRIDE: bg always white
   &__button {
     background-color: #fff;
   }
 
+  // SRP_OVERRIDE: text always purple
   &__button-text {
     color: var(--brand-colors-purple-purple800);
   }

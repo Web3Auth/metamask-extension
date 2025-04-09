@@ -123,6 +123,19 @@ export default function GetStarted() {
     );
   };
 
+  const handleLogin = (loginType) => {
+    if (loginType === 'srp') {
+      if (loginOption === 'new') {
+        onCreateClick();
+      } else {
+        onImportClick();
+      }
+    } else {
+      // TODO: handle social login
+      console.log('handleLogin', loginType);
+    }
+  };
+
   return (
     <div className="get-started" data-testid="get-started">
       {/* <div className="get-started__logo">
@@ -177,12 +190,9 @@ export default function GetStarted() {
         <LoginOptions
           loginOption={loginOption}
           onClose={() => {
-            console.log('onClose');
             setLoginOption('');
           }}
-          handleLogin={(loginType) => {
-            console.log('handleLogin', loginType, loginOption);
-          }}
+          handleLogin={handleLogin}
         />
       )}
     </div>
