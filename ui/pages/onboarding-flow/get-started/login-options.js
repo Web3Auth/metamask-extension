@@ -62,7 +62,7 @@ export default function LoginOptions({ onClose, loginOption, handleLogin }) {
                       alt="Google icon"
                     />
                     <Text variant={TextVariant.bodyMd}>
-                      {t('onboardingContinueWith', 'Google')}
+                      {t('onboardingContinueWith', ['Google'])}
                     </Text>
                   </div>
                   ///: END:ONLY_INCLUDE_IF
@@ -84,7 +84,7 @@ export default function LoginOptions({ onClose, loginOption, handleLogin }) {
                       size={IconSize.Lg}
                     />
                     <Text variant={TextVariant.bodyMd}>
-                      {t('onboardingContinueWith', 'Apple')}
+                      {t('onboardingContinueWith', ['Apple'])}
                     </Text>
                   </div>
                   ///: END:ONLY_INCLUDE_IF

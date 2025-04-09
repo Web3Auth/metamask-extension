@@ -9,7 +9,7 @@ import {
   MetaMetricsEventName,
 } from '../../../shared/constants/metametrics';
 ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-import TermsOfUsePopup from '../../components/app/terms-of-use-popup-old';
+import TermsOfUsePopup from '../../components/app/terms-of-use-popup';
 import RecoveryPhraseReminder from '../../components/app/recovery-phrase-reminder';
 import WhatsNewModal from '../../components/app/whats-new-modal';
 import { FirstTimeFlowType } from '../../../shared/constants/onboarding';

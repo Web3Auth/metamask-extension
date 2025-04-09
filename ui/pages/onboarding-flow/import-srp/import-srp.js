@@ -8,7 +8,7 @@ import {
   TextVariant,
 } from '../../../helpers/constants/design-system';
 import { ONBOARDING_CREATE_PASSWORD_ROUTE } from '../../../helpers/constants/routes';
-// import { useI18nContext } from '../../../hooks/useI18nContext';
+import { useI18nContext } from '../../../hooks/useI18nContext';
 import SrpInput from '../../../components/app/srp-input';
 import { getCurrentKeyring } from '../../../selectors';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
@@ -29,7 +29,7 @@ import Tooltip from '../../../components/ui/tooltip';
 export default function ImportSRP({ submitSecretRecoveryPhrase }) {
   const [secretRecoveryPhrase, setSecretRecoveryPhrase] = useState('');
   const history = useHistory();
-  // const t = useI18nContext();
+  const t = useI18nContext();
   const currentKeyring = useSelector(getCurrentKeyring);
 
   useEffect(() => {
@@ -43,17 +43,18 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
     <div className="import-srp" data-testid="import-srp">
       <div className="import-srp__step">
         <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          Step 1 of 2
+          {t('stepOf', [1, 2])}
         </Text>
       </div>
       <div className="import-srp__header">
-        <Text variant={TextVariant.headingLg}>Import a wallet</Text>
+        <Text variant={TextVariant.headingLg}>{t('importAWallet')}</Text>
       </div>
       <div className="import-srp__description">
         <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          Enter your Secret Recovery Phrase
+          {t('typeYourSRP')}
         </Text>
-        <Tooltip position="top" title="Enter your Secret Recovery Phrase">
+        {/* TODO: Check the content here */}
+        <Tooltip position="top" title={t('typeYourSRP')}>
           <Icon
             name={IconName.Info}
             size={IconSize.Sm}
@@ -82,7 +83,7 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
           }}
           disabled={!secretRecoveryPhrase.trim()}
         >
-          Continue
+          {t('continue')}
         </Button>
       </div>
     </div>

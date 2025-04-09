@@ -2414,6 +2414,9 @@
   "importWallet": {
     "message": "Import wallet"
   },
+  "importAWallet": {
+    "message": "Import a wallet"
+  },
   "importWalletOrAccountHeader": {
     "message": "Import a wallet or account"
   },
@@ -3647,6 +3650,18 @@
   "onboardingSrpImport": {
     "message": "Import using secret recovery phrase"
   },
+  "onboardingSrpInputClearAll": {
+    "message": "Clear all"
+  },
+  "onboardingSrpInputHideAll": {
+    "message": "Hide all"
+  },
+  "onboardingSrpInputPlaceholder": {
+    "message": "Add a space between each word and make sure no one is watching"
+  },
+  "onboardingSrpInputShowAll": {
+    "message": "Show all"
+  },
   "oneDayAbbreviation": {
     "message": "1D",
     "description": "Shortened form of '1 day'"
@@ -3742,6 +3757,9 @@
   },
   "passwordsDontMatch": {
     "message": "Passwords don't match"
+  },
+  "paste": {
+    "message": "Paste"
   },
   "pastePrivateKey": {
     "message": "Enter your private key string here:",
@@ -5398,6 +5416,10 @@
     "message": "Plug your Ledger directly into your computer, then  unlock it and open the Ethereum app.",
     "description": "$1 represents the `hardwareWalletSupportLinkConversion` localization key"
   },
+  "stepOf": {
+    "message": "Step $1 of $2",
+    "description": "$1 current step, $2 total steps"
+  },
   "stillGettingMessage": {
     "message": "Still getting this message?"
   },
@@ -6203,7 +6225,7 @@
     "message": "12hr:"
   },
   "typeYourSRP": {
-    "message": "Type your Secret Recovery Phrase"
+    "message": "Enter your Secret Recovery Phrase"
   },
   "u2f": {
     "message": "U2F",
