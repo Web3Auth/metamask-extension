@@ -42,7 +42,7 @@ export default function LoginOptions({ onClose, loginOption, handleLogin }) {
       <ModalContent size={ModalContentSize.Sm}>
         <ModalHeader onClose={onClose}>
           <Text textAlign={TextAlign.Center} variant={TextVariant.headingMd}>
-            Choose an option to continue
+            {t('onboardingOptionTitle')}
           </Text>
         </ModalHeader>
         <Box>
@@ -62,7 +62,7 @@ export default function LoginOptions({ onClose, loginOption, handleLogin }) {
                       alt="Google icon"
                     />
                     <Text variant={TextVariant.bodyMd}>
-                      Continue with Google
+                      {t('onboardingContinueWith', 'Google')}
                     </Text>
                   </div>
                   ///: END:ONLY_INCLUDE_IF
@@ -84,7 +84,7 @@ export default function LoginOptions({ onClose, loginOption, handleLogin }) {
                       size={IconSize.Lg}
                     />
                     <Text variant={TextVariant.bodyMd}>
-                      Continue with Apple
+                      {t('onboardingContinueWith', 'Apple')}
                     </Text>
                   </div>
                   ///: END:ONLY_INCLUDE_IF
@@ -99,7 +99,7 @@ export default function LoginOptions({ onClose, loginOption, handleLogin }) {
                   color={TextColor.textMuted}
                   as="div"
                 >
-                  OR
+                  {t('or')}
                 </Text>
               </div>
             </li>
@@ -113,8 +113,8 @@ export default function LoginOptions({ onClose, loginOption, handleLogin }) {
                 onClick={() => onLogin('srp')}
               >
                 {loginOption === 'existing'
-                  ? 'Import using secret recovery phrase'
-                  : 'Continue with secret recovery phrase'}
+                  ? t('onboardingSrpImport')
+                  : t('onboardingSrpCreate')}
               </Button>
             </li>
           </ul>
