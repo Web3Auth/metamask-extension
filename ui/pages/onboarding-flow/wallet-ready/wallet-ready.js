@@ -31,6 +31,7 @@ import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
   ONBOARDING_PIN_EXTENSION_ROUTE,
   ONBOARDING_PRIVACY_SETTINGS_ROUTE,
+  ONBOARDING_SRP_HINT,
 } from '../../../helpers/constants/routes';
 import { getFirstTimeFlowType } from '../../../selectors';
 import { getSeedPhraseBackedUp } from '../../../ducks/metamask/metamask';
@@ -129,7 +130,7 @@ export default function WalletReady() {
             variant={ButtonVariant.Secondary}
             borderRadius={BorderRadius.LG}
             width={BlockSize.Full}
-            onClick={() => history.push(ONBOARDING_PRIVACY_SETTINGS_ROUTE)}
+            onClick={() => history.push(ONBOARDING_SRP_HINT)}
           >
             <Box display={Display.Flex} alignItems={AlignItems.center}>
               <Icon

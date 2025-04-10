@@ -21,6 +21,9 @@ const SrpText = forwardRef((props, ref) => {
     setFocus: () => {
       inputRef.current.click();
     },
+    setQuizWord: (word) => {
+      setTempWord(word);
+    },
   }));
 
   const onChange = (e) => {

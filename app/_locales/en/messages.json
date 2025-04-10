@@ -1048,6 +1048,12 @@
   "confirmRecoveryPhrase": {
     "message": "Confirm Secret Recovery Phrase"
   },
+  "confirmRecoveryPhraseTitle": {
+    "message": "Confirm your Secret Recovery Phrase"
+  },
+  "confirmRecoveryPhraseDetails": {
+    "message": "Select the missing words in the correct order."
+  },
   "confirmTitleApproveTransactionNFT": {
     "message": "Withdrawal request"
   },
@@ -5984,6 +5990,12 @@
   },
   "symbolBetweenZeroTwelve": {
     "message": "Symbol must be 11 characters or fewer."
+  },
+  "tapToReveal": {
+    "message": "Tap to reveal"
+  },
+  "tapToRevealNote": {
+    "message": "Make sure no one is watching your screen."
   },
   "tenPercentIncreased": {
     "message": "10% increase"

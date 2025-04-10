@@ -11,6 +11,7 @@ import {
   ButtonVariant,
   ButtonLink,
   ButtonLinkSize,
+  ButtonSize,
 } from '../../../components/component-library';
 import {
   TextVariant,
@@ -94,6 +95,7 @@ export default function RecoveryPhrase({ secretRecoveryPhrase }) {
         <Button
           width={BlockSize.Full}
           variant={ButtonVariant.Primary}
+          size={ButtonSize.Lg}
           data-testid="recovery-phrase-reveal"
           className="recovery-phrase__footer--button"
           disabled={!phraseRevealed}
