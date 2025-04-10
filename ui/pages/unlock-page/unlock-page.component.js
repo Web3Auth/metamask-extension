@@ -6,7 +6,10 @@ import { TextVariant, TextColor } from '../../helpers/constants/design-system';
 import Button from '../../components/ui/button';
 import TextField from '../../components/ui/text-field';
 import Mascot from '../../components/ui/mascot';
-import { DEFAULT_ROUTE } from '../../helpers/constants/routes';
+import {
+  DEFAULT_ROUTE,
+  ONBOARDING_CREATE_PASSWORD_ROUTE,
+} from '../../helpers/constants/routes';
 import {
   MetaMetricsContextProp,
   MetaMetricsEventCategory,
@@ -105,9 +108,12 @@ export default class UnlockPage extends Component {
             failed_attempts: this.failed_attempts,
           },
         });
+      } else if (message === 'Seed phrase not found') {
+        this.props.history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
+      } else {
+        this.setState({ error: message });
       }
 
-      this.setState({ error: message });
       this.submitting = false;
     }
   };

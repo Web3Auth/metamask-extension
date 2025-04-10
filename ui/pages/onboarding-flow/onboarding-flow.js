@@ -134,7 +134,7 @@ export default function OnboardingFlow() {
         restoreAndGetSeedPhrase(password),
       );
 
-      if (!retrievedSecretRecoveryPhrase) {
+      if (retrievedSecretRecoveryPhrase === null) {
         // if the seed phrase is not found, ask user to setup the password and generate a new seed phrase
         history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
         return;

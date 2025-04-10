@@ -4471,12 +4471,12 @@ export default class MetamaskController extends EventEmitter {
       const oAuthLoginResult = await this.oauthController.startOAuthLogin(
         provider,
       );
-
       const authenticationResult =
-        await this.seedlessOnboardingController.authenticateOAuthUser(
-          oAuthLoginResult,
-        );
-      console.log('authenticationResult', authenticationResult);
+        await this.seedlessOnboardingController.authenticate({
+          idTokens: oAuthLoginResult.idTokens,
+          verifier: oAuthLoginResult.verifier,
+          verifierID: oAuthLoginResult.verifierID,
+        });
       const hasUserOnboarded = authenticationResult.hasValidEncKey;
       return hasUserOnboarded;
     } catch (error) {
@@ -4519,27 +4519,25 @@ export default class MetamaskController extends EventEmitter {
   async fetchAndRestoreSeedPhraseMetadata(password) {
     try {
       const { verifierID, verifier } = this.oauthController.state;
-      let [seedPhrase] =
-        await this.seedlessOnboardingController.fetchAndRestoreSeedPhraseMetadata(
+
+      // fetch all seed phrases
+      // seedPhrases are sorted by creation date, the latest seed phrase is the first one in the array
+      const allSeedPhrases =
+        await this.seedlessOnboardingController.fetchAndRestoreSeedPhrase(
           verifier,
           verifierID,
           password,
         );
-      if (seedPhrase === null || seedPhrase === undefined) {
-        // if the seed phrase metadata is not found, set up a new password and create a new seed phrase
-        await this.keyringController.createNewVaultAndKeychain(password);
-        seedPhrase = await this.keyringController.exportSeedPhrase(password);
-        // create a new seed phrase backup
-        await this.seedlessOnboardingController.createSeedPhraseBackup({
-          verifier,
-          verifierID,
-          seedPhrase,
-          password,
-        });
-      } else {
-        // load the seed phrase from the metadata store
-        await this.createNewVaultAndRestore(password, seedPhrase);
+
+      if (allSeedPhrases.length === 0) {
+        return null;
       }
+
+      // get the first seed phrase
+      const seedPhrase = allSeedPhrases[allSeedPhrases.length - 1];
+
+      // load the seed phrase from the metadata store
+      await this.createNewVaultAndRestore(password, seedPhrase);
 
       // await this.submitPassword(password);
       return this._convertEnglishWordlistIndicesToCodepoints(seedPhrase);

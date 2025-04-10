@@ -199,7 +199,10 @@ export function tryRestoreAndUnlockMetamask(
     dispatch(unlockInProgress());
 
     try {
-      await restoreSeedPhrase(password);
+      const seedPhrase = await restoreSeedPhrase(password);
+      if (seedPhrase === null) {
+        throw new Error('Seed phrase not found');
+      }
 
       dispatch(unlockSucceeded());
       return forceUpdateMetamaskState(dispatch);
@@ -533,11 +536,16 @@ export async function createSeedPhraseBackup(
  * @param password - The password.
  * @returns The seed phrase.
  */
-export async function restoreSeedPhrase(password: string): Promise<string> {
+export async function restoreSeedPhrase(
+  password: string,
+): Promise<string | null> {
   const encodedSeedPhrase = await submitRequestToBackground<Buffer>(
     'fetchAndRestoreSeedPhraseMetadata',
     [password],
   );
+  if (encodedSeedPhrase === null) {
+    return null;
+  }
   return Buffer.from(encodedSeedPhrase).toString('utf8');
 }
 
