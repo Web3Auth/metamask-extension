@@ -1520,11 +1520,33 @@
   "defaultRpcUrl": {
     "message": "Default RPC URL"
   },
+  "defaultSettingsBasicFunctionalityTitle": {
+    "message": "Basic functionality"
+  },
+  "defaultSettingsBasicFunctionalityDescription": {
+    "message": "This includes basic features like token details and gas settings. Keep this feature on for the best experience while using MetaMask. Read our $1 to learn more.",
+    "description": "$1 will have text saying Privacy Policy"
+  },
+  "defaultSettingsProfileSyncTitle": {
+    "message": "Profile sync"
+  },
+  "defaultSettingsProfileSyncDescription1": {
+    "message": "Sync settings, messages, and more across MetaMask Extension, Mobile, and Portfolio. You’ll need a unique ID to use this feature, which will be created if you allow data syncing. This makes it possible to sync your data across platforms. We’ll use your Secret Recovery Phrase to create this ID."
+  },
+  "defaultSettingsProfileSyncDescription2": {
+    "message": "Notifications rely on this feature, and won’t be available when turned off."
+  },
   "defaultSettingsSubTitle": {
     "message": "MetaMask uses default settings to best balance safety and ease of use. Change these settings to further increase your privacy."
   },
+  "defaultSettingsThirdPartyAPITitle": {
+    "message": "Third-party APIs"
+  },
+  "defaultSettingsThirdPartyAPIDescription": {
+    "message": "If you don’t want to share your IP address or Ethereum address with any third parties, you may want to turn off features that use them. This will impact your MetaMask experience."
+  },
   "defaultSettingsTitle": {
-    "message": "Default privacy settings"
+    "message": "Default settings"
   },
   "delete": {
     "message": "Delete"
@@ -6047,6 +6069,54 @@
   },
   "themeDescription": {
     "message": "Choose your preferred MetaMask theme."
+  },
+  "thirdPartyAPIBatchAccountBalanceDescription": {
+    "message": "Get balance updates for all your accounts at once. It allows for a faster and overall better experience for managing multiple accounts. Turning off this feature means others are less likely to associate one account with another."
+  },
+  "thirdPartyAPIBatchAccountBalanceTitle": {
+    "message": "Batch account balance"
+  },
+  "thirdPartyDisplayNftMediaDescription": {
+    "message": "NFT autodetection relies on this feature."
+  },
+  "thirdPartyDisplayNftMediaTitle": {
+    "message": "Display NFT media"
+  },
+  "thirdPartyAPIIPFSGatewayDescription": {
+    "message": "MetaMask uses third-party services to show images of your NFTs stored on IPFS, display information related to ENS addresses entered in your browser's address bar, and fetch icons for different tokens."
+  },
+  "thirdPartyAPIIPFSGatewayTitle": {
+    "message": "IPFS gateway"
+  },
+  "thirdPartyAPINetworkDetailsCheckDescription": {
+    "message": "MetaMask uses chainid.network to show accurate and standardized network details. This reduces your chances of connecting to malicious or incorrect network."
+  },
+  "thirdPartyAPINetworkDetailsCheckTitle": {
+    "message": "Network details check"
+  },
+  "thirdPartyAPINftDetectionDescription": {
+    "message": "Displays all NFTs including fake ones airdropped by scammers. "
+  },
+  "thirdPartyAPINftDetectionTitle": {
+    "message": "Autodetect NFTs"
+  },
+  "thirdPartyProposedNicknamesDescription": {
+    "message": "We’ll fetch proposed nicknames for addresses you interact with from third-party sources like Etherscan, Infura, and Lens protocol."
+  },
+  "thirdPartyProposedNicknamesTitle": {
+    "message": "Proposed nicknames"
+  },
+  "thirdPartyAPISettingsDescription": {
+    "message": "These settings use third-party APIs to work. If you don't want to share your IP address or Ethereum address with any third parties, you may want to turn off features that use them. This will impact your MetaMask experience."
+  },
+  "thirdPartyAPISettingsTitle": {
+    "message": "Third-party APIs"
+  },
+  "thirdPartyAPIshowIncomingTransactionsDescription": {
+    "message": "This relies on different third-party APIs for each network."
+  },
+  "thirdPartyAPIshowIncomingTransactionsTitle": {
+    "message": "Show incoming transactions"
   },
   "thirdPartySoftware": {
     "message": "Third-party software notice",

@@ -41,4 +41,25 @@
   &__customizable-network:hover {
     cursor: pointer;
   }
+
+  &__group-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    .privacy-settings__setting__wrapper {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+    .privacy-settings__setting__wrapper:not(:first-child):not(:last-child) {
+      border-radius: 0;
+    }
+    .privacy-settings__setting__wrapper:first-child {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    .privacy-settings__setting__wrapper:last-child {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+  }
 }

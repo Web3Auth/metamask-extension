@@ -18,22 +18,21 @@ import {
   FlexDirection,
   BlockSize,
   IconColor,
+  TextColor,
 } from '../../../helpers/constants/design-system';
-import { useI18nContext } from '../../../hooks/useI18nContext';
+import { PrivacyTags } from './privacy-tags';
 
 export const Setting = ({
   value,
   setValue,
   title,
-  description,
+  descriptions,
   showToggle = true,
   dataTestId,
   disabled = false,
   tags,
   onClick,
 }) => {
-  const t = useI18nContext();
-
   return (
     <Box
       display={Display.Flex}
@@ -79,12 +78,25 @@ export const Setting = ({
           </div>
         ) : null}
       </Box>
-      <Box paddingRight={3}>{description}</Box>
-      {tags && (
-        <Box display={Display.Flex} gap={2} marginTop={2}>
-          {tags}
+      {descriptions && (
+        <Box
+          paddingRight={3}
+          display={Display.Flex}
+          flexDirection={FlexDirection.Column}
+          gap={4}
+        >
+          {descriptions.map((description, index) => (
+            <Text
+              key={index}
+              variant={TextVariant.bodySm}
+              color={TextColor.textAlternative}
+            >
+              {description}
+            </Text>
+          ))}
         </Box>
       )}
+      {tags && <PrivacyTags tags={tags} />}
     </Box>
   );
 };
@@ -93,10 +105,10 @@ Setting.propTypes = {
   value: PropTypes.bool,
   setValue: PropTypes.func,
   title: PropTypes.string,
-  description: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
+  descriptions: PropTypes.array,
   showToggle: PropTypes.bool,
   dataTestId: PropTypes.string,
   disabled: PropTypes.bool,
-  tags: PropTypes.object,
+  tags: PropTypes.array,
   onClick: PropTypes.func,
 };
