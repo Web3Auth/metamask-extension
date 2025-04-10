@@ -19,7 +19,7 @@ import {
   ONBOARDING_PIN_EXTENSION_ROUTE,
   ONBOARDING_METAMETRICS,
   ONBOARDING_GET_STARTED_ROUTE,
-  ONBOARDING_SRP_HINT,
+  ONBOARDING_PASSWORD_HINT,
 } from '../../helpers/constants/routes';
 import {
   getCompletedOnboarding,
@@ -56,7 +56,7 @@ import ImportSRP from './import-srp/import-srp';
 import OnboardingPinExtension from './pin-extension/pin-extension';
 import MetaMetricsComponent from './metametrics/metametrics';
 import GetStarted from './get-started/get-started';
-import SRPHint from './srp-hint/srp-hint';
+import PasswordHint from './password-hint/password-hint';
 
 const TWITTER_URL = 'https://twitter.com/MetaMask';
 
@@ -206,7 +206,7 @@ export default function OnboardingFlow() {
             path={ONBOARDING_METAMETRICS}
             component={MetaMetricsComponent}
           />
-          <Route path={ONBOARDING_SRP_HINT} component={SRPHint} />
+          <Route path={ONBOARDING_PASSWORD_HINT} component={PasswordHint} />
           {
             ///: BEGIN:ONLY_INCLUDE_IF(build-flask)
           }

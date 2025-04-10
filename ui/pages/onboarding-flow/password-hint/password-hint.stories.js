@@ -1,14 +1,14 @@
 import React from 'react';
-import SRPHint from './srp-hint';
+import PasswordHint from './password-hint';
 
 export default {
-  title: 'Pages/OnboardingFlow/SRPHint',
+  title: 'Pages/OnboardingFlow/PasswordHint',
 };
 
 export const DefaultStory = () => {
   return (
     <div style={{ maxHeight: '2000px' }}>
-      <SRPHint />
+      <PasswordHint />
     </div>
   );
 };
