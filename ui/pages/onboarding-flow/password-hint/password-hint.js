@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
   Button,
@@ -15,11 +15,30 @@ import {
   BorderRadius,
   TextColor,
 } from '../../../helpers/constants/design-system';
-import { Box, Text, TextField } from '../../../components/component-library';
+import {
+  Box,
+  FormTextField,
+  Text,
+} from '../../../components/component-library';
 import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
+import { useI18nContext } from '../../../hooks/useI18nContext';
 
 export default function PasswordHint() {
+  const t = useI18nContext();
   const history = useHistory();
+  const [isSamePasswordError, setIsSamePasswordError] = useState(false);
+  const [hint, setHint] = useState('');
+  // TODO: get current password from store
+  const currentPassword = 'current';
+
+  const handleSubmitHint = () => {
+    if (currentPassword === hint) {
+      setIsSamePasswordError(true);
+      return;
+    }
+
+    history.push(ONBOARDING_COMPLETION_ROUTE);
+  };
 
   return (
     <Box
@@ -43,29 +62,31 @@ export default function PasswordHint() {
           }}
           marginBottom={4}
         >
-          Password hint
+          {t('passwordHintTitle')}
         </Text>
         <Text
           variant={TextVariant.bodyMd}
           color={TextColor.textAlternative}
           marginBottom={6}
         >
-          Leave yourself a hint to help remember where your Secret Recovery
-          Phrase is stored. This hint is stored on your device, and won’t be
-          shared.
+          {t('passwordHintDescription')}
         </Text>
         <Text
           variant={TextVariant.bodyMd}
           color={TextColor.textAlternative}
           marginBottom={6}
         >
-          Remember: If you lose this phrase, you won’t be able to use your
-          wallet.
+          {t('passwordHintLeaveHint')}
         </Text>
-        <TextField
+        <FormTextField
+          value={hint}
           placeholder="e.g. mom’s home"
           width={BlockSize.Full}
           borderRadius={BorderRadius.LG}
+          error={isSamePasswordError}
+          helpText={isSamePasswordError ? t('passwordHintError') : null}
+          onChange={(e) => setHint(e.target.value)}
+          onFocus={() => setIsSamePasswordError(false)}
         />
       </Box>
 
@@ -81,9 +102,10 @@ export default function PasswordHint() {
           variant={ButtonVariant.Primary}
           size={ButtonSize.Lg}
           width={BlockSize.Full}
-          onClick={() => history.push(ONBOARDING_COMPLETION_ROUTE)}
+          onClick={handleSubmitHint}
+          disabled={isSamePasswordError}
         >
-          Save
+          {t('save')}
         </Button>
       </Box>
     </Box>
