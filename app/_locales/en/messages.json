@@ -1054,6 +1054,18 @@
   "confirmRecoveryPhraseDetails": {
     "message": "Select the missing words in the correct order."
   },
+  "confirmSrpSuccessTitle": {
+    "message": "Perfect"
+  },
+  "confirmSrpSuccessDescription": {
+    "message": "That’s right! And remember: never share this phrase with anyone, ever."
+  },
+  "confirmSrpErrorTitle": {
+    "message": "Not quite right"
+  },
+  "confirmSrpErrorDescription": {
+    "message": "Double-check your Secret Recovery Phrase and try again."
+  },
   "confirmTitleApproveTransactionNFT": {
     "message": "Withdrawal request"
   },

@@ -25,7 +25,7 @@ import {
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
 import RecoveryPhraseChips from './recovery-phrase-chips';
-import ConfirmModal from './confirm-modal';
+import ConfirmSrpModal from './confirm-srp-modal';
 
 export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
   const history = useHistory();
@@ -91,7 +91,7 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
       data-testid="confirm-recovery-phrase"
     >
       {showConfirmModal && (
-        <ConfirmModal
+        <ConfirmSrpModal
           isError={!matching}
           onContinue={handleConfirmedPhrase}
           onClose={() => setShowConfirmModal(false)}
