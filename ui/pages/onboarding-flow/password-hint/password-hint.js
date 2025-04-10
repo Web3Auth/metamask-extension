@@ -105,7 +105,7 @@ export default function PasswordHint() {
           onClick={handleSubmitHint}
           disabled={isSamePasswordError}
         >
-          {t('save')}
+          {t('done')}
         </Button>
       </Box>
     </Box>
