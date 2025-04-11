@@ -3691,7 +3691,7 @@
     "message": "Your MetaMask install is complete!"
   },
   "onboardingSrpCreate": {
-    "message": "Continue with secret recovery phrase"
+    "message": "Continue with manual setup"
   },
   "onboardingSrpImport": {
     "message": "Import using secret recovery phrase"
