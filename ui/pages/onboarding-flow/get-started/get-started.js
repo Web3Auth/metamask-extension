@@ -153,8 +153,7 @@ export default function GetStarted() {
         onImportClick();
       }
     } else {
-      // TODO: handle social login
-      console.log('handleLogin', loginType);
+      onClickSocialLogin(loginType);
     }
   };
 
