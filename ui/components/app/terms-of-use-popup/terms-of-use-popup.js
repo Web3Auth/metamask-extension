@@ -1,17 +1,20 @@
 import React, { useContext, useEffect, useState, createRef } from 'react';
 import PropTypes from 'prop-types';
+import { debounce } from 'lodash';
 import { I18nContext } from '../../../contexts/i18n';
 import {
   Box,
+  Button,
   ButtonIcon,
   ButtonLink,
+  ButtonSize,
+  ButtonVariant,
   Checkbox,
   IconName,
   IconSize,
   Modal,
   ModalContent,
   ModalContentSize,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
@@ -24,31 +27,44 @@ import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
   AlignItems,
   BackgroundColor,
+  BlockSize,
   BorderRadius,
   Display,
   FlexDirection,
   IconColor,
+  TextAlign,
   TextColor,
   TextVariant,
 } from '../../../helpers/constants/design-system';
 
 export default function TermsOfUsePopup({ isOpen, onClose, onAccept }) {
   const t = useContext(I18nContext);
+  const [shouldShowScrollButton, setShouldShowScrollButton] = useState(true);
   const [isTermsOfUseChecked, setIsTermsOfUseChecked] = useState(false);
+  const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
 
   const trackEvent = useContext(MetaMetricsContext);
   const bottomRef = createRef();
 
   const handleScrollDownClick = (e) => {
-    console.log(bottomRef.current);
     e.stopPropagation();
     bottomRef.current.scrollIntoView({
       behavior: 'smooth',
     });
   };
 
+  const handleDebouncedScroll = debounce((target) => {
+    const termsReachedBottom =
+      target.scrollHeight - target.scrollTop !== target.clientHeight;
+    setShouldShowScrollButton(termsReachedBottom);
+
+    if (shouldShowScrollButton && !isScrolledToBottom) {
+      setIsScrolledToBottom(true);
+    }
+  }, 100);
+
   const handleScroll = (e) => {
-    console.dir(e.target);
+    handleDebouncedScroll(e.target);
   };
 
   useEffect(() => {
@@ -71,7 +87,11 @@ export default function TermsOfUsePopup({ isOpen, onClose, onAccept }) {
     >
       <ModalOverlay />
       <ModalContent size={ModalContentSize.Md}>
-        <ModalHeader onClose={onClose}>Review our Terms of Use</ModalHeader>
+        <ModalHeader onClose={onClose}>
+          <Text textAlign={TextAlign.Center} variant={TextVariant.headingMd}>
+            {t('termsOfUseTitle')}
+          </Text>
+        </ModalHeader>
         <Box
           display={Display.Flex}
           className="terms-of-use-popup__body-container"
@@ -1170,44 +1190,62 @@ export default function TermsOfUsePopup({ isOpen, onClose, onAccept }) {
               processing.&nbsp;
             </Text>
           </Box>
-          <div className="terms-of-use-popup__scroll-button-container">
-            <ButtonIcon
-              backgroundColor={BackgroundColor.primaryMuted}
-              iconName={IconName.ArrowDown}
-              color={IconColor.primaryDefault}
-              borderRadius={BorderRadius.full}
-              iconProps={{ size: IconSize.Md }}
-              onClick={handleScrollDownClick}
-              className="terms-of-use-popup__scroll-button"
-              data-testid="terms-of-use-popup__scroll-button"
-            />
-          </div>
+          {shouldShowScrollButton && (
+            <div className="terms-of-use-popup__scroll-button-container">
+              <ButtonIcon
+                backgroundColor={BackgroundColor.primaryMuted}
+                iconName={IconName.ArrowDown}
+                color={IconColor.primaryDefault}
+                borderRadius={BorderRadius.full}
+                iconProps={{ size: IconSize.Md }}
+                onClick={handleScrollDownClick}
+                className="terms-of-use-popup__scroll-button"
+                data-testid="terms-of-use-popup__scroll-button"
+              />
+            </div>
+          )}
         </Box>
-        <ModalFooter onSubmit={onAccept}>
-          <Box
-            flexDirection={FlexDirection.Row}
-            alignItems={AlignItems.flexStart}
-            marginLeft={3}
-            marginRight={3}
-            gap={2}
+        {/* Not using ModalFooter since the confirm button text can't be changed to `agree`*/}
+        <Box
+          display={Display.Flex}
+          flexDirection={FlexDirection.Column}
+          alignItems={AlignItems.center}
+          marginTop={6}
+          marginLeft={4}
+          marginRight={4}
+          gap={6}
+        >
+          <Checkbox
+            id="terms-of-use__checkbox"
+            className="terms-of-use__checkbox"
+            data-testid="terms-of-use-checkbox"
+            isChecked={isTermsOfUseChecked}
+            onChange={() => {
+              setIsTermsOfUseChecked(!isTermsOfUseChecked);
+            }}
+            label={
+              <Text variant={TextVariant.bodySmMedium}>
+                {t('termsOfUseAgreeText')}
+              </Text>
+            }
+          />
+          <Button
+            variant={ButtonVariant.Primary}
+            width={BlockSize.Full}
+            size={ButtonSize.Lg}
+            disabled={!isTermsOfUseChecked || !isScrolledToBottom}
+            onClick={onAccept}
           >
-            <Checkbox
-              id="terms-of-use__checkbox"
-              className="terms-of-use__checkbox"
-              data-testid="terms-of-use-checkbox"
-              isChecked={isTermsOfUseChecked}
-              onChange={() => {
-                setIsTermsOfUseChecked(!isTermsOfUseChecked);
-              }}
-              label={
-                <Text variant={TextVariant.bodyXsMedium}>
-                  {t('termsOfUseAgreeText')}
-                </Text>
-              }
-              marginBottom={6}
-            />
-          </Box>
-        </ModalFooter>
+            {t('agree')}
+          </Button>
+          <Text
+            as="p"
+            color={TextColor.textAlternative}
+            variant={TextVariant.bodySm}
+          >
+            {t('termsOfUseFooterText')}
+          </Text>
+        </Box>
       </ModalContent>
     </Modal>
   );

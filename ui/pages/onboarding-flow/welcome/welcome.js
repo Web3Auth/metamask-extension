@@ -17,16 +17,16 @@ import {
   BlockSize,
   TextVariant,
   TextColor,
-  FontWeight,
 } from '../../../helpers/constants/design-system';
 import { ONBOARDING_GET_STARTED_ROUTE } from '../../../helpers/constants/routes';
 import TermsOfUsePopup from '../../../components/app/terms-of-use-popup';
+import { useI18nContext } from '../../../hooks/useI18nContext';
 
 export default function Welcome() {
+  const history = useHistory();
+  const t = useI18nContext();
   const [eventEmitter] = useState(new EventEmitter());
   const [showTermsOfUse, setShowTermsOfUse] = useState(false);
-
-  const history = useHistory();
 
   const renderMascot = () => {
     if (isFlask()) {
@@ -51,14 +51,13 @@ export default function Welcome() {
   return (
     <div className="welcome">
       <div className="welcome__wrapper">
-        {/* TODO: Use proper font */}
         <div className="welcome__title">
           <Text
             className="welcome__title-text"
             variant={TextVariant.headingLg}
             color={TextColor.primaryDefault}
           >
-            Welcome to Metamask
+            {t('welcomeTitle')}
           </Text>
         </div>
         <div className="welcome__mascot">{renderMascot()}</div>
@@ -68,7 +67,6 @@ export default function Welcome() {
           justifyContent={JustifyContent.center}
           alignItems={AlignItems.center}
         >
-          {/* TODO: Check if this is the correct button component */}
           <ButtonBase
             className="welcome__button"
             width={BlockSize.Full}
@@ -77,11 +75,10 @@ export default function Welcome() {
             onClick={() => setShowTermsOfUse(true)}
           >
             <Text
-              variant={TextVariant.bodyMd}
-              color={TextColor.primaryDefault}
-              fontWeight={FontWeight.Medium}
+              className="welcome__button-text"
+              variant={TextVariant.bodyMdMedium}
             >
-              Get started
+              {t('welcomeGetStarted')}
             </Text>
           </ButtonBase>
         </Box>

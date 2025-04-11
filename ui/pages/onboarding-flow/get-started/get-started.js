@@ -7,18 +7,13 @@ import {
   Button,
   ButtonSize,
   ButtonVariant,
-  Icon,
-  IconName,
-  IconSize,
   Text,
 } from '../../../components/component-library';
 import {
   TextVariant,
   TextAlign,
   FontWeight,
-  TextColor,
   BlockSize,
-  IconColor,
 } from '../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
@@ -42,6 +37,7 @@ import {
 import { getFirstTimeFlowType, getCurrentKeyring } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { isFlask, isBeta } from '../../../helpers/utils/build-types';
+import LoginOptions from './login-options';
 
 export default function GetStarted() {
   const t = useI18nContext();
@@ -50,6 +46,7 @@ export default function GetStarted() {
   const [eventEmitter] = useState(new EventEmitter());
   const currentKeyring = useSelector(getCurrentKeyring);
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
+  const [loginOption, setLoginOption] = useState('');
   const [newAccountCreationInProgress, setNewAccountCreationInProgress] =
     useState(false);
 
@@ -148,11 +145,21 @@ export default function GetStarted() {
     );
   };
 
+  const handleLogin = (loginType) => {
+    if (loginType === 'srp') {
+      if (loginOption === 'new') {
+        onCreateClick();
+      } else {
+        onImportClick();
+      }
+    } else {
+      // TODO: handle social login
+      console.log('handleLogin', loginType);
+    }
+  };
+
   return (
     <div className="get-started" data-testid="get-started">
-      {/* <div className="get-started__logo">
-        <MetaFoxLogo theme="light" />
-      </div> */}
       <div className="get-started__mascot">{renderMascot()}</div>
 
       <div className="get-started__title">
@@ -168,62 +175,14 @@ export default function GetStarted() {
 
       <ul className="get-started__buttons">
         <li>
-          <button
-            className="get-started__plain-button"
-            onClick={() => onClickSocialLogin('google')}
-          >
-            {
-              ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-              <div className="get-started__plain-button-content">
-                <img
-                  src="images/icons/google.svg"
-                  className="get-started__social-icon"
-                  alt="Google icon"
-                />
-                <Text variant={TextVariant.bodyMd}>Continue with Google</Text>
-              </div>
-              ///: END:ONLY_INCLUDE_IF
-            }
-          </button>
-        </li>
-        <li>
-          <button
-            className="get-started__plain-button"
-            onClick={() => onClickSocialLogin('apple')}
-          >
-            {
-              ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-              <div className="get-started__plain-button-content">
-                <Icon
-                  name={IconName.Apple}
-                  color={IconColor.iconDefault}
-                  size={IconSize.Lg}
-                />
-                <Text variant={TextVariant.bodyMd}>Continue with Apple</Text>
-              </div>
-              ///: END:ONLY_INCLUDE_IF
-            }
-          </button>
-        </li>
-        <li>
-          <div className="get-started__or">
-            <Text
-              className="get-started__or-text"
-              variant={TextVariant.bodyMd}
-              color={TextColor.textMuted}
-              as="div"
-            >
-              OR
-            </Text>
-          </div>
-        </li>
-        <li>
           <Button
             data-testid="onboarding-create-wallet"
             variant={ButtonVariant.Primary}
             width={BlockSize.Full}
             size={ButtonSize.Lg}
-            onClick={onCreateClick}
+            onClick={() => {
+              setLoginOption('new');
+            }}
           >
             {
               ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
@@ -238,12 +197,23 @@ export default function GetStarted() {
             variant={ButtonVariant.Secondary}
             width={BlockSize.Full}
             size={ButtonSize.Lg}
-            onClick={onImportClick}
+            onClick={() => {
+              setLoginOption('existing');
+            }}
           >
             {t('onboardingImportWallet')}
           </Button>
         </li>
       </ul>
+      {loginOption && (
+        <LoginOptions
+          loginOption={loginOption}
+          onClose={() => {
+            setLoginOption('');
+          }}
+          handleLogin={handleLogin}
+        />
+      )}
     </div>
   );
 }

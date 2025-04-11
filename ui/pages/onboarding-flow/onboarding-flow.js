@@ -19,6 +19,7 @@ import {
   ONBOARDING_PIN_EXTENSION_ROUTE,
   ONBOARDING_METAMETRICS,
   ONBOARDING_GET_STARTED_ROUTE,
+  ONBOARDING_PASSWORD_HINT,
 } from '../../helpers/constants/routes';
 import {
   getCompletedOnboarding,
@@ -54,12 +55,14 @@ import ReviewRecoveryPhrase from './recovery-phrase/review-recovery-phrase';
 import SecureYourWallet from './secure-your-wallet/secure-your-wallet';
 import ConfirmRecoveryPhrase from './recovery-phrase/confirm-recovery-phrase';
 import PrivacySettings from './privacy-settings/privacy-settings';
-import CreationSuccessful from './creation-successful/creation-successful';
+// import CreationSuccessful from './creation-successful/creation-successful';
+import WalletReady from './wallet-ready/wallet-ready';
 import Welcome from './welcome/welcome';
 import ImportSRP from './import-srp/import-srp';
 import OnboardingPinExtension from './pin-extension/pin-extension';
 import MetaMetricsComponent from './metametrics/metametrics';
 import GetStarted from './get-started/get-started';
+import PasswordHint from './password-hint/password-hint';
 
 const TWITTER_URL = 'https://twitter.com/MetaMask';
 
@@ -228,10 +231,7 @@ export default function OnboardingFlow() {
             path={ONBOARDING_PRIVACY_SETTINGS_ROUTE}
             component={PrivacySettings}
           />
-          <Route
-            path={ONBOARDING_COMPLETION_ROUTE}
-            component={CreationSuccessful}
-          />
+          <Route path={ONBOARDING_COMPLETION_ROUTE} component={WalletReady} />
           <Route path={ONBOARDING_WELCOME_ROUTE} component={Welcome} />
           <Route path={ONBOARDING_GET_STARTED_ROUTE} component={GetStarted} />
           <Route
@@ -242,6 +242,7 @@ export default function OnboardingFlow() {
             path={ONBOARDING_METAMETRICS}
             component={MetaMetricsComponent}
           />
+          <Route path={ONBOARDING_PASSWORD_HINT} component={PasswordHint} />
           {
             ///: BEGIN:ONLY_INCLUDE_IF(build-flask)
           }

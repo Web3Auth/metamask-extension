@@ -5,7 +5,9 @@ export default {
   title: 'Components/App/SrpInput',
 
   component: SrpInput,
-  argTypes: {},
+  argTypes: {
+    onChange: { action: 'changed' },
+  },
 };
 
 const Template = (args) => {

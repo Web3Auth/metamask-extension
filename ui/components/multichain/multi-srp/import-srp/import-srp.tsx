@@ -23,7 +23,7 @@ import {
   BorderRadius,
 } from '../../../../helpers/constants/design-system';
 import { setShowNewSrpAddedToast } from '../../../app/toast-master/utils';
-import { parseSecretRecoveryPhrase } from '../../../app/srp-input-old/parse-secret-recovery-phrase';
+import { parseSecretRecoveryPhrase } from '../../../app/srp-input/parse-secret-recovery-phrase';
 import { clearClipboard } from '../../../../helpers/utils/util';
 
 const hasUpperCase = (draftSrp: string) => {

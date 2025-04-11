@@ -1,0 +1,23 @@
+@use "design-system";
+
+.wallet-ready {
+  img {
+    align-self: center;
+  }
+
+  &__settings-actions {
+    .mm-box.mm-text {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .mm-button-base {
+      height: 60px;
+    }
+  }
+
+  &__actions {
+    margin-top: 130px;
+  }
+}

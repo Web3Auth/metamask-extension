@@ -3,9 +3,13 @@
 .welcome {
   &__title {
     text-align: center;
+    margin: 0 auto;
+    max-width: 1048px;
   }
 
   &__title-text {
+    font-family: var(--font-family-hero);
+    color: var(--brand-colors-purple-purple800);
     font-size: 104px;
     line-height: 110px;
     text-align: center;
@@ -16,7 +20,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: -45px;
+    margin-top: -80px;
   }
 
   &__button-container {
@@ -24,7 +28,13 @@
     margin: 0 auto;
   }
 
+  // SRP_OVERRIDE: bg always white
   &__button {
     background-color: #fff;
+  }
+
+  // SRP_OVERRIDE: text always purple
+  &__button-text {
+    color: var(--brand-colors-purple-purple800);
   }
 }

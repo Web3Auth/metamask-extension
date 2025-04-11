@@ -4,12 +4,13 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
   BlockSize,
+  IconColor,
   TextColor,
   TextVariant,
 } from '../../../helpers/constants/design-system';
 import { ONBOARDING_CREATE_PASSWORD_ROUTE } from '../../../helpers/constants/routes';
-// import { useI18nContext } from '../../../hooks/useI18nContext';
-import SrpInput from '../../../components/app/srp-input';
+import { useI18nContext } from '../../../hooks/useI18nContext';
+import SrpInputImport from '../../../components/app/srp-input-import';
 import { getCurrentKeyring } from '../../../selectors';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
@@ -20,16 +21,17 @@ import {
   Text,
   Box,
   Button,
-  Icon,
   IconName,
-  IconSize,
+  ButtonIcon,
+  ButtonIconSize,
 } from '../../../components/component-library';
-import Tooltip from '../../../components/ui/tooltip';
+import SRPDetailsModal from '../../../components/app/srp-details-modal';
 
 export default function ImportSRP({ submitSecretRecoveryPhrase }) {
   const [secretRecoveryPhrase, setSecretRecoveryPhrase] = useState('');
+  const [showSrpDetailsModal, setShowSrpDetailsModal] = useState(false);
   const history = useHistory();
-  // const t = useI18nContext();
+  const t = useI18nContext();
   const currentKeyring = useSelector(getCurrentKeyring);
 
   useEffect(() => {
@@ -41,29 +43,31 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
 
   return (
     <div className="import-srp" data-testid="import-srp">
+      {showSrpDetailsModal && (
+        <SRPDetailsModal onClose={() => setShowSrpDetailsModal(false)} />
+      )}
       <div className="import-srp__step">
         <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          Step 1 of 2
+          {t('stepOf', [1, 2])}
         </Text>
       </div>
       <div className="import-srp__header">
-        <Text variant={TextVariant.headingLg}>Import a wallet</Text>
+        <Text variant={TextVariant.headingLg}>{t('importAWallet')}</Text>
       </div>
       <div className="import-srp__description">
         <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          Enter your Secret Recovery Phrase
+          {t('typeYourSRP')}
         </Text>
-        <Tooltip position="top" title="Enter your Secret Recovery Phrase">
-          <Icon
-            name={IconName.Info}
-            size={IconSize.Sm}
-            color={TextColor.textAlternative}
-          />
-        </Tooltip>
+        <ButtonIcon
+          iconName={IconName.Info}
+          size={ButtonIconSize.Sm}
+          color={IconColor.iconAlternative}
+          onClick={() => setShowSrpDetailsModal(true)}
+        />
       </div>
       <div className="import-srp__actions">
         <Box width={BlockSize.Full}>
-          <SrpInput onChange={setSecretRecoveryPhrase} />
+          <SrpInputImport onChange={setSecretRecoveryPhrase} />
         </Box>
         <Button
           width={BlockSize.Full}
@@ -82,7 +86,7 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
           }}
           disabled={!secretRecoveryPhrase.trim()}
         >
-          Continue
+          {t('continue')}
         </Button>
       </div>
     </div>

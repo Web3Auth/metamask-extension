@@ -108,3 +108,25 @@ $font-path: './fonts';
   font-weight: 400;
   font-style: normal;
 }
+
+/* MM Poly */
+@font-face {
+  font-family: 'MMPoly';
+  font-style: normal;
+  font-weight: 400;
+  src: url('fonts/MMPoly/MMPoly-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'MMPoly';
+  font-style: normal;
+  font-weight: 500;
+  src: url('fonts/MMPoly/MMPoly-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'MMPoly';
+  font-style: normal;
+  font-weight: 700;
+  src: url('fonts/MMPoly/MMPoly-Regular.woff2') format('woff2');
+}

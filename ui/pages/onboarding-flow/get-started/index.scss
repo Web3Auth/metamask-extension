@@ -52,6 +52,7 @@
     margin: auto;
     position: relative;
     z-index: 1;
+    text-transform: uppercase;
   }
 
   &__mascot {
@@ -66,11 +67,15 @@
   }
 
   &__buttons {
-    max-width: 300px;
-    margin: 40px auto 0 auto;
+    margin: 223px auto 0 auto;
 
     li {
       margin-bottom: 16px;
+    }
+
+    &--modal {
+      margin: 0 16px;
+      max-width: none;
     }
   }
 

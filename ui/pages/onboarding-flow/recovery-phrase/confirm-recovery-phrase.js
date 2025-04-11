@@ -3,19 +3,19 @@ import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { debounce } from 'lodash';
 import PropTypes from 'prop-types';
-import Box from '../../../components/ui/box';
-import Button from '../../../components/ui/button';
-import { Text } from '../../../components/component-library';
 import {
-  TextAlign,
+  Box,
+  Button,
+  ButtonSize,
+  ButtonVariant,
+  Text,
+} from '../../../components/component-library';
+import {
   TextVariant,
   JustifyContent,
-  FontWeight,
+  BlockSize,
+  TextColor,
 } from '../../../helpers/constants/design-system';
-import {
-  ThreeStepProgressBar,
-  threeStepStages,
-} from '../../../components/app/step-progress-bar';
 import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { setSeedPhraseBackedUp } from '../../../store/actions';
@@ -25,6 +25,7 @@ import {
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
 import RecoveryPhraseChips from './recovery-phrase-chips';
+import ConfirmSrpModal from './confirm-srp-modal';
 
 export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
   const history = useHistory();
@@ -34,6 +35,8 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
   const indicesToCheck = [2, 3, 7];
   const [matching, setMatching] = useState(false);
   const trackEvent = useContext(MetaMetricsContext);
+  const [completedQuizWords, setCompletedQuizWords] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   // Removes seed phrase words from chips corresponding to the
   // indicesToCheck so that user has to complete the phrase and confirm
@@ -49,17 +52,37 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
     initializePhraseElements(),
   );
 
-  const validate = useMemo(
+  const validateQuizWords = useMemo(
     () =>
       debounce((elements) => {
-        setMatching(Object.values(elements).join(' ') === secretRecoveryPhrase);
+        const quizWords = Object.values(elements).filter(
+          (value) => value !== '',
+        );
+        const srpLength = secretRecoveryPhrase.split(' ').length;
+        setCompletedQuizWords(quizWords.length === srpLength);
       }, 500),
-    [setMatching, secretRecoveryPhrase],
+    [setCompletedQuizWords, secretRecoveryPhrase],
   );
+
+  const tryContinue = async () => {
+    const isMatching =
+      Object.values(phraseElements).join(' ') === secretRecoveryPhrase;
+    setMatching(isMatching);
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmedPhrase = () => {
+    dispatch(setSeedPhraseBackedUp(true));
+    trackEvent({
+      category: MetaMetricsEventCategory.Onboarding,
+      event: MetaMetricsEventName.OnboardingWalletSecurityPhraseConfirmed,
+    });
+    history.push(ONBOARDING_COMPLETION_ROUTE);
+  };
 
   const handleSetPhraseElements = (values) => {
     setPhraseElements(values);
-    validate(values);
+    validateQuizWords(values);
   };
 
   return (
@@ -67,26 +90,28 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
       className="recovery-phrase__confirm"
       data-testid="confirm-recovery-phrase"
     >
-      <ThreeStepProgressBar
-        stage={threeStepStages.RECOVERY_PHRASE_CONFIRM}
-        marginBottom={4}
-      />
+      {showConfirmModal && (
+        <ConfirmSrpModal
+          isError={!matching}
+          onContinue={handleConfirmedPhrase}
+          onClose={() => setShowConfirmModal(false)}
+        />
+      )}
       <Box
-        justifyContent={JustifyContent.center}
-        textAlign={TextAlign.Center}
+        justifyContent={JustifyContent.flexStart}
         marginBottom={4}
+        width={BlockSize.Full}
       >
-        <Text variant={TextVariant.headingLg} fontWeight={FontWeight.Bold}>
-          {t('seedPhraseConfirm')}
+        <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
+          {t('stepOf', [3, 3])}
+        </Text>
+        <Text variant={TextVariant.headingLg}>
+          {t('confirmRecoveryPhraseTitle')}
         </Text>
       </Box>
-      <Box
-        justifyContent={JustifyContent.center}
-        textAlign={TextAlign.Center}
-        marginBottom={4}
-      >
-        <Text variant={TextVariant.headingSm} fontWeight={FontWeight.Normal}>
-          {t('seedPhraseEnterMissingWords')}
+      <Box marginBottom={6}>
+        <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
+          {t('confirmRecoveryPhraseDetails')}
         </Text>
       </Box>
       <RecoveryPhraseChips
@@ -98,20 +123,13 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
       />
       <div className="recovery-phrase__footer__confirm">
         <Button
+          variant={ButtonVariant.Primary}
+          width={BlockSize.Full}
           data-testid="recovery-phrase-confirm"
-          type="primary"
-          large
+          size={ButtonSize.Large}
           className="recovery-phrase__footer__confirm--button"
-          onClick={async () => {
-            await dispatch(setSeedPhraseBackedUp(true));
-            trackEvent({
-              category: MetaMetricsEventCategory.Onboarding,
-              event:
-                MetaMetricsEventName.OnboardingWalletSecurityPhraseConfirmed,
-            });
-            history.push(ONBOARDING_COMPLETION_ROUTE);
-          }}
-          disabled={!matching}
+          onClick={tryContinue}
+          disabled={!completedQuizWords}
         >
           {t('confirm')}
         </Button>

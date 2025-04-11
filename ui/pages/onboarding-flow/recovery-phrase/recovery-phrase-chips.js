@@ -1,19 +1,26 @@
-import React from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import Chip from '../../../components/ui/chip';
-import Box from '../../../components/ui/box';
-import { Text } from '../../../components/component-library';
-import { ChipWithInput } from '../../../components/ui/chip/chip-with-input';
+import {
+  Box,
+  Button,
+  ButtonVariant,
+  Icon,
+  IconName,
+  IconSize,
+  Text,
+} from '../../../components/component-library';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
   TextVariant,
-  BorderStyle,
   Size,
-  DISPLAY,
-  BorderColor,
-  Color,
+  Display,
+  TextColor,
+  FontWeight,
+  BorderRadius,
+  BlockSize,
 } from '../../../helpers/constants/design-system';
+import SrpText from '../../../components/app/srp-input-import/srp-text';
 
 export default function RecoveryPhraseChips({
   secretRecoveryPhrase,
@@ -21,19 +28,36 @@ export default function RecoveryPhraseChips({
   confirmPhase,
   setInputValue,
   inputValue,
-  indicesToCheck,
+  indicesToCheck = [],
   hiddenPhrase,
+  revealPhrase,
 }) {
   const t = useI18nContext();
   const hideSeedPhrase = phraseRevealed === false;
+  const [selectedQuizWords, setSelectedQuizWords] = useState([]);
+  const srpRefs = useRef([]);
+  const shuffledPhrases = indicesToCheck.map((index) => {
+    return secretRecoveryPhrase[index];
+  });
+
+  const addQuizWord = (phrase) => {
+    const newSelectedQuizWords = [...selectedQuizWords];
+    const targetIndex = newSelectedQuizWords.length;
+    newSelectedQuizWords.push(phrase);
+    setSelectedQuizWords(newSelectedQuizWords);
+    srpRefs.current[indicesToCheck[targetIndex]].setQuizWord(phrase);
+    setInputValue({ ...inputValue, [indicesToCheck[targetIndex]]: phrase });
+  };
+
+  useEffect(() => {
+    console.log('selectedQuizWords', selectedQuizWords);
+  }, [selectedQuizWords]);
+
   return (
     <Box
-      borderColor={BorderColor.borderMuted}
-      borderStyle={BorderStyle.solid}
       padding={4}
-      borderWidth={1}
-      borderRadius={Size.MD}
-      display={DISPLAY.GRID}
+      borderRadius={Size.LG}
+      display={Display.Grid}
       marginBottom={4}
       className="recovery-phrase__secret"
     >
@@ -44,58 +68,98 @@ export default function RecoveryPhraseChips({
         })}
       >
         {secretRecoveryPhrase.map((word, index) => {
-          if (
+          const isDisabled = !(
             confirmPhase &&
             indicesToCheck &&
             indicesToCheck.includes(index)
-          ) {
-            return (
-              <div className="recovery-phrase__chip-item" key={index}>
-                <div className="recovery-phrase__chip-item__number">
-                  {`${index + 1}.`}
-                </div>
-                <ChipWithInput
-                  dataTestId={`recovery-phrase-input-${index}`}
-                  borderColor={BorderColor.primaryDefault}
-                  className="recovery-phrase__chip--with-input"
-                  inputValue={inputValue[index]}
-                  setInputValue={(value) => {
-                    setInputValue({ ...inputValue, [index]: value });
-                  }}
-                />
-              </div>
-            );
+          );
+
+          let inputWord = '';
+
+          if (confirmPhase) {
+            inputWord = inputValue[index];
+          } else {
+            inputWord = inputValue ? inputValue[index] : word;
           }
+
           return (
-            <div className="recovery-phrase__chip-item" key={index}>
-              <div className="recovery-phrase__chip-item__number">
-                {`${index + 1}.`}
-              </div>
-              <Chip
-                dataTestId={`recovery-phrase-chip-${index}`}
-                className="recovery-phrase__chip"
-                borderColor={BorderColor.borderDefault}
-              >
-                {word}
-              </Chip>
+            <div
+              className={classnames('recovery-phrase__chip-item', {
+                'recovery-phrase__chip-item--revealed-phase': !confirmPhase,
+              })}
+              key={index}
+            >
+              <SrpText
+                dataTestId={`recovery-phrase-input-${index}`}
+                ref={(el) => (srpRefs.current[index] = el)}
+                word={{
+                  word: inputWord,
+                  isActive: true,
+                }}
+                index={index}
+                disabled={isDisabled}
+                updateWord={(value) => {
+                  setInputValue({ ...inputValue, [index]: value });
+                }}
+              />
             </div>
           );
         })}
       </div>
 
-      {hideSeedPhrase && (
-        <div className="recovery-phrase__secret-blocker">
-          {!hiddenPhrase && (
-            <>
-              <i className="far fa-eye" color="white" />
-              <Text
-                variant={TextVariant.bodySm}
-                color={Color.overlayInverse}
-                className="recovery-phrase__secret-blocker--text"
+      {shuffledPhrases && (
+        <Box
+          display={Display.Flex}
+          marginTop={6}
+          gap={2}
+          width={BlockSize.Full}
+        >
+          {/* TODO: Fix text color showing primary when hovered */}
+          {shuffledPhrases.map((value, index) => {
+            return (
+              <Button
+                variant={ButtonVariant.Secondary}
+                borderRadius={BorderRadius.LG}
+                key={index}
+                block
+                disabled={selectedQuizWords.includes(value)}
+                onClick={() => {
+                  addQuizWord(value);
+                }}
               >
-                {t('makeSureNoOneWatching')}
+                {value}
+              </Button>
+            );
+          })}
+        </Box>
+      )}
+
+      {hideSeedPhrase && (
+        <div className="recovery-phrase__secret-blocker-container">
+          <div className="recovery-phrase__secret-blocker" />
+          {!hiddenPhrase && (
+            <Box
+              className="recovery-phrase__secret-blocker-text"
+              onClick={() => {
+                revealPhrase();
+              }}
+            >
+              <Icon
+                name={IconName.EyeSlash}
+                color={TextColor.textDefault}
+                size={IconSize.Md}
+              />
+              <Text
+                variant={TextVariant.bodyMd}
+                color={TextColor.textDefault}
+                fontWeight={FontWeight.Medium}
+              >
+                {t('tapToReveal')}
               </Text>
-            </>
+              <Text variant={TextVariant.bodySm} color={TextColor.textDefault}>
+                {t('tapToRevealNote')}
+              </Text>
+            </Box>
           )}
         </div>
       )}
@@ -111,4 +175,5 @@ RecoveryPhraseChips.propTypes = {
   inputValue: PropTypes.object,
   indicesToCheck: PropTypes.array,
   hiddenPhrase: PropTypes.bool,
+  revealPhrase: PropTypes.func,
 };
