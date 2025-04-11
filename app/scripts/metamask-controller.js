@@ -3488,8 +3488,7 @@ export default class MetamaskController extends EventEmitter {
 
       // seedless onboarding
       createSeedPhraseBackup: this.createSeedPhraseBackup.bind(this),
-      fetchAndRestoreSeedPhraseMetadata:
-        this.fetchAndRestoreSeedPhraseMetadata.bind(this),
+      fetchAllSeedPhrases: this.fetchAllSeedPhrases.bind(this),
 
       // hardware wallets
       connectHardware: this.connectHardware.bind(this),
@@ -4514,9 +4513,9 @@ export default class MetamaskController extends EventEmitter {
    * Otherwise, it creates a new vault using the restored seedphrase from metadata store.
    *
    * @param {string} password - The user's password.
-   * @returns {Promise<Buffer>} The seed phrase.
+   * @returns {Promise<Buffer[]>} The seed phrase.
    */
-  async fetchAndRestoreSeedPhraseMetadata(password) {
+  async fetchAllSeedPhrases(password) {
     try {
       const { verifierID, verifier } = this.oauthController.state;
 
@@ -4533,14 +4532,9 @@ export default class MetamaskController extends EventEmitter {
         return null;
       }
 
-      // get the first seed phrase
-      const seedPhrase = allSeedPhrases[allSeedPhrases.length - 1];
-
-      // load the seed phrase from the metadata store
-      await this.createNewVaultAndRestore(password, seedPhrase);
-
-      // await this.submitPassword(password);
-      return this._convertEnglishWordlistIndicesToCodepoints(seedPhrase);
+      return allSeedPhrases.map((phrase) =>
+        this._convertEnglishWordlistIndicesToCodepoints(phrase),
+      );
     } catch (error) {
       log.error(
         'Error while fetching and restoring seed phrase metadata.',

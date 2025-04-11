@@ -2742,4 +2742,131 @@ describe('Actions', () => {
       );
     });
   });
+
+  describe('createAndBackupSeedPhrase', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should create KeyChain, vault and Backup in the background', async () => {
+      const store = mockStore();
+      const mockSeedPhrase = 'mock seed phrase';
+      const mockEncodedSeedPhrase = Array.from(
+        Buffer.from(mockSeedPhrase).values(),
+      );
+
+      const createSeedPhraseBackupStub =
+        background.createSeedPhraseBackup.callsFake((_, __, cb) =>
+          cb(null, undefined),
+        );
+      const createNewVaultAndKeychainStub =
+        background.createNewVaultAndKeychain.callsFake((_, cb) =>
+          cb(null, undefined),
+        );
+      const getSeedPhrase = background.getSeedPhrase.callsFake((_, __, cb) =>
+        cb(null, mockEncodedSeedPhrase),
+      );
+
+      setBackgroundConnection(background);
+
+      const expectedActions = [
+        { type: 'SHOW_LOADING_INDICATION', payload: undefined },
+        { type: 'HIDE_LOADING_INDICATION' },
+      ];
+
+      await store.dispatch(actions.createAndBackupSeedPhrase('password'));
+
+      expect(store.getActions()).toStrictEqual(expectedActions);
+      expect(getSeedPhrase.callCount).toStrictEqual(1);
+      expect(createNewVaultAndKeychainStub.callCount).toStrictEqual(1);
+      expect(
+        createSeedPhraseBackupStub.calledOnceWith(
+          mockEncodedSeedPhrase,
+          'password',
+        ),
+      ).toStrictEqual(true);
+    });
+  });
+
+  describe('#restoreAndGetSeedPhrase', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('fetches all seed phrases from the metadata store and restores the vault', async () => {
+      const store = mockStore();
+      const mockSeedPhrase = 'mock seed phrase';
+      const mockEncodedSeedPhrase = Array.from(
+        Buffer.from(mockSeedPhrase).values(),
+      );
+
+      const fetchAllSeedPhrasesStub = background.fetchAllSeedPhrases.callsFake(
+        (_, cb) => cb(null, [mockEncodedSeedPhrase]),
+      );
+      const createNewVaultAndRestoreStub =
+        background.createNewVaultAndRestore.callsFake((_, __, cb) =>
+          cb(null, undefined),
+        );
+
+      setBackgroundConnection(background);
+
+      const expectedActions = [
+        { type: 'SHOW_LOADING_INDICATION', payload: undefined },
+        { type: 'HIDE_LOADING_INDICATION' },
+      ];
+
+      await store.dispatch(actions.restoreAndGetSeedPhrase('password'));
+
+      expect(fetchAllSeedPhrasesStub.callCount).toStrictEqual(1);
+      expect(createNewVaultAndRestoreStub.callCount).toStrictEqual(1);
+      expect(store.getActions()).toStrictEqual(expectedActions);
+    });
+
+    it('should not restore vault if no seed phrase is found', async () => {
+      const store = mockStore();
+
+      const fetchAllSeedPhrasesStub = background.fetchAllSeedPhrases.callsFake(
+        (_, cb) => cb(null, []),
+      );
+      const createNewVaultAndRestoreStub =
+        background.createNewVaultAndRestore.callsFake((_, __, cb) =>
+          cb(null, undefined),
+        );
+
+      setBackgroundConnection(background);
+
+      const expectedActions = [
+        { type: 'SHOW_LOADING_INDICATION', payload: undefined },
+        { type: 'HIDE_LOADING_INDICATION' },
+      ];
+
+      await store.dispatch(actions.restoreAndGetSeedPhrase('password'));
+
+      expect(fetchAllSeedPhrasesStub.callCount).toStrictEqual(1);
+      expect(createNewVaultAndRestoreStub.callCount).toStrictEqual(0);
+      expect(store.getActions()).toStrictEqual(expectedActions);
+    });
+
+    it('errors when fetchAndRestoreSeedPhrase throws', async () => {
+      const store = mockStore();
+
+      background.fetchAllSeedPhrases.callsFake((_, cb) =>
+        cb(new Error('error')),
+      );
+
+      setBackgroundConnection(background);
+
+      const expectedActions = [
+        { type: 'SHOW_LOADING_INDICATION', payload: undefined },
+        { type: 'UNLOCK_IN_PROGRESS' },
+        { type: 'UNLOCK_FAILED', value: 'error' },
+        { type: 'HIDE_LOADING_INDICATION' },
+      ];
+
+      await expect(
+        store.dispatch(actions.tryRestoreAndUnlockMetamask('password')),
+      ).rejects.toThrow('error');
+      expect(store.getActions()).toStrictEqual(expectedActions);
+    });
+  });
 });

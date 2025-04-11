@@ -199,8 +199,8 @@ export function tryRestoreAndUnlockMetamask(
     dispatch(unlockInProgress());
 
     try {
-      const seedPhrase = await restoreSeedPhrase(password);
-      if (seedPhrase === null) {
+      const seedPhrases = await fetchAllSeedPhrases(password);
+      if (seedPhrases === null) {
         throw new Error('Seed phrase not found');
       }
 
@@ -208,7 +208,7 @@ export function tryRestoreAndUnlockMetamask(
       return forceUpdateMetamaskState(dispatch);
     } catch (error) {
       dispatch(unlockFailed(getErrorMessage(error)));
-      dispatch(displayWarning(error));
+      throw error;
     } finally {
       dispatch(hideLoadingIndication());
     }
@@ -372,6 +372,7 @@ export function createAndBackupSeedPhrase(
 export function unlockAndGetSeedPhrase(
   password: string,
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  console.log('[unlockAndGetSeedPhrase] password', password);
   return async (dispatch: MetaMaskReduxDispatch) => {
     dispatch(showLoadingIndication());
 
@@ -406,7 +407,20 @@ export function restoreAndGetSeedPhrase(
     dispatch(showLoadingIndication());
 
     try {
-      const seedPhrase = await restoreSeedPhrase(password);
+      const seedPhrases = await fetchAllSeedPhrases(password);
+      if (seedPhrases === null || seedPhrases.length === 0) {
+        return null;
+      }
+
+      // get the first seed phrase from the array
+      const seedPhrase = seedPhrases[seedPhrases.length - 1];
+      const encodedSeedPhrase = Array.from(Buffer.from(seedPhrase).values());
+
+      await submitRequestToBackground('createNewVaultAndRestore', [
+        password,
+        encodedSeedPhrase,
+      ]);
+
       await forceUpdateMetamaskState(dispatch);
       return seedPhrase;
     } catch (error) {
@@ -531,22 +545,21 @@ export async function createSeedPhraseBackup(
 }
 
 /**
- * Restores the seed phrase from the metadata store and restore the vault using the seed phrase.
+ * Fetches all seed phrases from the metadata store.
+ *
+ * Seedphrases are sorted by creation date, the latest seed phrase is the first one in the array.
  *
  * @param password - The password.
- * @returns The seed phrase.
+ * @returns The seed phrases.
  */
-export async function restoreSeedPhrase(
+export async function fetchAllSeedPhrases(
   password: string,
-): Promise<string | null> {
-  const encodedSeedPhrase = await submitRequestToBackground<Buffer>(
-    'fetchAndRestoreSeedPhraseMetadata',
+): Promise<Buffer[] | null> {
+  const encodedSeedPhrases = await submitRequestToBackground<Buffer[]>(
+    'fetchAllSeedPhrases',
     [password],
   );
-  if (encodedSeedPhrase === null) {
-    return null;
-  }
-  return Buffer.from(encodedSeedPhrase).toString('utf8');
+  return encodedSeedPhrases;
 }
 
 export function resetAccount(): ThunkAction<
