@@ -8,7 +8,10 @@ import {
   TextColor,
   TextVariant,
 } from '../../../helpers/constants/design-system';
-import { ONBOARDING_CREATE_PASSWORD_ROUTE } from '../../../helpers/constants/routes';
+import {
+  ONBOARDING_CREATE_PASSWORD_ROUTE,
+  ONBOARDING_GET_STARTED_ROUTE,
+} from '../../../helpers/constants/routes';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import SrpInputImport from '../../../components/app/srp-input-import';
 import { getCurrentKeyring } from '../../../selectors';
@@ -46,6 +49,16 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
       {showSrpDetailsModal && (
         <SRPDetailsModal onClose={() => setShowSrpDetailsModal(false)} />
       )}
+      {/* TODO: check fully if it should always go to get started page */}
+      <Box marginBottom={4}>
+        <ButtonIcon
+          iconName={IconName.ArrowLeft}
+          color={IconColor.iconDefault}
+          size={ButtonIconSize.Md}
+          data-testid="import-srp-back-button"
+          onClick={() => history.push(ONBOARDING_GET_STARTED_ROUTE)}
+        />
+      </Box>
       <div className="import-srp__step">
         <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
           {t('stepOf', [1, 2])}

@@ -10,6 +10,7 @@ import {
   TextVariant,
   TextColor,
   BlockSize,
+  IconColor,
 } from '../../../helpers/constants/design-system';
 import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
@@ -33,6 +34,7 @@ import {
   Box,
   Button,
   ButtonIcon,
+  ButtonIconSize,
   ButtonSize,
   ButtonVariant,
   Checkbox,
@@ -233,6 +235,20 @@ export default function CreatePassword({
 
   return (
     <div className="create-password__wrapper" data-testid="create-password">
+      {/* TODO: check fully it should just go back to the previous page */}
+      <Box
+        justifyContent={JustifyContent.flexStart}
+        marginBottom={4}
+        width={BlockSize.Full}
+      >
+        <ButtonIcon
+          iconName={IconName.ArrowLeft}
+          color={IconColor.iconDefault}
+          size={ButtonIconSize.Md}
+          data-testid="create-password-back-button"
+          onClick={() => history.goBack()}
+        />
+      </Box>
       <Box
         justifyContent={JustifyContent.flexStart}
         marginBottom={4}
