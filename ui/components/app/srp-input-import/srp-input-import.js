@@ -13,6 +13,7 @@ import {
   BackgroundColor,
   BlockSize,
   BorderColor,
+  TextColor,
 } from '../../../helpers/constants/design-system';
 import { parseSecretRecoveryPhrase } from './parse-secret-recovery-phrase';
 
@@ -131,7 +132,10 @@ export default function SrpInputImport({ onChange }) {
       SRP_LENGTHS.includes(draftSrp.length) &&
       !draftSrp.some((word) => word.word.length === 0)
     ) {
-      onChange(draftSrp);
+      const stringSrp = draftSrp.map((word) => word.word).join(' ');
+      onChange(stringSrp);
+    } else {
+      onChange('');
     }
   }, [draftSrp, onChange]);
 
@@ -146,7 +150,14 @@ export default function SrpInputImport({ onChange }) {
                 ref={(el) => (srpRefs.current[word.id] = el)}
                 value={word.word}
                 type={word.active || showAll ? 'text' : 'password'}
-                startAccessory={<Text>{index + 1}</Text>}
+                startAccessory={
+                  <Text
+                    color={TextColor.textAlternative}
+                    className="srp-input-import__word-index"
+                  >
+                    {index + 1}
+                  </Text>
+                }
                 onChange={(e) => handleChange(word.id, e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
@@ -210,6 +221,7 @@ export default function SrpInputImport({ onChange }) {
           <Button
             variant={ButtonVariant.Link}
             onClick={async () => {
+              setShowAll(false);
               setDraftSrp([]);
             }}
           >
