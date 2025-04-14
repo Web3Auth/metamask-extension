@@ -4497,8 +4497,12 @@ export default class MetamaskController extends EventEmitter {
   async createSeedPhraseBackup(encodedSeedPhrase, password) {
     const { userId, authConnectionId, groupedAuthConnectionId } =
       this.oauthController.state;
+
+    const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
+
     const seedPhrase =
-      this._convertMnemonicToWordlistIndices(encodedSeedPhrase);
+      this._convertMnemonicToWordlistIndices(seedPhraseAsBuffer);
+
     await this.seedlessOnboardingController.createToprfKeyAndBackupSeedPhrase({
       seedPhrase,
       password,
@@ -4526,12 +4530,12 @@ export default class MetamaskController extends EventEmitter {
       // fetch all seed phrases
       // seedPhrases are sorted by creation date, the latest seed phrase is the first one in the array
       const allSeedPhrases =
-        await this.seedlessOnboardingController.fetchAllSeedPhrases(
+        await this.seedlessOnboardingController.fetchAllSeedPhrases({
           userId,
           authConnectionId,
           groupedAuthConnectionId,
           password,
-        );
+        });
 
       if (allSeedPhrases.length === 0) {
         return null;

@@ -372,7 +372,6 @@ export function createAndBackupSeedPhrase(
 export function unlockAndGetSeedPhrase(
   password: string,
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
-  console.log('[unlockAndGetSeedPhrase] password', password);
   return async (dispatch: MetaMaskReduxDispatch) => {
     dispatch(showLoadingIndication());
 

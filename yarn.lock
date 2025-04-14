@@ -5007,7 +5007,7 @@ __metadata:
 
 "@metamask/auth-network-utils@file:./auth-network-utils.tgz::locator=metamask-crx%40workspace%3A.":
   version: 0.0.0
-  resolution: "@metamask/auth-network-utils@file:./auth-network-utils.tgz#./auth-network-utils.tgz::hash=f25b30&locator=metamask-crx%40workspace%3A."
+  resolution: "@metamask/auth-network-utils@file:./auth-network-utils.tgz#./auth-network-utils.tgz::hash=172c1a&locator=metamask-crx%40workspace%3A."
   dependencies:
     "@noble/curves": "npm:^1.8.1"
     "@noble/hashes": "npm:^1.7.1"
@@ -5018,7 +5018,7 @@ __metadata:
     elliptic: "npm:^6.6.1"
     json-stable-stringify: "npm:^1.2.1"
     loglevel: "npm:^1.9.2"
-  checksum: 10/87fd75277249b26684a69847b262aee544c6bce4cad2448d9f6e8a827d5fdb9fd07c86bb924a1eb2db71164ca0df27ebc4f9ea43a4214ee8ef03172427f88140
+  checksum: 10/3f5a070f7a5d4f126919d11ebebf97b94042f4ed2f06798111382871d5aa19d9eeeb0245e8659330c9a60c78a01950958deec9929a93793c813a705b56b7b1f3
   languageName: node
   linkType: hard
 
@@ -6268,9 +6268,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/seedless-onboarding-controller@file:../core/packages/seedless-onboarding-controller::locator=metamask-crx%40workspace%3A.":
+"@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz::locator=metamask-crx%40workspace%3A.":
   version: 0.0.1
-  resolution: "@metamask/seedless-onboarding-controller@file:../core/packages/seedless-onboarding-controller#../core/packages/seedless-onboarding-controller::hash=66c76d&locator=metamask-crx%40workspace%3A."
+  resolution: "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz#./seedless-onboarding-controller.tgz::hash=3e5596&locator=metamask-crx%40workspace%3A."
   dependencies:
     "@metamask/base-controller": "npm:^8.0.0"
     "@metamask/browser-passworder": "npm:^4.3.0"
@@ -6282,7 +6282,7 @@ __metadata:
     loglevel: "npm:^1.8.1"
   peerDependencies:
     "@metamask/keyring-controller": ^21.0.0
-  checksum: 10/5a4cd79ad98b8b8d3e92d53944ad2ad30f64ccd189f382162c933d11ae720d312f0187a7d36940320b84fa40804e9382c6b842ee546bbc8c0d854cefb1463674
+  checksum: 10/3c3d69480a126a9d639ca0d303957a84b3e771f2aab6e12fd77861de3b296368099f42ad21cf76597219e37dac269f80864238170961e350be7ee4fd3f28b017
   languageName: node
   linkType: hard
 
@@ -6621,7 +6621,7 @@ __metadata:
 
 "@metamask/toprf-secure-backup@file:./toprf-secure-backup.tgz::locator=metamask-crx%40workspace%3A.":
   version: 0.0.0
-  resolution: "@metamask/toprf-secure-backup@file:./toprf-secure-backup.tgz#./toprf-secure-backup.tgz::hash=f04b7d&locator=metamask-crx%40workspace%3A."
+  resolution: "@metamask/toprf-secure-backup@file:./toprf-secure-backup.tgz#./toprf-secure-backup.tgz::hash=420869&locator=metamask-crx%40workspace%3A."
   dependencies:
     "@metamask/auth-network-utils": "npm:^0.0.0"
     "@noble/ciphers": "npm:^1.2.1"
@@ -6633,7 +6633,7 @@ __metadata:
     "@toruslabs/fetch-node-details": "npm:^15.0.0"
     "@toruslabs/http-helpers": "npm:^8.1.1"
     bn.js: "npm:^5.2.1"
-  checksum: 10/ec4def6652649cc192c40a63c4031cbe5a7ec2f2ea7cfefa2a86d1644d5c997c1c67f14d3ce58f4810416aef355baba3bead31f28e3f1deead390afeef57ec1f
+  checksum: 10/994157ce349ea1f0a678488ff9070d6aff223e825bfe253c899aa780bdcbd80f0da972505969d8c6560f9af8e71f848eafce0cc1229e1b999008dc086398fa05
   languageName: node
   linkType: hard
 
@@ -27603,7 +27603,7 @@ __metadata:
     "@metamask/rpc-errors": "npm:^7.0.0"
     "@metamask/safe-event-emitter": "npm:^3.1.1"
     "@metamask/scure-bip39": "npm:^2.0.3"
-    "@metamask/seedless-onboarding-controller": ../core/packages/seedless-onboarding-controller
+    "@metamask/seedless-onboarding-controller": ./seedless-onboarding-controller.tgz
     "@metamask/selected-network-controller": "npm:^19.0.0"
     "@metamask/signature-controller": "npm:^23.1.0"
     "@metamask/smart-transactions-controller": "npm:^16.0.1"
@@ -27620,6 +27620,7 @@ __metadata:
     "@metamask/user-operation-controller": "npm:^24.0.1"
     "@metamask/utils": "npm:^11.1.0"
     "@ngraveio/bc-ur": "npm:^1.1.12"
+    "@noble/curves": "npm:^1.8.1"
     "@noble/hashes": "npm:^1.3.3"
     "@octokit/core": "npm:^3.6.0"
     "@open-rpc/meta-schema": "npm:^1.14.6"
