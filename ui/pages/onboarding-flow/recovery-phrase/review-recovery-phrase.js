@@ -50,7 +50,10 @@ export default function RecoveryPhrase({ secretRecoveryPhrase }) {
   return (
     <div className="recovery-phrase" data-testid="recovery-phrase">
       {showSrpDetailsModal && (
-        <SRPDetailsModal onClose={() => setShowSrpDetailsModal(false)} />
+        <SRPDetailsModal
+          onClose={() => setShowSrpDetailsModal(false)}
+          marginBottom={4}
+        />
       )}
       {/* TODO: check fully it should just go back to the previous page */}
       <Box
@@ -79,22 +82,24 @@ export default function RecoveryPhrase({ secretRecoveryPhrase }) {
         </Text>
       </Box>
       <Box marginBottom={6}>
-        <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          <Text variant={TextVariant.bodyMd} marginBottom={6}>
-            {t('seedPhraseReviewDetails', [
-              [
-                <ButtonLink
-                  key="seedPhraseReviewDetails"
-                  size={ButtonLinkSize.Inherit}
-                  onClick={() => {
-                    setShowSrpDetailsModal(true);
-                  }}
-                >
-                  {t('secretRecoveryPhrase')}
-                </ButtonLink>,
-              ],
-            ])}
-          </Text>
+        <Text
+          variant={TextVariant.bodyMd}
+          color={TextColor.textAlternative}
+          marginBottom={6}
+        >
+          {t('seedPhraseReviewDetails', [
+            [
+              <ButtonLink
+                key="seedPhraseReviewDetails"
+                size={ButtonLinkSize.Inherit}
+                onClick={() => {
+                  setShowSrpDetailsModal(true);
+                }}
+              >
+                {t('secretRecoveryPhrase')}
+              </ButtonLink>,
+            ],
+          ])}
         </Text>
       </Box>
       <RecoveryPhraseChips

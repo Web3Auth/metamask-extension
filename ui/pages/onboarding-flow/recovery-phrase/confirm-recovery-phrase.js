@@ -139,7 +139,7 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
         inputValue={phraseElements}
         indicesToCheck={indicesToCheck}
       />
-      <div className="recovery-phrase__footer__confirm">
+      <div className="recovery-phrase__footer--button">
         <Button
           variant={ButtonVariant.Primary}
           width={BlockSize.Full}
