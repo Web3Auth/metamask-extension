@@ -34,11 +34,11 @@ import {
   DEFAULT_ROUTE,
 } from '../../../helpers/constants/routes';
 import {
+  getCurrentKeyring,
   getExternalServicesOnboardingToggleState,
   getFirstTimeFlowType,
   getPasswordHint,
 } from '../../../selectors';
-import { getSeedPhraseBackedUp } from '../../../ducks/metamask/metamask';
 import {
   MetaMetricsEventCategory,
   MetaMetricsEventName,
@@ -57,7 +57,7 @@ export default function WalletReady() {
   const dispatch = useDispatch();
   const trackEvent = useContext(MetaMetricsContext);
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
-  const seedPhraseBackedUp = useSelector(getSeedPhraseBackedUp);
+  const currentKeyring = useSelector(getCurrentKeyring);
   const learnMoreLink =
     'https://support.metamask.io/hc/en-us/articles/360015489591-Basic-Safety-and-Security-Tips-for-MetaMask';
   // const learnHowToKeepWordsSafe =
@@ -167,7 +167,7 @@ export default function WalletReady() {
         className="wallet-ready__settings-actions"
         gap={4}
       >
-        {seedPhraseBackedUp && (
+        {currentKeyring && (
           <ButtonBase
             variant={ButtonVariant.Secondary}
             borderRadius={BorderRadius.LG}
