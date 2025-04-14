@@ -123,6 +123,7 @@ type AppState = {
   ///: BEGIN:ONLY_INCLUDE_IF(multi-srp)
   showNewSrpAddedToast: boolean;
   ///: END:ONLY_INCLUDE_IF
+  passwordHint: string;
 };
 
 export type AppSliceState = {
@@ -222,6 +223,7 @@ const initialState: AppState = {
   ///: BEGIN:ONLY_INCLUDE_IF(multi-srp)
   showNewSrpAddedToast: false,
   ///: END:ONLY_INCLUDE_IF
+  passwordHint: '',
 };
 
 export default function reduceApp(
@@ -750,6 +752,11 @@ export default function reduceApp(
         showNewSrpAddedToast: action.payload,
       };
     ///: END:ONLY_INCLUDE_IF
+    case actionConstants.ONBOARDING_SET_PASSWORD_HINT:
+      return {
+        ...appState,
+        passwordHint: action.payload,
+      };
 
     default:
       return appState;
@@ -784,6 +791,15 @@ export function onboardingToggleBasicFunctionalityOn(): Action {
 export function onboardingToggleBasicFunctionalityOff(): Action {
   return {
     type: actionConstants.ONBOARDING_TOGGLE_BASIC_FUNCTIONALITY_OFF,
+  };
+}
+
+export function onboardingSetPasswordHint(
+  payload: string,
+): PayloadAction<string> {
+  return {
+    type: actionConstants.ONBOARDING_SET_PASSWORD_HINT,
+    payload,
   };
 }
 

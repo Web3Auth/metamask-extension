@@ -36,6 +36,7 @@ import {
 import {
   getExternalServicesOnboardingToggleState,
   getFirstTimeFlowType,
+  getPasswordHint,
 } from '../../../selectors';
 import { getSeedPhraseBackedUp } from '../../../ducks/metamask/metamask';
 import {
@@ -57,8 +58,6 @@ export default function WalletReady() {
   const trackEvent = useContext(MetaMetricsContext);
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const seedPhraseBackedUp = useSelector(getSeedPhraseBackedUp);
-  // TODO: get from hooks
-  const srpHint = '';
   const learnMoreLink =
     'https://support.metamask.io/hc/en-us/articles/360015489591-Basic-Safety-and-Security-Tips-for-MetaMask';
   // const learnHowToKeepWordsSafe =
@@ -69,6 +68,8 @@ export default function WalletReady() {
   const externalServicesOnboardingToggleState = useSelector(
     getExternalServicesOnboardingToggleState,
   );
+
+  const passwordHint = useSelector(getPasswordHint);
 
   const onDone = async () => {
     trackEvent({
@@ -183,12 +184,12 @@ export default function WalletReady() {
                 <Text variant={TextVariant.bodyMdBold}>
                   {t('passwordHintCreate')}
                 </Text>
-                {srpHint && (
+                {passwordHint && (
                   <Text
                     variant={TextVariant.bodySm}
                     color={TextColor.textAlternative}
                   >
-                    {srpHint}
+                    {passwordHint}
                   </Text>
                 )}
               </Box>
