@@ -34,7 +34,7 @@ export default function OnboardingAppHeader() {
         data-theme={pathname === ONBOARDING_WELCOME_ROUTE ? 'light' : ''}
       >
         <MetaFoxLogo
-          theme={pathname === ONBOARDING_WELCOME_ROUTE ? 'light' : ''}
+          theme={pathname === ONBOARDING_WELCOME_ROUTE ? 'light' : 'os'}
           unsetIconHeight
           isOnboarding
         />
