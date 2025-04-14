@@ -3455,10 +3455,10 @@ export function startOAuthLogin(
     dispatch(showLoadingIndication());
 
     try {
-      const tokenInfo = await submitRequestToBackground('startOAuthLogin', [
+      const isNewUser = await submitRequestToBackground('startOAuthLogin', [
         provider,
       ]);
-      return tokenInfo;
+      return isNewUser;
     } catch (err) {
       dispatch(displayWarning(error));
       if (isErrorWithMessage(error)) {

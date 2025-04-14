@@ -3,22 +3,32 @@ import {
   ControllerGetStateAction,
   ControllerStateChangeEvent,
   RestrictedMessenger,
+  StateMetadata,
 } from '@metamask/base-controller';
 import log from 'loglevel';
 
 // Unique name for the controller
 const controllerName = 'OAuthController';
 
-export type OAuthProvider = 'google' | 'apple';
+export enum OAuthProvider {
+  Google = 'google',
+  Apple = 'apple',
+}
+
+export enum Web3AuthNetwork {
+  Mainnet = 'sapphire_mainnet',
+  Devnet = 'sapphire_devnet',
+}
 
 /**
  * The state of the {@link OAuthController}
  */
-// TODO: do we actually need the state? If not, remove it
 export type OAuthControllerState = {
   authLoading: boolean;
-  verifier?: OAuthProvider;
-  verifierID?: string;
+  authConnectionId?: string;
+  groupedAuthConnectionId?: string;
+  userId?: string;
+  provider?: OAuthProvider;
 };
 
 /**
@@ -84,15 +94,14 @@ export type OAuthControllerOptions = {
   messenger: OAuthControllerMessenger;
   loginProviderConfig: LoginProviderConfig;
   byoaServerUrl: string;
-  web3AuthNetwork: string;
+  web3AuthNetwork: Web3AuthNetwork;
 };
 
 export type OAuthLoginResult = {
-  verifier: OAuthProvider;
-  verifierID: string;
+  authConnectionId: string;
+  groupedAuthConnectionId: string;
+  userId: string;
   idTokens: string[];
-  endpoints: string[];
-  indexes: number[];
 };
 
 /**
@@ -102,16 +111,24 @@ export type OAuthLoginResult = {
  * using the `persist` flag; and if they can be sent to Sentry or not, using
  * the `anonymous` flag.
  */
-const controllerMetadata = {
+const controllerMetadata: StateMetadata<OAuthControllerState> = {
   authLoading: {
     persist: false,
     anonymous: true,
   },
-  verifier: {
+  authConnectionId: {
     persist: true,
     anonymous: true,
   },
-  verifierID: {
+  groupedAuthConnectionId: {
+    persist: true,
+    anonymous: true,
+  },
+  userId: {
+    persist: true,
+    anonymous: true,
+  },
+  provider: {
     persist: true,
     anonymous: true,
   },
@@ -128,13 +145,17 @@ export default class OAuthController extends BaseController<
   OAuthControllerState,
   OAuthControllerMessenger
 > {
-  private loginProviderConfig: LoginProviderConfig;
+  loginProviderConfig: LoginProviderConfig;
 
-  private byoaServerUrl: string;
+  byoaServerUrl: string;
+
+  readonly OAuthAud = 'metamask';
+
+  readonly AuthConnectionId = 'byoa-server';
+
+  readonly GroupedAuthConnectionId = 'mm-seedless-onboarding';
 
   private web3AuthNetwork: string;
-
-  private readonly OAUTH_AUD = 'metamask';
 
   constructor({
     state,
@@ -231,7 +252,7 @@ export default class OAuthController extends BaseController<
         code: authCode,
         client_id: providerConfig.clientId,
         redirect_uri:
-          provider === 'apple'
+          provider === OAuthProvider.Apple
             ? providerConfig.serverRedirectUri
             : providerConfig.redirectUri,
         login_provider: provider,
@@ -241,16 +262,17 @@ export default class OAuthController extends BaseController<
     const data = await res.json();
 
     this.update((state) => {
-      state.verifier = provider;
-      state.verifierID = data.verifier_id;
+      state.authConnectionId = this.AuthConnectionId;
+      state.groupedAuthConnectionId = this.GroupedAuthConnectionId;
+      state.userId = data.verifier_id;
+      state.provider = provider;
     });
 
     return {
-      verifier: provider,
-      verifierID: data.verifier_id,
-      idTokens: [data.jwt_tokens[this.OAUTH_AUD]],
-      endpoints: [data.endpoints[this.OAUTH_AUD]],
-      indexes: data.indexes,
+      authConnectionId: this.AuthConnectionId,
+      groupedAuthConnectionId: this.GroupedAuthConnectionId,
+      userId: data.verifier_id,
+      idTokens: [data.jwt_tokens[this.OAuthAud]],
     };
   }
 

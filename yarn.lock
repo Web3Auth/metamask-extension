@@ -6268,19 +6268,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz::locator=metamask-crx%40workspace%3A.":
+"@metamask/seedless-onboarding-controller@file:../core/packages/seedless-onboarding-controller::locator=metamask-crx%40workspace%3A.":
   version: 0.0.1
-  resolution: "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz#./seedless-onboarding-controller.tgz::hash=4a204f&locator=metamask-crx%40workspace%3A."
+  resolution: "@metamask/seedless-onboarding-controller@file:../core/packages/seedless-onboarding-controller#../core/packages/seedless-onboarding-controller::hash=66c76d&locator=metamask-crx%40workspace%3A."
   dependencies:
     "@metamask/base-controller": "npm:^8.0.0"
     "@metamask/browser-passworder": "npm:^4.3.0"
     "@metamask/keyring-controller": "npm:^21.0.0"
     "@metamask/toprf-secure-backup": "file:./toprf-secure-backup.tgz"
+    "@metamask/utils": "npm:^11.2.0"
+    "@noble/hashes": "npm:^1.4.0"
     async-mutex: "npm:^0.5.0"
     loglevel: "npm:^1.8.1"
   peerDependencies:
     "@metamask/keyring-controller": ^21.0.0
-  checksum: 10/7fc05bfdfac0c3f4247aee2992fc418de5579d322008220efc5117107e18f2588f367b83d3996ba3cc5ca58322793d8d39a7024617079088540d7cf2cb500fa3
+  checksum: 10/5a4cd79ad98b8b8d3e92d53944ad2ad30f64ccd189f382162c933d11ae720d312f0187a7d36940320b84fa40804e9382c6b842ee546bbc8c0d854cefb1463674
   languageName: node
   linkType: hard
 
@@ -6619,7 +6621,7 @@ __metadata:
 
 "@metamask/toprf-secure-backup@file:./toprf-secure-backup.tgz::locator=metamask-crx%40workspace%3A.":
   version: 0.0.0
-  resolution: "@metamask/toprf-secure-backup@file:./toprf-secure-backup.tgz#./toprf-secure-backup.tgz::hash=b9aade&locator=metamask-crx%40workspace%3A."
+  resolution: "@metamask/toprf-secure-backup@file:./toprf-secure-backup.tgz#./toprf-secure-backup.tgz::hash=f04b7d&locator=metamask-crx%40workspace%3A."
   dependencies:
     "@metamask/auth-network-utils": "npm:^0.0.0"
     "@noble/ciphers": "npm:^1.2.1"
@@ -6631,7 +6633,7 @@ __metadata:
     "@toruslabs/fetch-node-details": "npm:^15.0.0"
     "@toruslabs/http-helpers": "npm:^8.1.1"
     bn.js: "npm:^5.2.1"
-  checksum: 10/958e7b34c79c887cc60339886def4f99f2b4efa88288dd5b31fe9e38527c18787cd8d4a0cc4018a101b18f1cc842cefa4e1779734cfcf6447523f8a1b5b016c2
+  checksum: 10/ec4def6652649cc192c40a63c4031cbe5a7ec2f2ea7cfefa2a86d1644d5c997c1c67f14d3ce58f4810416aef355baba3bead31f28e3f1deead390afeef57ec1f
   languageName: node
   linkType: hard
 
@@ -27601,7 +27603,7 @@ __metadata:
     "@metamask/rpc-errors": "npm:^7.0.0"
     "@metamask/safe-event-emitter": "npm:^3.1.1"
     "@metamask/scure-bip39": "npm:^2.0.3"
-    "@metamask/seedless-onboarding-controller": ./seedless-onboarding-controller.tgz
+    "@metamask/seedless-onboarding-controller": ../core/packages/seedless-onboarding-controller
     "@metamask/selected-network-controller": "npm:^19.0.0"
     "@metamask/signature-controller": "npm:^23.1.0"
     "@metamask/smart-transactions-controller": "npm:^16.0.1"

@@ -4473,10 +4473,11 @@ export default class MetamaskController extends EventEmitter {
       const authenticationResult =
         await this.seedlessOnboardingController.authenticate({
           idTokens: oAuthLoginResult.idTokens,
-          verifier: oAuthLoginResult.verifier,
-          verifierID: oAuthLoginResult.verifierID,
+          authConnectionId: oAuthLoginResult.authConnectionId,
+          groupedAuthConnectionId: oAuthLoginResult.groupedAuthConnectionId,
+          userId: oAuthLoginResult.userId,
         });
-      const hasUserOnboarded = authenticationResult.hasValidEncKey;
+      const hasUserOnboarded = authenticationResult.isNewUser;
       return hasUserOnboarded;
     } catch (error) {
       log.error('Error while starting social login', error);
@@ -4494,14 +4495,16 @@ export default class MetamaskController extends EventEmitter {
    * @param {string} password - The user's password.
    */
   async createSeedPhraseBackup(encodedSeedPhrase, password) {
-    const { verifierID, verifier } = this.oauthController.state;
+    const { userId, authConnectionId, groupedAuthConnectionId } =
+      this.oauthController.state;
     const seedPhrase =
       this._convertMnemonicToWordlistIndices(encodedSeedPhrase);
-    await this.seedlessOnboardingController.createSeedPhraseBackup({
+    await this.seedlessOnboardingController.createToprfKeyAndBackupSeedPhrase({
       seedPhrase,
       password,
-      verifier,
-      verifierID,
+      userId,
+      authConnectionId,
+      groupedAuthConnectionId,
     });
   }
 
@@ -4517,14 +4520,16 @@ export default class MetamaskController extends EventEmitter {
    */
   async fetchAllSeedPhrases(password) {
     try {
-      const { verifierID, verifier } = this.oauthController.state;
+      const { userId, authConnectionId, groupedAuthConnectionId } =
+        this.oauthController.state;
 
       // fetch all seed phrases
       // seedPhrases are sorted by creation date, the latest seed phrase is the first one in the array
       const allSeedPhrases =
-        await this.seedlessOnboardingController.fetchAndRestoreSeedPhrase(
-          verifier,
-          verifierID,
+        await this.seedlessOnboardingController.fetchAllSeedPhrases(
+          userId,
+          authConnectionId,
+          groupedAuthConnectionId,
           password,
         );
 

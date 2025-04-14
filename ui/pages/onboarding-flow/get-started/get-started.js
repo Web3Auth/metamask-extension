@@ -74,8 +74,8 @@ export default function GetStarted() {
   const onClickSocialLogin = async (provider) => {
     setNewAccountCreationInProgress(true);
     dispatch(setFirstTimeFlowType(FirstTimeFlowType.seedless));
-    const isExistingUser = await dispatch(startOAuthLogin(provider));
-    if (isExistingUser) {
+    const isNewUser = await dispatch(startOAuthLogin(provider));
+    if (!isNewUser) {
       // redirect to login page
       history.push(ONBOARDING_UNLOCK_ROUTE);
       return;
