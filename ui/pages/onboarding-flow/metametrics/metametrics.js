@@ -119,8 +119,7 @@ export default function OnboardingMetametrics() {
         {t('onboardingMetametricsTitle')}
       </Text>
       <Text className="onboarding-metametrics__desc" textAlign={TextAlign.Left}>
-        We’d like to gather basic usage and diagnostics data to improve
-        MetaMask. It will always be:
+        {t('onboardingMetametricsDescription')}
       </Text>
       <ul>
         <li>
@@ -135,18 +134,19 @@ export default function OnboardingMetametrics() {
               size={IconSize.Sm}
               color={IconColor.successDefault}
             />
-            <Box>
+            <Text color={TextColor.textAlternative}>
               {t('onboardingMetametricsNeverCollect', [
                 <Text
                   variant={TextVariant.inherit}
                   key="never"
                   fontWeight={FontWeight.Bold}
+                  color={TextColor.textDefault}
                   marginTop={0}
                 >
                   {t('onboardingMetametricsNeverCollectEmphasis')}
                 </Text>,
               ])}
-            </Box>
+            </Text>
           </Box>
         </li>
         <li>
@@ -161,17 +161,18 @@ export default function OnboardingMetametrics() {
               size={IconSize.Sm}
               color={IconColor.successDefault}
             />
-            <Box>
+            <Text color={TextColor.textAlternative}>
               {t('onboardingMetametricsNeverCollectIP', [
                 <Text
                   variant={TextVariant.inherit}
                   key="never-collect"
                   fontWeight={FontWeight.Bold}
+                  color={TextColor.textDefault}
                 >
                   {t('onboardingMetametricsNeverCollectIPEmphasis')}
                 </Text>,
               ])}
-            </Box>
+            </Text>
           </Box>
         </li>
         <li>
@@ -186,17 +187,18 @@ export default function OnboardingMetametrics() {
               size={IconSize.Sm}
               color={IconColor.successDefault}
             />
-            <Box>
+            <Text color={TextColor.textAlternative}>
               {t('onboardingMetametricsNeverSellData', [
                 <Text
                   variant={TextVariant.inherit}
                   key="never-sell"
                   fontWeight={FontWeight.Bold}
+                  color={TextColor.textDefault}
                 >
                   {t('onboardingMetametricsNeverSellDataEmphasis')}
                 </Text>,
               ])}
-            </Box>
+            </Text>
           </Box>
         </li>
       </ul>
@@ -221,10 +223,7 @@ export default function OnboardingMetametrics() {
         variant={TextVariant.bodySm}
         className="onboarding-metametrics__terms"
       >
-        We’ll let you know if we plan to use this data for other purposes. You
-        can review our Privacy Policy any time (we never sell the data you
-        provide here).
-        {/* {t('onboardingMetametricsInfuraTerms', [
+        {t('onboardingMetametricsTerms', [
           <a
             href="https://metamask.io/privacy.html"
             target="_blank"
@@ -233,7 +232,7 @@ export default function OnboardingMetametrics() {
           >
             {t('onboardingMetametricsInfuraTermsPolicy')}
           </a>,
-        ])} */}
+        ])}
       </Text>
 
       <Box
