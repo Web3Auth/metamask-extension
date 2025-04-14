@@ -399,20 +399,21 @@ const PasswordHintSavedToast = () => {
   const dispatch = useDispatch();
 
   const showPasswordHintSavedToast = useSelector(selectPasswordHintSavedToast);
+  const autoHideToastDelay = 5 * SECOND;
 
   return (
     showPasswordHintSavedToast && (
       <Toast
         key="password-hint-saved-toast"
-        startAdornment={
-          <Icon name={IconName.CheckBold} color={IconColor.iconDefault} />
-        }
         text={t('passwordHintSaved')}
         className="toasts-container--password-hint-saved"
         borderRadius={BorderRadius.LG}
         textVariant={TextVariant.bodyMd}
+        autoHideTime={autoHideToastDelay}
+        onAutoHideToast={() => {
+          dispatch(setShowPasswordHintSavedToast(false));
+        }}
         onClose={() => {
-          console.log('onClose');
           dispatch(setShowPasswordHintSavedToast(false));
         }}
       />
