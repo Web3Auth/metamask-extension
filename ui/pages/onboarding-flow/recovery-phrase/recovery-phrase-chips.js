@@ -39,7 +39,6 @@ export default function RecoveryPhraseChips({
   confirmPhase,
   inputValue,
   indicesToCheck = [],
-  hiddenPhrase,
   revealPhrase,
   setInputValue,
 }) {
@@ -103,13 +102,15 @@ export default function RecoveryPhraseChips({
   }, [confirmPhase, tempInputValue, secretRecoveryPhrase]);
 
   useEffect(() => {
-    const hasEmptyInput = Object.values(tempInputValue).some(
-      (value) => value === '',
-    );
-    if (!hasEmptyInput) {
-      setInputValue(tempInputValue);
+    if (confirmPhase) {
+      const hasEmptyInput = Object.values(tempInputValue).some(
+        (value) => value === '',
+      );
+      if (!hasEmptyInput) {
+        setInputValue(tempInputValue);
+      }
     }
-  }, [tempInputValue, setInputValue]);
+  }, [tempInputValue, setInputValue, confirmPhase]);
 
   return (
     <Box display={Display.Flex} flexDirection={FlexDirection.Column} gap={4}>
@@ -154,7 +155,10 @@ export default function RecoveryPhraseChips({
                 readOnly={!hideSeedPhrase}
                 disabled={confirmPhase && !indicesToCheck.includes(index)}
                 onClick={() => {
-                  if (word && confirmPhase && indicesToCheck.includes(index)) {
+                  if (!confirmPhase) {
+                    return;
+                  }
+                  if (word && indicesToCheck.includes(index)) {
                     removeQuizWord(word);
                   } else {
                     setIndexToFocus(index);
@@ -165,7 +169,7 @@ export default function RecoveryPhraseChips({
           })}
         </div>
 
-        {hideSeedPhrase && !hiddenPhrase && (
+        {hideSeedPhrase && (
           <div className="recovery-phrase__secret-blocker-container">
             <div className="recovery-phrase__secret-blocker" />
             <Box
@@ -240,6 +244,5 @@ RecoveryPhraseChips.propTypes = {
   setInputValue: PropTypes.func,
   inputValue: PropTypes.object,
   indicesToCheck: PropTypes.array,
-  hiddenPhrase: PropTypes.bool,
   revealPhrase: PropTypes.func,
 };
