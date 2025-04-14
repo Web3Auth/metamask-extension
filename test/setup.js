@@ -9,3 +9,11 @@ global.platform = {
   // Required for: settings info tab
   getVersion: () => '<version>',
 };
+
+// Required for: testing OAuth Controller login flow
+global.chrome = {
+  identity: {
+    getRedirectURL: jest.fn().mockReturnValue('https://mocked-redirect-uri'),
+    launchWebAuthFlow: jest.fn(),
+  },
+};
