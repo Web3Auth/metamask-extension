@@ -42,8 +42,8 @@ export default function SkipSRPBackup({ onClose }) {
     <Modal
       isOpen
       onClose={onClose}
-      className="srp-details-modal"
-      data-testid="srp-details-modal"
+      className="skip-srp-backup-modal"
+      data-testid="skip-srp-backup-modal"
     >
       <ModalOverlay />
       <ModalContent>

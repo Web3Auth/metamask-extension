@@ -36,8 +36,8 @@ export default function ConfirmSrpModal({ onContinue, onClose, isError }) {
     <Modal
       isOpen
       onClose={onClose}
-      className="srp-details-modal"
-      data-testid="srp-details-modal"
+      className="confirm-srp-modal"
+      data-testid="confirm-srp-modal"
     >
       <ModalOverlay />
       <ModalContent>
