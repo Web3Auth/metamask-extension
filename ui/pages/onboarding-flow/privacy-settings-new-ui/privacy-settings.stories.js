@@ -1,14 +1,14 @@
 import React from 'react';
-import SecureYourWallet from './secure-your-wallet';
+import PrivacySettings from './privacy-settings';
 
 export default {
-  title: 'Pages/OnboardingFlow/SecureYourWalletOld',
+  title: 'Pages/OnboardingFlow/PrivacySettingsNewUI',
 };
 
 export const DefaultStory = () => {
   return (
     <div style={{ maxHeight: '2000px' }}>
-      <SecureYourWallet />
+      <PrivacySettings />
     </div>
   );
 };
