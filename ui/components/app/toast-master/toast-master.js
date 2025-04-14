@@ -25,6 +25,7 @@ import {
   SEND_ROUTE,
   SWAPS_ROUTE,
   PREPARE_SWAP_ROUTE,
+  ONBOARDING_COMPLETION_ROUTE,
 } from '../../../helpers/constants/routes';
 import { getURLHost } from '../../../helpers/utils/util';
 import { useI18nContext } from '../../../hooks/useI18nContext';
@@ -59,6 +60,7 @@ import {
   ///: BEGIN:ONLY_INCLUDE_IF(multi-srp)
   selectNewSrpAdded,
   ///: END:ONLY_INCLUDE_IF
+  selectPasswordHintSavedToast,
 } from './selectors';
 import {
   setNewPrivacyPolicyToastClickedOrClosed,
@@ -69,6 +71,7 @@ import {
   ///: BEGIN:ONLY_INCLUDE_IF(multi-srp)
   setShowNewSrpAddedToast,
   ///: END:ONLY_INCLUDE_IF
+  setShowPasswordHintSavedToast,
 } from './utils';
 
 export function ToastMaster() {
@@ -79,6 +82,7 @@ export function ToastMaster() {
   const onSwapsScreen =
     location.pathname === SWAPS_ROUTE ||
     location.pathname === PREPARE_SWAP_ROUTE;
+  const onWalletReadyScreen = location.pathname === ONBOARDING_COMPLETION_ROUTE;
 
   if (onHomeScreen) {
     return (
@@ -107,6 +111,13 @@ export function ToastMaster() {
     );
   }
 
+  if (onWalletReadyScreen) {
+    return (
+      <ToastContainer>
+        <PasswordHintSavedToast />
+      </ToastContainer>
+    );
+  }
   return null;
 }
 
@@ -382,3 +393,29 @@ function NewSrpAddedToast() {
   );
 }
 ///: END:ONLY_INCLUDE_IF
+
+const PasswordHintSavedToast = () => {
+  const t = useI18nContext();
+  const dispatch = useDispatch();
+
+  const showPasswordHintSavedToast = useSelector(selectPasswordHintSavedToast);
+
+  return (
+    showPasswordHintSavedToast && (
+      <Toast
+        key="password-hint-saved-toast"
+        startAdornment={
+          <Icon name={IconName.CheckBold} color={IconColor.iconDefault} />
+        }
+        text={t('passwordHintSaved')}
+        className="toasts-container--password-hint-saved"
+        borderRadius={BorderRadius.LG}
+        textVariant={TextVariant.bodyMd}
+        onClose={() => {
+          console.log('onClose');
+          dispatch(setShowPasswordHintSavedToast(false));
+        }}
+      />
+    )
+  );
+};

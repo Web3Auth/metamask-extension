@@ -4,6 +4,7 @@ import {
   ///: BEGIN:ONLY_INCLUDE_IF(multi-srp)
   SET_SHOW_NEW_SRP_ADDED_TOAST,
   ///: END:ONLY_INCLUDE_IF
+  SET_SHOW_PASSWORD_HINT_SAVED_TOAST,
   SHOW_NFT_DETECTION_ENABLEMENT_TOAST,
 } from '../../../store/actionConstants';
 import { submitRequestToBackground } from '../../../store/background-connection';
@@ -81,3 +82,10 @@ export function setShowNewSrpAddedToast(value: boolean) {
   };
 }
 ///: END:ONLY_INCLUDE_IF
+
+export function setShowPasswordHintSavedToast(value: boolean) {
+  return {
+    type: SET_SHOW_PASSWORD_HINT_SAVED_TOAST,
+    payload: value,
+  };
+}
