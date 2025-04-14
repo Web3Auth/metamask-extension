@@ -14,10 +14,14 @@ import {
   BlockSize,
   BorderRadius,
   TextColor,
+  IconColor,
 } from '../../../helpers/constants/design-system';
 import {
   Box,
+  ButtonIcon,
+  ButtonIconSize,
   FormTextField,
+  IconName,
   Text,
 } from '../../../components/component-library';
 import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
@@ -47,6 +51,19 @@ export default function PasswordHint() {
       display={Display.Flex}
       flexDirection={FlexDirection.Column}
     >
+      <Box
+        justifyContent={JustifyContent.flexStart}
+        marginBottom={4}
+        width={BlockSize.Full}
+      >
+        <ButtonIcon
+          iconName={IconName.ArrowLeft}
+          color={IconColor.iconDefault}
+          size={ButtonIconSize.Md}
+          data-testid="password-hint-back-button"
+          onClick={() => history.goBack()}
+        />
+      </Box>
       <Box
         display={Display.Flex}
         flexDirection={FlexDirection.Column}

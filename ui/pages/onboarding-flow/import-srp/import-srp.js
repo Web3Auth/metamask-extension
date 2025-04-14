@@ -45,7 +45,7 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
 
   useEffect(() => {
     if (currentKeyring) {
-      history.replace(ONBOARDING_CREATE_PASSWORD_ROUTE);
+      history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
     }
   }, [currentKeyring, history]);
   const trackEvent = useContext(MetaMetricsContext);
@@ -70,7 +70,7 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
       category: MetaMetricsEventCategory.Onboarding,
       event: MetaMetricsEventName.OnboardingWalletSecurityPhraseConfirmed,
     });
-    history.replace(ONBOARDING_CREATE_PASSWORD_ROUTE);
+    history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
   };
 
   useEffect(() => {

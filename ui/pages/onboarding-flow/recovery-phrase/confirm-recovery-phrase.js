@@ -101,7 +101,6 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
           onClose={() => setShowConfirmModal(false)}
         />
       )}
-      {/* TODO: check fully it should just go back to the previous page */}
       <Box
         justifyContent={JustifyContent.flexStart}
         marginBottom={4}

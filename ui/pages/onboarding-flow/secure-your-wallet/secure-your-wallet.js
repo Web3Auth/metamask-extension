@@ -10,7 +10,7 @@ import {
   Display,
   BlockSize,
   TextColor,
-  IconColor,
+  // IconColor,
 } from '../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
@@ -27,9 +27,9 @@ import {
   ButtonVariant,
   ButtonLink,
   ButtonLinkSize,
-  ButtonIcon,
-  IconName,
-  ButtonIconSize,
+  // ButtonIcon,
+  // IconName,
+  // ButtonIconSize,
 } from '../../../components/component-library';
 import SRPDetailsModal from '../../../components/app/srp-details-modal';
 import SkipSRPBackup from './skip-srp-backup-popover';
@@ -80,7 +80,7 @@ export default function SecureYourWallet() {
         <SRPDetailsModal onClose={() => setShowSrpDetailsModal(false)} />
       )}
       {/* TODO: check fully it should just go back to the previous page */}
-      <Box
+      {/* <Box
         justifyContent={JustifyContent.flexStart}
         marginBottom={4}
         width={BlockSize.Full}
@@ -92,7 +92,7 @@ export default function SecureYourWallet() {
           data-testid="secure-your-wallet-back-button"
           onClick={() => history.goBack()}
         />
-      </Box>
+      </Box> */}
       <Box
         justifyContent={JustifyContent.flexStart}
         marginBottom={4}
