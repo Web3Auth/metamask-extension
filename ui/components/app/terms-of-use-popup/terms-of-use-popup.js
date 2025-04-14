@@ -1220,6 +1220,7 @@ export default function TermsOfUsePopup({ isOpen, onClose, onAccept }) {
             className="terms-of-use__checkbox"
             data-testid="terms-of-use-checkbox"
             isChecked={isTermsOfUseChecked}
+            alignItems={AlignItems.flexStart}
             onChange={() => {
               setIsTermsOfUseChecked(!isTermsOfUseChecked);
             }}

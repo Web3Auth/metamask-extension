@@ -74,7 +74,10 @@ export default function SecureYourWallet() {
       data-testid="secure-your-wallet"
     >
       {showSkipSRPBackupPopover && (
-        <SkipSRPBackup onClose={() => setShowSkipSRPBackupPopover(false)} />
+        <SkipSRPBackup
+          onClose={() => setShowSkipSRPBackupPopover(false)}
+          secureYourWallet={handleClickRecommended}
+        />
       )}
       {showSrpDetailsModal && (
         <SRPDetailsModal onClose={() => setShowSrpDetailsModal(false)} />
