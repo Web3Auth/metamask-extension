@@ -79,7 +79,7 @@ export default function SecureYourWallet() {
       {showSrpDetailsModal && (
         <SRPDetailsModal onClose={() => setShowSrpDetailsModal(false)} />
       )}
-      {/* TODO: check fully it should just go back to the previous page */}
+      {/* TODO: verify if this is needed */}
       {/* <Box
         justifyContent={JustifyContent.flexStart}
         marginBottom={4}

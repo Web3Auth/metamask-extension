@@ -82,7 +82,6 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
       {showSrpDetailsModal && (
         <SRPDetailsModal onClose={() => setShowSrpDetailsModal(false)} />
       )}
-      {/* TODO: check fully if it should always go to get started page */}
       <Box marginBottom={4}>
         <ButtonIcon
           iconName={IconName.ArrowLeft}

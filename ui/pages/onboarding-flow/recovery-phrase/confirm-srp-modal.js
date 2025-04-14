@@ -43,7 +43,6 @@ export default function ConfirmSrpModal({ onContinue, onClose, isError }) {
       <ModalContent>
         <ModalHeader onClose={onClose}>
           <Box textAlign={TextAlign.Center}>
-            {/* TODO: Fix check icon */}
             <Icon
               name={isError ? IconName.CircleX : IconName.Confirmation}
               size={IconSize.Xl}

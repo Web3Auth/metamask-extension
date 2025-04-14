@@ -35,8 +35,8 @@ export default function PasswordHint() {
   const history = useHistory();
   const [isSamePasswordError, setIsSamePasswordError] = useState(false);
   const [hint, setHint] = useState('');
-  // TODO: get current password from store
-  const currentPassword = 'current';
+  // TODO: how to compare hint with current password?
+  const currentPassword = null;
 
   const handleSubmitHint = () => {
     if (currentPassword === hint) {
