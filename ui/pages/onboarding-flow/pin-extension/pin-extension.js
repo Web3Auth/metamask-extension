@@ -96,6 +96,7 @@ export default function OnboardingPinExtension() {
             selectedItem={selectedIndex}
             showThumbs={false}
             showStatus={false}
+            dynamicHeight
             renderArrowPrev={(onClickHandler, hasPrev, label) => (
               <ButtonIcon
                 iconName={IconName.Arrow2Left}
@@ -138,6 +139,7 @@ export default function OnboardingPinExtension() {
             flexDirection={FlexDirection.Column}
             justifyContent={JustifyContent.flexStart}
             width={BlockSize.Full}
+            marginTop={4}
             gap={4}
           >
             <Text

@@ -1,28 +1,28 @@
 .onboarding-pin-extension {
   padding: 32px 8px;
 
-  .control-dots .dot {
-    background: var(--color-icon-muted);
-    box-shadow: none;
+  .carousel {
+    .control-dots {
+      bottom: -12px;
+      .dot {
+        background: var(--color-icon-muted);
+        box-shadow: none;
 
-    &.selected {
-      background: var(--color-icon-default);
+        &.selected {
+          background: var(--color-icon-default);
+        }
+      }
     }
-  }
 
-  .slider-wrapper {
-    height: 218px;
-  }
-
-  .slide .onboarding-pin-extension__image-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 184px;
-    img {
-      width: 354px;
-      height: auto;
-      object-fit: contain;
+    .slide .onboarding-pin-extension__image-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      img {
+        width: 354px;
+        height: auto;
+        object-fit: contain;
+      }
     }
   }
 
