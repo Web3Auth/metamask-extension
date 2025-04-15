@@ -3698,7 +3698,7 @@
     "message": "Your MetaMask install is complete!"
   },
   "onboardingSrpCreate": {
-    "message": "Continue with manual setup"
+    "message": "Continue with Secret Recovery Phrase "
   },
   "onboardingSrpImport": {
     "message": "Import using secret recovery phrase"
@@ -4728,8 +4728,11 @@
     "message": "Save your Secret Recovery Phrase"
   },
   "seedPhraseReviewDetails": {
-    "message": "This is your $1. Write it down in the correct order and keep it safe. If someone has your Secret Recovery Phrase, they can access your wallet. Don’t share it with anyone, ever.",
-    "description": "The $1 is the bolded text 'Secret Recovery Phrase'"
+    "message": "This is your $1. Write it down in the correct order and keep it safe. If someone has your Secret Recovery Phrase, they can access your wallet. $2",
+    "description": "The $1 is the bolded text 'Secret Recovery Phrase' and $2 is 'seedPhraseReviewDetails2'"
+  },
+  "seedPhraseReviewDetails2": {
+    "message": "Don’t share it with anyone, ever.'s in bold"
   },
   "seedPhraseWriteDownDetails": {
     "message": "Write down this 12-word Secret Recovery Phrase and save it in a place that you trust and only you can access."
