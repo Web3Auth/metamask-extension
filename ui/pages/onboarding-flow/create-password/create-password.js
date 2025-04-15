@@ -268,6 +268,7 @@ export default function CreatePassword({
             autoFocus
             placeholder={t('newPasswordPlaceholder')}
             label={t('newPassword')}
+            labelProps={{ marginBottom: 1 }}
             size={FormTextFieldSize.Lg}
             value={password}
             type={showPassword ? 'text' : 'password'}
@@ -306,6 +307,7 @@ export default function CreatePassword({
             marginTop={4}
             placeholder={t('confirmPasswordPlaceholder')}
             label={t('confirmPassword')}
+            labelProps={{ marginBottom: 1 }}
             size={FormTextFieldSize.Lg}
             error={Boolean(confirmPasswordError)}
             helpText={confirmPasswordError}
