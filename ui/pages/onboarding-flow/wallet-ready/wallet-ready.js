@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
   ButtonSize,
@@ -29,27 +29,35 @@ import {
 } from '../../../components/component-library';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
-  ONBOARDING_PIN_EXTENSION_ROUTE,
   ONBOARDING_PRIVACY_SETTINGS_ROUTE,
   ONBOARDING_PASSWORD_HINT,
+  DEFAULT_ROUTE,
 } from '../../../helpers/constants/routes';
-import { getFirstTimeFlowType } from '../../../selectors';
-import { getSeedPhraseBackedUp } from '../../../ducks/metamask/metamask';
+import {
+  getCurrentKeyring,
+  getExternalServicesOnboardingToggleState,
+  getFirstTimeFlowType,
+  getPasswordHint,
+} from '../../../selectors';
 import {
   MetaMetricsEventCategory,
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import { selectIsProfileSyncingEnabled } from '../../../selectors/identity/profile-syncing';
+import {
+  setCompletedOnboarding,
+  toggleExternalServices,
+} from '../../../store/actions';
+import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 
 export default function WalletReady() {
   const history = useHistory();
   const t = useI18nContext();
+  const dispatch = useDispatch();
   const trackEvent = useContext(MetaMetricsContext);
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
-  const seedPhraseBackedUp = useSelector(getSeedPhraseBackedUp);
-  // TODO: get from hooks
-  const srpHint = '';
+  const currentKeyring = useSelector(getCurrentKeyring);
   const learnMoreLink =
     'https://support.metamask.io/hc/en-us/articles/360015489591-Basic-Safety-and-Security-Tips-for-MetaMask';
   // const learnHowToKeepWordsSafe =
@@ -57,6 +65,40 @@ export default function WalletReady() {
 
   const isProfileSyncingEnabled = useSelector(selectIsProfileSyncingEnabled);
 
+  const externalServicesOnboardingToggleState = useSelector(
+    getExternalServicesOnboardingToggleState,
+  );
+
+  const passwordHint = useSelector(getPasswordHint);
+
+  const onDone = async () => {
+    trackEvent({
+      category: MetaMetricsEventCategory.Onboarding,
+      event: MetaMetricsEventName.OnboardingWalletCreationComplete,
+      properties: {
+        method: firstTimeFlowType,
+        is_profile_syncing_enabled: isProfileSyncingEnabled,
+      },
+    });
+
+    ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+    await dispatch(
+      toggleExternalServices(externalServicesOnboardingToggleState),
+    );
+    await dispatch(setCompletedOnboarding());
+
+    trackEvent({
+      category: MetaMetricsEventCategory.Onboarding,
+      event: MetaMetricsEventName.OnboardingWalletSetupComplete,
+      properties: {
+        wallet_setup_type:
+          firstTimeFlowType === FirstTimeFlowType.import ? 'import' : 'new',
+        new_wallet: firstTimeFlowType === FirstTimeFlowType.create,
+      },
+    });
+    history.push(DEFAULT_ROUTE);
+    ///: END:ONLY_INCLUDE_IF
+  };
   return (
     <Box
       className="wallet-ready"
@@ -125,7 +167,7 @@ export default function WalletReady() {
         className="wallet-ready__settings-actions"
         gap={4}
       >
-        {seedPhraseBackedUp && (
+        {currentKeyring && (
           <ButtonBase
             variant={ButtonVariant.Secondary}
             borderRadius={BorderRadius.LG}
@@ -139,15 +181,15 @@ export default function WalletReady() {
                 marginInlineEnd={3}
               />
               <Box>
-                <Text variant={TextVariant.bodyLgMedium}>
-                  {t('srpHintCreate')}
+                <Text variant={TextVariant.bodyMdBold}>
+                  {t('passwordHintCreate')}
                 </Text>
-                {srpHint && (
+                {passwordHint && (
                   <Text
                     variant={TextVariant.bodySm}
                     color={TextColor.textAlternative}
                   >
-                    {srpHint}
+                    {passwordHint}
                   </Text>
                 )}
               </Box>
@@ -187,17 +229,7 @@ export default function WalletReady() {
           variant={ButtonVariant.Primary}
           size={ButtonSize.Lg}
           width={BlockSize.Full}
-          onClick={() => {
-            trackEvent({
-              category: MetaMetricsEventCategory.Onboarding,
-              event: MetaMetricsEventName.OnboardingWalletCreationComplete,
-              properties: {
-                method: firstTimeFlowType,
-                is_profile_syncing_enabled: isProfileSyncingEnabled,
-              },
-            });
-            history.push(ONBOARDING_PIN_EXTENSION_ROUTE);
-          }}
+          onClick={onDone}
         >
           {t('done')}
         </Button>

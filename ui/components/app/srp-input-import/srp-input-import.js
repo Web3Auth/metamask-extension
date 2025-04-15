@@ -1,290 +1,248 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { isValidMnemonic } from '@ethersproject/hdnode';
+import { v4 as uuidv4 } from 'uuid';
 import { Textarea, TextareaResize } from '../../component-library/textarea';
 import {
-  BorderColor,
+  Button,
+  ButtonVariant,
+  Text,
+  TextField,
+} from '../../component-library';
+import { useI18nContext } from '../../../hooks/useI18nContext';
+import {
   BackgroundColor,
   BlockSize,
+  BorderColor,
   TextColor,
-  TextVariant,
 } from '../../../helpers/constants/design-system';
-import { Box, Button, ButtonVariant, Text } from '../../component-library';
-import { useI18nContext } from '../../../hooks/useI18nContext';
-import SrpText from './srp-text';
 import { parseSecretRecoveryPhrase } from './parse-secret-recovery-phrase';
 
-const ACCEPTABLE_SRP_LENGTHS = [12, 15, 18, 21, 24];
+const SRP_LENGTHS = [12, 15, 18, 21, 24];
 const MAX_SRP_LENGTH = 24;
-
-const hasUpperCase = (draftSrp) => {
-  return draftSrp !== draftSrp.toLowerCase();
-};
 
 export default function SrpInputImport({ onChange }) {
   const t = useI18nContext();
-  const [srpError, setSrpError] = useState('');
   const [draftSrp, setDraftSrp] = useState([]);
+  const [firstWord, setFirstWord] = useState('');
   const [showAll, setShowAll] = useState(false);
+
   const srpRefs = useRef([]);
-  const srpInputRef = useRef(null);
 
-  // 12, 15, 18, 21, 24
-  // TODO: verify if we don't need this
-  // eslint-disable-next-line no-unused-vars
-  const incrementSrpLength = (currentDraftSrp) => {
-    let updatedDraftSrp = currentDraftSrp;
-    let arrayItemsToAdd = 0;
-    const currentSrpLength = updatedDraftSrp.length;
-    console.log('currentSrpLength', currentSrpLength);
-
-    if (!ACCEPTABLE_SRP_LENGTHS.includes(currentSrpLength)) {
-      // find the closest acceptable srp length
-      const closestAcceptableSrpLength = ACCEPTABLE_SRP_LENGTHS.find(
-        (length) => length > currentSrpLength,
-      );
-      arrayItemsToAdd = closestAcceptableSrpLength - currentSrpLength;
-    }
-
-    updatedDraftSrp = [
-      ...updatedDraftSrp,
-      ...Array(arrayItemsToAdd).fill({
-        word: '',
-        isActive: false,
-      }),
-    ];
-
-    return updatedDraftSrp;
+  const initializeSrp = () => {
+    setDraftSrp([
+      { word: firstWord, id: uuidv4(), active: false },
+      { word: '', id: uuidv4(), active: true },
+    ]);
+    setFirstWord('');
   };
 
-  const setupDraftSrp = useCallback(
-    (firstWord) => {
-      // const updatedDraftSrp = incrementSrpLength(draftSrp);
-      const updatedDraftSrp = [...draftSrp];
-      updatedDraftSrp[0] = { word: firstWord, isActive: false };
-      updatedDraftSrp[1] = { word: '', isActive: true };
-      setDraftSrp(updatedDraftSrp);
-    },
-    [draftSrp, setDraftSrp],
-  );
+  const onSrpPaste = (rawSrp) => {
+    const parsedSrp = parseSecretRecoveryPhrase(rawSrp);
+    const splittedSrp = parsedSrp.split(' ');
+    const newDraftSrp = splittedSrp.map((word) => ({
+      word,
+      id: uuidv4(),
+      active: false,
+    }));
 
-  const setActive = useCallback(
-    (index) => {
-      const updatedDraftSrp = [...draftSrp];
-      updatedDraftSrp.forEach((srp) => {
-        srp.isActive = false;
+    newDraftSrp[newDraftSrp.length - 1].active = true;
+
+    setDraftSrp(newDraftSrp);
+  };
+
+  const setWordActive = (srp, wordId) => {
+    const newDraftSrp = [...srp];
+    newDraftSrp.forEach((word) => {
+      word.active = word.id === wordId;
+    });
+    return newDraftSrp;
+  };
+
+  const handleChange = (id, value) => {
+    const newDraftSrp = [...draftSrp];
+    const targetIndex = newDraftSrp.findIndex((word) => word.id === id);
+    newDraftSrp[targetIndex] = { ...newDraftSrp[targetIndex], word: value };
+    setDraftSrp(setWordActive(newDraftSrp, id));
+  };
+
+  const nextWord = (currentWordId) => {
+    const currentWordIndex = draftSrp.findIndex(
+      (word) => word.id === currentWordId,
+    );
+    const isLastWord = currentWordIndex === draftSrp.length - 1;
+
+    // if last word, add new word
+    if (isLastWord && draftSrp.length < MAX_SRP_LENGTH) {
+      const newDraftSrp = [...draftSrp];
+
+      newDraftSrp.forEach((word) => {
+        word.active = false;
       });
-      updatedDraftSrp[index] = {
-        ...updatedDraftSrp[index],
-        isActive: true,
-      };
-      setDraftSrp(updatedDraftSrp);
-    },
-    [draftSrp, setDraftSrp],
-  );
 
-  const onNextWord = useCallback(
-    (word, index) => {
-      const updatedDraftSrp = [...draftSrp];
-      let newIndex = index;
-      updatedDraftSrp[index] = {
-        word,
-        isActive: false,
-      };
-
-      const isLastWord = newIndex + 1 >= updatedDraftSrp.length;
-
-      if (isLastWord && updatedDraftSrp.length < MAX_SRP_LENGTH) {
-        updatedDraftSrp[newIndex + 1] = {
-          word: '',
-          isActive: true,
-        };
-        // updatedDraftSrp = incrementSrpLength(updatedDraftSrp);
-      } else {
-        newIndex += 1;
-        updatedDraftSrp[newIndex] = {
-          ...updatedDraftSrp[newIndex],
-          isActive: true,
-        };
-      }
-
-      setDraftSrp(updatedDraftSrp);
-    },
-    [draftSrp, setDraftSrp],
-  );
-
-  const onPreviousWord = useCallback(
-    (index) => {
-      const updatedDraftSrp = [...draftSrp];
-      updatedDraftSrp[index] = {
+      newDraftSrp.push({
         word: '',
-        isActive: false,
-      };
-      if (index > 0) {
-        updatedDraftSrp[index - 1] = {
-          ...updatedDraftSrp[index - 1],
-          isActive: true,
-        };
-      }
-      setDraftSrp(updatedDraftSrp);
-    },
-    [draftSrp, setDraftSrp],
-  );
-
-  const updateWord = useCallback(
-    (word, index) => {
-      const updatedDraftSrp = [...draftSrp];
-      updatedDraftSrp[index] = { word, isActive: false };
-      setDraftSrp(updatedDraftSrp);
-    },
-    [draftSrp, setDraftSrp],
-  );
-
-  const onSrpPaste = useCallback(
-    (rawSrp) => {
-      const parsedSrp = parseSecretRecoveryPhrase(rawSrp);
-      let newDraftSrp = parsedSrp.split(' ');
-      const currentSrpLength = newDraftSrp.length;
-
-      if (newDraftSrp.length > 24) {
-        return;
-      }
-
-      newDraftSrp = newDraftSrp.map((word) => ({ word, isActive: false }));
-      // newDraftSrp = incrementSrpLength(newDraftSrp);
-      newDraftSrp[currentSrpLength - 1] = {
-        ...newDraftSrp[currentSrpLength - 1],
-        isActive: true,
-      };
+        id: uuidv4(),
+        active: true,
+      });
       setDraftSrp(newDraftSrp);
-    },
-    [setDraftSrp],
-  );
-
-  const validateSrp = useCallback(
-    (newDraftSrp) => {
-      let newSrpError = '';
-      const joinedDraftSrp = newDraftSrp
-        .map((word) => word.word)
-        .join(' ')
-        .trim();
-
-      if (newDraftSrp.some((word) => word.word !== '')) {
-        if (newDraftSrp.some((word) => word.word === '')) {
-          newSrpError = t('seedPhraseReq');
-        } else if (hasUpperCase(joinedDraftSrp)) {
-          newSrpError = t('invalidSeedPhraseCaseSensitive');
-        } else if (!isValidMnemonic(joinedDraftSrp)) {
-          newSrpError = t('invalidSeedPhrase');
-        }
-      }
-
-      setSrpError(newSrpError);
-      onChange(newSrpError ? '' : joinedDraftSrp);
-    },
-    [setSrpError, onChange, t],
-  );
-
-  useEffect(() => {
-    const activeSrpIndex = draftSrp.findIndex((srp) => srp.isActive);
-    if (activeSrpIndex >= 0) {
-      srpRefs.current[activeSrpIndex].setFocus();
+      return;
     }
 
-    // validate the srp
-    validateSrp(draftSrp);
-  }, [draftSrp, validateSrp]);
+    // set next word to active
+    setDraftSrp(setWordActive(draftSrp, draftSrp[currentWordIndex + 1].id));
+  };
+
+  const deleteWord = (wordId) => {
+    const currentWordIndex = draftSrp.findIndex((word) => word.id === wordId);
+    const previousWordId = draftSrp[currentWordIndex - 1]?.id;
+    const newDraftSrp = [...draftSrp];
+    newDraftSrp.splice(currentWordIndex, 1);
+
+    if (newDraftSrp.length > 0) {
+      setDraftSrp(setWordActive(newDraftSrp, previousWordId));
+    } else {
+      setDraftSrp([]);
+    }
+  };
+
+  const setWordInactive = (wordId) => {
+    const newDraftSrp = [...draftSrp];
+    const targetIndex = newDraftSrp.findIndex((word) => word.id === wordId);
+    newDraftSrp[targetIndex] = { ...newDraftSrp[targetIndex], active: false };
+    setDraftSrp(newDraftSrp);
+  };
+
+  const onWordFocus = (wordId) => {
+    srpRefs.current[wordId].type = 'text';
+    const newDraftSrp = [...draftSrp];
+    newDraftSrp.forEach((word) => {
+      word.active = word.id === wordId;
+    });
+    setDraftSrp(newDraftSrp);
+  };
+
+  useEffect(() => {
+    const activeWord = draftSrp.find((word) => word.active);
+    if (activeWord) {
+      srpRefs.current[activeWord.id]?.click();
+    }
+
+    // if srp length is valid and no empty word trigger onChange
+    if (
+      SRP_LENGTHS.includes(draftSrp.length) &&
+      !draftSrp.some((word) => word.word.length === 0)
+    ) {
+      const stringSrp = draftSrp.map((word) => word.word).join(' ');
+      onChange(stringSrp);
+    } else {
+      onChange('');
+    }
+  }, [draftSrp, onChange]);
 
   return (
-    <>
-      <div className="srp-input-import__container">
-        {draftSrp.length > 0 ? (
-          <div className="srp-input-import__srp-container">
-            <div className="srp-input-import__words-list">
-              {draftSrp.map((word, index) => (
-                <SrpText
-                  key={index}
-                  index={index}
-                  ref={(el) => (srpRefs.current[index] = el)}
-                  word={word}
-                  forceShow={showAll}
-                  onNextWord={onNextWord}
-                  onPreviousWord={onPreviousWord}
-                  updateWord={updateWord}
-                  setActive={setActive}
-                />
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="srp-input-import__srp-note">
-            <Textarea
-              ref={srpInputRef}
-              borderColor={BorderColor.transparent}
-              backgroundColor={BackgroundColor.transparent}
-              width={BlockSize.Full}
-              placeholder={`${t('onboardingSrpInputPlaceholder')} 👀`}
-              rows={7}
-              resize={TextareaResize.None}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  setupDraftSrp(e.target.value);
+    <div className="srp-input-import__container">
+      {draftSrp.length > 0 ? (
+        <div className="srp-input-import__srp-container">
+          <div className="srp-input-import__words-list">
+            {draftSrp.map((word, index) => (
+              <TextField
+                key={word.id}
+                ref={(el) => (srpRefs.current[word.id] = el)}
+                value={word.word}
+                type={word.active || showAll ? 'text' : 'password'}
+                startAccessory={
+                  <Text
+                    color={TextColor.textAlternative}
+                    className="srp-input-import__word-index"
+                  >
+                    {index + 1}
+                  </Text>
                 }
-              }}
-              onPaste={(e) => {
-                const newSrp = e.clipboardData.getData('text');
-                if (newSrp.trim().match(/\s/u)) {
-                  e.preventDefault();
-                  onSrpPaste(newSrp);
-                }
-              }}
-            />
+                onChange={(e) => handleChange(word.id, e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    nextWord(word.id);
+                  }
+                  if (e.key === 'Backspace' && word.word.length === 0) {
+                    e.preventDefault();
+                    deleteWord(word.id);
+                  }
+                }}
+                onFocus={() => {
+                  onWordFocus(word.id);
+                }}
+                onBlur={() => {
+                  setWordInactive(word.id);
+                }}
+              />
+            ))}
           </div>
-        )}
+        </div>
+      ) : (
+        <div className="srp-input-import__srp-note">
+          <Textarea
+            borderColor={BorderColor.transparent}
+            backgroundColor={BackgroundColor.transparent}
+            width={BlockSize.Full}
+            placeholder={`${t('onboardingSrpInputPlaceholder')} 👀`}
+            rows={7}
+            resize={TextareaResize.None}
+            value={firstWord}
+            onChange={(e) => setFirstWord(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                initializeSrp();
+              }
+            }}
+            onPaste={(e) => {
+              e.preventDefault();
+              const newSrp = e.clipboardData.getData('text');
+              if (newSrp.trim().match(/\s/u)) {
+                e.preventDefault();
+                onSrpPaste(newSrp);
+              }
+            }}
+          />
+        </div>
+      )}
 
-        <div className="srp-input-import__actions">
+      <div className="srp-input-import__actions">
+        <Button
+          variant={ButtonVariant.Link}
+          onClick={() => setShowAll(!showAll)}
+        >
+          {showAll
+            ? t('onboardingSrpInputHideAll')
+            : t('onboardingSrpInputShowAll')}
+        </Button>
+        {draftSrp.length > 0 ? (
           <Button
             variant={ButtonVariant.Link}
-            onClick={() => setShowAll(!showAll)}
+            onClick={async () => {
+              setShowAll(false);
+              setDraftSrp([]);
+            }}
           >
-            {showAll
-              ? t('onboardingSrpInputHideAll')
-              : t('onboardingSrpInputShowAll')}
+            {t('onboardingSrpInputClearAll')}
           </Button>
-          {draftSrp.length > 0 ? (
-            <Button
-              variant={ButtonVariant.Link}
-              onClick={async () => {
-                setDraftSrp([]);
-              }}
-            >
-              {t('onboardingSrpInputClearAll')}
-            </Button>
-          ) : (
-            <Button
-              variant={ButtonVariant.Link}
-              onClick={async () => {
-                // TODO: this requires user permission
-                const newSrp = await window.navigator.clipboard.readText();
-                if (newSrp.trim().match(/\s/u)) {
-                  onSrpPaste(newSrp);
-                }
-              }}
-            >
-              {t('paste')}
-            </Button>
-          )}
-        </div>
+        ) : (
+          <Button
+            variant={ButtonVariant.Link}
+            onClick={async () => {
+              // TODO: this requires user permission
+              const newSrp = await window.navigator.clipboard.readText();
+              if (newSrp.trim().match(/\s/u)) {
+                onSrpPaste(newSrp);
+              }
+            }}
+          >
+            {t('paste')}
+          </Button>
+        )}
       </div>
-      {srpError && (
-        <Box marginTop={2}>
-          <Text variant={TextVariant.bodySm} color={TextColor.errorDefault}>
-            {srpError}
-          </Text>
-        </Box>
-      )}
-    </>
+    </div>
   );
 }
 

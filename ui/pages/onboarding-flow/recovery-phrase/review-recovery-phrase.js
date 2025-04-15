@@ -12,12 +12,16 @@ import {
   ButtonLink,
   ButtonLinkSize,
   ButtonSize,
+  ButtonIcon,
+  IconName,
+  ButtonIconSize,
 } from '../../../components/component-library';
 import {
   TextVariant,
   JustifyContent,
   BlockSize,
   TextColor,
+  IconColor,
 } from '../../../helpers/constants/design-system';
 import {
   MetaMetricsEventCategory,
@@ -34,8 +38,6 @@ export default function RecoveryPhrase({ secretRecoveryPhrase }) {
   // TODO: Check on copy to clipboard
   // const [copied, handleCopy] = useCopyToClipboard();
   const [phraseRevealed, setPhraseRevealed] = useState(false);
-  // TODO: Check on hide phrase
-  // const [hiddenPhrase, setHiddenPhrase] = useState(false);
   const [showSrpDetailsModal, setShowSrpDetailsModal] = useState(false);
   const searchParams = new URLSearchParams(search);
   const isFromReminderParam = searchParams.get('isFromReminder')
@@ -46,8 +48,24 @@ export default function RecoveryPhrase({ secretRecoveryPhrase }) {
   return (
     <div className="recovery-phrase" data-testid="recovery-phrase">
       {showSrpDetailsModal && (
-        <SRPDetailsModal onClose={() => setShowSrpDetailsModal(false)} />
+        <SRPDetailsModal
+          onClose={() => setShowSrpDetailsModal(false)}
+          marginBottom={4}
+        />
       )}
+      <Box
+        justifyContent={JustifyContent.flexStart}
+        marginBottom={4}
+        width={BlockSize.Full}
+      >
+        <ButtonIcon
+          iconName={IconName.ArrowLeft}
+          color={IconColor.iconDefault}
+          size={ButtonIconSize.Md}
+          data-testid="review-srp-back-button"
+          onClick={() => history.goBack()}
+        />
+      </Box>
       <Box
         justifyContent={JustifyContent.flexStart}
         marginBottom={4}
@@ -61,28 +79,29 @@ export default function RecoveryPhrase({ secretRecoveryPhrase }) {
         </Text>
       </Box>
       <Box marginBottom={6}>
-        <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          <Text variant={TextVariant.bodyMd} marginBottom={6}>
-            {t('seedPhraseReviewDetails', [
-              [
-                <ButtonLink
-                  key="seedPhraseReviewDetails"
-                  size={ButtonLinkSize.Inherit}
-                  onClick={() => {
-                    setShowSrpDetailsModal(true);
-                  }}
-                >
-                  {t('secretRecoveryPhrase')}
-                </ButtonLink>,
-              ],
-            ])}
-          </Text>
+        <Text
+          variant={TextVariant.bodyMd}
+          color={TextColor.textAlternative}
+          marginBottom={6}
+        >
+          {t('seedPhraseReviewDetails', [
+            [
+              <ButtonLink
+                key="seedPhraseReviewDetails"
+                size={ButtonLinkSize.Inherit}
+                onClick={() => {
+                  setShowSrpDetailsModal(true);
+                }}
+              >
+                {t('secretRecoveryPhrase')}
+              </ButtonLink>,
+            ],
+          ])}
         </Text>
       </Box>
       <RecoveryPhraseChips
         secretRecoveryPhrase={secretRecoveryPhrase.split(' ')}
         phraseRevealed={phraseRevealed}
-        // hiddenPhrase={hiddenPhrase}
         revealPhrase={() => {
           trackEvent({
             category: MetaMetricsEventCategory.Onboarding,

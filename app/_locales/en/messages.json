@@ -2578,6 +2578,9 @@
   "invalidSeedPhraseCaseSensitive": {
     "message": "Invalid input! Secret Recovery Phrase is case sensitive."
   },
+  "invalidSeedPhraseNotFound": {
+    "message": "Secret Recovery Phrase not found."
+  },
   "ipfsGateway": {
     "message": "IPFS gateway"
   },
@@ -3609,7 +3612,7 @@
     "message": "I agree"
   },
   "onboardingMetametricsDescription": {
-    "message": "We’d like to gather basic usage and diagnostics data to improve MetaMask. Know that we never sell the data you provide here."
+    "message": "We'd like to gather basic usage and diagnostics data to improve MetaMask. It will always be:"
   },
   "onboardingMetametricsDescription2": {
     "message": "When we gather metrics, it will always be..."
@@ -3622,7 +3625,7 @@
     "message": "Privacy Policy"
   },
   "onboardingMetametricsNeverCollect": {
-    "message": "$1 clicks and views on the app are stored, but other details (like your public address) are not.",
+    "message": "$1 Clicks and views on the app are stored, but other details (like your public address) are not.",
     "description": "$1 represents `onboardingMetametricsNeverCollectEmphasis`"
   },
   "onboardingMetametricsNeverCollectEmphasis": {
@@ -3644,6 +3647,10 @@
   },
   "onboardingMetametricsPrivacyDescription": {
     "message": "Learn how we protect your privacy while collecting usage data for your profile."
+  },
+  "onboardingMetametricsTerms": {
+    "message": "We’ll let you know if we plan to use this data for other purposes. You can review our $1 any time (we never sell the data you provide here).",
+    "description": "$1 represents `onboardingMetametricsPrivacyPolicy`"
   },
   "onboardingMetametricsTitle": {
     "message": "Help us improve MetaMask"
@@ -3691,7 +3698,7 @@
     "message": "Your MetaMask install is complete!"
   },
   "onboardingSrpCreate": {
-    "message": "Continue with secret recovery phrase"
+    "message": "Continue with manual setup"
   },
   "onboardingSrpImport": {
     "message": "Import using secret recovery phrase"
@@ -3785,6 +3792,9 @@
   "password": {
     "message": "Password"
   },
+  "passwordHintCreate": {
+    "message": "Create a password hint"
+  },
   "passwordHintTitle": {
     "message": "Password hint"
   },
@@ -3796,6 +3806,9 @@
   },
   "passwordHintError": {
     "message": "You can’t use the password as a hint"
+  },
+  "passwordHintSaved": {
+    "message": "Password hint saved"
   },
   "passwordNotLongEnough": {
     "message": "Password not long enough"
@@ -5358,7 +5371,7 @@
     "message": "Spending caps"
   },
   "srpDetailsTitle": {
-    "message": "What is a Secret Recovery Phrase?"
+    "message": "What’s a Secret Recovery Phrase?"
   },
   "srpDetailsDescription": {
     "message": "A Secret Recovery Phrase, also called a seed phrase or mnemonic, is a set of words that lets you access and control your crypto wallet. To move your wallet to MetaMask, you need this phrase."
@@ -5374,9 +5387,6 @@
   },
   "srpDetailsOwnsAccessListItemThree": {
     "message": "Change your login information"
-  },
-  "srpHintCreate": {
-    "message": "Create a Secret Recovery Phrase hint"
   },
   "srpInputNumberOfWords": {
     "message": "I have a $1-word phrase",

@@ -21,18 +21,13 @@ import {
   MetaMetricsEventCategory,
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
+import { setFirstTimeFlowType, startOAuthLogin } from '../../../store/actions';
 import {
-  setFirstTimeFlowType,
-  setTermsOfUseLastAgreed,
-  startOAuthLogin,
-} from '../../../store/actions';
-import {
-  ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-  ONBOARDING_METAMETRICS,
-  ///: END:ONLY_INCLUDE_IF
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
   ONBOARDING_COMPLETION_ROUTE,
   ONBOARDING_UNLOCK_ROUTE,
+  ONBOARDING_CREATE_PASSWORD_ROUTE,
+  ONBOARDING_IMPORT_WITH_SRP_ROUTE,
 } from '../../../helpers/constants/routes';
 import { getFirstTimeFlowType, getCurrentKeyring } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
@@ -89,10 +84,9 @@ export default function GetStarted() {
         account_type: 'metamask',
       },
     });
-    dispatch(setTermsOfUseLastAgreed(new Date().getTime()));
 
     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-    history.push(ONBOARDING_METAMETRICS);
+    history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
     ///: END:ONLY_INCLUDE_IF
   };
 
@@ -106,10 +100,9 @@ export default function GetStarted() {
         account_type: 'metamask',
       },
     });
-    dispatch(setTermsOfUseLastAgreed(new Date().getTime()));
 
     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-    history.push(ONBOARDING_METAMETRICS);
+    history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
     ///: END:ONLY_INCLUDE_IF
   };
 
@@ -122,10 +115,9 @@ export default function GetStarted() {
         account_type: 'imported',
       },
     });
-    dispatch(setTermsOfUseLastAgreed(new Date().getTime()));
 
     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-    history.push(ONBOARDING_METAMETRICS);
+    history.push(ONBOARDING_IMPORT_WITH_SRP_ROUTE);
     ///: END:ONLY_INCLUDE_IF
   };
 

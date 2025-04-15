@@ -25,22 +25,24 @@ export default function ConfirmSrpModal({ onContinue, onClose, isError }) {
   const t = useI18nContext();
 
   const handleContinue = () => {
-    onContinue();
-    onClose();
+    if (isError) {
+      onClose();
+    } else {
+      onContinue();
+    }
   };
 
   return (
     <Modal
       isOpen
       onClose={onClose}
-      className="srp-details-modal"
-      data-testid="srp-details-modal"
+      className="confirm-srp-modal"
+      data-testid="confirm-srp-modal"
     >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader onClose={onClose}>
           <Box textAlign={TextAlign.Center}>
-            {/* TODO: Fix check icon */}
             <Icon
               name={isError ? IconName.CircleX : IconName.Confirmation}
               size={IconSize.Xl}

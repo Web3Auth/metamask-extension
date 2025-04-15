@@ -27,15 +27,56 @@
     align-items: center;
     row-gap: 8px;
     column-gap: 8px;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-
-    @include design-system.screen-sm-min {
-      grid-template-columns: 1fr 1fr 1fr;
-    }
+    grid-template-columns: 1fr 1fr 1fr;
 
     &--hidden {
       filter: blur(8px);
     }
+
+    // SRP_OVERRIDE: START: custom text field style
+    .mm-text-field {
+      padding-left: 8px;
+      border-radius: 8px;
+    }
+    .mm-text-field:not(.mm-text-field--quiz-word) {
+      border-color: var(--color-border-muted);
+    }
+    .mm-text-field.mm-text-field--quiz-word {
+      cursor: pointer;
+      .mm-input {
+        cursor: pointer;
+      }
+    }
+    .mm-text-field.mm-text-field--target-index {
+      outline: 5px auto var(--color-primary-default);
+    }
+    .mm-text-field.mm-text-field--focused {
+      outline: 5px auto var(--color-primary-default);
+    }
+    .mm-input {
+      padding-right: 8px;
+      padding-left: 4px;
+    }
+    // SRP_OVERRIDE: END
+  }
+
+  // SRP_OVERRIDE: custom text field style
+  &__word-input {
+    padding-left: 8px;
+    border-radius: 8px;
+  }
+
+  // SRP_OVERRIDE: custom text field style
+  &__word-input--revealed {
+    border-color: var(--color-border-muted);
+  }
+
+  &__word-index {
+    width: 20px;
+  }
+
+  &__footer--button {
+    margin-top: 100px;
   }
 
   &__secret {
@@ -99,5 +140,12 @@
         opacity: 1;
       }
     }
+  }
+}
+
+.confirm-srp-modal {
+  // SRP_OVERRIDE: center modal content
+  .mm-modal-content {
+    align-items: center;
   }
 }

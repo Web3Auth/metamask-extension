@@ -10,6 +10,7 @@ import {
   Display,
   BlockSize,
   TextColor,
+  // IconColor,
 } from '../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
@@ -26,6 +27,9 @@ import {
   ButtonVariant,
   ButtonLink,
   ButtonLinkSize,
+  // ButtonIcon,
+  // IconName,
+  // ButtonIconSize,
 } from '../../../components/component-library';
 import SRPDetailsModal from '../../../components/app/srp-details-modal';
 import SkipSRPBackup from './skip-srp-backup-popover';
@@ -70,11 +74,28 @@ export default function SecureYourWallet() {
       data-testid="secure-your-wallet"
     >
       {showSkipSRPBackupPopover && (
-        <SkipSRPBackup onClose={() => setShowSkipSRPBackupPopover(false)} />
+        <SkipSRPBackup
+          onClose={() => setShowSkipSRPBackupPopover(false)}
+          secureYourWallet={handleClickRecommended}
+        />
       )}
       {showSrpDetailsModal && (
         <SRPDetailsModal onClose={() => setShowSrpDetailsModal(false)} />
       )}
+      {/* TODO: verify if this is needed */}
+      {/* <Box
+        justifyContent={JustifyContent.flexStart}
+        marginBottom={4}
+        width={BlockSize.Full}
+      >
+        <ButtonIcon
+          iconName={IconName.ArrowLeft}
+          color={IconColor.iconDefault}
+          size={ButtonIconSize.Md}
+          data-testid="secure-your-wallet-back-button"
+          onClick={() => history.goBack()}
+        />
+      </Box> */}
       <Box
         justifyContent={JustifyContent.flexStart}
         marginBottom={4}

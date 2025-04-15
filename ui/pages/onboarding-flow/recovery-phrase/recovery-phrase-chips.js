@@ -1,14 +1,16 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import {
   Box,
   Button,
+  ButtonBase,
   ButtonVariant,
   Icon,
   IconName,
   IconSize,
   Text,
+  TextField,
 } from '../../../components/component-library';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
@@ -19,125 +21,157 @@ import {
   FontWeight,
   BorderRadius,
   BlockSize,
+  FlexDirection,
 } from '../../../helpers/constants/design-system';
-import SrpText from '../../../components/app/srp-input-import/srp-text';
+
+// Fisher-Yates shuffle algorithm
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
 export default function RecoveryPhraseChips({
   secretRecoveryPhrase,
   phraseRevealed,
   confirmPhase,
-  setInputValue,
   inputValue,
   indicesToCheck = [],
-  hiddenPhrase,
   revealPhrase,
+  setInputValue,
 }) {
   const t = useI18nContext();
   const hideSeedPhrase = phraseRevealed === false;
-  const [selectedQuizWords, setSelectedQuizWords] = useState([]);
+  const [tempInputValue, setTempInputValue] = useState(inputValue);
+  const [shuffledPhrases, setShuffledPhrases] = useState([]);
+  const [phrasesToDisplay, setPhrasesToDisplay] = useState([]);
+  const [indexToFocus, setIndexToFocus] = useState(-1);
   const srpRefs = useRef([]);
-  const shuffledPhrases = indicesToCheck.map((index) => {
-    return secretRecoveryPhrase[index];
-  });
+
+  const setTargetIndex = (inputValues) => {
+    const firstEmptyIndex = Object.values(inputValues).findIndex(
+      (value) => value === '',
+    );
+    setIndexToFocus(firstEmptyIndex);
+  };
 
   const addQuizWord = (phrase) => {
-    const newSelectedQuizWords = [...selectedQuizWords];
-    const targetIndex = newSelectedQuizWords.length;
-    newSelectedQuizWords.push(phrase);
-    setSelectedQuizWords(newSelectedQuizWords);
-    srpRefs.current[indicesToCheck[targetIndex]].setQuizWord(phrase);
-    setInputValue({ ...inputValue, [indicesToCheck[targetIndex]]: phrase });
+    if (indexToFocus !== -1) {
+      const newTempInputValue = { ...tempInputValue, [indexToFocus]: phrase };
+      setTempInputValue(newTempInputValue);
+      setTargetIndex(newTempInputValue);
+    }
+  };
+
+  const removeQuizWord = (word) => {
+    const index = Object.values(tempInputValue).findIndex(
+      (value) => value === word,
+    );
+    const newTempInputValue = {
+      ...tempInputValue,
+      [index]: '',
+    };
+    setTempInputValue(newTempInputValue);
+    setTargetIndex(newTempInputValue);
   };
 
   useEffect(() => {
-    console.log('selectedQuizWords', selectedQuizWords);
-  }, [selectedQuizWords]);
+    if (indicesToCheck.length > 0 && secretRecoveryPhrase.length > 0) {
+      setShuffledPhrases(
+        shuffleArray(
+          indicesToCheck.map((index) => {
+            return secretRecoveryPhrase[index];
+          }),
+        ),
+      );
+    }
+  }, [indicesToCheck, secretRecoveryPhrase]);
+
+  useEffect(() => {
+    const phrases = confirmPhase
+      ? Object.values(tempInputValue)
+      : secretRecoveryPhrase;
+
+    setPhrasesToDisplay(phrases);
+
+    if (confirmPhase) {
+      setTargetIndex(phrases);
+    }
+  }, [confirmPhase, tempInputValue, secretRecoveryPhrase]);
+
+  useEffect(() => {
+    if (confirmPhase) {
+      const hasEmptyInput = Object.values(tempInputValue).some(
+        (value) => value === '',
+      );
+      if (!hasEmptyInput) {
+        setInputValue(tempInputValue);
+      }
+    }
+  }, [tempInputValue, setInputValue, confirmPhase]);
 
   return (
-    <Box
-      padding={4}
-      borderRadius={Size.LG}
-      display={Display.Grid}
-      marginBottom={4}
-      className="recovery-phrase__secret"
-    >
-      <div
-        data-testid="recovery-phrase-chips"
-        className={classnames('recovery-phrase__chips', {
-          'recovery-phrase__chips--hidden': hideSeedPhrase,
-        })}
+    <Box display={Display.Flex} flexDirection={FlexDirection.Column} gap={4}>
+      <Box
+        padding={4}
+        borderRadius={Size.LG}
+        display={Display.Grid}
+        className="recovery-phrase__secret"
       >
-        {secretRecoveryPhrase.map((word, index) => {
-          const isDisabled = !(
-            confirmPhase &&
-            indicesToCheck &&
-            indicesToCheck.includes(index)
-          );
-
-          let inputWord = '';
-
-          if (confirmPhase) {
-            inputWord = inputValue[index];
-          } else {
-            inputWord = inputValue ? inputValue[index] : word;
-          }
-
-          return (
-            <div
-              className={classnames('recovery-phrase__chip-item', {
-                'recovery-phrase__chip-item--revealed-phase': !confirmPhase,
-              })}
-              key={index}
-            >
-              <SrpText
-                dataTestId={`recovery-phrase-input-${index}`}
+        <div
+          data-testid="recovery-phrase-chips"
+          className={classnames('recovery-phrase__chips', {
+            'recovery-phrase__chips--hidden': hideSeedPhrase,
+          })}
+        >
+          {phrasesToDisplay.map((word, index) => {
+            return (
+              <TextField
+                key={index}
                 ref={(el) => (srpRefs.current[index] = el)}
-                word={{
-                  word: inputWord,
-                  isActive: true,
-                }}
-                index={index}
-                disabled={isDisabled}
-                updateWord={(value) => {
-                  setInputValue({ ...inputValue, [index]: value });
+                value={word}
+                className={`${
+                  confirmPhase && indicesToCheck.includes(index)
+                    ? 'mm-text-field--quiz-word'
+                    : ''
+                } ${
+                  index === indexToFocus ? 'mm-text-field--target-index' : ''
+                }`}
+                type={
+                  confirmPhase && !indicesToCheck.includes(index)
+                    ? 'password'
+                    : 'text'
+                }
+                startAccessory={
+                  <Text
+                    color={TextColor.textAlternative}
+                    className="recovery-phrase__word-index"
+                  >
+                    {index + 1}
+                  </Text>
+                }
+                readOnly={!hideSeedPhrase}
+                disabled={confirmPhase && !indicesToCheck.includes(index)}
+                onClick={() => {
+                  if (!confirmPhase) {
+                    return;
+                  }
+                  if (word && indicesToCheck.includes(index)) {
+                    removeQuizWord(word);
+                  } else {
+                    setIndexToFocus(index);
+                  }
                 }}
               />
-            </div>
-          );
-        })}
-      </div>
-
-      {shuffledPhrases && (
-        <Box
-          display={Display.Flex}
-          marginTop={6}
-          gap={2}
-          width={BlockSize.Full}
-        >
-          {/* TODO: Fix text color showing primary when hovered */}
-          {shuffledPhrases.map((value, index) => {
-            return (
-              <Button
-                variant={ButtonVariant.Secondary}
-                borderRadius={BorderRadius.LG}
-                key={index}
-                block
-                disabled={selectedQuizWords.includes(value)}
-                onClick={() => {
-                  addQuizWord(value);
-                }}
-              >
-                {value}
-              </Button>
             );
           })}
-        </Box>
-      )}
+        </div>
 
-      {hideSeedPhrase && (
-        <div className="recovery-phrase__secret-blocker-container">
-          <div className="recovery-phrase__secret-blocker" />
-          {!hiddenPhrase && (
+        {hideSeedPhrase && (
+          <div className="recovery-phrase__secret-blocker-container">
+            <div className="recovery-phrase__secret-blocker" />
             <Box
               className="recovery-phrase__secret-blocker-text"
               onClick={() => {
@@ -160,8 +194,44 @@ export default function RecoveryPhraseChips({
                 {t('tapToRevealNote')}
               </Text>
             </Box>
-          )}
-        </div>
+          </div>
+        )}
+      </Box>
+
+      {shuffledPhrases && shuffledPhrases.length > 0 && (
+        <Box display={Display.Flex} gap={2} width={BlockSize.Full}>
+          {shuffledPhrases.map((value, index) => {
+            if (Object.values(tempInputValue).includes(value)) {
+              return (
+                <ButtonBase
+                  key={index}
+                  color={TextColor.textAlternative}
+                  borderRadius={BorderRadius.LG}
+                  block
+                  onClick={() => {
+                    removeQuizWord(value);
+                  }}
+                >
+                  {value}
+                </ButtonBase>
+              );
+            }
+            return (
+              <Button
+                key={index}
+                variant={ButtonVariant.Secondary}
+                borderRadius={BorderRadius.LG}
+                block
+                disabled={Object.values(tempInputValue).includes(value)}
+                onClick={() => {
+                  addQuizWord(value);
+                }}
+              >
+                {value}
+              </Button>
+            );
+          })}
+        </Box>
       )}
     </Box>
   );
@@ -174,6 +244,5 @@ RecoveryPhraseChips.propTypes = {
   setInputValue: PropTypes.func,
   inputValue: PropTypes.object,
   indicesToCheck: PropTypes.array,
-  hiddenPhrase: PropTypes.bool,
   revealPhrase: PropTypes.func,
 };

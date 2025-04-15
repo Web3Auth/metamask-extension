@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import Mascot from '../../../components/ui/mascot';
 import { isFlask, isBeta } from '../../../helpers/utils/build-types';
 import {
@@ -21,10 +22,12 @@ import {
 import { ONBOARDING_GET_STARTED_ROUTE } from '../../../helpers/constants/routes';
 import TermsOfUsePopup from '../../../components/app/terms-of-use-popup';
 import { useI18nContext } from '../../../hooks/useI18nContext';
+import { setTermsOfUseLastAgreed } from '../../../store/actions';
 
 export default function Welcome() {
   const history = useHistory();
   const t = useI18nContext();
+  const dispatch = useDispatch();
   const [eventEmitter] = useState(new EventEmitter());
   const [showTermsOfUse, setShowTermsOfUse] = useState(false);
 
@@ -45,6 +48,7 @@ export default function Welcome() {
   };
 
   const onAcceptTermsOfUse = () => {
+    dispatch(setTermsOfUseLastAgreed(new Date().getTime()));
     history.push(ONBOARDING_GET_STARTED_ROUTE);
   };
 

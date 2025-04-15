@@ -15,6 +15,7 @@ import { getIsPrivacyToastRecent } from './utils';
 type State = Omit<MetaMaskReduxState, 'appState'> & {
   appState: {
     showNftDetectionEnablementToast?: boolean;
+    showPasswordHintSavedToast?: boolean;
     ///: BEGIN:ONLY_INCLUDE_IF(multi-srp)
     showNewSrpAddedToast?: boolean;
     ///: END:ONLY_INCLUDE_IF
@@ -79,6 +80,10 @@ export function selectShowPrivacyPolicyToast(state: State): {
 
 export function selectNftDetectionEnablementToast(state: State): boolean {
   return Boolean(state.appState?.showNftDetectionEnablementToast);
+}
+
+export function selectPasswordHintSavedToast(state: State): boolean {
+  return Boolean(state.appState?.showPasswordHintSavedToast);
 }
 
 // If there is more than one connected account to activeTabOrigin,

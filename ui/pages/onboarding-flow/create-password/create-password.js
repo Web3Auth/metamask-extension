@@ -10,10 +10,11 @@ import {
   TextVariant,
   TextColor,
   BlockSize,
+  IconColor,
 } from '../../../helpers/constants/design-system';
 import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-  ONBOARDING_COMPLETION_ROUTE,
+  ONBOARDING_METAMETRICS,
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
   ONBOARDING_WELCOME_ROUTE,
   ONBOARDING_UNLOCK_ROUTE,
@@ -35,6 +36,7 @@ import {
   Box,
   Button,
   ButtonIcon,
+  ButtonIconSize,
   ButtonSize,
   ButtonVariant,
   Checkbox,
@@ -98,7 +100,7 @@ export default function CreatePassword({
         firstTimeFlowType === FirstTimeFlowType.seedless
       ) {
         ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-        history.replace(ONBOARDING_COMPLETION_ROUTE);
+        history.replace(ONBOARDING_METAMETRICS);
         ///: END:ONLY_INCLUDE_IF
       } else {
         ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
@@ -223,7 +225,7 @@ export default function CreatePassword({
     ) {
       await importWithRecoveryPhrase(password, secretRecoveryPhrase);
       ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-      history.push(ONBOARDING_COMPLETION_ROUTE);
+      history.push(ONBOARDING_METAMETRICS);
       ///: END:ONLY_INCLUDE_IF
     } else {
       // Otherwise we are in create new wallet flow
@@ -266,8 +268,24 @@ export default function CreatePassword({
         marginBottom={4}
         width={BlockSize.Full}
       >
+        <ButtonIcon
+          iconName={IconName.ArrowLeft}
+          color={IconColor.iconDefault}
+          size={ButtonIconSize.Md}
+          data-testid="create-password-back-button"
+          onClick={() => history.goBack()}
+        />
+      </Box>
+      <Box
+        justifyContent={JustifyContent.flexStart}
+        marginBottom={4}
+        width={BlockSize.Full}
+      >
         <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          {t('stepOf', [2, 2])}
+          {t('stepOf', [
+            firstTimeFlowType === FirstTimeFlowType.import ? 2 : 1,
+            firstTimeFlowType === FirstTimeFlowType.import ? 2 : 3,
+          ])}
         </Text>
         <Text variant={TextVariant.headingLg}>{t('createPassword')}</Text>
       </Box>
@@ -280,6 +298,7 @@ export default function CreatePassword({
             autoFocus
             placeholder={t('newPasswordPlaceholder')}
             label={t('newPassword')}
+            labelProps={{ marginBottom: 1 }}
             size={FormTextFieldSize.Lg}
             value={password}
             type={showPassword ? 'text' : 'password'}
@@ -318,6 +337,7 @@ export default function CreatePassword({
             marginTop={4}
             placeholder={t('confirmPasswordPlaceholder')}
             label={t('confirmPassword')}
+            labelProps={{ marginBottom: 1 }}
             size={FormTextFieldSize.Lg}
             error={Boolean(confirmPasswordError)}
             helpText={confirmPasswordError}
@@ -377,24 +397,6 @@ export default function CreatePassword({
             >
               {t('confirm')}
             </Button>
-            // <Button
-            //   data-testid={
-            //     secretRecoveryPhrase &&
-            //     firstTimeFlowType === FirstTimeFlowType.import
-            //       ? 'create-password-import'
-            //       : 'create-password-wallet'
-            //   }
-            //   type="primary"
-            //   large
-            //   className="create-password-old__form--submit-button"
-            //   disabled={!isValid || !termsChecked}
-            //   onClick={handleCreate}
-            // >
-            //   {secretRecoveryPhrase &&
-            //   firstTimeFlowType === FirstTimeFlowType.import
-            //     ? t('importMyWallet')
-            //     : t('createNewWallet')}
-            // </Button>
             ///: END:ONLY_INCLUDE_IF
           }
         </form>

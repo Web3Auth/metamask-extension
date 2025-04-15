@@ -33,9 +33,18 @@ export default function OnboardingAppHeader() {
         className="onboarding-app-header__contents"
         data-theme={pathname === ONBOARDING_WELCOME_ROUTE ? 'light' : ''}
       >
-        <MetaFoxLogo unsetIconHeight isOnboarding />
+        <MetaFoxLogo
+          theme={pathname === ONBOARDING_WELCOME_ROUTE ? 'light' : 'os'}
+          unsetIconHeight
+          isOnboarding
+        />
         <Dropdown
           id="select-locale"
+          className={`onboarding-app-header__dropdown ${
+            pathname === ONBOARDING_WELCOME_ROUTE
+              ? 'onboarding-app-header__dropdown--welcome'
+              : ''
+          }`}
           options={localeOptions}
           selectedOption={currentLocale}
           onChange={async (newLocale) =>

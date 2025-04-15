@@ -120,6 +120,7 @@ export type Preferences = {
   };
   tokenNetworkFilter: Record<string, boolean>;
   shouldShowAggregatedBalancePopover: boolean;
+  passwordHint: string;
 };
 
 // Omitting properties that already exist in the PreferencesState, as part of the preferences property.
@@ -225,6 +226,7 @@ export const getDefaultPreferencesControllerState =
         sortCallback: 'stringNumeric',
       },
       tokenNetworkFilter: {},
+      passwordHint: '',
     },
     // ENS decentralized website resolution
     ipfsGateway: IPFS_DEFAULT_GATEWAY_URL,

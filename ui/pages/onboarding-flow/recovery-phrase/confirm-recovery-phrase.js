@@ -6,8 +6,11 @@ import PropTypes from 'prop-types';
 import {
   Box,
   Button,
+  ButtonIcon,
+  ButtonIconSize,
   ButtonSize,
   ButtonVariant,
+  IconName,
   Text,
 } from '../../../components/component-library';
 import {
@@ -15,8 +18,9 @@ import {
   JustifyContent,
   BlockSize,
   TextColor,
+  IconColor,
 } from '../../../helpers/constants/design-system';
-import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
+import { ONBOARDING_METAMETRICS } from '../../../helpers/constants/routes';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { setSeedPhraseBackedUp } from '../../../store/actions';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
@@ -77,7 +81,7 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
       category: MetaMetricsEventCategory.Onboarding,
       event: MetaMetricsEventName.OnboardingWalletSecurityPhraseConfirmed,
     });
-    history.push(ONBOARDING_COMPLETION_ROUTE);
+    history.push(ONBOARDING_METAMETRICS);
   };
 
   const handleSetPhraseElements = (values) => {
@@ -102,6 +106,19 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
         marginBottom={4}
         width={BlockSize.Full}
       >
+        <ButtonIcon
+          iconName={IconName.ArrowLeft}
+          color={IconColor.iconDefault}
+          size={ButtonIconSize.Md}
+          data-testid="confirm-recovery-phrase-back-button"
+          onClick={() => history.goBack()}
+        />
+      </Box>
+      <Box
+        justifyContent={JustifyContent.flexStart}
+        marginBottom={4}
+        width={BlockSize.Full}
+      >
         <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
           {t('stepOf', [3, 3])}
         </Text>
@@ -121,7 +138,7 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
         inputValue={phraseElements}
         indicesToCheck={indicesToCheck}
       />
-      <div className="recovery-phrase__footer__confirm">
+      <div className="recovery-phrase__footer--button">
         <Button
           variant={ButtonVariant.Primary}
           width={BlockSize.Full}
