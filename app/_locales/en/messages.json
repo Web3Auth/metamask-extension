@@ -3677,13 +3677,13 @@
     "message": "Click the browser extension icon"
   },
   "onboardingPinExtensionDescription": {
-    "message": "Pin MetaMask on your browser so it's accessible and easy to view transaction confirmations."
+    "message": "Pin MetaMask on your browser so it’s accessible and easy to view transaction confirmations."
   },
   "onboardingPinExtensionDescription2": {
-    "message": "You can open MetaMask by clicking on the extension and access your wallet with 1 click."
+    "message": "Access your MetaMask wallet with 1 click by clicking on the extension."
   },
   "onboardingPinExtensionDescription3": {
-    "message": "Click browser extension icon to access it instantly"
+    "message": "Click Chrome extension icon to access it instantly"
   },
   "onboardingPinExtensionLabel": {
     "message": "Pin MetaMask"
@@ -3695,7 +3695,7 @@
     "message": "2"
   },
   "onboardingPinExtensionTitle": {
-    "message": "Your MetaMask install is complete!"
+    "message": "Installation is complete!"
   },
   "onboardingSrpCreate": {
     "message": "Continue with Secret Recovery Phrase "
@@ -6599,8 +6599,14 @@
     "message": "$1 you can keep this phrase safe so you never lose access to your money.",
     "description": "$1 is the link to Learn how"
   },
+  "walletReadyLearnRemind": {
+    "message": "You can back up your wallets or see your Secret Recovery Phrase in Settings > Security & Password."
+  },
   "walletReadyLoseSrp": {
     "message": "If you lose your Secret Recovery Phrase, you won’t be able to use your wallet."
+  },
+  "walletReadyLoseSrpRemind": {
+    "message": "If you don’t back up your Secret Recovery Phrase, you’ll lose access to your funds if you get locked out of the app or get a new device."
   },
   "wantToAddThisNetwork": {
     "message": "Want to add this network?"
@@ -6727,6 +6733,9 @@
   },
   "yourWalletIsReady": {
     "message": "Your wallet is ready!"
+  },
+  "yourWalletIsReadyRemind": {
+    "message": "We’ll remind you later"
   },
   "zeroGasPriceOnSpeedUpError": {
     "message": "Zero gas price on speed up"
