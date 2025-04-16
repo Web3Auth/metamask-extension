@@ -45,6 +45,7 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
   } = dispatchProps;
   const { history, onSubmit: ownPropsSubmit, ...restOwnProps } = ownProps;
 
+  // TODO: might remove this once new forget password flow is implemented
   const onImport = async () => {
     await markPasswordForgotten();
     history.push(RESTORE_VAULT_ROUTE);

@@ -68,3 +68,17 @@
     }
   }
 }
+
+.reset-password-modal {
+  // SRP_OVERRIDE: center modal content
+  .mm-modal-content {
+    align-items: center;
+  }
+}
+
+.erase-wallet-modal {
+  // SRP_OVERRIDE: center modal content
+  .mm-modal-content {
+    align-items: center;
+  }
+}
