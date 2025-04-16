@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
+import { wordlist } from '@metamask/scure-bip39/dist/wordlists/english';
 import { Textarea, TextareaResize } from '../../component-library/textarea';
 import {
+  Box,
   Button,
   ButtonVariant,
   Text,
@@ -14,6 +16,7 @@ import {
   BlockSize,
   BorderColor,
   TextColor,
+  TextVariant,
 } from '../../../helpers/constants/design-system';
 import { parseSecretRecoveryPhrase } from './parse-secret-recovery-phrase';
 
@@ -25,6 +28,7 @@ export default function SrpInputImport({ onChange }) {
   const [draftSrp, setDraftSrp] = useState([]);
   const [firstWord, setFirstWord] = useState('');
   const [showAll, setShowAll] = useState(false);
+  const [missSpelledWords, setMissSpelledWords] = useState([]);
 
   const srpRefs = useRef([]);
 
@@ -127,6 +131,11 @@ export default function SrpInputImport({ onChange }) {
       srpRefs.current[activeWord.id]?.click();
     }
 
+    const wordsNotInWordList = draftSrp
+      .map((word) => word.word)
+      .filter((word) => !wordlist.includes(word));
+    setMissSpelledWords(wordsNotInWordList);
+
     // if srp length is valid and no empty word trigger onChange
     if (
       SRP_LENGTHS.includes(draftSrp.length) &&
@@ -140,109 +149,119 @@ export default function SrpInputImport({ onChange }) {
   }, [draftSrp, onChange]);
 
   return (
-    <div className="srp-input-import__container">
-      {draftSrp.length > 0 ? (
-        <div className="srp-input-import__srp-container">
-          <div className="srp-input-import__words-list">
-            {draftSrp.map((word, index) => (
-              <TextField
-                key={word.id}
-                ref={(el) => (srpRefs.current[word.id] = el)}
-                value={word.word}
-                type={word.active || showAll ? 'text' : 'password'}
-                startAccessory={
-                  <Text
-                    color={TextColor.textAlternative}
-                    className="srp-input-import__word-index"
-                  >
-                    {index + 1}
-                  </Text>
-                }
-                onChange={(e) => handleChange(word.id, e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    nextWord(word.id);
-                  }
-                  if (e.key === 'Backspace' && word.word.length === 0) {
-                    e.preventDefault();
-                    deleteWord(word.id);
-                  }
-                }}
-                onFocus={() => {
-                  onWordFocus(word.id);
-                }}
-                onBlur={() => {
-                  setWordInactive(word.id);
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div className="srp-input-import__srp-note">
-          <Textarea
-            borderColor={BorderColor.transparent}
-            backgroundColor={BackgroundColor.transparent}
-            width={BlockSize.Full}
-            placeholder={`${t('onboardingSrpInputPlaceholder')} 👀`}
-            rows={7}
-            resize={TextareaResize.None}
-            value={firstWord}
-            onChange={(e) => setFirstWord(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                initializeSrp();
-              }
-            }}
-            onPaste={(e) => {
-              e.preventDefault();
-              const newSrp = e.clipboardData.getData('text');
-              if (newSrp.trim().match(/\s/u)) {
-                e.preventDefault();
-                onSrpPaste(newSrp);
-              }
-            }}
-          />
-        </div>
-      )}
-
-      <div className="srp-input-import__actions">
-        <Button
-          variant={ButtonVariant.Link}
-          onClick={() => setShowAll(!showAll)}
-        >
-          {showAll
-            ? t('onboardingSrpInputHideAll')
-            : t('onboardingSrpInputShowAll')}
-        </Button>
+    <>
+      <div className="srp-input-import__container">
         {draftSrp.length > 0 ? (
-          <Button
-            variant={ButtonVariant.Link}
-            onClick={async () => {
-              setShowAll(false);
-              setDraftSrp([]);
-            }}
-          >
-            {t('onboardingSrpInputClearAll')}
-          </Button>
+          <div className="srp-input-import__srp-container">
+            <div className="srp-input-import__words-list">
+              {draftSrp.map((word, index) => (
+                <TextField
+                  key={word.id}
+                  ref={(el) => (srpRefs.current[word.id] = el)}
+                  error={missSpelledWords.includes(word.word)}
+                  value={word.word}
+                  type={word.active || showAll ? 'text' : 'password'}
+                  startAccessory={
+                    <Text
+                      color={TextColor.textAlternative}
+                      className="srp-input-import__word-index"
+                    >
+                      {index + 1}
+                    </Text>
+                  }
+                  onChange={(e) => handleChange(word.id, e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      nextWord(word.id);
+                    }
+                    if (e.key === 'Backspace' && word.word.length === 0) {
+                      e.preventDefault();
+                      deleteWord(word.id);
+                    }
+                  }}
+                  onFocus={() => {
+                    onWordFocus(word.id);
+                  }}
+                  onBlur={() => {
+                    setWordInactive(word.id);
+                  }}
+                />
+              ))}
+            </div>
+          </div>
         ) : (
+          <div className="srp-input-import__srp-note">
+            <Textarea
+              borderColor={BorderColor.transparent}
+              backgroundColor={BackgroundColor.transparent}
+              width={BlockSize.Full}
+              placeholder={`${t('onboardingSrpInputPlaceholder')} 👀`}
+              rows={7}
+              resize={TextareaResize.None}
+              value={firstWord}
+              onChange={(e) => setFirstWord(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  initializeSrp();
+                }
+              }}
+              onPaste={(e) => {
+                e.preventDefault();
+                const newSrp = e.clipboardData.getData('text');
+                if (newSrp.trim().match(/\s/u)) {
+                  e.preventDefault();
+                  onSrpPaste(newSrp);
+                }
+              }}
+            />
+          </div>
+        )}
+
+        <div className="srp-input-import__actions">
           <Button
             variant={ButtonVariant.Link}
-            onClick={async () => {
-              // TODO: this requires user permission
-              const newSrp = await window.navigator.clipboard.readText();
-              if (newSrp.trim().match(/\s/u)) {
-                onSrpPaste(newSrp);
-              }
-            }}
+            onClick={() => setShowAll(!showAll)}
           >
-            {t('paste')}
+            {showAll
+              ? t('onboardingSrpInputHideAll')
+              : t('onboardingSrpInputShowAll')}
           </Button>
-        )}
+          {draftSrp.length > 0 ? (
+            <Button
+              variant={ButtonVariant.Link}
+              onClick={async () => {
+                setShowAll(false);
+                setDraftSrp([]);
+              }}
+            >
+              {t('onboardingSrpInputClearAll')}
+            </Button>
+          ) : (
+            <Button
+              variant={ButtonVariant.Link}
+              onClick={async () => {
+                // TODO: this requires user permission
+                const newSrp = await window.navigator.clipboard.readText();
+                if (newSrp.trim().match(/\s/u)) {
+                  onSrpPaste(newSrp);
+                }
+              }}
+            >
+              {t('paste')}
+            </Button>
+          )}
+        </div>
       </div>
-    </div>
+      {missSpelledWords.length > 0 && (
+        <Box marginTop={2}>
+          <Text color={TextColor.errorDefault} variant={TextVariant.bodySm}>
+            {t('onboardingSrpImportError')}
+          </Text>
+        </Box>
+      )}
+    </>
   );
 }
 

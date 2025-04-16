@@ -42,6 +42,8 @@
     .mm-text-field {
       padding-left: 8px;
       border-radius: 8px;
+    }
+    .mm-text-field:not(.mm-text-field--error) {
       border-color: var(--color-border-muted);
     }
     // SRP_OVERRIDE: custom text field style

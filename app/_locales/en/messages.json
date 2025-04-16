@@ -3729,6 +3729,9 @@
   "onboardingSrpImport": {
     "message": "Import using Secret Recovery Phrase"
   },
+  "onboardingSrpImportError": {
+    "message": "Make sure the Secret Recovery Phrase is entered in the original order and spelled correctly."
+  },
   "onboardingSrpInputClearAll": {
     "message": "Clear all"
   },
