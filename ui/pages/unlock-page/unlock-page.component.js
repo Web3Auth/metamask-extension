@@ -72,7 +72,7 @@ export default class UnlockPage extends Component {
     event.stopPropagation();
 
     const { password } = this.state;
-    const { onSubmit, forceUpdateMetamaskState } = this.props;
+    const { onSubmit } = this.props;
 
     if (password === '' || this.submitting) {
       return;
@@ -95,27 +95,49 @@ export default class UnlockPage extends Component {
           isNewVisit: true,
         },
       );
-    } catch ({ message }) {
+    } catch (error) {
       this.failed_attempts += 1;
 
-      if (message === 'Incorrect password') {
-        await forceUpdateMetamaskState();
-        this.context.trackEvent({
-          category: MetaMetricsEventCategory.Navigation,
-          event: MetaMetricsEventName.AppUnlockedFailed,
-          properties: {
-            reason: 'incorrect_password',
-            failed_attempts: this.failed_attempts,
-          },
-        });
-      } else if (message === 'Seed phrase not found') {
-        this.props.history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
-      } else {
-        this.setState({ error: message });
-      }
+      await this.handleLoginError(error);
 
       this.submitting = false;
     }
+  };
+
+  handleLoginError = async (error) => {
+    const { message, data } = error;
+    let finalErrorMessage = message;
+    let errorReason;
+
+    switch (message) {
+      case 'Incorrect password':
+        finalErrorMessage = message;
+        errorReason = 'incorrect_password';
+        break;
+      case 'Too many login attempts':
+        finalErrorMessage = data.message || message;
+        errorReason = 'too_many_login_attempts';
+        break;
+      case 'Seed phrase not found':
+        this.props.history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
+        return;
+      default:
+        this.setState({ error: message });
+        return;
+    }
+
+    if (errorReason) {
+      await this.props.forceUpdateMetamaskState();
+      this.context.trackEvent({
+        category: MetaMetricsEventCategory.Navigation,
+        event: MetaMetricsEventName.AppUnlockedFailed,
+        properties: {
+          reason: errorReason,
+          failed_attempts: this.failed_attempts,
+        },
+      });
+    }
+    this.setState({ error: finalErrorMessage });
   };
 
   handleInputChange({ target }) {

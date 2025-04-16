@@ -162,6 +162,7 @@ import {
   walletRevokeSession,
   walletInvokeMethod,
 } from '@metamask/multichain';
+import { TooManyLoginAttemptsError } from '@metamask/seedless-onboarding-controller';
 import {
   methodsRequiringNetworkSwitch,
   methodsThatCanSwitchNetworkWithoutApproval,
@@ -4495,21 +4496,34 @@ export default class MetamaskController extends EventEmitter {
    * @param {string} password - The user's password.
    */
   async createSeedPhraseBackup(encodedSeedPhrase, password) {
-    const { userId, authConnectionId, groupedAuthConnectionId } =
-      this.oauthController.state;
+    try {
+      const { userId, authConnectionId, groupedAuthConnectionId } =
+        this.oauthController.state;
 
-    const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
+      console.log(
+        '[createSeedPhraseBackup] encodedSeedPhrase',
+        encodedSeedPhrase,
+      );
+      console.log('[createSeedPhraseBackup] password', password);
 
-    const seedPhrase =
-      this._convertMnemonicToWordlistIndices(seedPhraseAsBuffer);
+      const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
 
-    await this.seedlessOnboardingController.createToprfKeyAndBackupSeedPhrase({
-      seedPhrase,
-      password,
-      userId,
-      authConnectionId,
-      groupedAuthConnectionId,
-    });
+      const seedPhrase =
+        this._convertMnemonicToWordlistIndices(seedPhraseAsBuffer);
+
+      await this.seedlessOnboardingController.createToprfKeyAndBackupSeedPhrase(
+        {
+          seedPhrase,
+          password,
+          userId,
+          authConnectionId,
+          groupedAuthConnectionId,
+        },
+      );
+    } catch (error) {
+      log.error('[createSeedPhraseBackup] error', error);
+      throw error;
+    }
   }
 
   /**
@@ -4549,6 +4563,11 @@ export default class MetamaskController extends EventEmitter {
         'Error while fetching and restoring seed phrase metadata.',
         error,
       );
+
+      if (error instanceof TooManyLoginAttemptsError) {
+        throw new JsonRpcError(-32603, 'Too many login attempts', error.meta);
+      }
+
       throw error;
     }
   }

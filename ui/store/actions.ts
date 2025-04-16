@@ -212,7 +212,6 @@ export function tryRestoreAndUnlockMetamask(
     } finally {
       dispatch(hideLoadingIndication());
     }
-    return undefined;
   };
 }
 
@@ -424,11 +423,7 @@ export function restoreAndGetSeedPhrase(
       return seedPhrase;
     } catch (error) {
       dispatch(displayWarning(error));
-      if (isErrorWithMessage(error)) {
-        throw new Error(getErrorMessage(error));
-      } else {
-        throw error;
-      }
+      throw error;
     } finally {
       dispatch(hideLoadingIndication());
     }

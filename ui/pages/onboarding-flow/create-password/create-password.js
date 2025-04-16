@@ -17,7 +17,7 @@ import {
   ONBOARDING_METAMETRICS,
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
   ONBOARDING_WELCOME_ROUTE,
-  ONBOARDING_UNLOCK_ROUTE,
+  ONBOARDING_COMPLETION_ROUTE,
   ///: END:ONLY_INCLUDE_IF
 } from '../../../helpers/constants/routes';
 import { PASSWORD_MIN_LENGTH } from '../../../helpers/constants/common';
@@ -46,10 +46,7 @@ import {
   Text,
 } from '../../../components/component-library';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
-import {
-  selectHasValidEncryptionKey,
-  selectNodeAuthTokens,
-} from '../../../selectors/seedless-onboarding';
+import { selectNodeAuthTokens } from '../../../selectors/seedless-onboarding';
 
 export default function CreatePassword({
   createNewAccount,
@@ -71,7 +68,6 @@ export default function CreatePassword({
   const history = useHistory();
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const nodeAuthTokens = useSelector(selectNodeAuthTokens);
-  const hasValidEncryptionKey = useSelector(selectHasValidEncryptionKey);
   const trackEvent = useContext(MetaMetricsContext);
   const currentKeyring = useSelector(getCurrentKeyring);
 
@@ -108,15 +104,9 @@ export default function CreatePassword({
         ///: END:ONLY_INCLUDE_IF
       }
     } else if (firstTimeFlowType === FirstTimeFlowType.seedless) {
+      // If user doesn't have node auth tokens, redirect to welcome page
       if (!nodeAuthTokens) {
-        // user has not authenticated with the seedless onboarding servers,
-        // redirect back to the welcome page and asks to do social login
-        // Should we show a warning here?
         history.replace(ONBOARDING_WELCOME_ROUTE);
-      } else if (hasValidEncryptionKey) {
-        // user has already setup password and encryption key
-        // redirect to the login page instead
-        history.replace(ONBOARDING_UNLOCK_ROUTE);
       }
     }
   }, [
@@ -125,7 +115,6 @@ export default function CreatePassword({
     firstTimeFlowType,
     newAccountCreationInProgress,
     nodeAuthTokens,
-    hasValidEncryptionKey,
   ]);
 
   const isValid = useMemo(() => {
