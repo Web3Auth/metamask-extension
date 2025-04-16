@@ -162,7 +162,7 @@ import {
   walletRevokeSession,
   walletInvokeMethod,
 } from '@metamask/multichain';
-import { TooManyLoginAttemptsError } from '@metamask/seedless-onboarding-controller';
+import { RecoveryError } from '@metamask/seedless-onboarding-controller';
 import {
   methodsRequiringNetworkSwitch,
   methodsThatCanSwitchNetworkWithoutApproval,
@@ -4564,8 +4564,8 @@ export default class MetamaskController extends EventEmitter {
         error,
       );
 
-      if (error instanceof TooManyLoginAttemptsError) {
-        throw new JsonRpcError(-32603, 'Too many login attempts', error.meta);
+      if (error instanceof RecoveryError) {
+        throw new JsonRpcError(-32603, error.message, error.data);
       }
 
       throw error;

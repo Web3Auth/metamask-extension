@@ -96,15 +96,12 @@ export default class UnlockPage extends Component {
         },
       );
     } catch (error) {
-      this.failed_attempts += 1;
-
       await this.handleLoginError(error);
-
-      this.submitting = false;
     }
   };
 
   handleLoginError = async (error) => {
+    this.failed_attempts += 1;
     const { message, data } = error;
     let finalErrorMessage = message;
     let errorReason;
@@ -115,15 +112,15 @@ export default class UnlockPage extends Component {
         errorReason = 'incorrect_password';
         break;
       case 'Too many login attempts':
-        finalErrorMessage = data.message || message;
+        finalErrorMessage = data?.message || message;
         errorReason = 'too_many_login_attempts';
         break;
       case 'Seed phrase not found':
         this.props.history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
         return;
       default:
-        this.setState({ error: message });
-        return;
+        finalErrorMessage = message;
+        break;
     }
 
     if (errorReason) {
@@ -138,6 +135,7 @@ export default class UnlockPage extends Component {
       });
     }
     this.setState({ error: finalErrorMessage });
+    this.submitting = false;
   };
 
   handleInputChange({ target }) {
