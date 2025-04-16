@@ -22,6 +22,7 @@ import {
   BlockSize,
   TextColor,
   IconColor,
+  FontWeight,
 } from '../../../helpers/constants/design-system';
 import {
   MetaMetricsEventCategory,
@@ -85,17 +86,18 @@ export default function RecoveryPhrase({ secretRecoveryPhrase }) {
           marginBottom={6}
         >
           {t('seedPhraseReviewDetails', [
-            [
-              <ButtonLink
-                key="seedPhraseReviewDetails"
-                size={ButtonLinkSize.Inherit}
-                onClick={() => {
-                  setShowSrpDetailsModal(true);
-                }}
-              >
-                {t('secretRecoveryPhrase')}
-              </ButtonLink>,
-            ],
+            <ButtonLink
+              key="seedPhraseReviewDetails"
+              size={ButtonLinkSize.Inherit}
+              onClick={() => {
+                setShowSrpDetailsModal(true);
+              }}
+            >
+              {t('secretRecoveryPhrase')}
+            </ButtonLink>,
+            <Text key="seedPhraseReviewDetails2" fontWeight={FontWeight.Medium}>
+              {t('seedPhraseReviewDetails2')}
+            </Text>,
           ])}
         </Text>
       </Box>

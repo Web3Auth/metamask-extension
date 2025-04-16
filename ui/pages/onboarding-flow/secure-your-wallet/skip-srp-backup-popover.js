@@ -31,7 +31,7 @@ import {
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
 import { setSeedPhraseBackedUp } from '../../../store/actions';
-import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
+import { ONBOARDING_METAMETRICS } from '../../../helpers/constants/routes';
 
 export default function SkipSRPBackup({ onClose, secureYourWallet }) {
   const [checked, setChecked] = useState(false);
@@ -107,7 +107,7 @@ export default function SkipSRPBackup({ onClose, secureYourWallet }) {
                   event:
                     MetaMetricsEventName.OnboardingWalletSecuritySkipConfirmed,
                 });
-                history.push(ONBOARDING_COMPLETION_ROUTE);
+                history.push(ONBOARDING_METAMETRICS);
               }}
               block
             >
