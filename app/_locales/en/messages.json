@@ -3719,11 +3719,15 @@
   "onboardingPinExtensionTitle": {
     "message": "Installation is complete!"
   },
+  "onboardingSignInWith": {
+    "message": "Sign in with $1",
+    "description": "$1 is the type of login used Google, Apple, etc."
+  },
   "onboardingSrpCreate": {
     "message": "Continue with Secret Recovery Phrase "
   },
   "onboardingSrpImport": {
-    "message": "Import using secret recovery phrase"
+    "message": "Import using Secret Recovery Phrase"
   },
   "onboardingSrpInputClearAll": {
     "message": "Clear all"
@@ -4682,7 +4686,7 @@
     "description": "The $1 is the button text 'Secret Recovery Phrase'"
   },
   "secureWalletWalletRecover": {
-    "message": "If you get locked out of the app or get a new device, you can recover your wallet using your Secret Recovery Phrase."
+    "message": "It’s the only way to recover your wallet if you get locked out of the app or get a new device."
   },
   "secureWalletGetStartedButton": {
     "message": "Get started"
@@ -4776,7 +4780,7 @@
     "description": "The $1 is the bolded text 'Secret Recovery Phrase' and $2 is 'seedPhraseReviewDetails2'"
   },
   "seedPhraseReviewDetails2": {
-    "message": "Don’t share it with anyone, ever.'s in bold"
+    "message": "Don’t share it with anyone, ever."
   },
   "seedPhraseWriteDownDetails": {
     "message": "Write down this 12-word Secret Recovery Phrase and save it in a place that you trust and only you can access."
