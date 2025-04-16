@@ -1,5 +1,4 @@
 import React from 'react';
-import classnames from 'classnames';
 import {
   AlignItems,
   BackgroundColor,
@@ -28,9 +27,7 @@ export const AppHeaderContainer = ({
   return (
     <Box
       display={Display.Flex}
-      className={classnames('multichain-app-header', {
-        'multichain-app-header-shadow': !isUnlocked || popupStatus,
-      })}
+      className="multichain-app-header"
       marginBottom={headerBottomMargin}
       alignItems={AlignItems.center}
       width={BlockSize.Full}
