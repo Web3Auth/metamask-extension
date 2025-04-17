@@ -149,7 +149,7 @@ export default function RecoveryPhraseChips({
                     color={TextColor.textAlternative}
                     className="recovery-phrase__word-index"
                   >
-                    {index + 1}
+                    {index + 1}.
                   </Text>
                 }
                 readOnly={!hideSeedPhrase}

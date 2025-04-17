@@ -1,5 +1,6 @@
 @use "design-system";
 
+@import 'account-exist/index';
 @import 'recovery-phrase/index';
 @import 'onboarding-app-header/index';
 @import 'secure-your-wallet/index';
@@ -24,18 +25,23 @@
   }
 
   &__wrapper {
-    margin: 64px auto 40px;
+    margin: 12px auto auto;
     padding: 24px;
+    width: 100%;
     max-width: 446px;
     border: 1px solid var(--color-border-muted);
     border-radius: 8px;
 
     &--welcome {
+      margin: 120px auto auto;
       border: none;
       max-width: inherit;
     }
 
-    @include design-system.screen-sm-min {
+    &--unlock {
+      margin: auto;
+      padding: 0;
+      border: none;
     }
   }
 

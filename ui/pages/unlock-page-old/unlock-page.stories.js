@@ -4,7 +4,7 @@ import README from './README.mdx';
 import UnlockPage from './unlock-page.component';
 
 export default {
-  title: 'Pages/UnlockPage',
+  title: 'Pages/UnlockPageOld',
 
   component: UnlockPage,
   parameters: {
@@ -18,7 +18,6 @@ export default {
     onRestore: { action: 'onRestore' },
     onSubmit: { action: 'onSubmit' },
     forceUpdateMetamaskState: { action: 'forceUpdateMetamaskState' },
-    passwordHint: { control: 'text' },
   },
 };
 
@@ -33,7 +32,6 @@ DefaultStory.args = {
   forceUpdateMetamaskState: () => ({
     participateInMetaMetrics: true,
   }),
-  passwordHint: 'password hint written',
 };
 
 DefaultStory.storyName = 'Default';

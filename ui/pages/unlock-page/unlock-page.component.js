@@ -1,10 +1,27 @@
 import { EventEmitter } from 'events';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Text } from '../../components/component-library';
-import { TextVariant, TextColor } from '../../helpers/constants/design-system';
-import Button from '../../components/ui/button';
-import TextField from '../../components/ui/text-field';
+import {
+  Text,
+  FormTextField,
+  Box,
+  ButtonLink,
+  Button,
+  ButtonSize,
+  ButtonVariant,
+  HelpText,
+  HelpTextSeverity,
+} from '../../components/component-library';
+import {
+  TextVariant,
+  TextColor,
+  BlockSize,
+  BorderRadius,
+  Display,
+  JustifyContent,
+  AlignItems,
+  FlexDirection,
+} from '../../helpers/constants/design-system';
 import Mascot from '../../components/ui/mascot';
 import {
   DEFAULT_ROUTE,
@@ -15,9 +32,11 @@ import {
   MetaMetricsEventCategory,
   MetaMetricsEventName,
 } from '../../../shared/constants/metametrics';
-import { SUPPORT_LINK } from '../../../shared/lib/ui-utils';
 import { isFlask, isBeta } from '../../helpers/utils/build-types';
+import { SUPPORT_LINK } from '../../../shared/lib/ui-utils';
 import { getCaretCoordinates } from './unlock-page.util';
+import ResetPasswordModal from './reset-password-modal';
+import EraseWalletModal from './erase-wallet-modal';
 
 export default class UnlockPage extends Component {
   static contextTypes = {
@@ -35,10 +54,6 @@ export default class UnlockPage extends Component {
      */
     isUnlocked: PropTypes.bool,
     /**
-     * onClick handler for "Forgot password?" link
-     */
-    onRestore: PropTypes.func,
-    /**
      * onSubmit handler when form is submitted
      */
     onSubmit: PropTypes.func,
@@ -46,11 +61,18 @@ export default class UnlockPage extends Component {
      * Force update metamask data state
      */
     forceUpdateMetamaskState: PropTypes.func,
+    /**
+     * Password hint
+     */
+    passwordHint: PropTypes.string,
   };
 
   state = {
     password: '',
     error: null,
+    showHint: false,
+    showResetPasswordModal: false,
+    showEraseWalletModal: false,
   };
 
   submitting = false;
@@ -152,32 +174,6 @@ export default class UnlockPage extends Component {
     }
   }
 
-  renderSubmitButton() {
-    const style = {
-      backgroundColor: 'var(--color-primary-default)',
-      color: 'var(--color-primary-inverse)',
-      marginTop: '20px',
-      height: '60px',
-      fontWeight: '400',
-      boxShadow: 'none',
-      borderRadius: '100px',
-    };
-
-    return (
-      <Button
-        type="submit"
-        data-testid="unlock-submit"
-        style={style}
-        disabled={!this.state.password}
-        variant="contained"
-        size="large"
-        onClick={this.handleSubmit}
-      >
-        {this.context.t('unlock')}
-      </Button>
-    );
-  }
-
   renderMascot = () => {
     if (isFlask()) {
       return (
@@ -198,16 +194,65 @@ export default class UnlockPage extends Component {
     );
   };
 
-  render() {
-    const { password, error } = this.state;
+  renderHelpText = () => {
+    const { error, showHint } = this.state;
+    const { passwordHint } = this.props;
     const { t } = this.context;
-    const { onRestore } = this.props;
+
+    if (showHint) {
+      return (
+        <HelpText color={TextColor.textMuted}>
+          {t('unlockPageHint', [passwordHint])}
+        </HelpText>
+      );
+    }
+    if (error) {
+      return <HelpText severity={HelpTextSeverity.Danger}>{error}</HelpText>;
+    }
+    // empty help text to keep the input field from shifting when no help text is present
+    return <HelpText color={TextColor.textMuted}>&nbsp;</HelpText>;
+  };
+
+  onRestore = () => {
+    this.setState({ showResetPasswordModal: true });
+  };
+
+  render() {
+    const {
+      password,
+      error,
+      showHint,
+      showResetPasswordModal,
+      showEraseWalletModal,
+    } = this.state;
+    const { t } = this.context;
+    const { passwordHint } = this.props;
 
     const needHelpText = t('needHelpLinkText');
 
     return (
       <div className="unlock-page__container">
         <div className="unlock-page" data-testid="unlock-page">
+          {showResetPasswordModal && (
+            <ResetPasswordModal
+              onClose={() => this.setState({ showResetPasswordModal: false })}
+              onEraseWallet={() =>
+                this.setState({
+                  showResetPasswordModal: false,
+                  showEraseWalletModal: true,
+                })
+              }
+            />
+          )}
+          {showEraseWalletModal && (
+            <EraseWalletModal
+              onClose={() => this.setState({ showEraseWalletModal: false })}
+              onEraseWallet={() =>
+                // TODO: erase wallet
+                this.setState({ showEraseWalletModal: false })
+              }
+            />
+          )}
           <div className="unlock-page__mascot-container">
             {this.renderMascot()}
             {isBeta() ? (
@@ -221,37 +266,70 @@ export default class UnlockPage extends Component {
             as="h1"
             variant={TextVariant.headingLg}
             marginTop={1}
-            color={TextColor.textAlternative}
+            color={TextColor.textDefault}
           >
             {t('welcomeBack')}
           </Text>
-          <div>{t('unlockMessage')}</div>
           <form className="unlock-page__form" onSubmit={this.handleSubmit}>
-            <TextField
+            <FormTextField
               id="password"
               data-testid="unlock-password"
-              label={t('password')}
+              label={
+                <Box
+                  display={Display.Flex}
+                  width={BlockSize.Full}
+                  justifyContent={JustifyContent.spaceBetween}
+                  alignItems={AlignItems.center}
+                >
+                  <Text variant={TextVariant.bodyMdMedium}>
+                    {t('password')}
+                  </Text>
+                  {passwordHint && (
+                    <ButtonLink
+                      onClick={() => {
+                        this.setState({ showHint: !showHint });
+                      }}
+                    >
+                      {showHint ? 'Hide hint' : 'Show hint'}
+                    </ButtonLink>
+                  )}
+                </Box>
+              }
               type="password"
               value={password}
               onChange={(event) => this.handleInputChange(event)}
               error={error}
-              autoFocus
+              helpText={this.renderHelpText()}
               autoComplete="current-password"
-              theme="material"
-              fullWidth
+              autoFocus
+              width={BlockSize.Full}
+              textFieldProps={{
+                borderRadius: BorderRadius.LG,
+              }}
             />
           </form>
-          {this.renderSubmitButton()}
-          <div className="unlock-page__links">
+          <Box
+            className="unlock-page__buttons"
+            display={Display.Flex}
+            flexDirection={FlexDirection.Column}
+            width={BlockSize.Full}
+            gap={4}
+          >
             <Button
-              type="link"
-              key="import-account"
-              className="unlock-page__link"
-              onClick={() => onRestore()}
+              variant={ButtonVariant.Primary}
+              size={ButtonSize.Lg}
+              block
+              type="submit"
+              data-testid="unlock-submit"
+              disabled={!this.state.password}
+              onClick={this.handleSubmit}
             >
-              {t('forgotPassword')}
+              {this.context.t('unlock')}
             </Button>
-          </div>
+            <ButtonLink key="import-account" onClick={() => this.onRestore()}>
+              {t('forgotPassword')}
+            </ButtonLink>
+          </Box>
           <div className="unlock-page__support">
             {t('needHelp', [
               <a

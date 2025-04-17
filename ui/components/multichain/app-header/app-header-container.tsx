@@ -20,21 +20,16 @@ export const AppHeaderContainer = ({
   headerBottomMargin,
   children,
 }: React.PropsWithChildren<AppHeaderContainerProps>) => {
-  const backgroundColor =
-    !isUnlocked || popupStatus
-      ? BackgroundColor.backgroundDefault
-      : BackgroundColor.backgroundAlternative;
-
   return (
     <Box
       display={Display.Flex}
       className={classnames('multichain-app-header', {
-        'multichain-app-header-shadow': !isUnlocked || popupStatus,
+        'multichain-app-header-shadow': isUnlocked && popupStatus,
       })}
       marginBottom={headerBottomMargin}
       alignItems={AlignItems.center}
       width={BlockSize.Full}
-      backgroundColor={backgroundColor}
+      backgroundColor={BackgroundColor.backgroundDefault}
     >
       {children}
     </Box>

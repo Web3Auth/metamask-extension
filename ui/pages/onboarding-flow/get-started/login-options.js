@@ -66,7 +66,9 @@ export default function LoginOptions({ onClose, loginOption, handleLogin }) {
                       variant={TextVariant.bodyMd}
                       fontWeight={FontWeight.Medium}
                     >
-                      {t('onboardingContinueWith', ['Google'])}
+                      {loginOption === 'existing'
+                        ? t('onboardingSignInWith', ['Google'])
+                        : t('onboardingContinueWith', ['Google'])}
                     </Text>
                   </div>
                   ///: END:ONLY_INCLUDE_IF
@@ -91,7 +93,9 @@ export default function LoginOptions({ onClose, loginOption, handleLogin }) {
                       variant={TextVariant.bodyMd}
                       fontWeight={FontWeight.Medium}
                     >
-                      {t('onboardingContinueWith', ['Apple'])}
+                      {loginOption === 'existing'
+                        ? t('onboardingSignInWith', ['Apple'])
+                        : t('onboardingContinueWith', ['Apple'])}
                     </Text>
                   </div>
                   ///: END:ONLY_INCLUDE_IF
