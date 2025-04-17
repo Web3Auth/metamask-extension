@@ -71,6 +71,7 @@ export default function EraseWalletModal({ onClose, onEraseWallet }) {
               size={ButtonSize.Lg}
               onClick={async () => onEraseWallet()}
               block
+              danger
             >
               {t('eraseWalletButton')}
             </Button>

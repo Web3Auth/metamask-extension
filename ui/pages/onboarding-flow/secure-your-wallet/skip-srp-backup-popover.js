@@ -110,6 +110,7 @@ export default function SkipSRPBackup({ onClose, secureYourWallet }) {
                 history.push(ONBOARDING_METAMETRICS);
               }}
               block
+              danger
             >
               {t('skipAccountSecuritySkip')}
             </Button>
