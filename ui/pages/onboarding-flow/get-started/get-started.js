@@ -28,6 +28,8 @@ import {
   ONBOARDING_UNLOCK_ROUTE,
   ONBOARDING_CREATE_PASSWORD_ROUTE,
   ONBOARDING_IMPORT_WITH_SRP_ROUTE,
+  ONBOARDING_ACCOUNT_EXIST,
+  ONBOARDING_ACCOUNT_NOT_FOUND,
 } from '../../../helpers/constants/routes';
 import { getFirstTimeFlowType, getCurrentKeyring } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
@@ -70,6 +72,17 @@ export default function GetStarted() {
     setNewAccountCreationInProgress(true);
     dispatch(setFirstTimeFlowType(FirstTimeFlowType.seedless));
     const isNewUser = await dispatch(startOAuthLogin(provider));
+
+    // if user is not new user and login option is new, redirect to account exist page
+    if (loginOption === 'new' && !isNewUser) {
+      history.push(ONBOARDING_ACCOUNT_EXIST);
+      return;
+    } else if (loginOption === 'existing' && isNewUser) {
+      // if user is new user and login option is existing, redirect to account not found page
+      history.push(ONBOARDING_ACCOUNT_NOT_FOUND);
+      return;
+    }
+
     if (!isNewUser) {
       // redirect to login page
       history.push(ONBOARDING_UNLOCK_ROUTE);
@@ -145,7 +158,7 @@ export default function GetStarted() {
         onImportClick();
       }
     } else {
-      onClickSocialLogin(loginType);
+      onClickSocialLogin(loginType, loginOption);
     }
   };
 

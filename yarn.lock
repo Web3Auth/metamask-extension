@@ -6268,9 +6268,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/seedless-onboarding-controller@file:../../core/packages/seedless-onboarding-controller::locator=metamask-crx%40workspace%3A.":
+"@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz::locator=metamask-crx%40workspace%3A.":
   version: 0.0.0
-  resolution: "@metamask/seedless-onboarding-controller@file:../../core/packages/seedless-onboarding-controller#../../core/packages/seedless-onboarding-controller::hash=49996d&locator=metamask-crx%40workspace%3A."
+  resolution: "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz#./seedless-onboarding-controller.tgz::hash=cab6e7&locator=metamask-crx%40workspace%3A."
   dependencies:
     "@metamask/base-controller": "npm:^8.0.0"
     "@metamask/browser-passworder": "npm:^4.3.0"
@@ -6278,7 +6278,7 @@ __metadata:
     "@metamask/utils": "npm:^11.2.0"
     "@noble/hashes": "npm:^1.4.0"
     async-mutex: "npm:^0.5.0"
-  checksum: 10/518c9f96833c7fb357dfce0a58a855ded99f62317b3c2ac33888beea7a73768c2b55ce499d72caebf08adf7958699df254ddeddbb5f0473693d509153b2df47d
+  checksum: 10/53c9ef69d233a08543b519f69753cc4de9c6196109635bd31462dd6547e336d40c77d2660b990007a90f877b1ab2f7e15b9c010bb4ee1071ba2bb4cb0ec7f428
   languageName: node
   linkType: hard
 
@@ -27599,7 +27599,7 @@ __metadata:
     "@metamask/rpc-errors": "npm:^7.0.0"
     "@metamask/safe-event-emitter": "npm:^3.1.1"
     "@metamask/scure-bip39": "npm:^2.0.3"
-    "@metamask/seedless-onboarding-controller": ../../core/packages/seedless-onboarding-controller
+    "@metamask/seedless-onboarding-controller": ./seedless-onboarding-controller.tgz
     "@metamask/selected-network-controller": "npm:^19.0.0"
     "@metamask/signature-controller": "npm:^23.1.0"
     "@metamask/smart-transactions-controller": "npm:^16.0.1"

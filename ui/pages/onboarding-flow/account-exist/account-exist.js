@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import {
   Button,
   ButtonSize,
@@ -22,17 +23,33 @@ import {
   ButtonIconSize,
 } from '../../../components/component-library';
 import { useI18nContext } from '../../../hooks/useI18nContext';
-import { UNLOCK_ROUTE } from '../../../helpers/constants/routes';
+import {
+  ONBOARDING_WELCOME_ROUTE,
+  ONBOARDING_UNLOCK_ROUTE,
+} from '../../../helpers/constants/routes';
+import {
+  getFirstTimeFlowType,
+  getUserSocialLoginEmail,
+} from '../../../selectors';
+import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 
 export default function AccountExist() {
   const history = useHistory();
   const t = useI18nContext();
-  // TODO: get account email from controllers
-  const accountEmail = 'username@gmail.com';
+  const firstTimeFlowType = useSelector(getFirstTimeFlowType);
+  const userSocialLoginEmail = useSelector(getUserSocialLoginEmail);
 
   const onDone = async () => {
-    history.push(UNLOCK_ROUTE);
+    history.push(ONBOARDING_UNLOCK_ROUTE);
   };
+
+  useEffect(() => {
+    // if the onboarding flow is not seedless, redirect to the welcome page
+    if (firstTimeFlowType !== FirstTimeFlowType.seedless) {
+      history.push(ONBOARDING_WELCOME_ROUTE);
+    }
+  }, [firstTimeFlowType, history]);
+
   return (
     <Box
       className="account-exist"
@@ -85,7 +102,7 @@ export default function AccountExist() {
           />
         </Box>
         <Text variant={TextVariant.bodyMd} marginBottom={6}>
-          {t('accountAlreadyExistsLoginDescription', [accountEmail])}
+          {t('accountAlreadyExistsLoginDescription', [userSocialLoginEmail])}
         </Text>
       </Box>
 

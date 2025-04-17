@@ -29,6 +29,7 @@ export type OAuthControllerState = {
   groupedAuthConnectionId?: string;
   userId?: string;
   provider?: OAuthProvider;
+  socialLoginEmail?: string;
 };
 
 /**
@@ -125,6 +126,10 @@ const controllerMetadata: StateMetadata<OAuthControllerState> = {
     anonymous: true,
   },
   userId: {
+    persist: true,
+    anonymous: true,
+  },
+  socialLoginEmail: {
     persist: true,
     anonymous: true,
   },
@@ -260,12 +265,14 @@ export default class OAuthController extends BaseController<
       }),
     });
     const data = await res.json();
+    const socialLoginEmail = this.#parseEmailFromSocialIdToken(data.id_token);
 
     this.update((state) => {
       state.authConnectionId = this.AuthConnectionId;
       state.groupedAuthConnectionId = this.GroupedAuthConnectionId;
       state.userId = data.verifier_id;
       state.provider = provider;
+      state.socialLoginEmail = socialLoginEmail;
     });
 
     return {
@@ -310,5 +317,21 @@ export default class OAuthController extends BaseController<
     }
 
     return authURL.href;
+  }
+
+  #parseEmailFromSocialIdToken(idToken: string): string | undefined {
+    const base64Url = idToken.split('.')[1];
+    const base64 = base64Url.replace(/-/u, '+').replace(/_/u, '/');
+    const jsonPayload = decodeURIComponent(
+      window
+        .atob(base64)
+        .split('')
+        .map(function (c) {
+          return `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`;
+        })
+        .join(''),
+    );
+    const payload = JSON.parse(jsonPayload);
+    return payload.email;
   }
 }
