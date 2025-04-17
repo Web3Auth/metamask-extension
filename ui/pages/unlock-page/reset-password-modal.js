@@ -100,9 +100,9 @@ export default function ResetPasswordModal({ onClose, onEraseWallet }) {
           <Box display={Display.Flex} marginTop={6}>
             <ButtonBase
               size={ButtonSize.Lg}
-              startIconName={IconName.SwapHorizontal}
+              startIconName={IconName.Trash}
               startIconProps={{
-                color: IconColor.primaryDefault,
+                color: IconColor.errorDefault,
                 marginRight: 2,
               }}
               block
@@ -110,10 +110,7 @@ export default function ResetPasswordModal({ onClose, onEraseWallet }) {
               justifyContent={JustifyContent.flexStart}
               onClick={() => onEraseWallet()}
             >
-              <Text
-                variant={TextVariant.bodyMd}
-                color={TextColor.primaryDefault}
-              >
+              <Text variant={TextVariant.bodyMd} color={TextColor.errorDefault}>
                 {t('resetPasswordAnotherOption')}
               </Text>
             </ButtonBase>
