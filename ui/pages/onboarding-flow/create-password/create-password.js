@@ -16,6 +16,8 @@ import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
   ONBOARDING_METAMETRICS,
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
+  ONBOARDING_WELCOME_ROUTE,
+  ONBOARDING_COMPLETION_ROUTE,
   ///: END:ONLY_INCLUDE_IF
 } from '../../../helpers/constants/routes';
 import { PASSWORD_MIN_LENGTH } from '../../../helpers/constants/common';
@@ -44,6 +46,7 @@ import {
   Text,
 } from '../../../components/component-library';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
+import { selectNodeAuthTokens } from '../../../selectors/seedless-onboarding';
 
 export default function CreatePassword({
   createNewAccount,
@@ -64,6 +67,7 @@ export default function CreatePassword({
     useState(false);
   const history = useHistory();
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
+  const nodeAuthTokens = useSelector(selectNodeAuthTokens);
   const trackEvent = useContext(MetaMetricsContext);
   const currentKeyring = useSelector(getCurrentKeyring);
 
@@ -87,7 +91,10 @@ export default function CreatePassword({
 
   useEffect(() => {
     if (currentKeyring && !newAccountCreationInProgress) {
-      if (firstTimeFlowType === FirstTimeFlowType.import) {
+      if (
+        firstTimeFlowType === FirstTimeFlowType.import ||
+        firstTimeFlowType === FirstTimeFlowType.seedless
+      ) {
         ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
         history.replace(ONBOARDING_METAMETRICS);
         ///: END:ONLY_INCLUDE_IF
@@ -96,12 +103,18 @@ export default function CreatePassword({
         history.replace(ONBOARDING_SECURE_YOUR_WALLET_ROUTE);
         ///: END:ONLY_INCLUDE_IF
       }
+    } else if (firstTimeFlowType === FirstTimeFlowType.seedless) {
+      // If user doesn't have node auth tokens, redirect to welcome page
+      if (!nodeAuthTokens) {
+        history.replace(ONBOARDING_WELCOME_ROUTE);
+      }
     }
   }, [
     currentKeyring,
     history,
     firstTimeFlowType,
     newAccountCreationInProgress,
+    nodeAuthTokens,
   ]);
 
   const isValid = useMemo(() => {
@@ -210,9 +223,13 @@ export default function CreatePassword({
           setNewAccountCreationInProgress(true);
           await createNewAccount(password);
         }
-        ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-        history.push(ONBOARDING_SECURE_YOUR_WALLET_ROUTE);
-        ///: END:ONLY_INCLUDE_IF
+        if (firstTimeFlowType === FirstTimeFlowType.seedless) {
+          history.push(ONBOARDING_COMPLETION_ROUTE);
+        } else {
+          ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+          history.push(ONBOARDING_SECURE_YOUR_WALLET_ROUTE);
+          ///: END:ONLY_INCLUDE_IF
+        }
       } catch (error) {
         setPasswordError(error.message);
       }
@@ -264,6 +281,8 @@ export default function CreatePassword({
       <Box justifyContent={JustifyContent.center} width={BlockSize.Full}>
         <form className="create-password__form" onSubmit={handleCreate}>
           <FormTextField
+            passwordStrength={passwordStrength}
+            passwordStrengthText={passwordStrengthText}
             dataTestId="create-password-new"
             autoFocus
             placeholder={t('newPasswordPlaceholder')}

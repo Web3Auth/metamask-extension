@@ -186,6 +186,36 @@ export function tryUnlockMetamask(
 }
 
 /**
+ * Tries to restore seedphrase from metadata store and unlock the metamask.
+ *
+ * @param password - The password.
+ * @returns The updated state of metamask.
+ */
+export function tryRestoreAndUnlockMetamask(
+  password: string,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+    dispatch(unlockInProgress());
+
+    try {
+      const seedPhrases = await fetchAllSeedPhrases(password);
+      if (seedPhrases === null) {
+        throw new Error('Seed phrase not found');
+      }
+
+      dispatch(unlockSucceeded());
+      return forceUpdateMetamaskState(dispatch);
+    } catch (error) {
+      dispatch(unlockFailed(getErrorMessage(error)));
+      throw error;
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
+  };
+}
+
+/**
  * Adds a new account where all data is encrypted using the given password and
  * where all addresses are generated from a given seed phrase.
  *
@@ -314,6 +344,30 @@ export function createNewVaultAndGetSeedPhrase(
   };
 }
 
+export function createAndBackupSeedPhrase(
+  password: string,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      await createNewVault(password);
+      const seedPhrase = await getSeedPhrase(password);
+      await createSeedPhraseBackup(seedPhrase, password);
+      return seedPhrase;
+    } catch (error) {
+      dispatch(displayWarning(error));
+      if (isErrorWithMessage(error)) {
+        throw new Error(getErrorMessage(error));
+      } else {
+        throw error;
+      }
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
+  };
+}
+
 export function unlockAndGetSeedPhrase(
   password: string,
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
@@ -332,6 +386,44 @@ export function unlockAndGetSeedPhrase(
       } else {
         throw error;
       }
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
+  };
+}
+
+/**
+ * Fetches and restores the seed phrase from the metadata store and restore the vault using the seed phrase.
+ *
+ * @param password - The password.
+ * @returns The seed phrase.
+ */
+export function restoreAndGetSeedPhrase(
+  password: string,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      const seedPhrases = await fetchAllSeedPhrases(password);
+      if (seedPhrases === null || seedPhrases.length === 0) {
+        return null;
+      }
+
+      // get the first seed phrase from the array
+      const seedPhrase = seedPhrases[seedPhrases.length - 1];
+      const encodedSeedPhrase = Array.from(Buffer.from(seedPhrase).values());
+
+      await submitRequestToBackground('createNewVaultAndRestore', [
+        password,
+        encodedSeedPhrase,
+      ]);
+
+      await forceUpdateMetamaskState(dispatch);
+      return seedPhrase;
+    } catch (error) {
+      dispatch(displayWarning(error));
+      throw error;
     } finally {
       dispatch(hideLoadingIndication());
     }
@@ -425,6 +517,43 @@ export function tryReverseResolveAddress(
       });
     });
   };
+}
+
+/**
+ * Creates a seed phrase backup in the metadata store for seedless onboarding flow.
+ *
+ * @param seedPhrase - The seed phrase.
+ * @param password - The password.
+ */
+export async function createSeedPhraseBackup(
+  seedPhrase: string,
+  password: string,
+): Promise<void> {
+  const encodedSeedPhrase = Array.from(
+    Buffer.from(seedPhrase, 'utf8').values(),
+  );
+  await submitRequestToBackground('createSeedPhraseBackup', [
+    encodedSeedPhrase,
+    password,
+  ]);
+}
+
+/**
+ * Fetches all seed phrases from the metadata store.
+ *
+ * Seedphrases are sorted by creation date, the latest seed phrase is the first one in the array.
+ *
+ * @param password - The password.
+ * @returns The seed phrases.
+ */
+export async function fetchAllSeedPhrases(
+  password: string,
+): Promise<Buffer[] | null> {
+  const encodedSeedPhrases = await submitRequestToBackground<Buffer[]>(
+    'fetchAllSeedPhrases',
+    [password],
+  );
+  return encodedSeedPhrases;
 }
 
 export function resetAccount(): ThunkAction<
@@ -3314,6 +3443,30 @@ export function resetOnboarding(): ThunkAction<
 export function resetOnboardingAction() {
   return {
     type: actionConstants.RESET_ONBOARDING,
+  };
+}
+
+export function startOAuthLogin(
+  provider: 'google' | 'apple',
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      const isNewUser = await submitRequestToBackground('startOAuthLogin', [
+        provider,
+      ]);
+      return isNewUser;
+    } catch (err) {
+      dispatch(displayWarning(error));
+      if (isErrorWithMessage(error)) {
+        throw new Error(getErrorMessage(error));
+      } else {
+        throw error;
+      }
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
   };
 }
 

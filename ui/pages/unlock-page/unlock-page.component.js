@@ -23,7 +23,10 @@ import {
   FlexDirection,
 } from '../../helpers/constants/design-system';
 import Mascot from '../../components/ui/mascot';
-import { DEFAULT_ROUTE } from '../../helpers/constants/routes';
+import {
+  DEFAULT_ROUTE,
+  ONBOARDING_CREATE_PASSWORD_ROUTE,
+} from '../../helpers/constants/routes';
 import {
   MetaMetricsContextProp,
   MetaMetricsEventCategory,
@@ -91,7 +94,7 @@ export default class UnlockPage extends Component {
     event.stopPropagation();
 
     const { password } = this.state;
-    const { onSubmit, forceUpdateMetamaskState } = this.props;
+    const { onSubmit } = this.props;
 
     if (password === '' || this.submitting) {
       return;
@@ -114,24 +117,47 @@ export default class UnlockPage extends Component {
           isNewVisit: true,
         },
       );
-    } catch ({ message }) {
-      this.failed_attempts += 1;
-
-      if (message === 'Incorrect password') {
-        await forceUpdateMetamaskState();
-        this.context.trackEvent({
-          category: MetaMetricsEventCategory.Navigation,
-          event: MetaMetricsEventName.AppUnlockedFailed,
-          properties: {
-            reason: 'incorrect_password',
-            failed_attempts: this.failed_attempts,
-          },
-        });
-      }
-
-      this.setState({ error: message });
-      this.submitting = false;
+    } catch (error) {
+      await this.handleLoginError(error);
     }
+  };
+
+  handleLoginError = async (error) => {
+    this.failed_attempts += 1;
+    const { message, data } = error;
+    let finalErrorMessage = message;
+    let errorReason;
+
+    switch (message) {
+      case 'Incorrect password':
+        finalErrorMessage = message;
+        errorReason = 'incorrect_password';
+        break;
+      case 'Too many login attempts':
+        finalErrorMessage = data?.message || message;
+        errorReason = 'too_many_login_attempts';
+        break;
+      case 'Seed phrase not found':
+        this.props.history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
+        return;
+      default:
+        finalErrorMessage = message;
+        break;
+    }
+
+    if (errorReason) {
+      await this.props.forceUpdateMetamaskState();
+      this.context.trackEvent({
+        category: MetaMetricsEventCategory.Navigation,
+        event: MetaMetricsEventName.AppUnlockedFailed,
+        properties: {
+          reason: errorReason,
+          failed_attempts: this.failed_attempts,
+        },
+      });
+    }
+    this.setState({ error: finalErrorMessage });
+    this.submitting = false;
   };
 
   handleInputChange({ target }) {

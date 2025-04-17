@@ -21,10 +21,11 @@ import {
   MetaMetricsEventCategory,
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
-import { setFirstTimeFlowType } from '../../../store/actions';
+import { setFirstTimeFlowType, startOAuthLogin } from '../../../store/actions';
 import {
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
   ONBOARDING_COMPLETION_ROUTE,
+  ONBOARDING_UNLOCK_ROUTE,
   ONBOARDING_CREATE_PASSWORD_ROUTE,
   ONBOARDING_IMPORT_WITH_SRP_ROUTE,
 } from '../../../helpers/constants/routes';
@@ -64,6 +65,30 @@ export default function GetStarted() {
     newAccountCreationInProgress,
   ]);
   const trackEvent = useContext(MetaMetricsContext);
+
+  const onClickSocialLogin = async (provider) => {
+    setNewAccountCreationInProgress(true);
+    dispatch(setFirstTimeFlowType(FirstTimeFlowType.seedless));
+    const isNewUser = await dispatch(startOAuthLogin(provider));
+    if (!isNewUser) {
+      // redirect to login page
+      history.push(ONBOARDING_UNLOCK_ROUTE);
+      return;
+    }
+
+    trackEvent({
+      category: MetaMetricsEventCategory.Onboarding,
+      // TODO: add seedless onboarding event?
+      event: MetaMetricsEventName.OnboardingWalletCreationStarted,
+      properties: {
+        account_type: 'metamask',
+      },
+    });
+
+    ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+    history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
+    ///: END:ONLY_INCLUDE_IF
+  };
 
   const onCreateClick = async () => {
     setNewAccountCreationInProgress(true);
@@ -120,8 +145,7 @@ export default function GetStarted() {
         onImportClick();
       }
     } else {
-      // TODO: handle social login
-      console.log('handleLogin', loginType);
+      onClickSocialLogin(loginType);
     }
   };
 

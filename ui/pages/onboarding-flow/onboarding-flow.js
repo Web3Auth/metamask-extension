@@ -32,8 +32,13 @@ import {
   createNewVaultAndGetSeedPhrase,
   unlockAndGetSeedPhrase,
   createNewVaultAndRestore,
+  createAndBackupSeedPhrase,
+  restoreAndGetSeedPhrase,
 } from '../../store/actions';
-import { getFirstTimeFlowTypeRouteAfterUnlock } from '../../selectors';
+import {
+  getFirstTimeFlowType,
+  getFirstTimeFlowTypeRouteAfterUnlock,
+} from '../../selectors';
 import { MetaMetricsContext } from '../../contexts/metametrics';
 import Button from '../../components/ui/button';
 import RevealSRPModal from '../../components/app/reveal-SRP-modal';
@@ -46,6 +51,7 @@ import {
 import ExperimentalArea from '../../components/app/flask/experimental-area';
 ///: END:ONLY_INCLUDE_IF
 import { submitRequestToBackgroundAndCatch } from '../../components/app/toast-master/utils';
+import { FirstTimeFlowType } from '../../../shared/constants/onboarding';
 import OnboardingFlowSwitch from './onboarding-flow-switch/onboarding-flow-switch';
 import CreatePassword from './create-password/create-password';
 import ReviewRecoveryPhrase from './recovery-phrase/review-recovery-phrase';
@@ -71,6 +77,7 @@ export default function OnboardingFlow() {
   const history = useHistory();
   const t = useI18nContext();
   const completedOnboarding = useSelector(getCompletedOnboarding);
+  const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const nextRoute = useSelector(getFirstTimeFlowTypeRouteAfterUnlock);
   const isFromReminder = new URLSearchParams(search).get('isFromReminder');
   const trackEvent = useContext(MetaMetricsContext);
@@ -105,17 +112,46 @@ export default function OnboardingFlow() {
     history,
   ]);
 
-  const handleCreateNewAccount = async (password) => {
+  const handleDefaultOnboardingFlow = async (password) => {
     const newSecretRecoveryPhrase = await dispatch(
       createNewVaultAndGetSeedPhrase(password),
     );
     setSecretRecoveryPhrase(newSecretRecoveryPhrase);
   };
 
-  const handleUnlock = async (password) => {
-    const retrievedSecretRecoveryPhrase = await dispatch(
-      unlockAndGetSeedPhrase(password),
+  const handleSeedlessOnboardingFlow = async (password) => {
+    const newSecretRecoveryPhrase = await dispatch(
+      createAndBackupSeedPhrase(password),
     );
+    setSecretRecoveryPhrase(newSecretRecoveryPhrase);
+  };
+
+  const handleCreateNewAccount = async (password) => {
+    if (firstTimeFlowType === FirstTimeFlowType.seedless) {
+      await handleSeedlessOnboardingFlow(password);
+    } else {
+      await handleDefaultOnboardingFlow(password);
+    }
+  };
+
+  const handleUnlock = async (password) => {
+    let retrievedSecretRecoveryPhrase;
+    if (firstTimeFlowType === FirstTimeFlowType.seedless) {
+      retrievedSecretRecoveryPhrase = await dispatch(
+        restoreAndGetSeedPhrase(password),
+      );
+
+      if (retrievedSecretRecoveryPhrase === null) {
+        // if the seed phrase is not found, ask user to setup the password and generate a new seed phrase
+        history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
+        return;
+      }
+    } else {
+      retrievedSecretRecoveryPhrase = await dispatch(
+        unlockAndGetSeedPhrase(password),
+      );
+    }
+
     setSecretRecoveryPhrase(retrievedSecretRecoveryPhrase);
     history.push(nextRoute);
   };

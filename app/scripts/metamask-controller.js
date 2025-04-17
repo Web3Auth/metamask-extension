@@ -75,7 +75,6 @@ import {
 } from '@metamask/selected-network-controller';
 import { LoggingController, LogType } from '@metamask/logging-controller';
 import { PermissionLogController } from '@metamask/permission-log-controller';
-
 import {
   createSnapsMethodMiddleware,
   buildSnapEndowmentSpecifications,
@@ -163,6 +162,7 @@ import {
   walletRevokeSession,
   walletInvokeMethod,
 } from '@metamask/multichain';
+import { RecoveryError } from '@metamask/seedless-onboarding-controller';
 import {
   methodsRequiringNetworkSwitch,
   methodsThatCanSwitchNetworkWithoutApproval,
@@ -394,6 +394,8 @@ import {
 } from './controller-init/snaps';
 import { AuthenticationControllerInit } from './controller-init/identity/authentication-controller-init';
 import { UserStorageControllerInit } from './controller-init/identity/user-storage-controller-init';
+import { SeedlessOnboardingControllerInit } from './controller-init/onboarding/seedless-onboarding-controller-init';
+import OAuthController from './controllers/oauth-controller';
 import {
   getCapabilities,
   getTransactionReceiptsByBatchId,
@@ -1107,8 +1109,29 @@ export default class MetamaskController extends EventEmitter {
       state: initState.OnboardingController,
     });
 
-    let additionalKeyrings = [keyringBuilderFactory(QRHardwareKeyring)];
+    const oauthControllerMessenger = this.controllerMessenger.getRestricted({
+      name: 'OAuthController',
+      allowedActions: [],
+      allowedEvents: [],
+    });
+    this.oauthController = new OAuthController({
+      messenger: oauthControllerMessenger,
+      state: initState.OAuthController,
+      loginProviderConfig: {
+        google: {
+          clientId: process.env.GOOGLE_CLIENT_ID,
+          authUri: process.env.GOOGLE_AUTH_URI,
+        },
+        apple: {
+          clientId: process.env.APPLE_CLIENT_ID,
+          authUri: process.env.APPLE_AUTH_URI,
+        },
+      },
+      byoaServerUrl: process.env.BYOA_SERVER_URL,
+      web3AuthNetwork: process.env.WEB3AUTH_NETWORK,
+    });
 
+    let additionalKeyrings = [keyringBuilderFactory(QRHardwareKeyring)];
     const keyringOverrides = this.opts.overrides?.keyrings;
 
     if (isManifestV3 === false) {
@@ -2010,6 +2033,7 @@ export default class MetamaskController extends EventEmitter {
       MultichainNetworkController: MultichainNetworkControllerInit,
       AuthenticationController: AuthenticationControllerInit,
       UserStorageController: UserStorageControllerInit,
+      SeedlessOnboardingController: SeedlessOnboardingControllerInit,
     };
 
     const {
@@ -2051,6 +2075,8 @@ export default class MetamaskController extends EventEmitter {
       controllersByName.MultichainNetworkController;
     this.authenticationController = controllersByName.AuthenticationController;
     this.userStorageController = controllersByName.UserStorageController;
+    this.seedlessOnboardingController =
+      controllersByName.SeedlessOnboardingController;
 
     this.controllerMessenger.subscribe(
       'TransactionController:transactionStatusUpdated',
@@ -2209,6 +2235,8 @@ export default class MetamaskController extends EventEmitter {
       MultichainNetworkController: this.multichainNetworkController,
       NetworkController: this.networkController,
       AlertController: this.alertController,
+      OAuthController: this.oauthController,
+      SeedlessOnboardingController: this.seedlessOnboardingController,
       OnboardingController: this.onboardingController,
       PermissionController: this.permissionController,
       PermissionLogController: this.permissionLogController,
@@ -2266,6 +2294,8 @@ export default class MetamaskController extends EventEmitter {
         AddressBookController: this.addressBookController,
         CurrencyController: this.currencyRateController,
         AlertController: this.alertController,
+        OAuthController: this.oauthController,
+        SeedlessOnboardingController: this.seedlessOnboardingController,
         OnboardingController: this.onboardingController,
         PermissionController: this.permissionController,
         PermissionLogController: this.permissionLogController,
@@ -3454,6 +3484,13 @@ export default class MetamaskController extends EventEmitter {
       getAccountsBySnapId: (snapId) => getAccountsBySnapId(this, snapId),
       ///: END:ONLY_INCLUDE_IF
 
+      // oauth controller
+      startOAuthLogin: this.startSocialLogin.bind(this),
+
+      // seedless onboarding
+      createSeedPhraseBackup: this.createSeedPhraseBackup.bind(this),
+      fetchAllSeedPhrases: this.fetchAllSeedPhrases.bind(this),
+
       // hardware wallets
       connectHardware: this.connectHardware.bind(this),
       forgetDevice: this.forgetDevice.bind(this),
@@ -4417,6 +4454,121 @@ export default class MetamaskController extends EventEmitter {
       return details?.symbol;
     } catch (e) {
       return null;
+    }
+  }
+
+  /**
+   * Login with social login provider and get User Onboarding details.
+   *
+   * AuthenticationResult is an object that contains the temporary Auth token for next step of onboarding flow
+   * and user's onboarding status to indicate whether the user has already completed the seedless onboarding flow.
+   *
+   * @param {OAuthProvider} provider - social login provider, `google` | `apple`
+   * @returns {Promise<boolean>} true if user is already onboarded, false otherwise
+   */
+  async startSocialLogin(provider) {
+    try {
+      const oAuthLoginResult = await this.oauthController.startOAuthLogin(
+        provider,
+      );
+      const authenticationResult =
+        await this.seedlessOnboardingController.authenticate({
+          idTokens: oAuthLoginResult.idTokens,
+          authConnectionId: oAuthLoginResult.authConnectionId,
+          groupedAuthConnectionId: oAuthLoginResult.groupedAuthConnectionId,
+          userId: oAuthLoginResult.userId,
+        });
+      const hasUserOnboarded = authenticationResult.isNewUser;
+      return hasUserOnboarded;
+    } catch (error) {
+      log.error('Error while starting social login', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Creates a seed phrase backup for the user.
+   *
+   * Generate Encryption Key from the password using the Threshold OPRF and encrypt the seed phrase with the key.
+   * Save the encrypted seed phrase in the metadata store.
+   *
+   * @param {number[]} encodedSeedPhrase - The seed phrase to backup.
+   * @param {string} password - The user's password.
+   */
+  async createSeedPhraseBackup(encodedSeedPhrase, password) {
+    try {
+      const { userId, authConnectionId, groupedAuthConnectionId } =
+        this.oauthController.state;
+
+      console.log(
+        '[createSeedPhraseBackup] encodedSeedPhrase',
+        encodedSeedPhrase,
+      );
+      console.log('[createSeedPhraseBackup] password', password);
+
+      const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
+
+      const seedPhrase =
+        this._convertMnemonicToWordlistIndices(seedPhraseAsBuffer);
+
+      await this.seedlessOnboardingController.createToprfKeyAndBackupSeedPhrase(
+        {
+          seedPhrase,
+          password,
+          userId,
+          authConnectionId,
+          groupedAuthConnectionId,
+        },
+      );
+    } catch (error) {
+      log.error('[createSeedPhraseBackup] error', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetches and restores the seed phrase metadata.
+   *
+   * If the seedphrase is not found in the metadata store, it creates new seedphrase and saves it in the metadata store.
+   *
+   * Otherwise, it creates a new vault using the restored seedphrase from metadata store.
+   *
+   * @param {string} password - The user's password.
+   * @returns {Promise<Buffer[]>} The seed phrase.
+   */
+  async fetchAllSeedPhrases(password) {
+    try {
+      const { userId, authConnectionId, groupedAuthConnectionId } =
+        this.oauthController.state;
+
+      // fetch all seed phrases
+      // seedPhrases are sorted by creation date, the latest seed phrase is the first one in the array
+      const allSeedPhrases =
+        await this.seedlessOnboardingController.fetchAllSeedPhrases({
+          userId,
+          authConnectionId,
+          groupedAuthConnectionId,
+          password,
+        });
+
+      if (allSeedPhrases.length === 0) {
+        return null;
+      }
+
+      return allSeedPhrases.map((phrase) =>
+        this._convertEnglishWordlistIndicesToCodepoints(phrase),
+      );
+    } catch (error) {
+      log.error(
+        'Error while fetching and restoring seed phrase metadata.',
+        error,
+      );
+
+      if (error instanceof RecoveryError) {
+        throw new JsonRpcError(-32603, error.message, error.data);
+      }
+
+      throw error;
     }
   }
 

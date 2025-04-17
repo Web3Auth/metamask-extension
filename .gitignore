@@ -33,6 +33,8 @@ storybook-build/
 coverage/
 jest-coverage/
 dist
+*.pem
+*.crx
 builds*/
 builds.zip
 development/ts-migration-dashboard/build

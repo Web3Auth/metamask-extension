@@ -35,6 +35,7 @@ import { Controller as UserStorageController } from '@metamask/profile-sync-cont
 import OnboardingController from '../controllers/onboarding';
 import { PreferencesController } from '../controllers/preferences-controller';
 import SwapsController from '../controllers/swaps';
+import { SeedlessOnboardingController } from '@metamask/seedless-onboarding-controller';
 
 /**
  * Union of all controllers supporting or required by modular initialization.
@@ -69,7 +70,8 @@ export type Controller =
       name: 'TransactionUpdateController';
       state: Record<string, unknown>;
     })
-  | UserStorageController;
+  | UserStorageController
+  | SeedlessOnboardingController;
 
 /**
  * Flat state object for all controllers supporting or required by modular initialization.
@@ -100,4 +102,5 @@ export type ControllerFlatState = AccountsController['state'] &
   SnapInterfaceController['state'] &
   TransactionController['state'] &
   SwapsController['state'] &
-  UserStorageController['state'];
+  UserStorageController['state'] &
+  SeedlessOnboardingController['state'];
