@@ -22,6 +22,7 @@ import {
   ONBOARDING_GET_STARTED_ROUTE,
   ONBOARDING_PASSWORD_HINT,
   ONBOARDING_ACCOUNT_EXIST,
+  ONBOARDING_ACCOUNT_NOT_FOUND,
 } from '../../helpers/constants/routes';
 import {
   getCompletedOnboarding,
@@ -65,6 +66,7 @@ import MetaMetricsComponent from './metametrics/metametrics';
 import GetStarted from './get-started/get-started';
 import PasswordHint from './password-hint/password-hint';
 import AccountExist from './account-exist/account-exist';
+import AccountNotFound from './account-not-found/account-not-found';
 
 const TWITTER_URL = 'https://twitter.com/MetaMask';
 
@@ -248,6 +250,10 @@ export default function OnboardingFlow() {
           />
           <Route path={ONBOARDING_PASSWORD_HINT} component={PasswordHint} />
           <Route path={ONBOARDING_ACCOUNT_EXIST} component={AccountExist} />
+          <Route
+            path={ONBOARDING_ACCOUNT_NOT_FOUND}
+            component={AccountNotFound}
+          />
           {
             ///: BEGIN:ONLY_INCLUDE_IF(build-flask)
           }
