@@ -117,6 +117,9 @@ export default class UnlockPage extends Component {
     } catch ({ message }) {
       this.failed_attempts += 1;
 
+      // TODO: add remainingTime and isPermanent on UI
+      // remainingTime: seconds
+      // isPermanent: boolean
       if (message === 'Incorrect password') {
         await forceUpdateMetamaskState();
         this.context.trackEvent({
