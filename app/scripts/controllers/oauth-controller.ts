@@ -5,6 +5,7 @@ import {
   RestrictedMessenger,
   StateMetadata,
 } from '@metamask/base-controller';
+import { Web3AuthNetwork } from '@metamask/seedless-onboarding-controller';
 import log from 'loglevel';
 
 // Unique name for the controller
@@ -14,20 +15,10 @@ export enum OAuthProvider {
   Google = 'google',
   Apple = 'apple',
 }
-
-export enum Web3AuthNetwork {
-  Mainnet = 'sapphire_mainnet',
-  Devnet = 'sapphire_devnet',
-}
-
 /**
  * The state of the {@link OAuthController}
  */
 export type OAuthControllerState = {
-  authLoading: boolean;
-  authConnectionId?: string;
-  groupedAuthConnectionId?: string;
-  userId?: string;
   provider?: OAuthProvider;
   socialLoginEmail?: string;
 };
@@ -35,9 +26,8 @@ export type OAuthControllerState = {
 /**
  * Function to get default state of the {@link OAuthController}.
  */
-export const getDefaultOAuthControllerState = (): OAuthControllerState => ({
-  authLoading: false,
-});
+export const getDefaultOAuthControllerState =
+  (): Partial<OAuthControllerState> => ({});
 
 export type OAuthControllerGetStateAction = ControllerGetStateAction<
   typeof controllerName,
@@ -113,22 +103,6 @@ export type OAuthLoginResult = {
  * the `anonymous` flag.
  */
 const controllerMetadata: StateMetadata<OAuthControllerState> = {
-  authLoading: {
-    persist: false,
-    anonymous: true,
-  },
-  authConnectionId: {
-    persist: true,
-    anonymous: true,
-  },
-  groupedAuthConnectionId: {
-    persist: true,
-    anonymous: true,
-  },
-  userId: {
-    persist: true,
-    anonymous: true,
-  },
   socialLoginEmail: {
     persist: true,
     anonymous: true,
@@ -268,9 +242,6 @@ export default class OAuthController extends BaseController<
     const socialLoginEmail = this.#parseEmailFromSocialIdToken(data.id_token);
 
     this.update((state) => {
-      state.authConnectionId = this.AuthConnectionId;
-      state.groupedAuthConnectionId = this.GroupedAuthConnectionId;
-      state.userId = data.verifier_id;
       state.provider = provider;
       state.socialLoginEmail = socialLoginEmail;
     });
@@ -278,7 +249,7 @@ export default class OAuthController extends BaseController<
     return {
       authConnectionId: this.AuthConnectionId,
       groupedAuthConnectionId: this.GroupedAuthConnectionId,
-      userId: data.verifier_id,
+      userId: socialLoginEmail,
       idTokens: [data.jwt_tokens[this.OAuthAud]],
     };
   }
@@ -319,7 +290,7 @@ export default class OAuthController extends BaseController<
     return authURL.href;
   }
 
-  #parseEmailFromSocialIdToken(idToken: string): string | undefined {
+  #parseEmailFromSocialIdToken(idToken: string): string {
     const base64Url = idToken.split('.')[1];
     const base64 = base64Url.replace(/-/u, '+').replace(/_/u, '/');
     const jsonPayload = decodeURIComponent(

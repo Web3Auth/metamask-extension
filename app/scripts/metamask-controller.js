@@ -4464,22 +4464,23 @@ export default class MetamaskController extends EventEmitter {
    * and user's onboarding status to indicate whether the user has already completed the seedless onboarding flow.
    *
    * @param {OAuthProvider} provider - social login provider, `google` | `apple`
-   * @returns {Promise<boolean>} true if user is already onboarded, false otherwise
+   * @returns {Promise<boolean>} true if user has not completed the seedless onboarding flow, false otherwise
    */
   async startSocialLogin(provider) {
     try {
       const oAuthLoginResult = await this.oauthController.startOAuthLogin(
         provider,
       );
-      const authenticationResult =
+
+      const { isNewUser } =
         await this.seedlessOnboardingController.authenticate({
           idTokens: oAuthLoginResult.idTokens,
           authConnectionId: oAuthLoginResult.authConnectionId,
           groupedAuthConnectionId: oAuthLoginResult.groupedAuthConnectionId,
           userId: oAuthLoginResult.userId,
         });
-      const hasUserOnboarded = authenticationResult.isNewUser;
-      return hasUserOnboarded;
+
+      return isNewUser;
     } catch (error) {
       log.error('Error while starting social login', error);
       throw error;
@@ -4497,28 +4498,14 @@ export default class MetamaskController extends EventEmitter {
    */
   async createSeedPhraseBackup(encodedSeedPhrase, password) {
     try {
-      const { userId, authConnectionId, groupedAuthConnectionId } =
-        this.oauthController.state;
-
-      console.log(
-        '[createSeedPhraseBackup] encodedSeedPhrase',
-        encodedSeedPhrase,
-      );
-      console.log('[createSeedPhraseBackup] password', password);
-
       const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
 
       const seedPhrase =
         this._convertMnemonicToWordlistIndices(seedPhraseAsBuffer);
 
       await this.seedlessOnboardingController.createToprfKeyAndBackupSeedPhrase(
-        {
-          seedPhrase,
-          password,
-          userId,
-          authConnectionId,
-          groupedAuthConnectionId,
-        },
+        password,
+        seedPhrase,
       );
     } catch (error) {
       log.error('[createSeedPhraseBackup] error', error);
@@ -4538,18 +4525,10 @@ export default class MetamaskController extends EventEmitter {
    */
   async fetchAllSeedPhrases(password) {
     try {
-      const { userId, authConnectionId, groupedAuthConnectionId } =
-        this.oauthController.state;
-
       // fetch all seed phrases
       // seedPhrases are sorted by creation date, the latest seed phrase is the first one in the array
       const allSeedPhrases =
-        await this.seedlessOnboardingController.fetchAllSeedPhrases({
-          userId,
-          authConnectionId,
-          groupedAuthConnectionId,
-          password,
-        });
+        await this.seedlessOnboardingController.fetchAllSeedPhrases(password);
 
       if (allSeedPhrases.length === 0) {
         return null;

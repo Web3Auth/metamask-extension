@@ -1,6 +1,7 @@
 import {
   SeedlessOnboardingController,
   SeedlessOnboardingControllerMessenger,
+  Web3AuthNetwork,
 } from '@metamask/seedless-onboarding-controller';
 import { ControllerInitFunction } from '../types';
 
@@ -11,6 +12,7 @@ export const SeedlessOnboardingControllerInit: ControllerInitFunction<
   const { controllerMessenger } = request;
   const controller = new SeedlessOnboardingController({
     messenger: controllerMessenger,
+    network: Web3AuthNetwork.Devnet,
   });
 
   return {
