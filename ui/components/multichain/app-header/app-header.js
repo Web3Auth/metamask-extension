@@ -119,6 +119,7 @@ export const AppHeader = ({ location }) => {
     display: Display.Flex,
     alignItems: AlignItems.center,
     width: BlockSize.Full,
+    justifyContent: JustifyContent.spaceBetween,
     backgroundColor: BackgroundColor.backgroundDefault,
     padding: 2,
     gap: 2,
@@ -156,7 +157,11 @@ export const AppHeader = ({ location }) => {
                 menuRef={menuRef}
               />
             ) : (
-              <AppHeaderLockedContent />
+              <AppHeaderLockedContent
+                currentNetwork={multichainNetwork}
+                networkIconSrc={networkIconSrc}
+                networkOpenCallback={networkOpenCallback}
+              />
             )}
           </Box>
         </>
