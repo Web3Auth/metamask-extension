@@ -1182,17 +1182,17 @@
         "uuid": true
       }
     },
-    "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@metamask/auth-network-utils": {
+    "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils": {
       "globals": {
         "setTimeout": true
       },
       "packages": {
         "@noble/curves": true,
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@metamask/auth-network-utils>@noble/hashes": true,
+        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>@noble/hashes": true,
         "bn.js": true,
         "browserify>buffer": true,
         "@metamask/ppom-validator>elliptic": true,
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify": true
+        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify": true
       }
     },
     "@metamask/base-controller": {
@@ -2091,11 +2091,11 @@
     },
     "@metamask/seedless-onboarding-controller": {
       "packages": {
+        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils": true,
         "@metamask/base-controller": true,
         "@metamask/browser-passworder": true,
         "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup": true,
         "@metamask/utils": true,
-        "@noble/hashes": true,
         "@metamask/name-controller>async-mutex": true
       }
     },
@@ -2336,11 +2336,11 @@
         "fetch": true
       },
       "packages": {
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@metamask/auth-network-utils": true,
+        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils": true,
         "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@noble/ciphers": true,
         "@noble/curves": true,
         "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@noble/hashes": true,
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/eccrypto": true,
+        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>@toruslabs/eccrypto": true,
         "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details": true,
         "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/http-helpers": true,
         "bn.js": true,
@@ -2621,7 +2621,7 @@
         "crypto": true
       }
     },
-    "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@metamask/auth-network-utils>@noble/hashes": {
+    "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>@noble/hashes": {
       "globals": {
         "TextEncoder": true,
         "crypto": true
@@ -3069,7 +3069,7 @@
         "browserify>browser-resolve": true
       }
     },
-    "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/eccrypto": {
+    "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>@toruslabs/eccrypto": {
       "globals": {
         "crypto": true,
         "msCrypto": true
@@ -3082,7 +3082,7 @@
     "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details": {
       "packages": {
         "@babel/runtime": true,
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/constants": true,
+        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>@toruslabs/constants": true,
         "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/fnd-base": true,
         "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/http-helpers": true,
         "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>loglevel": true
@@ -3090,7 +3090,7 @@
     },
     "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/fnd-base": {
       "packages": {
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/constants": true
+        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>@toruslabs/constants": true
       }
     },
     "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/http-helpers": {
@@ -3649,7 +3649,7 @@
         "semver": true
       }
     },
-    "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify>call-bind>call-bind-apply-helpers": {
+    "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify>call-bind>call-bind-apply-helpers": {
       "packages": {
         "string.prototype.matchall>call-bind>es-errors": true,
         "browserify>has>function-bind": true
@@ -3661,9 +3661,9 @@
         "browserify>has>function-bind": true
       }
     },
-    "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify>call-bind": {
+    "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify>call-bind": {
       "packages": {
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify>call-bind>call-bind-apply-helpers": true,
+        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify>call-bind>call-bind-apply-helpers": true,
         "string.prototype.matchall>call-bind>es-define-property": true,
         "string.prototype.matchall>call-bind>set-function-length": true
       }
@@ -3677,10 +3677,10 @@
         "string.prototype.matchall>call-bind>set-function-length": true
       }
     },
-    "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify>call-bound": {
+    "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify>call-bound": {
       "packages": {
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify>call-bind>call-bind-apply-helpers": true,
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify>call-bound>get-intrinsic": true
+        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify>call-bind>call-bind-apply-helpers": true,
+        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify>call-bound>get-intrinsic": true
       }
     },
     "string.prototype.matchall>side-channel>side-channel-map>call-bound": {
@@ -4285,7 +4285,7 @@
         "define": true
       }
     },
-    "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify>call-bound>get-intrinsic": {
+    "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify>call-bound>get-intrinsic": {
       "globals": {
         "AggregateError": true,
         "FinalizationRegistry": true,
@@ -4293,10 +4293,10 @@
         "WeakRef": true
       },
       "packages": {
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify>call-bind>call-bind-apply-helpers": true,
+        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify>call-bind>call-bind-apply-helpers": true,
         "string.prototype.matchall>call-bind>es-define-property": true,
         "string.prototype.matchall>call-bind>es-errors": true,
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify>call-bound>get-intrinsic>es-object-atoms": true,
+        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify>call-bound>get-intrinsic>es-object-atoms": true,
         "browserify>has>function-bind": true,
         "string.prototype.matchall>get-intrinsic>get-proto": true,
         "string.prototype.matchall>es-abstract>gopd": true,
@@ -4602,10 +4602,10 @@
         "define": true
       }
     },
-    "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify": {
+    "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify": {
       "packages": {
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify>call-bind": true,
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify>call-bound": true,
+        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify>call-bind": true,
+        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify>call-bound": true,
         "@lavamoat/lavapack>json-stable-stringify>isarray": true,
         "@lavamoat/lavapack>json-stable-stringify>jsonify": true,
         "@lavamoat/lavapack>json-stable-stringify>object-keys": true

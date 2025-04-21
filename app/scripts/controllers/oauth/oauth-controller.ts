@@ -124,7 +124,7 @@ export default class OAuthController extends BaseController<
     return {
       authConnectionId: this.#AuthConnectionId,
       groupedAuthConnectionId: this.#GroupedAuthConnectionId,
-      userId: userInfo.email,
+      userId: userInfo.sub,
       idTokens: [idToken],
     };
   }
