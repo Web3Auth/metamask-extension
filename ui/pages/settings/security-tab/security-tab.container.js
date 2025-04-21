@@ -29,10 +29,17 @@ import {
 } from '../../../selectors/selectors';
 import { getNetworkConfigurationsByChainId } from '../../../../shared/modules/selectors/networks';
 import { openBasicFunctionalityModal } from '../../../ducks/app/app';
+import {
+  SECURITY_MULTI_SRP_ROUTE,
+  SECURITY_PASSWORD_HINT_ROUTE,
+  SECURITY_PASSWORD_ROUTE,
+} from '../../../helpers/constants/routes';
 import SecurityTab from './security-tab.component';
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
   const { metamask } = state;
+  const { location } = ownProps;
+  const { pathname } = location;
 
   const petnamesEnabled = getPetnamesEnabled(state);
 
@@ -56,6 +63,14 @@ const mapStateToProps = (state) => {
 
   const networkConfigurations = getNetworkConfigurationsByChainId(state);
 
+  const isSecuritySrpPage = Boolean(pathname.match(SECURITY_MULTI_SRP_ROUTE));
+  const isSecurityPasswordPage = Boolean(
+    pathname.match(SECURITY_PASSWORD_ROUTE),
+  );
+  const isSecurityPasswordHintPage = Boolean(
+    pathname.match(SECURITY_PASSWORD_HINT_ROUTE),
+  );
+
   return {
     incomingTransactionsPreferences,
     networkConfigurations,
@@ -77,6 +92,9 @@ const mapStateToProps = (state) => {
     securityAlertsEnabled: getIsSecurityAlertsEnabled(state),
     useTransactionSimulations: metamask.useTransactionSimulations,
     metaMetricsDataDeletionId: getMetaMetricsDataDeletionId(state),
+    isSecuritySrpPage,
+    isSecurityPasswordPage,
+    isSecurityPasswordHintPage,
   };
 };
 

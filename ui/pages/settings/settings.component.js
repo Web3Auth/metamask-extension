@@ -22,6 +22,9 @@ import {
   DEFAULT_ROUTE,
   NOTIFICATIONS_SETTINGS_ROUTE,
   SNAP_SETTINGS_ROUTE,
+  SECURITY_MULTI_SRP_ROUTE,
+  SECURITY_PASSWORD_ROUTE,
+  SECURITY_PASSWORD_HINT_ROUTE,
 } from '../../helpers/constants/routes';
 
 import { getSettingsRoutes } from '../../helpers/utils/settings-search';
@@ -439,8 +442,17 @@ class SettingsPage extends PureComponent {
             return <Redirect to={{ pathname: DEFAULT_ROUTE }} />;
           }}
         />
+
         <Route exact path={SECURITY_ROUTE} component={SecurityTab} />
+        <Route exact path={SECURITY_MULTI_SRP_ROUTE} component={SecurityTab} />
+        <Route exact path={SECURITY_PASSWORD_ROUTE} component={SecurityTab} />
+        <Route
+          exact
+          path={SECURITY_PASSWORD_HINT_ROUTE}
+          component={SecurityTab}
+        />
         <Route exact path={EXPERIMENTAL_ROUTE} component={ExperimentalTab} />
+
         {(process.env.ENABLE_SETTINGS_PAGE_DEV_OPTIONS ||
           process.env.IN_TEST) && (
           <Route

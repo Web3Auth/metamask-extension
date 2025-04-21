@@ -1,0 +1,18 @@
+@use "design-system";
+
+.protect-wallet {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+
+  &__container {
+    border-radius: 0.5rem;
+    background-color: var(--color-background-muted);
+  }
+
+  &__container-body {
+    border-top: 1px solid var(--color-background-default);
+  }
+}
+
