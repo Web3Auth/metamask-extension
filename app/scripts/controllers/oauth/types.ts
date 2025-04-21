@@ -18,7 +18,6 @@ export type LoginHandlerOptions = {
   authServerUrl: string;
   web3AuthNetwork: Web3AuthNetwork;
   redirectUri: string;
-  provider: AuthConnection;
   scopes?: string[];
   /**
    * The server redirect URI to use for the OAuth login.

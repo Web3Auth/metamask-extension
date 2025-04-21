@@ -11,12 +11,6 @@ export class AppleLoginHandler extends BaseLoginHandler {
   constructor(options: LoginHandlerOptions) {
     super(options);
 
-    if (options.provider !== AuthConnection.Apple) {
-      throw new Error(
-        `Provider mistmatch. Expected Apple, got ${options.provider}`,
-      );
-    }
-
     if (options.serverRedirectUri) {
       this.serverRedirectUri = options.serverRedirectUri;
     } else {
@@ -24,19 +18,43 @@ export class AppleLoginHandler extends BaseLoginHandler {
     }
   }
 
+  get provider() {
+    return AuthConnection.Apple;
+  }
+
   get scope() {
     return this.#scope;
   }
 
   getAuthUrl(): string {
-    const authUrl = this.finalUrl;
-
+    const authUrl = new URL(this.options.oAuthServerUrl);
+    authUrl.searchParams.set('client_id', this.options.oAuthClientId);
+    authUrl.searchParams.set('response_type', 'code');
     authUrl.searchParams.set('redirect_uri', this.serverRedirectUri);
     authUrl.searchParams.set('response_mode', 'form_post');
     authUrl.searchParams.set('nonce', this.#generateNonce());
     authUrl.searchParams.set('scope', this.#scope.join(' '));
 
     return authUrl.toString();
+  }
+
+  async getAuthIdToken(code: string) {
+    const requestData = this.generateAuthTokenRequestData(code);
+    const res = await this.requestAuthToken(requestData);
+    return res;
+  }
+
+  generateAuthTokenRequestData(code: string) {
+    const { serverRedirectUri, web3AuthNetwork } = this.options;
+    const requestData = {
+      code,
+      client_id: this.options.oAuthClientId,
+      redirect_uri: serverRedirectUri,
+      login_provider: this.provider,
+      network: web3AuthNetwork,
+    };
+
+    return JSON.stringify(requestData);
   }
 
   async getUserInfo(idToken: string): Promise<OAuthUserInfo> {

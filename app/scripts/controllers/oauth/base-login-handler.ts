@@ -8,21 +8,25 @@ import {
 export abstract class BaseLoginHandler {
   public options: LoginHandlerOptions;
 
-  public finalUrl: URL;
-
   constructor(options: LoginHandlerOptions) {
     this.options = options;
-
-    this.finalUrl = new URL(this.options.oAuthServerUrl);
-    this.finalUrl.searchParams.set('client_id', this.options.oAuthClientId);
-    this.finalUrl.searchParams.set('response_type', 'code');
   }
 
-  get provider() {
-    return this.options.provider;
-  }
+  abstract get provider(): AuthConnection;
 
-  async getAuthIdToken(code: string): Promise<AuthTokenResponse> {
+  abstract get scope(): string[];
+
+  abstract getAuthUrl(): string;
+
+  abstract getAuthIdToken(code: string): Promise<AuthTokenResponse>;
+
+  abstract generateAuthTokenRequestData(code: string): string;
+
+  abstract getUserInfo(idToken: string): Promise<OAuthUserInfo>;
+
+  protected async requestAuthToken(
+    requestData: string,
+  ): Promise<AuthTokenResponse> {
     const res = await fetch(
       `${this.options.authServerUrl}/api/v1/oauth/token`,
       {
@@ -30,29 +34,11 @@ export abstract class BaseLoginHandler {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: this.generateAuthRequestData(code),
+        body: requestData,
       },
     );
 
     const data = await res.json();
     return data;
   }
-
-  protected generateAuthRequestData(code: string) {
-    const redirectUri =
-      this.options.provider === AuthConnection.Apple
-        ? this.options.serverRedirectUri
-        : this.options.redirectUri;
-    const requestData = {
-      code,
-      client_id: this.options.oAuthClientId,
-      redirect_uri: redirectUri,
-      login_provider: this.options.provider,
-      network: this.options.web3AuthNetwork,
-    };
-
-    return JSON.stringify(requestData);
-  }
-
-  abstract getUserInfo(idToken: string): Promise<OAuthUserInfo>;
 }

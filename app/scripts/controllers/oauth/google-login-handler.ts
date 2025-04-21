@@ -1,5 +1,5 @@
 import { BaseLoginHandler } from './base-login-handler';
-import { LoginHandlerOptions, AuthConnection, OAuthUserInfo } from './types';
+import { AuthConnection, OAuthUserInfo } from './types';
 
 export class GoogleLoginHandler extends BaseLoginHandler {
   // This prompt value is used to force the user to select an account before OAuth login
@@ -7,14 +7,8 @@ export class GoogleLoginHandler extends BaseLoginHandler {
 
   readonly #scope = ['openid', 'profile', 'email'];
 
-  constructor(options: LoginHandlerOptions) {
-    super(options);
-
-    if (options.provider !== AuthConnection.Google) {
-      throw new Error(
-        `Provider mistmatch. Expected Google, got ${options.provider}`,
-      );
-    }
+  get provider() {
+    return AuthConnection.Google;
   }
 
   get scope() {
@@ -22,11 +16,33 @@ export class GoogleLoginHandler extends BaseLoginHandler {
   }
 
   getAuthUrl(): string {
-    const finalAuthUrl = this.finalUrl;
-    finalAuthUrl.searchParams.set('scope', this.#scope.join(' '));
-    finalAuthUrl.searchParams.set('redirect_uri', this.options.redirectUri);
-    finalAuthUrl.searchParams.set('prompt', this.#prompt);
-    return finalAuthUrl.toString();
+    const authUrl = new URL(this.options.oAuthServerUrl);
+    authUrl.searchParams.set('client_id', this.options.oAuthClientId);
+    authUrl.searchParams.set('response_type', 'code');
+    authUrl.searchParams.set('scope', this.#scope.join(' '));
+    authUrl.searchParams.set('redirect_uri', this.options.redirectUri);
+    authUrl.searchParams.set('prompt', this.#prompt);
+
+    return authUrl.toString();
+  }
+
+  async getAuthIdToken(code: string) {
+    const requestData = this.generateAuthTokenRequestData(code);
+    const res = await this.requestAuthToken(requestData);
+    return res;
+  }
+
+  generateAuthTokenRequestData(code: string) {
+    const { redirectUri, web3AuthNetwork } = this.options;
+    const requestData = {
+      code,
+      client_id: this.options.oAuthClientId,
+      redirect_uri: redirectUri,
+      login_provider: this.provider,
+      network: web3AuthNetwork,
+    };
+
+    return JSON.stringify(requestData);
   }
 
   async getUserInfo(idToken: string): Promise<OAuthUserInfo> {
