@@ -67,6 +67,10 @@
       color: var(--color-primary-default);
     }
   }
+
+  &__help-text {
+    height: 40px;
+  }
 }
 
 .reset-password-modal {
