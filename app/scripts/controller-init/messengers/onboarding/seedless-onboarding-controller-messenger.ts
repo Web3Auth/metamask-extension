@@ -1,10 +1,8 @@
 import { Messenger } from '@metamask/base-controller';
-import { KeyringControllerStateChangeEvent } from '@metamask/keyring-controller';
-import { SeedlessOnboardingControllerGetStateActions } from '@metamask/seedless-onboarding-controller';
-
-type MessengerActions = SeedlessOnboardingControllerGetStateActions;
-
-type MessengerEvents =  KeyringControllerStateChangeEvent;
+import {
+  SeedlessOnboardingControllerGetStateAction,
+  SeedlessOnboardingControllerStateChangeEvent,
+} from '@metamask/seedless-onboarding-controller';
 
 export type SeedlessOnboardingControllerMessenger = ReturnType<
   typeof getSeedlessOnboardingControllerMessenger
@@ -18,13 +16,14 @@ export type SeedlessOnboardingControllerMessenger = ReturnType<
  * @returns The restricted messenger.
  */
 export function getSeedlessOnboardingControllerMessenger(
-  messenger: Messenger<MessengerActions, MessengerEvents>,
+  messenger: Messenger<
+    SeedlessOnboardingControllerGetStateAction,
+    SeedlessOnboardingControllerStateChangeEvent
+  >,
 ) {
   return messenger.getRestricted({
     name: 'SeedlessOnboardingController',
     allowedActions: [],
-    allowedEvents: [
-      'KeyringController:stateChange',
-    ],
+    allowedEvents: [],
   });
 }

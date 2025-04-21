@@ -2,6 +2,9 @@ import { BaseLoginHandler } from './base-login-handler';
 import { LoginHandlerOptions, OAuthProvider, OAuthUserInfo } from './types';
 
 export class GoogleLoginHandler extends BaseLoginHandler {
+  // This prompt value is used to force the user to select an account before OAuth login
+  readonly #prompt = 'select_account';
+
   constructor(options: LoginHandlerOptions) {
     super(options);
 
@@ -15,6 +18,7 @@ export class GoogleLoginHandler extends BaseLoginHandler {
   getAuthUrl(): string {
     const finalAuthUrl = this.finalUrl;
     finalAuthUrl.searchParams.set('redirect_uri', this.options.redirectUri);
+    finalAuthUrl.searchParams.set('prompt', this.#prompt);
     return finalAuthUrl.toString();
   }
 

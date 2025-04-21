@@ -45,6 +45,7 @@ import {
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import { selectIsProfileSyncingEnabled } from '../../../selectors/identity/profile-syncing';
 import { getSeedPhraseBackedUp } from '../../../ducks/metamask/metamask';
+import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 
 export default function WalletReady() {
   const history = useHistory();
@@ -96,7 +97,7 @@ export default function WalletReady() {
           }}
           marginBottom={4}
         >
-          {seedPhraseBackedUp
+          {firstTimeFlowType === FirstTimeFlowType.seedless
             ? t('yourWalletIsReady')
             : t('yourWalletIsReadyRemind')}
         </Text>
