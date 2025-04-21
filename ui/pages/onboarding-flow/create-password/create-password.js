@@ -16,7 +16,6 @@ import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
   ONBOARDING_METAMETRICS,
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
-  ONBOARDING_WELCOME_ROUTE,
   ONBOARDING_COMPLETION_ROUTE,
   ///: END:ONLY_INCLUDE_IF
 } from '../../../helpers/constants/routes';
@@ -46,7 +45,6 @@ import {
   Text,
 } from '../../../components/component-library';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
-import { selectNodeAuthTokens } from '../../../selectors/seedless-onboarding';
 
 export default function CreatePassword({
   createNewAccount,
@@ -67,7 +65,6 @@ export default function CreatePassword({
     useState(false);
   const history = useHistory();
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
-  const nodeAuthTokens = useSelector(selectNodeAuthTokens);
   const trackEvent = useContext(MetaMetricsContext);
   const currentKeyring = useSelector(getCurrentKeyring);
 
@@ -103,18 +100,12 @@ export default function CreatePassword({
         history.replace(ONBOARDING_SECURE_YOUR_WALLET_ROUTE);
         ///: END:ONLY_INCLUDE_IF
       }
-    } else if (firstTimeFlowType === FirstTimeFlowType.seedless) {
-      // If user doesn't have node auth tokens, redirect to welcome page
-      if (!nodeAuthTokens) {
-        history.replace(ONBOARDING_WELCOME_ROUTE);
-      }
     }
   }, [
     currentKeyring,
     history,
     firstTimeFlowType,
     newAccountCreationInProgress,
-    nodeAuthTokens,
   ]);
 
   const isValid = useMemo(() => {

@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { SeedlessOnboardingControllerError } from '@metamask/seedless-onboarding-controller';
 import {
   Text,
   FormTextField,
@@ -130,10 +131,11 @@ export default class UnlockPage extends Component {
 
     switch (message) {
       case 'Incorrect password':
-        finalErrorMessage = message;
+      case SeedlessOnboardingControllerError.IncorrectPassword:
+        finalErrorMessage = 'Incorrect password';
         errorReason = 'incorrect_password';
         break;
-      case 'Too many login attempts':
+      case SeedlessOnboardingControllerError.TooManyLoginAttempts:
         finalErrorMessage = data?.message || message;
         errorReason = 'too_many_login_attempts';
         break;
