@@ -395,7 +395,7 @@ import {
 import { AuthenticationControllerInit } from './controller-init/identity/authentication-controller-init';
 import { UserStorageControllerInit } from './controller-init/identity/user-storage-controller-init';
 import { SeedlessOnboardingControllerInit } from './controller-init/onboarding/seedless-onboarding-controller-init';
-import OAuthController from './controllers/oauth-controller';
+import OAuthController from './controllers/oauth/oauth-controller';
 import {
   getCapabilities,
   getTransactionReceiptsByBatchId,
@@ -1117,18 +1117,14 @@ export default class MetamaskController extends EventEmitter {
     this.oauthController = new OAuthController({
       messenger: oauthControllerMessenger,
       state: initState.OAuthController,
-      loginProviderConfig: {
-        google: {
-          clientId: process.env.GOOGLE_CLIENT_ID,
-          authUri: process.env.GOOGLE_AUTH_URI,
-        },
-        apple: {
-          clientId: process.env.APPLE_CLIENT_ID,
-          authUri: process.env.APPLE_AUTH_URI,
-        },
+      env: {
+        web3AuthNetwork: process.env.WEB3AUTH_NETWORK,
+        authServerUrl: process.env.AUTH_SERVER_URL,
+        googleClientId: process.env.GOOGLE_CLIENT_ID,
+        googleAuthUri: process.env.GOOGLE_AUTH_URI,
+        appleClientId: process.env.APPLE_CLIENT_ID,
+        appleAuthUri: process.env.APPLE_AUTH_URI,
       },
-      authServerUrl: process.env.AUTH_SERVER_URL,
-      web3AuthNetwork: process.env.WEB3AUTH_NETWORK,
     });
 
     let additionalKeyrings = [keyringBuilderFactory(QRHardwareKeyring)];

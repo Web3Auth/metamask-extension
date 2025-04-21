@@ -1,10 +1,9 @@
 import { Web3AuthNetwork } from '@metamask/seedless-onboarding-controller';
 import OAuthController, {
   getDefaultOAuthControllerState,
-  OAuthControllerMessenger,
-  OAuthProvider,
-  OAuthProviderConfig,
 } from './oauth-controller';
+import { OAuthControllerMessenger, OAuthProvider } from './types';
+import { createLoginHandler } from './login-handler-factory';
 
 function buildOAuthControllerMessenger() {
   return {
@@ -20,38 +19,17 @@ const DEFAULT_GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string;
 const DEFAULT_GOOGLE_AUTH_URI = process.env.GOOGLE_AUTH_URI as string;
 const DEFAULT_APPLE_CLIENT_ID = process.env.APPLE_CLIENT_ID as string;
 const DEFAULT_APPLE_AUTH_URI = process.env.APPLE_AUTH_URI as string;
+const OAUTH_AUD = 'metamask';
 
-function getLoginProviderConfig() {
+function getOAuthLoginEnvs() {
   return {
-    google: {
-      clientId: DEFAULT_GOOGLE_CLIENT_ID,
-      authUri: DEFAULT_GOOGLE_AUTH_URI,
-    },
-    apple: {
-      clientId: DEFAULT_APPLE_CLIENT_ID,
-      authUri: DEFAULT_APPLE_AUTH_URI,
-    },
+    googleClientId: DEFAULT_GOOGLE_CLIENT_ID,
+    googleAuthUri: DEFAULT_GOOGLE_AUTH_URI,
+    appleClientId: DEFAULT_APPLE_CLIENT_ID,
+    appleAuthUri: DEFAULT_APPLE_AUTH_URI,
+    authServerUrl: process.env.AUTH_SERVER_URL as string,
+    web3AuthNetwork: process.env.WEB3AUTH_NETWORK as Web3AuthNetwork,
   };
-}
-
-function getMockedRedirectURI(
-  providerConfig: OAuthProviderConfig,
-  redirectUri: string,
-  additionalParams: Record<string, string> = {},
-) {
-  const baseUrl = providerConfig.authUri;
-  const { clientId } = providerConfig;
-  const responseType = 'code';
-
-  const url = new URL(baseUrl);
-  url.searchParams.set('client_id', clientId);
-  url.searchParams.set('response_type', responseType);
-  url.searchParams.set('redirect_uri', redirectUri);
-  url.searchParams.set('scope', providerConfig.scopes?.join(' ') || '');
-  Object.entries(additionalParams).forEach(([key, value]) => {
-    url.searchParams.set(key, value);
-  });
-  return url.href;
 }
 
 describe('OAuthController', () => {
@@ -76,9 +54,7 @@ describe('OAuthController', () => {
     const controller = new OAuthController({
       messenger,
       state: getDefaultOAuthControllerState(),
-      loginProviderConfig: getLoginProviderConfig(),
-      authServerUrl: process.env.AUTH_SERVER_URL as string,
-      web3AuthNetwork: process.env.WEB3AUTH_NETWORK as Web3AuthNetwork,
+      env: getOAuthLoginEnvs(),
     });
 
     // mock the fetch call to auth-server
@@ -86,18 +62,21 @@ describe('OAuthController', () => {
       json: jest.fn().mockResolvedValue({
         verifier_id: userId,
         jwt_tokens: {
-          [controller.OAuthAud]: idTokens[0],
+          [OAUTH_AUD]: idTokens[0],
         },
       }),
     });
     await controller.startOAuthLogin(OAuthProvider.Google);
 
+    const googleLoginHandler = createLoginHandler(
+      OAuthProvider.Google,
+      chrome.identity.getRedirectURL(),
+      getOAuthLoginEnvs(),
+    );
+
     expect(launchWebAuthFlowSpy).toHaveBeenCalledWith({
       interactive: true,
-      url: getMockedRedirectURI(
-        controller.loginProviderConfig.google,
-        chrome.identity.getRedirectURL(),
-      ),
+      url: googleLoginHandler.getAuthUrl(),
     });
     expect(controller.state.provider).toBe(OAuthProvider.Google);
   });
@@ -109,9 +88,7 @@ describe('OAuthController', () => {
     const controller = new OAuthController({
       messenger,
       state: getDefaultOAuthControllerState(),
-      loginProviderConfig: getLoginProviderConfig(),
-      authServerUrl: process.env.AUTH_SERVER_URL as string,
-      web3AuthNetwork: process.env.WEB3AUTH_NETWORK as Web3AuthNetwork,
+      env: getOAuthLoginEnvs(),
     });
 
     // mock the fetch call to auth-server
@@ -119,7 +96,7 @@ describe('OAuthController', () => {
       json: jest.fn().mockResolvedValue({
         verifier_id: userId,
         jwt_tokens: {
-          [controller.OAuthAud]: idTokens[0],
+          [OAUTH_AUD]: idTokens[0],
         },
       }),
     });
@@ -128,21 +105,15 @@ describe('OAuthController', () => {
 
     await controller.startOAuthLogin(OAuthProvider.Apple);
 
-    const redirectUri = `${process.env.AUTH_SERVER_URL}/api/v1/oauth/callback`;
+    const appleLoginHandler = createLoginHandler(
+      OAuthProvider.Apple,
+      chrome.identity.getRedirectURL(),
+      getOAuthLoginEnvs(),
+    );
 
     expect(launchWebAuthFlowSpy).toHaveBeenCalledWith({
       interactive: true,
-      url: getMockedRedirectURI(
-        controller.loginProviderConfig.apple,
-        redirectUri,
-        {
-          response_mode: 'form_post',
-          state: JSON.stringify({
-            client_redirect_back_uri: chrome.identity.getRedirectURL(),
-          }),
-          nonce: (0.1).toString(16).substring(2, 15),
-        },
-      ),
+      url: appleLoginHandler.getAuthUrl(),
     });
 
     expect(controller.state.provider).toBe(OAuthProvider.Apple);
