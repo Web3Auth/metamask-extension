@@ -317,7 +317,7 @@ env:
   - GOOGLE_AUTH_URI: ''
   - APPLE_CLIENT_ID: ''
   - APPLE_AUTH_URI: ''
-  - BYOA_SERVER_URL: ''
+  - AUTH_SERVER_URL: ''
   - WEB3AUTH_NETWORK: ''
 
   # Enables the notifications feature within the build:

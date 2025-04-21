@@ -20,5 +20,5 @@ process.env.GOOGLE_CLIENT_ID = 'google-client-id';
 process.env.GOOGLE_AUTH_URI = 'https://accounts.google.com/o/oauth2/v2/auth';
 process.env.APPLE_CLIENT_ID = 'apple-client-id';
 process.env.APPLE_AUTH_URI = 'https://appleid.apple.com/auth/authorize';
-process.env.BYOA_SERVER_URL = 'https://byoa-server-url';
+process.env.AUTH_SERVER_URL = 'https://auth-server-url';
 process.env.WEB3AUTH_NETWORK = 'sapphire_devnet';

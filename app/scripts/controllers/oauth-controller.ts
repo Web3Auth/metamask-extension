@@ -84,7 +84,7 @@ export type OAuthControllerOptions = {
   state: Partial<OAuthControllerState>;
   messenger: OAuthControllerMessenger;
   loginProviderConfig: LoginProviderConfig;
-  byoaServerUrl: string;
+  authServerUrl: string;
   web3AuthNetwork: Web3AuthNetwork;
 };
 
@@ -126,7 +126,7 @@ export default class OAuthController extends BaseController<
 > {
   loginProviderConfig: LoginProviderConfig;
 
-  byoaServerUrl: string;
+  authServerUrl: string;
 
   readonly OAuthAud = 'metamask';
 
@@ -140,7 +140,7 @@ export default class OAuthController extends BaseController<
     state,
     messenger,
     loginProviderConfig,
-    byoaServerUrl,
+    authServerUrl,
     web3AuthNetwork,
   }: OAuthControllerOptions) {
     super({
@@ -153,7 +153,7 @@ export default class OAuthController extends BaseController<
       },
     });
 
-    this.byoaServerUrl = byoaServerUrl;
+    this.authServerUrl = authServerUrl;
     this.web3AuthNetwork = web3AuthNetwork;
 
     Object.entries(loginProviderConfig).forEach(([provider, config]) => {
@@ -164,7 +164,7 @@ export default class OAuthController extends BaseController<
         config.redirectUri = chrome.identity.getRedirectURL();
       }
       if (!config.serverRedirectUri && provider === 'apple') {
-        config.serverRedirectUri = `${this.byoaServerUrl}/api/v1/oauth/callback`;
+        config.serverRedirectUri = `${this.authServerUrl}/api/v1/oauth/callback`;
       }
     });
     this.loginProviderConfig = loginProviderConfig;
@@ -213,16 +213,16 @@ export default class OAuthController extends BaseController<
     if (!authCode) {
       throw new Error('No auth code found');
     }
-    const res = await this.#getBYOAIdToken(provider, authCode);
+    const res = await this.#getAuthIdToken(provider, authCode);
     return res;
   }
 
-  async #getBYOAIdToken(
+  async #getAuthIdToken(
     provider: OAuthProvider,
     authCode: string,
   ): Promise<OAuthLoginResult> {
     const providerConfig = this.#getProviderConfig(provider);
-    const res = await fetch(`${this.byoaServerUrl}/api/v1/oauth/token`, {
+    const res = await fetch(`${this.authServerUrl}/api/v1/oauth/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

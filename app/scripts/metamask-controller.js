@@ -1127,7 +1127,7 @@ export default class MetamaskController extends EventEmitter {
           authUri: process.env.APPLE_AUTH_URI,
         },
       },
-      byoaServerUrl: process.env.BYOA_SERVER_URL,
+      authServerUrl: process.env.AUTH_SERVER_URL,
       web3AuthNetwork: process.env.WEB3AUTH_NETWORK,
     });
 

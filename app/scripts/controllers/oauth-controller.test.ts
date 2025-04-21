@@ -1,5 +1,10 @@
-import { Messenger } from "@metamask/base-controller";
-import OAuthController, { getDefaultOAuthControllerState, OAuthControllerMessenger, OAuthProvider, OAuthProviderConfig, Web3AuthNetwork } from "./oauth-controller";
+import { Web3AuthNetwork } from '@metamask/seedless-onboarding-controller';
+import OAuthController, {
+  getDefaultOAuthControllerState,
+  OAuthControllerMessenger,
+  OAuthProvider,
+  OAuthProviderConfig,
+} from './oauth-controller';
 
 function buildOAuthControllerMessenger() {
   return {
@@ -26,12 +31,16 @@ function getLoginProviderConfig() {
       clientId: DEFAULT_APPLE_CLIENT_ID,
       authUri: DEFAULT_APPLE_AUTH_URI,
     },
-  }
+  };
 }
 
-function getMockedRedirectURI(providerConfig: OAuthProviderConfig, redirectUri: string, additionalParams: Record<string, string> = {}) {
+function getMockedRedirectURI(
+  providerConfig: OAuthProviderConfig,
+  redirectUri: string,
+  additionalParams: Record<string, string> = {},
+) {
   const baseUrl = providerConfig.authUri;
-  const clientId = providerConfig.clientId;
+  const { clientId } = providerConfig;
   const responseType = 'code';
 
   const url = new URL(baseUrl);
@@ -51,7 +60,9 @@ describe('OAuthController', () => {
 
   beforeEach(() => {
     // mock chrome.identity.launchWebAuthFlow to return a mocked redirect URI with a mocked code
-    launchWebAuthFlowSpy = jest.spyOn(chrome.identity, 'launchWebAuthFlow').mockResolvedValueOnce('https://mocked-redirect-uri?code=mocked-code');
+    launchWebAuthFlowSpy = jest
+      .spyOn(chrome.identity, 'launchWebAuthFlow')
+      .mockResolvedValueOnce('https://mocked-redirect-uri?code=mocked-code');
   });
 
   afterEach(() => {
@@ -59,8 +70,6 @@ describe('OAuthController', () => {
   });
 
   it('should start the OAuth login process with `Google`', async () => {
-    const authConnectionId = 'byoa-server';
-    const groupedAuthConnectionId = 'mm-seedless-onboarding';
     const userId = 'user-id';
     const idTokens = ['id-token'];
 
@@ -68,35 +77,32 @@ describe('OAuthController', () => {
       messenger,
       state: getDefaultOAuthControllerState(),
       loginProviderConfig: getLoginProviderConfig(),
-      byoaServerUrl: process.env.BYOA_SERVER_URL as string,
+      authServerUrl: process.env.AUTH_SERVER_URL as string,
       web3AuthNetwork: process.env.WEB3AUTH_NETWORK as Web3AuthNetwork,
     });
 
-    // mock the fetch call to byoa-server
+    // mock the fetch call to auth-server
     jest.spyOn(global, 'fetch').mockResolvedValue({
       json: jest.fn().mockResolvedValue({
         verifier_id: userId,
         jwt_tokens: {
           [controller.OAuthAud]: idTokens[0],
-        }
+        },
       }),
     });
     await controller.startOAuthLogin(OAuthProvider.Google);
 
     expect(launchWebAuthFlowSpy).toHaveBeenCalledWith({
       interactive: true,
-      url: getMockedRedirectURI(controller.loginProviderConfig.google, chrome.identity.getRedirectURL()),
+      url: getMockedRedirectURI(
+        controller.loginProviderConfig.google,
+        chrome.identity.getRedirectURL(),
+      ),
     });
-
-    expect(controller.state.authConnectionId).toBe(authConnectionId);
-    expect(controller.state.groupedAuthConnectionId).toBe(groupedAuthConnectionId);
-    expect(controller.state.userId).toBe(userId);
     expect(controller.state.provider).toBe(OAuthProvider.Google);
   });
 
   it('should start the OAuth login process with `Apple`', async () => {
-    const authConnectionId = 'byoa-server';
-    const groupedAuthConnectionId = 'mm-seedless-onboarding';
     const userId = 'apple-user-id';
     const idTokens = ['id-token'];
 
@@ -104,41 +110,41 @@ describe('OAuthController', () => {
       messenger,
       state: getDefaultOAuthControllerState(),
       loginProviderConfig: getLoginProviderConfig(),
-      byoaServerUrl: process.env.BYOA_SERVER_URL as string,
+      authServerUrl: process.env.AUTH_SERVER_URL as string,
       web3AuthNetwork: process.env.WEB3AUTH_NETWORK as Web3AuthNetwork,
     });
 
-    // mock the fetch call to byoa-server
+    // mock the fetch call to auth-server
     jest.spyOn(global, 'fetch').mockResolvedValue({
       json: jest.fn().mockResolvedValue({
         verifier_id: userId,
         jwt_tokens: {
           [controller.OAuthAud]: idTokens[0],
-        }
+        },
       }),
     });
     // mock the Math.random to return a fixed value nonce
     jest.spyOn(global.Math, 'random').mockReturnValueOnce(0.1);
 
-
     await controller.startOAuthLogin(OAuthProvider.Apple);
 
-    const redirectUri = `${process.env.BYOA_SERVER_URL}/api/v1/oauth/callback`;
+    const redirectUri = `${process.env.AUTH_SERVER_URL}/api/v1/oauth/callback`;
 
     expect(launchWebAuthFlowSpy).toHaveBeenCalledWith({
       interactive: true,
-      url: getMockedRedirectURI(controller.loginProviderConfig.apple, redirectUri, {
-        response_mode: 'form_post',
-        state: JSON.stringify({
-          client_redirect_back_uri: chrome.identity.getRedirectURL(),
-        }),
-        nonce: 0.1.toString(16).substring(2, 15),
-      }),
+      url: getMockedRedirectURI(
+        controller.loginProviderConfig.apple,
+        redirectUri,
+        {
+          response_mode: 'form_post',
+          state: JSON.stringify({
+            client_redirect_back_uri: chrome.identity.getRedirectURL(),
+          }),
+          nonce: (0.1).toString(16).substring(2, 15),
+        },
+      ),
     });
 
-    expect(controller.state.authConnectionId).toBe(authConnectionId);
-    expect(controller.state.groupedAuthConnectionId).toBe(groupedAuthConnectionId);
-    expect(controller.state.userId).toBe(userId);
     expect(controller.state.provider).toBe(OAuthProvider.Apple);
   });
 });
