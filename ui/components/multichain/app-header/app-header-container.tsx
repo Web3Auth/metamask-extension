@@ -24,7 +24,8 @@ export const AppHeaderContainer = ({
     <Box
       display={Display.Flex}
       className={classnames('multichain-app-header', {
-        'multichain-app-header-shadow': isUnlocked && popupStatus,
+        'multichain-app-header-shadow':
+          (isUnlocked && popupStatus) || (!isUnlocked && popupStatus),
       })}
       marginBottom={headerBottomMargin}
       alignItems={AlignItems.center}

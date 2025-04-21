@@ -349,8 +349,7 @@ export default function CreatePassword({
               inputProps={{ 'data-testid': 'create-password-terms' }}
               alignItems={AlignItems.flexStart}
               isChecked={termsChecked}
-              onChange={(e) => {
-                e.preventDefault();
+              onChange={() => {
                 setTermsChecked(!termsChecked);
               }}
               label={

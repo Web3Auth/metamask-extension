@@ -39,6 +39,22 @@ import { getCaretCoordinates } from './unlock-page.util';
 import ResetPasswordModal from './reset-password-modal';
 import EraseWalletModal from './erase-wallet-modal';
 
+const formatTimeToUnlock = (timeInSeconds) => {
+  if (timeInSeconds <= 60) {
+    return `${timeInSeconds}s`;
+  } else if (timeInSeconds < 3600) {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${minutes}m:${seconds.toString().padStart(2, '0')}s`;
+  }
+  const hours = Math.floor(timeInSeconds / 3600);
+  const minutes = Math.floor((timeInSeconds % 3600) / 60);
+  const seconds = timeInSeconds % 60;
+  return `${hours}hr:${minutes.toString().padStart(2, '0')}m:${seconds
+    .toString()
+    .padStart(2, '0')}s`;
+};
+
 export default class UnlockPage extends Component {
   static contextTypes = {
     trackEvent: PropTypes.func,
@@ -124,6 +140,7 @@ export default class UnlockPage extends Component {
   };
 
   handleLoginError = async (error) => {
+    const { t } = this.context;
     this.failed_attempts += 1;
     const { message, data } = error;
     let finalErrorMessage = message;
@@ -132,11 +149,18 @@ export default class UnlockPage extends Component {
     switch (message) {
       case 'Incorrect password':
       case SeedlessOnboardingControllerError.IncorrectPassword:
-        finalErrorMessage = 'Incorrect password';
+        finalErrorMessage = t('unlockPageIncorrectPassword');
         errorReason = 'incorrect_password';
         break;
       case SeedlessOnboardingControllerError.TooManyLoginAttempts:
-        finalErrorMessage = data?.message || message;
+        if (data.isPermanent) {
+          finalErrorMessage = t('unlockPageTooManyFailedAttemptsPermanent');
+        } else {
+          const formattedTimeToUnlock = formatTimeToUnlock(data.remainingTime);
+          finalErrorMessage = t('unlockPageTooManyFailedAttempts', [
+            formattedTimeToUnlock,
+          ]);
+        }
         errorReason = 'too_many_login_attempts';
         break;
       case 'Seed phrase not found':
@@ -201,18 +225,22 @@ export default class UnlockPage extends Component {
     const { passwordHint } = this.props;
     const { t } = this.context;
 
-    if (showHint) {
-      return (
-        <HelpText color={TextColor.textMuted}>
-          {t('unlockPageHint', [passwordHint])}
-        </HelpText>
-      );
-    }
-    if (error) {
-      return <HelpText severity={HelpTextSeverity.Danger}>{error}</HelpText>;
-    }
-    // empty help text to keep the input field from shifting when no help text is present
-    return <HelpText color={TextColor.textMuted}>&nbsp;</HelpText>;
+    return (
+      <Box
+        className="unlock-page__help-text"
+        display={Display.Flex}
+        flexDirection={FlexDirection.Column}
+      >
+        {error && (
+          <HelpText severity={HelpTextSeverity.Danger}>{error}</HelpText>
+        )}
+        {showHint && (
+          <HelpText color={TextColor.textMuted}>
+            {t('unlockPageHint', [passwordHint])}
+          </HelpText>
+        )}
+      </Box>
+    );
   };
 
   onRestore = () => {
@@ -282,6 +310,7 @@ export default class UnlockPage extends Component {
                   width={BlockSize.Full}
                   justifyContent={JustifyContent.spaceBetween}
                   alignItems={AlignItems.center}
+                  marginBottom={1}
                 >
                   <Text variant={TextVariant.bodyMdMedium}>
                     {t('password')}

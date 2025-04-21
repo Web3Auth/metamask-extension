@@ -40,6 +40,13 @@
     }
   }
 
+  &__dropdown {
+    cursor: pointer;
+    .dropdown__select {
+      cursor: pointer;
+    }
+  }
+
   // SRP_OVERRIDE: dropdown on welcome page
   &__dropdown--welcome {
     .dropdown__select {
