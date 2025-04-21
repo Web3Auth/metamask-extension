@@ -823,7 +823,6 @@ export function setupController(
   //
   // MetaMask Controller
   //
-  console.log('[setupController] initState', initState);
   controller = new MetamaskController({
     infuraProjectId: process.env.INFURA_PROJECT_ID,
     // User confirmation callbacks:

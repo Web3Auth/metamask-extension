@@ -5,17 +5,6 @@ import {
   OAuthUserInfo,
 } from './types';
 
-export function getDefaultScopes(provider: AuthConnection) {
-  switch (provider) {
-    case AuthConnection.Google:
-      return ['openid', 'email', 'profile'];
-    case AuthConnection.Apple:
-      return ['name', 'email'];
-    default:
-      throw new Error('Invalid provider');
-  }
-}
-
 export abstract class BaseLoginHandler {
   public options: LoginHandlerOptions;
 
@@ -27,15 +16,6 @@ export abstract class BaseLoginHandler {
     this.finalUrl = new URL(this.options.oAuthServerUrl);
     this.finalUrl.searchParams.set('client_id', this.options.oAuthClientId);
     this.finalUrl.searchParams.set('response_type', 'code');
-
-    if (this.options.scopes) {
-      this.finalUrl.searchParams.set('scope', this.options.scopes.join(' '));
-    } else {
-      this.finalUrl.searchParams.set(
-        'scope',
-        getDefaultScopes(this.options.provider).join(' '),
-      );
-    }
   }
 
   get provider() {

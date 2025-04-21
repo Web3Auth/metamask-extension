@@ -4,6 +4,8 @@ import { LoginHandlerOptions, AuthConnection, OAuthUserInfo } from './types';
 export class AppleLoginHandler extends BaseLoginHandler {
   public readonly PROVIDER = 'apple';
 
+  readonly #scope = ['name', 'email'];
+
   protected serverRedirectUri: string;
 
   constructor(options: LoginHandlerOptions) {
@@ -22,12 +24,17 @@ export class AppleLoginHandler extends BaseLoginHandler {
     }
   }
 
+  get scope() {
+    return this.#scope;
+  }
+
   getAuthUrl(): string {
     const authUrl = this.finalUrl;
 
     authUrl.searchParams.set('redirect_uri', this.serverRedirectUri);
     authUrl.searchParams.set('response_mode', 'form_post');
     authUrl.searchParams.set('nonce', this.#generateNonce());
+    authUrl.searchParams.set('scope', this.#scope.join(' '));
 
     return authUrl.toString();
   }
