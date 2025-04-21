@@ -7,7 +7,7 @@ import { Web3AuthNetwork } from '@metamask/seedless-onboarding-controller';
 
 export const controllerName = 'OAuthController';
 
-export enum OAuthProvider {
+export enum AuthConnection {
   Google = 'google',
   Apple = 'apple',
 }
@@ -18,7 +18,7 @@ export type LoginHandlerOptions = {
   authServerUrl: string;
   web3AuthNetwork: Web3AuthNetwork;
   redirectUri: string;
-  provider: OAuthProvider;
+  provider: AuthConnection;
   scopes?: string[];
   /**
    * The server redirect URI to use for the OAuth login.
@@ -32,7 +32,7 @@ export type LoginHandlerOptions = {
  * The state of the {@link OAuthController}
  */
 export type OAuthControllerState = {
-  provider?: OAuthProvider;
+  provider?: AuthConnection;
   socialLoginEmail?: string;
 };
 

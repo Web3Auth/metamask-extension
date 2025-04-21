@@ -7,7 +7,7 @@ import {
   OAuthControllerState,
   OAuthLoginEnv,
   OAuthLoginResult,
-  OAuthProvider,
+  AuthConnection,
 } from './types';
 import { createLoginHandler } from './login-handler-factory';
 import { BaseLoginHandler } from './base-login-handler';
@@ -67,7 +67,7 @@ export default class OAuthController extends BaseController<
     this.#redirectUri = chrome.identity.getRedirectURL();
   }
 
-  async startOAuthLogin(provider: OAuthProvider): Promise<OAuthLoginResult> {
+  async startOAuthLogin(provider: AuthConnection): Promise<OAuthLoginResult> {
     const loginHandler = createLoginHandler(
       provider,
       this.#redirectUri,

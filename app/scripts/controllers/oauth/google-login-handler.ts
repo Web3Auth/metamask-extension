@@ -1,5 +1,5 @@
 import { BaseLoginHandler } from './base-login-handler';
-import { LoginHandlerOptions, OAuthProvider, OAuthUserInfo } from './types';
+import { LoginHandlerOptions, AuthConnection, OAuthUserInfo } from './types';
 
 export class GoogleLoginHandler extends BaseLoginHandler {
   // This prompt value is used to force the user to select an account before OAuth login
@@ -8,7 +8,7 @@ export class GoogleLoginHandler extends BaseLoginHandler {
   constructor(options: LoginHandlerOptions) {
     super(options);
 
-    if (options.provider !== OAuthProvider.Google) {
+    if (options.provider !== AuthConnection.Google) {
       throw new Error(
         `Provider mistmatch. Expected Google, got ${options.provider}`,
       );

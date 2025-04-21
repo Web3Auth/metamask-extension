@@ -2,7 +2,7 @@ import { Web3AuthNetwork } from '@metamask/seedless-onboarding-controller';
 import OAuthController, {
   getDefaultOAuthControllerState,
 } from './oauth-controller';
-import { OAuthControllerMessenger, OAuthProvider } from './types';
+import { OAuthControllerMessenger, AuthConnection } from './types';
 import { createLoginHandler } from './login-handler-factory';
 
 function buildOAuthControllerMessenger() {
@@ -66,10 +66,10 @@ describe('OAuthController', () => {
         },
       }),
     });
-    await controller.startOAuthLogin(OAuthProvider.Google);
+    await controller.startOAuthLogin(AuthConnection.Google);
 
     const googleLoginHandler = createLoginHandler(
-      OAuthProvider.Google,
+      AuthConnection.Google,
       chrome.identity.getRedirectURL(),
       getOAuthLoginEnvs(),
     );
@@ -78,7 +78,7 @@ describe('OAuthController', () => {
       interactive: true,
       url: googleLoginHandler.getAuthUrl(),
     });
-    expect(controller.state.provider).toBe(OAuthProvider.Google);
+    expect(controller.state.provider).toBe(AuthConnection.Google);
   });
 
   it('should start the OAuth login process with `Apple`', async () => {
@@ -103,10 +103,10 @@ describe('OAuthController', () => {
     // mock the Math.random to return a fixed value nonce
     jest.spyOn(global.Math, 'random').mockReturnValueOnce(0.1);
 
-    await controller.startOAuthLogin(OAuthProvider.Apple);
+    await controller.startOAuthLogin(AuthConnection.Apple);
 
     const appleLoginHandler = createLoginHandler(
-      OAuthProvider.Apple,
+      AuthConnection.Apple,
       chrome.identity.getRedirectURL(),
       getOAuthLoginEnvs(),
     );
@@ -116,6 +116,6 @@ describe('OAuthController', () => {
       url: appleLoginHandler.getAuthUrl(),
     });
 
-    expect(controller.state.provider).toBe(OAuthProvider.Apple);
+    expect(controller.state.provider).toBe(AuthConnection.Apple);
   });
 });

@@ -1,5 +1,5 @@
 import { BaseLoginHandler } from './base-login-handler';
-import { LoginHandlerOptions, OAuthProvider, OAuthUserInfo } from './types';
+import { LoginHandlerOptions, AuthConnection, OAuthUserInfo } from './types';
 
 export class AppleLoginHandler extends BaseLoginHandler {
   public readonly PROVIDER = 'apple';
@@ -9,7 +9,7 @@ export class AppleLoginHandler extends BaseLoginHandler {
   constructor(options: LoginHandlerOptions) {
     super(options);
 
-    if (options.provider !== OAuthProvider.Apple) {
+    if (options.provider !== AuthConnection.Apple) {
       throw new Error(
         `Provider mistmatch. Expected Apple, got ${options.provider}`,
       );

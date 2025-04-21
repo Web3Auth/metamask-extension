@@ -1,9 +1,9 @@
 import { AppleLoginHandler } from './apple-login-handler';
 import { GoogleLoginHandler } from './google-login-handler';
-import { OAuthLoginEnv, OAuthProvider } from './types';
+import { OAuthLoginEnv, AuthConnection } from './types';
 
 export function createLoginHandler(
-  provider: OAuthProvider,
+  provider: AuthConnection,
   redirectUri: string,
   env: OAuthLoginEnv,
 ) {
@@ -15,13 +15,13 @@ export function createLoginHandler(
   };
 
   switch (provider) {
-    case OAuthProvider.Google:
+    case AuthConnection.Google:
       return new GoogleLoginHandler({
         ...commonHandlerOptions,
         oAuthClientId: env.googleClientId,
         oAuthServerUrl: env.googleAuthUri,
       });
-    case OAuthProvider.Apple:
+    case AuthConnection.Apple:
       return new AppleLoginHandler({
         ...commonHandlerOptions,
         oAuthClientId: env.appleClientId,

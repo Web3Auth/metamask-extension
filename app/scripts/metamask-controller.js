@@ -4459,7 +4459,7 @@ export default class MetamaskController extends EventEmitter {
    * AuthenticationResult is an object that contains the temporary Auth token for next step of onboarding flow
    * and user's onboarding status to indicate whether the user has already completed the seedless onboarding flow.
    *
-   * @param {OAuthProvider} provider - social login provider, `google` | `apple`
+   * @param {AuthConnection} provider - social login provider, `google` | `apple`
    * @returns {Promise<boolean>} true if user has not completed the seedless onboarding flow, false otherwise
    */
   async startSocialLogin(provider) {

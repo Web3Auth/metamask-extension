@@ -1,15 +1,15 @@
 import {
-  OAuthProvider,
+  AuthConnection,
   LoginHandlerOptions,
   AuthTokenResponse,
   OAuthUserInfo,
 } from './types';
 
-export function getDefaultScopes(provider: OAuthProvider) {
+export function getDefaultScopes(provider: AuthConnection) {
   switch (provider) {
-    case OAuthProvider.Google:
+    case AuthConnection.Google:
       return ['openid', 'email', 'profile'];
-    case OAuthProvider.Apple:
+    case AuthConnection.Apple:
       return ['name', 'email'];
     default:
       throw new Error('Invalid provider');
@@ -60,7 +60,7 @@ export abstract class BaseLoginHandler {
 
   protected generateAuthRequestData(code: string) {
     const redirectUri =
-      this.options.provider === OAuthProvider.Apple
+      this.options.provider === AuthConnection.Apple
         ? this.options.serverRedirectUri
         : this.options.redirectUri;
     const requestData = {
