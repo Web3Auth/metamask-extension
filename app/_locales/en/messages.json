@@ -1947,7 +1947,7 @@
     "message": "You can only get this wallet back with the info used when creating it, such as your Secret Recovery Phrase, Google account, or Apple account. MetaMask doesn’t have this info."
   },
   "eraseWalletButton": {
-    "message": "Yes, erase wallet"
+    "message": "Erase wallet"
   },
   "errorCode": {
     "message": "Code: $1",
