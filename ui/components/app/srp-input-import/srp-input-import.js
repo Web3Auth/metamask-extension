@@ -133,7 +133,7 @@ export default function SrpInputImport({ onChange }) {
 
     const wordsNotInWordList = draftSrp
       .map((word) => word.word)
-      .filter((word) => !wordlist.includes(word));
+      .filter((word) => word !== '' && !wordlist.includes(word));
     setMissSpelledWords(wordsNotInWordList);
 
     // if srp length is valid and no empty word trigger onChange

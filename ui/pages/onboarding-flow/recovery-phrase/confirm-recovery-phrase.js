@@ -1,8 +1,7 @@
-import React, { useState, useMemo, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { debounce } from 'lodash';
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
 import {
   Box,
   Button,
@@ -20,7 +19,6 @@ import {
   TextColor,
   IconColor,
 } from '../../../helpers/constants/design-system';
-import { ONBOARDING_METAMETRICS } from '../../../helpers/constants/routes';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { setSeedPhraseBackedUp } from '../../../store/actions';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
@@ -28,49 +26,66 @@ import {
   MetaMetricsEventCategory,
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
-import RecoveryPhraseChips from './recovery-phrase-chips';
+import { ONBOARDING_METAMETRICS } from '../../../helpers/constants/routes';
 import ConfirmSrpModal from './confirm-srp-modal';
+import RecoveryPhraseChips from './recovery-phrase-chips';
+
+const QUIZ_WORDS_COUNT = 3;
+
+const generateQuizWords = (secretRecoveryPhrase) => {
+  const randomIndices = new Set();
+  const srpLength = secretRecoveryPhrase.length;
+
+  while (randomIndices.size < QUIZ_WORDS_COUNT) {
+    const randomIndex = Math.floor(Math.random() * srpLength);
+    randomIndices.add(randomIndex);
+  }
+
+  const quizWords = Array.from(randomIndices).map((index) => {
+    return {
+      index,
+      word: secretRecoveryPhrase[index],
+    };
+  });
+
+  return quizWords;
+};
 
 export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
   const history = useHistory();
   const t = useI18nContext();
   const dispatch = useDispatch();
-  const splitSecretRecoveryPhrase = secretRecoveryPhrase.split(' ');
-  const indicesToCheck = [2, 3, 7];
-  const [matching, setMatching] = useState(false);
   const trackEvent = useContext(MetaMetricsContext);
-  const [completedQuizWords, setCompletedQuizWords] = useState(false);
+
+  const splitSecretRecoveryPhrase = secretRecoveryPhrase.split(' ');
+
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [matching, setMatching] = useState(false);
+  const [quizWords, setQuizWords] = useState(
+    generateQuizWords(splitSecretRecoveryPhrase),
+  );
+  const [answerSrp, setAnswerSrp] = useState('');
 
-  // Removes seed phrase words from chips corresponding to the
-  // indicesToCheck so that user has to complete the phrase and confirm
-  // they have saved it.
-  const initializePhraseElements = () => {
-    const phraseElements = { ...splitSecretRecoveryPhrase };
-    indicesToCheck.forEach((i) => {
-      phraseElements[i] = '';
-    });
-    return phraseElements;
+  const resetQuizWords = () => {
+    const newQuizWords = generateQuizWords(splitSecretRecoveryPhrase);
+    setQuizWords(newQuizWords);
   };
-  const [phraseElements, setPhraseElements] = useState(
-    initializePhraseElements(),
-  );
 
-  const validateQuizWords = useMemo(
-    () =>
-      debounce((elements) => {
-        const quizWords = Object.values(elements).filter(
-          (value) => value !== '',
-        );
-        const srpLength = secretRecoveryPhrase.split(' ').length;
-        setCompletedQuizWords(quizWords.length === srpLength);
-      }, 500),
-    [setCompletedQuizWords, secretRecoveryPhrase],
-  );
+  const handleQuizInput = (inputValue) => {
+    const isAnswered = inputValue.every((answer) => answer.word !== '');
+    if (isAnswered) {
+      const copySplitSrp = [...splitSecretRecoveryPhrase];
+      inputValue.forEach((answer) => {
+        copySplitSrp[answer.index] = answer.word;
+      });
+      setAnswerSrp(copySplitSrp.join(' '));
+    } else {
+      setAnswerSrp('');
+    }
+  };
 
-  const tryContinue = async () => {
-    const isMatching =
-      Object.values(phraseElements).join(' ') === secretRecoveryPhrase;
+  const tryContinue = () => {
+    const isMatching = answerSrp === secretRecoveryPhrase;
     setMatching(isMatching);
     setShowConfirmModal(true);
   };
@@ -84,11 +99,6 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
     history.push(ONBOARDING_METAMETRICS);
   };
 
-  const handleSetPhraseElements = (values) => {
-    setPhraseElements(values);
-    validateQuizWords(values);
-  };
-
   return (
     <div
       className="recovery-phrase__confirm"
@@ -98,7 +108,10 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
         <ConfirmSrpModal
           isError={!matching}
           onContinue={handleConfirmedPhrase}
-          onClose={() => setShowConfirmModal(false)}
+          onClose={() => {
+            resetQuizWords();
+            setShowConfirmModal(false);
+          }}
         />
       )}
       <Box
@@ -133,10 +146,9 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
       </Box>
       <RecoveryPhraseChips
         secretRecoveryPhrase={splitSecretRecoveryPhrase}
+        quizWords={quizWords}
         confirmPhase
-        setInputValue={handleSetPhraseElements}
-        inputValue={phraseElements}
-        indicesToCheck={indicesToCheck}
+        setInputValue={handleQuizInput}
       />
       <div className="recovery-phrase__footer--button">
         <Button
@@ -145,8 +157,8 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
           data-testid="recovery-phrase-confirm"
           size={ButtonSize.Large}
           className="recovery-phrase__footer__confirm--button"
-          onClick={tryContinue}
-          disabled={!completedQuizWords}
+          onClick={() => tryContinue()}
+          disabled={!answerSrp}
         >
           {t('continue')}
         </Button>

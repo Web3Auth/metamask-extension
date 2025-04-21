@@ -4537,7 +4537,7 @@
     "message": "If you have a mobile device where you’re already logged in, you can reset your password there."
   },
   "resetPasswordStep1": {
-    "message": "Open MetaMask mobile app and go to $1.",
+    "message": "Open MetaMask mobile app and go to $1",
     "description": "$1 is bold Settings > Security and passwords."
   },
   "resetPasswordStep1Settings": {
