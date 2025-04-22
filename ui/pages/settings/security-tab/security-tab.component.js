@@ -10,6 +10,7 @@ import {
 import { ENVIRONMENT_TYPE_POPUP } from '../../../../shared/constants/app';
 import {
   MetaMetricsEventCategory,
+  MetaMetricsEventKeyType,
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
 import { IPFS_DEFAULT_GATEWAY_URL } from '../../../../shared/constants/network';
@@ -32,6 +33,7 @@ import {
   BannerAlert,
   BannerAlertSeverity,
   ButtonVariant,
+  ButtonSize,
 } from '../../../components/component-library';
 import TextField from '../../../components/ui/text-field';
 import ToggleButton from '../../../components/ui/toggle-button';
@@ -48,17 +50,17 @@ import {
 } from '../../../helpers/constants/design-system';
 import {
   ADD_POPULAR_CUSTOM_NETWORK,
-  SECURITY_MULTI_SRP_ROUTE,
   SECURITY_PASSWORD_HINT_ROUTE,
   SECURITY_PASSWORD_ROUTE,
+  REVEAL_SRP_LIST_ROUTE,
 } from '../../../helpers/constants/routes';
 import {
   getNumberOfSettingRoutesInTab,
   handleSettingsRefs,
 } from '../../../helpers/utils/settings-search';
 
-import IncomingTransactionToggle from '../../../components/app/incoming-trasaction-toggle/incoming-transaction-toggle';
 import { updateDataDeletionTaskStatus } from '../../../store/actions';
+import SRPQuiz from '../../../components/app/srp-quiz-modal';
 import MetametricsToggle from './metametrics-toggle';
 import ProfileSyncToggle from './profile-sync-toggle';
 import DeleteMetametricsDataButton from './delete-metametrics-data-button';
@@ -82,9 +84,6 @@ export default class SecurityTab extends PureComponent {
     setDataCollectionForMarketing: PropTypes.func.isRequired,
     participateInMetaMetrics: PropTypes.bool.isRequired,
     setParticipateInMetaMetrics: PropTypes.func.isRequired,
-    incomingTransactionsPreferences: PropTypes.object.isRequired,
-    networkConfigurations: PropTypes.object.isRequired,
-    setIncomingTransactionsPreferences: PropTypes.func.isRequired,
     setUsePhishDetect: PropTypes.func.isRequired,
     usePhishDetect: PropTypes.bool.isRequired,
     setUse4ByteResolution: PropTypes.func.isRequired,
@@ -110,17 +109,20 @@ export default class SecurityTab extends PureComponent {
     petnamesEnabled: PropTypes.bool.isRequired,
     securityAlertsEnabled: PropTypes.bool,
     useExternalServices: PropTypes.bool,
-    toggleExternalServices: PropTypes.func.isRequired,
+    toggleExternalServices: PropTypes.func,
     setSecurityAlertsEnabled: PropTypes.func,
     metaMetricsDataDeletionId: PropTypes.string,
     isSecuritySrpPage: PropTypes.bool,
     isSecurityPasswordPage: PropTypes.bool,
     isSecurityPasswordHintPage: PropTypes.bool,
+    hdEntropyIndex: PropTypes.number,
+    hasMultipleHdKeyrings: PropTypes.bool,
   };
 
   state = {
     ipfsGateway: this.props.ipfsGateway || IPFS_DEFAULT_GATEWAY_URL,
     ipfsGatewayError: '',
+    srpQuizModalVisible: false,
     showDataCollectionDisclaimer: false,
     ipfsToggle: this.props.ipfsGateway.length > 0,
   };
@@ -171,63 +173,9 @@ export default class SecurityTab extends PureComponent {
     toggleMethod(!value);
   }
 
-  // hideSrpQuizModal = () => this.setState({ srpQuizModalVisible: false });
-
-  // TODO: check if we need to keep this on normal srp login
-  // renderSeedWords() {
-  //   const { t } = this.context;
-
-  //   return (
-  //     <>
-  //       <div
-  //         ref={this.settingsRefs[1]}
-  //         className="settings-page__security-tab-sub-header"
-  //       >
-  //         {t('secretRecoveryPhrase')}
-  //       </div>
-  //       <div className="settings-page__content-padded">
-  //         <Button
-  //           data-testid="reveal-seed-words"
-  //           type="danger"
-  //           size={ButtonSize.Lg}
-  //           onClick={(event) => {
-  //             event.preventDefault();
-  //             this.context.trackEvent({
-  //               category: MetaMetricsEventCategory.Settings,
-  //               event: MetaMetricsEventName.KeyExportSelected,
-  //               properties: {
-  //                 key_type: MetaMetricsEventKeyType.Srp,
-  //                 location: 'Settings',
-  //               },
-  //             });
-  //             this.context.trackEvent({
-  //               category: MetaMetricsEventCategory.Settings,
-  //               event: MetaMetricsEventName.SrpRevealClicked,
-  //               properties: {
-  //                 key_type: MetaMetricsEventKeyType.Srp,
-  //                 location: 'Settings',
-  //               },
-  //             });
-  //             this.setState({ srpQuizModalVisible: true });
-  //           }}
-  //         >
-  //           {t('revealSeedWords')}
-  //         </Button>
-  //         {this.state.srpQuizModalVisible && (
-  //           <SRPQuiz
-  //             isOpen={this.state.srpQuizModalVisible}
-  //             onClose={this.hideSrpQuizModal}
-  //           />
-  //         )}
-  //       </div>
-  //     </>
-  //   );
-  // }
-
-  // TODO: if using social login use this
   renderSeedWords() {
     const { t } = this.context;
-    const { history } = this.props;
+    const { history, hasMultipleHdKeyrings } = this.props;
 
     return (
       <>
@@ -259,15 +207,45 @@ export default class SecurityTab extends PureComponent {
             severity={BannerAlertSeverity.Success}
           />
           <Button
-            width={BlockSize.Full}
-            marginTop={4}
-            block
-            onClick={() => {
-              history.push(SECURITY_MULTI_SRP_ROUTE);
+            data-testid="reveal-seed-words"
+            type="danger"
+            size={ButtonSize.Lg}
+            onClick={(event) => {
+              event.preventDefault();
+              this.context.trackEvent({
+                category: MetaMetricsEventCategory.Settings,
+                event: MetaMetricsEventName.KeyExportSelected,
+                properties: {
+                  key_type: MetaMetricsEventKeyType.Srp,
+                  location: 'Settings',
+                  hd_entropy_index: this.props.hdEntropyIndex,
+                },
+              });
+              this.context.trackEvent({
+                category: MetaMetricsEventCategory.Settings,
+                event: MetaMetricsEventName.SrpRevealClicked,
+                properties: {
+                  key_type: MetaMetricsEventKeyType.Srp,
+                  location: 'Settings',
+                },
+              });
+              if (hasMultipleHdKeyrings) {
+                history.push({
+                  pathname: REVEAL_SRP_LIST_ROUTE,
+                });
+                return;
+              }
+              this.setState({ srpQuizModalVisible: true });
             }}
           >
             {t('securitySrpProtect')}
           </Button>
+          {this.state.srpQuizModalVisible && (
+            <SRPQuiz
+              isOpen={this.state.srpQuizModalVisible}
+              onClose={this.hideSrpQuizModal}
+            />
+          )}
         </div>
       </>
     );
@@ -363,23 +341,6 @@ export default class SecurityTab extends PureComponent {
           </Box>
         </div>
       </>
-    );
-  }
-
-  renderIncomingTransactionsOptIn() {
-    const {
-      incomingTransactionsPreferences,
-      networkConfigurations,
-      setIncomingTransactionsPreferences,
-    } = this.props;
-
-    return (
-      <IncomingTransactionToggle
-        wrapperRef={this.settingsRefs[2]}
-        networkConfigurations={networkConfigurations}
-        setIncomingTransactionsPreferences={setIncomingTransactionsPreferences}
-        incomingTransactionsPreferences={incomingTransactionsPreferences}
-      />
     );
   }
 
@@ -1308,7 +1269,6 @@ export default class SecurityTab extends PureComponent {
         </span>
         <div className="settings-page__content-padded">
           {this.renderCurrencyRateCheckToggle()}
-          {this.renderIncomingTransactionsOptIn()}
           {this.renderSimulationsToggle()}
         </div>
 

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useContext, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import {
   AlignItems,
@@ -32,23 +32,25 @@ import {
 } from '../../../../shared/constants/metametrics';
 import { setSeedPhraseBackedUp } from '../../../store/actions';
 import { ONBOARDING_METAMETRICS } from '../../../helpers/constants/routes';
+import { getHDEntropyIndex } from '../../../selectors/selectors';
 
-export default function SkipSRPBackup({ onClose, secureYourWallet }) {
+export default function SkipSRPBackup({ secureYourWallet }) {
   const [checked, setChecked] = useState(false);
   const t = useI18nContext();
   const dispatch = useDispatch();
+  const hdEntropyIndex = useSelector(getHDEntropyIndex);
   const trackEvent = useContext(MetaMetricsContext);
   const history = useHistory();
+
   return (
     <Modal
       isOpen
-      onClose={onClose}
       className="skip-srp-backup-modal"
       data-testid="skip-srp-backup-modal"
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader onClose={onClose}>
+        <ModalHeader>
           <Box textAlign={TextAlign.Center}>
             <Icon
               name={IconName.Danger}
@@ -90,6 +92,9 @@ export default function SkipSRPBackup({ onClose, secureYourWallet }) {
                   category: MetaMetricsEventCategory.Onboarding,
                   event:
                     MetaMetricsEventName.OnboardingWalletSecuritySkipCanceled,
+                  properties: {
+                    hd_entropy_index: hdEntropyIndex,
+                  },
                 });
                 secureYourWallet();
               }}
@@ -106,6 +111,9 @@ export default function SkipSRPBackup({ onClose, secureYourWallet }) {
                   category: MetaMetricsEventCategory.Onboarding,
                   event:
                     MetaMetricsEventName.OnboardingWalletSecuritySkipConfirmed,
+                  properties: {
+                    hd_entropy_index: hdEntropyIndex,
+                  },
                 });
                 history.push(ONBOARDING_METAMETRICS);
               }}
@@ -122,6 +130,5 @@ export default function SkipSRPBackup({ onClose, secureYourWallet }) {
 }
 
 SkipSRPBackup.propTypes = {
-  onClose: PropTypes.func.isRequired,
   secureYourWallet: PropTypes.func.isRequired,
 };

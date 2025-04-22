@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import {
   TextAlign,
@@ -32,12 +33,16 @@ import {
   // ButtonIconSize,
 } from '../../../components/component-library';
 import SRPDetailsModal from '../../../components/app/srp-details-modal';
+import { getHDEntropyIndex } from '../../../selectors/selectors';
+// TODO: Fix this eslint error
+// eslint-disable-next-line import/namespace, import/default, import/no-named-as-default
 import SkipSRPBackup from './skip-srp-backup-popover';
 
 export default function SecureYourWallet() {
   const history = useHistory();
   const t = useI18nContext();
   const { search } = useLocation();
+  const hdEntropyIndex = useSelector(getHDEntropyIndex);
   const [showSkipSRPBackupPopover, setShowSkipSRPBackupPopover] =
     useState(false);
   const [showSrpDetailsModal, setShowSrpDetailsModal] = useState(false);
@@ -52,6 +57,9 @@ export default function SecureYourWallet() {
     trackEvent({
       category: MetaMetricsEventCategory.Onboarding,
       event: MetaMetricsEventName.OnboardingWalletSecurityStarted,
+      properties: {
+        hd_entropy_index: hdEntropyIndex,
+      },
     });
     history.push(`${ONBOARDING_REVIEW_SRP_ROUTE}${isFromReminderParam}`);
   };
@@ -60,6 +68,9 @@ export default function SecureYourWallet() {
     trackEvent({
       category: MetaMetricsEventCategory.Onboarding,
       event: MetaMetricsEventName.OnboardingWalletSecuritySkipInitiated,
+      properties: {
+        hd_entropy_index: hdEntropyIndex,
+      },
     });
     setShowSkipSRPBackupPopover(true);
   };
