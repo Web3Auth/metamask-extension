@@ -6378,6 +6378,9 @@
   "termsOfService": {
     "message": "Terms of service"
   },
+  "termsOfUseAgree": {
+    "message": "Agree"
+  },
   "termsOfUseAgreeText": {
     "message": " I agree to the Terms of Use, which apply to my use of MetaMask and all of its features"
   },
