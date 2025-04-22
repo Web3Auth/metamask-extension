@@ -1,8 +1,9 @@
 import { Web3AuthNetwork } from '@metamask/seedless-onboarding-controller';
+import { AuthConnection } from '../../../../shared/constants/oauth';
 import OAuthController, {
   getDefaultOAuthControllerState,
 } from './oauth-controller';
-import { OAuthControllerMessenger, AuthConnection } from './types';
+import { OAuthControllerMessenger } from './types';
 import { createLoginHandler } from './login-handler-factory';
 
 function buildOAuthControllerMessenger() {

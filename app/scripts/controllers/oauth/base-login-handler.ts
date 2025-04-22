@@ -1,9 +1,5 @@
-import {
-  AuthConnection,
-  LoginHandlerOptions,
-  AuthTokenResponse,
-  OAuthUserInfo,
-} from './types';
+import { AuthConnection } from '../../../../shared/constants/oauth';
+import { LoginHandlerOptions, AuthTokenResponse, OAuthUserInfo } from './types';
 
 export abstract class BaseLoginHandler {
   public options: LoginHandlerOptions;

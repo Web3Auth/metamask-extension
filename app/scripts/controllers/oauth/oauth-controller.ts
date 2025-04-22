@@ -1,5 +1,6 @@
 import { BaseController, StateMetadata } from '@metamask/base-controller';
 import log from 'loglevel';
+import { AuthConnection } from '../../../../shared/constants/oauth';
 import {
   controllerName,
   OAuthControllerMessenger,
@@ -7,7 +8,6 @@ import {
   OAuthControllerState,
   OAuthLoginEnv,
   OAuthLoginResult,
-  AuthConnection,
 } from './types';
 import { createLoginHandler } from './login-handler-factory';
 import { BaseLoginHandler } from './base-login-handler';

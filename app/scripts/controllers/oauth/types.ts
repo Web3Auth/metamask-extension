@@ -4,13 +4,9 @@ import {
   RestrictedMessenger,
 } from '@metamask/base-controller';
 import { Web3AuthNetwork } from '@metamask/seedless-onboarding-controller';
+import { AuthConnection } from '../../../../shared/constants/oauth';
 
 export const controllerName = 'OAuthController';
-
-export enum AuthConnection {
-  Google = 'google',
-  Apple = 'apple',
-}
 
 export type LoginHandlerOptions = {
   oAuthClientId: string;

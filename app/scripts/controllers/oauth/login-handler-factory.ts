@@ -1,6 +1,7 @@
+import { AuthConnection } from '../../../../shared/constants/oauth';
 import { AppleLoginHandler } from './apple-login-handler';
 import { GoogleLoginHandler } from './google-login-handler';
-import { OAuthLoginEnv, AuthConnection } from './types';
+import { OAuthLoginEnv } from './types';
 
 export function createLoginHandler(
   provider: AuthConnection,

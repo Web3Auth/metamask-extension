@@ -1,5 +1,6 @@
+import { AuthConnection } from '../../../../shared/constants/oauth';
 import { BaseLoginHandler } from './base-login-handler';
-import { AuthConnection, OAuthUserInfo } from './types';
+import { OAuthUserInfo } from './types';
 
 export class GoogleLoginHandler extends BaseLoginHandler {
   // This prompt value is used to force the user to select an account before OAuth login

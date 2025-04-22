@@ -1,5 +1,6 @@
+import { AuthConnection } from '../../../../shared/constants/oauth';
 import { BaseLoginHandler } from './base-login-handler';
-import { LoginHandlerOptions, AuthConnection, OAuthUserInfo } from './types';
+import { LoginHandlerOptions, OAuthUserInfo } from './types';
 
 export class AppleLoginHandler extends BaseLoginHandler {
   public readonly PROVIDER = 'apple';
