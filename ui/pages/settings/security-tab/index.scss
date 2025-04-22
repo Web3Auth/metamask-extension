@@ -16,3 +16,15 @@
   }
 }
 
+.change-password {
+  padding: 1rem;
+  &__spinner {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.password-hint {
+  padding: 1rem;
+}

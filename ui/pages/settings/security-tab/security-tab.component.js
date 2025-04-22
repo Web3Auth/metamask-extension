@@ -1253,16 +1253,12 @@ export default class SecurityTab extends PureComponent {
     } = this.props;
     const { showDataCollectionDisclaimer } = this.state;
 
-    if (isSecuritySrpPage) {
-      return <ProtectWallet />;
-    }
-
-    if (isSecurityPasswordPage) {
-      return <ChangePassword />;
-    }
-
     if (isSecurityPasswordHintPage) {
       return <PasswordHint />;
+    } else if (isSecurityPasswordPage) {
+      return <ChangePassword />;
+    } else if (isSecuritySrpPage) {
+      return <ProtectWallet />;
     }
 
     return (

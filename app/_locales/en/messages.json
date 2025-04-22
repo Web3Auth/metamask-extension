@@ -1355,6 +1355,12 @@
   "createPassword": {
     "message": "Create password"
   },
+  "createPasswordCreating": {
+    "message": "Creating password..."
+  },
+  "createPasswordCreatingNote": {
+    "message": "This shouldn't take long"
+  },
   "createSnapAccountDescription": {
     "message": "$1 wants to add a new account to MetaMask."
   },
@@ -3838,10 +3844,10 @@
     "message": "Password hint"
   },
   "passwordHintDescription": {
-    "message": "Leave yourself a hint to help remember where your Secret Recovery Phrase is stored. This hint is stored on your device, and won’t be shared."
+    "message": "Leave yourself a hint to help remember your password. This hint won’t be shared."
   },
   "passwordHintLeaveHint": {
-    "message": "Leave yourself a hint to help remember where your Secret Recovery Phrase is stored."
+    "message": "Remember: If you lose your password, you won’t be able to use your wallet."
   },
   "passwordHintError": {
     "message": "You can’t use the password as a hint"

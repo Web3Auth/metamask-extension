@@ -2,7 +2,6 @@ import React from 'react';
 import {
   AvatarAccount,
   AvatarAccountSize,
-  AvatarIcon,
   Box,
   ButtonIcon,
   ButtonIconSize,
@@ -20,6 +19,7 @@ import {
   TextVariant,
 } from '../../../../helpers/constants/design-system';
 import { shortenAddress } from '../../../../helpers/utils/util';
+// eslint-disable-next-line import/no-restricted-paths
 import { normalizeSafeAddress } from '../../../../../app/scripts/lib/multichain/address';
 
 const ProtectWallet = () => {
@@ -98,7 +98,13 @@ const ProtectWallet = () => {
             </Box>
           </Box>
         </Box>
-        <Box className="protect-wallet__container-body" padding={4}>
+        <Box
+          className="protect-wallet__container-body"
+          padding={4}
+          gap={2}
+          display={Display.Flex}
+          flexDirection={FlexDirection.Column}
+        >
           <Box
             display={Display.Flex}
             justifyContent={JustifyContent.spaceBetween}
