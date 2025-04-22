@@ -1,3 +1,4 @@
+/* eslint-disable sort-keys */
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
@@ -34,6 +35,9 @@ import {
   ADD_NETWORK_ROUTE,
   ADD_POPULAR_CUSTOM_NETWORK,
   SNAP_SETTINGS_ROUTE,
+  SECURITY_MULTI_SRP_ROUTE,
+  SECURITY_PASSWORD_ROUTE,
+  SECURITY_PASSWORD_HINT_ROUTE,
 } from '../../helpers/constants/routes';
 import { getProviderConfig } from '../../../shared/modules/selectors/networks';
 import { toggleNetworkMenu } from '../../store/actions';
@@ -56,6 +60,9 @@ const ROUTES_TO_I18N_KEYS = {
   [NETWORKS_FORM_ROUTE]: 'networks',
   [NETWORKS_ROUTE]: 'networks',
   [SECURITY_ROUTE]: 'securityAndPrivacy',
+  [SECURITY_MULTI_SRP_ROUTE]: 'securityMultiSrp',
+  [SECURITY_PASSWORD_ROUTE]: 'securityPassword',
+  [SECURITY_PASSWORD_HINT_ROUTE]: 'securityPasswordHint',
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -83,6 +90,7 @@ const mapStateToProps = (state, ownProps) => {
   const isSnapSettingsRoute = Boolean(pathname.match(SNAP_SETTINGS_ROUTE));
 
   const isPopup = getEnvironmentType() === ENVIRONMENT_TYPE_POPUP;
+  console.log('pathname', pathname);
   const pathnameI18nKey = ROUTES_TO_I18N_KEYS[pathname];
 
   let backRoute = SETTINGS_ROUTE;

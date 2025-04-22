@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { SeedlessOnboardingControllerError } from '@metamask/seedless-onboarding-controller';
 import {
@@ -55,6 +55,33 @@ const formatTimeToUnlock = (timeInSeconds) => {
     .padStart(2, '0')}s`;
 };
 
+function Counter({ remainingTime, unlock }) {
+  const [time, setTime] = useState(remainingTime);
+  const [timeDisplay, setTimeDisplay] = useState(
+    formatTimeToUnlock(remainingTime),
+  );
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newTime = time - 1;
+      if (newTime < 0) {
+        unlock();
+      } else {
+        setTime(newTime);
+        setTimeDisplay(formatTimeToUnlock(newTime));
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [time, unlock]);
+
+  return <span>{timeDisplay}</span>;
+}
+
+Counter.propTypes = {
+  remainingTime: PropTypes.number.isRequired,
+  unlock: PropTypes.func.isRequired,
+};
+
 export default class UnlockPage extends Component {
   static contextTypes = {
     trackEvent: PropTypes.func,
@@ -90,6 +117,7 @@ export default class UnlockPage extends Component {
     showHint: false,
     showResetPasswordModal: false,
     showEraseWalletModal: false,
+    isLocked: false,
   };
 
   submitting = false;
@@ -145,6 +173,7 @@ export default class UnlockPage extends Component {
     const { message, data } = error;
     let finalErrorMessage = message;
     let errorReason;
+    let isLocked = false;
 
     switch (message) {
       case 'Incorrect password':
@@ -153,12 +182,19 @@ export default class UnlockPage extends Component {
         errorReason = 'incorrect_password';
         break;
       case SeedlessOnboardingControllerError.TooManyLoginAttempts:
+        isLocked = true;
+
+        // TODO: check if we need to remove this
         if (data.isPermanent) {
           finalErrorMessage = t('unlockPageTooManyFailedAttemptsPermanent');
         } else {
-          const formattedTimeToUnlock = formatTimeToUnlock(data.remainingTime);
+          const initialRemainingTime = data.remainingTime;
           finalErrorMessage = t('unlockPageTooManyFailedAttempts', [
-            formattedTimeToUnlock,
+            <Counter
+              key="unlockPageTooManyFailedAttempts"
+              remainingTime={initialRemainingTime}
+              unlock={() => this.setState({ isLocked: false, error: '' })}
+            />,
           ]);
         }
         errorReason = 'too_many_login_attempts';
@@ -182,7 +218,7 @@ export default class UnlockPage extends Component {
         },
       });
     }
-    this.setState({ error: finalErrorMessage });
+    this.setState({ error: finalErrorMessage, isLocked });
     this.submitting = false;
   };
 
@@ -254,6 +290,7 @@ export default class UnlockPage extends Component {
       showHint,
       showResetPasswordModal,
       showEraseWalletModal,
+      isLocked,
     } = this.state;
     const { t } = this.context;
     const { passwordHint } = this.props;
@@ -333,6 +370,7 @@ export default class UnlockPage extends Component {
               helpText={this.renderHelpText()}
               autoComplete="current-password"
               autoFocus
+              disabled={isLocked}
               width={BlockSize.Full}
               textFieldProps={{
                 borderRadius: BorderRadius.LG,
@@ -352,7 +390,7 @@ export default class UnlockPage extends Component {
               block
               type="submit"
               data-testid="unlock-submit"
-              disabled={!this.state.password}
+              disabled={!this.state.password || isLocked}
               onClick={this.handleSubmit}
             >
               {this.context.t('unlock')}
