@@ -17,6 +17,14 @@ import { BaseLoginHandler } from './base-login-handler';
 export const getDefaultOAuthControllerState =
   (): Partial<OAuthControllerState> => ({});
 
+/**
+ * The OAuth Controller is responsible for handling the Social (OAuth) login process.
+ *
+ * It will initiate the webAuthFlow to get the authentication code from the social login provider.
+ * Then it will use the authentication code to get the Jwt Token from the Web3Auth Authentication Server.
+ *
+ * The JWT Token will be used to authenticate with the Seedless Onboarding Services.
+ */
 export default class OAuthController extends BaseController<
   typeof controllerName,
   OAuthControllerState,
@@ -24,33 +32,40 @@ export default class OAuthController extends BaseController<
 > {
   #env: OAuthLoginEnv;
 
-  #redirectUri: string;
+  /**
+   * The redirect URI for the OAuth login.
+   */
+  readonly #redirectUri = chrome.identity.getRedirectURL();
 
-  readonly #OAuthAud = 'metamask';
-
-  constructor({ state, messenger, env }: OAuthControllerOptions) {
+  constructor({ messenger, env }: OAuthControllerOptions) {
     super({
       messenger,
       metadata: {}, // OAuth Controller is stateless and does not need metadata
       name: controllerName,
-      state: {
-        ...getDefaultOAuthControllerState(),
-        ...state,
-      },
+      state: {}, // OAuth Controller is stateless and does not need any state
     });
 
     this.#env = env;
-
-    this.#redirectUri = chrome.identity.getRedirectURL();
   }
 
-  async startOAuthLogin(provider: AuthConnection): Promise<OAuthLoginResult> {
+  /**
+   * Start the OAuth login process for the given social login type.
+   *
+   * @param authConnection - The social login type to login with.
+   * @returns The login result.
+   */
+  async startOAuthLogin(
+    authConnection: AuthConnection,
+  ): Promise<OAuthLoginResult> {
+    // create the login handler for the given social login type
+    // this is to get the Jwt Token in the exchange for the Authorization Code
     const loginHandler = createLoginHandler(
-      provider,
+      authConnection,
       this.#redirectUri,
       this.#env,
     );
 
+    // launch the web auth flow to get the Authorization Code from the social login provider
     const redirectUrl = await chrome.identity.launchWebAuthFlow({
       interactive: true,
       url: loginHandler.getAuthUrl(),
@@ -61,6 +76,7 @@ export default class OAuthController extends BaseController<
       throw new Error('No redirect URL found');
     }
 
+    // handle the OAuth response from the social login provider and get the Jwt Token in exchange
     const loginResult = await this.#handleOAuthResponse(
       loginHandler,
       redirectUrl,
@@ -68,6 +84,17 @@ export default class OAuthController extends BaseController<
     return loginResult;
   }
 
+  /**
+   * Handle the OAuth response from the social login provider and get the Jwt Token in exchange.
+   *
+   * The Social Login Auth Server returned the Authorization Code in the redirect URL.
+   * This function will extract the Authorization Code from the redirect URL,
+   * use it to get the Jwt Token from the Web3Auth Authentication Server.
+   *
+   * @param loginHandler - The login handler to use.
+   * @param redirectUrl - The redirect URL from webAuthFlow which includes the Authorization Code.
+   * @returns The login result.
+   */
   async #handleOAuthResponse(
     loginHandler: BaseLoginHandler,
     redirectUrl: string,
@@ -80,13 +107,22 @@ export default class OAuthController extends BaseController<
     return res;
   }
 
+  /**
+   * Get the Jwt Token from the Web3Auth Authentication Server.
+   *
+   * @param loginHandler - The login handler to use.
+   * @param authCode - The Authorization Code from the social login provider.
+   * @returns The login result.
+   */
   async #getAuthIdToken(
     loginHandler: BaseLoginHandler,
     authCode: string,
   ): Promise<OAuthLoginResult> {
     const { authConnectionId, groupedAuthConnectionId } = this.#env;
+    const audience = 'metamask';
+
     const authTokenData = await loginHandler.getAuthIdToken(authCode);
-    const idToken = authTokenData.jwt_tokens[this.#OAuthAud];
+    const idToken = authTokenData.jwt_tokens[audience];
     const userInfo = await loginHandler.getUserInfo(idToken);
 
     return {

@@ -41,14 +41,43 @@ export abstract class BaseLoginHandler {
 
   abstract get scope(): string[];
 
+  /**
+   * Generate the Auth URL to initiate the OAuth login to get the Authorization Code.
+   *
+   * @returns The URL to initiate the OAuth login.
+   */
   abstract getAuthUrl(): string;
 
+  /**
+   * Get the JWT Token from the Web3Auth Authentication Server.
+   *
+   * @param code - The authorization code from the social login provider.
+   * @returns The JWT Token from the Web3Auth Authentication Server.
+   */
   abstract getAuthIdToken(code: string): Promise<AuthTokenResponse>;
 
+  /**
+   * Generate the request body data to get the JWT Token from the Web3Auth Authentication Server.
+   *
+   * @param code - The authorization code from the social login provider.
+   * @returns The request data for the Web3Auth Authentication Server.
+   */
   abstract generateAuthTokenRequestData(code: string): string;
 
+  /**
+   * Get the user's information from the JWT Token.
+   *
+   * @param idToken - The JWT Token from the Web3Auth Authentication Server.
+   * @returns The user's information from the JWT Token.
+   */
   abstract getUserInfo(idToken: string): Promise<OAuthUserInfo>;
 
+  /**
+   * Make a request to the Web3Auth Authentication Server to get the JWT Token.
+   *
+   * @param requestData - The request data for the Web3Auth Authentication Server.
+   * @returns The JWT Token from the Web3Auth Authentication Server.
+   */
   protected async requestAuthToken(
     requestData: string,
   ): Promise<AuthTokenResponse> {
@@ -67,6 +96,12 @@ export abstract class BaseLoginHandler {
     return data;
   }
 
+  /**
+   * Decode the JWT Token to get the user's information.
+   *
+   * @param idToken - The JWT Token from the Web3Auth Authentication Server.
+   * @returns The user's information from the JWT Token.
+   */
   protected decodeIdToken(idToken: string): string {
     const [, idTokenPayload] = idToken.split('.');
     const base64String = padString(idTokenPayload)

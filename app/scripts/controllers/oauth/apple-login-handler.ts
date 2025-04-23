@@ -27,6 +27,11 @@ export class AppleLoginHandler extends BaseLoginHandler {
     return this.#scope;
   }
 
+  /**
+   * Generate the Auth URL to initiate the OAuth login to get the Authorization Code from Apple ID server.
+   *
+   * @returns The URL to initiate the OAuth login.
+   */
   getAuthUrl(): string {
     const authUrl = new URL(this.OAUTH_SERVER_URL);
     authUrl.searchParams.set('client_id', this.options.oAuthClientId);
@@ -39,12 +44,24 @@ export class AppleLoginHandler extends BaseLoginHandler {
     return authUrl.toString();
   }
 
+  /**
+   * Get the JWT Token from the Web3Auth Authentication Server.
+   *
+   * @param code - The Authorization Code from the social login provider.
+   * @returns The JWT Token from the Web3Auth Authentication Server.
+   */
   async getAuthIdToken(code: string) {
     const requestData = this.generateAuthTokenRequestData(code);
     const res = await this.requestAuthToken(requestData);
     return res;
   }
 
+  /**
+   * Generate the request body data to get the JWT Token from the Web3Auth Authentication Server.
+   *
+   * @param code - The Authorization Code from the social login provider.
+   * @returns The request data for the Web3Auth Authentication Server.
+   */
   generateAuthTokenRequestData(code: string) {
     const { serverRedirectUri, web3AuthNetwork } = this.options;
     const requestData = {
@@ -58,6 +75,12 @@ export class AppleLoginHandler extends BaseLoginHandler {
     return JSON.stringify(requestData);
   }
 
+  /**
+   * Get the user's information from the JWT Token.
+   *
+   * @param idToken - The JWT Token from the Web3Auth Authentication Server.
+   * @returns The user's information from the JWT Token.
+   */
   async getUserInfo(idToken: string): Promise<OAuthUserInfo> {
     const jsonPayload = this.decodeIdToken(idToken);
     const payload = JSON.parse(jsonPayload);

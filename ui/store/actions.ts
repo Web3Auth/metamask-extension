@@ -3352,6 +3352,12 @@ export function resetOnboardingAction() {
   };
 }
 
+/**
+ * Starts the social login process for the given Social Login type.
+ *
+ * @param authConnection - The authentication connection to use (apple | google).
+ * @returns The social login result.
+ */
 export function startSocialLogin(
   authConnection: AuthConnection,
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {

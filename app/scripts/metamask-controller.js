@@ -3540,8 +3540,8 @@ export default class MetamaskController extends EventEmitter {
       ///: END:ONLY_INCLUDE_IF
 
       // oauth controller
-      startSocialLogin: this.onboardingController.startSocialLogin.bind(
-        this.onboardingController,
+      startSocialLogin: this.oauthController.startOAuthLogin.bind(
+        this.oauthController,
       ),
 
       // hardware wallets
@@ -4676,19 +4676,6 @@ export default class MetamaskController extends EventEmitter {
     } catch (e) {
       return null;
     }
-  }
-
-  /**
-   * Starts the social login process.
-   *
-   * @param {string} authConnection - The authentication connection to use (apple | google).
-   * @returns {Promise<object>} The social login result.
-   */
-  async startSocialLogin(authConnection) {
-    const socialLoginResult = await this.oauthController.startOAuthLogin(
-      authConnection,
-    );
-    return socialLoginResult;
   }
 
   //=============================================================================
