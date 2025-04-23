@@ -4,10 +4,10 @@ import { LoginHandlerOptions, AuthTokenResponse, OAuthUserInfo } from './types';
 /**
  * Pads a string to a length of 4 characters
  *
- * @param input - The string to pad
+ * @param input - The base64 encoded string to pad
  * @returns The padded string
  */
-function padString(input: string) {
+function padBase64String(input: string) {
   const segmentLength = 4;
   const stringLength = input.length;
   const diff = stringLength % segmentLength;
@@ -104,7 +104,7 @@ export abstract class BaseLoginHandler {
    */
   protected decodeIdToken(idToken: string): string {
     const [, idTokenPayload] = idToken.split('.');
-    const base64String = padString(idTokenPayload)
+    const base64String = padBase64String(idTokenPayload)
       .replace(/-/u, '+')
       .replace(/_/u, '/');
     // Using buffer here instead of atob because userinfo can contain emojis which are not supported by atob

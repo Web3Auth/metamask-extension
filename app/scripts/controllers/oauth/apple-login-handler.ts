@@ -1,6 +1,6 @@
 import { AuthConnection } from '@metamask/seedless-onboarding-controller';
 import { BaseLoginHandler } from './base-login-handler';
-import { LoginHandlerOptions, OAuthUserInfo } from './types';
+import { AuthTokenResponse, LoginHandlerOptions, OAuthUserInfo } from './types';
 
 export class AppleLoginHandler extends BaseLoginHandler {
   public readonly OAUTH_SERVER_URL = 'https://appleid.apple.com/auth/authorize';
@@ -50,7 +50,7 @@ export class AppleLoginHandler extends BaseLoginHandler {
    * @param code - The Authorization Code from the social login provider.
    * @returns The JWT Token from the Web3Auth Authentication Server.
    */
-  async getAuthIdToken(code: string) {
+  async getAuthIdToken(code: string): Promise<AuthTokenResponse> {
     const requestData = this.generateAuthTokenRequestData(code);
     const res = await this.requestAuthToken(requestData);
     return res;
@@ -62,7 +62,7 @@ export class AppleLoginHandler extends BaseLoginHandler {
    * @param code - The Authorization Code from the social login provider.
    * @returns The request data for the Web3Auth Authentication Server.
    */
-  generateAuthTokenRequestData(code: string) {
+  generateAuthTokenRequestData(code: string): string {
     const { serverRedirectUri, web3AuthNetwork } = this.options;
     const requestData = {
       code,

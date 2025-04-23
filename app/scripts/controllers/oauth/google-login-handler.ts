@@ -1,6 +1,6 @@
 import { AuthConnection } from '@metamask/seedless-onboarding-controller';
 import { BaseLoginHandler } from './base-login-handler';
-import { OAuthUserInfo } from './types';
+import { AuthTokenResponse, OAuthUserInfo } from './types';
 
 export class GoogleLoginHandler extends BaseLoginHandler {
   // This prompt value is used to force the user to select an account before OAuth login
@@ -42,7 +42,7 @@ export class GoogleLoginHandler extends BaseLoginHandler {
    * @param code - The Authorization Code from the social login provider.
    * @returns The JWT Token from the Web3Auth Authentication Server.
    */
-  async getAuthIdToken(code: string) {
+  async getAuthIdToken(code: string): Promise<AuthTokenResponse> {
     const requestData = this.generateAuthTokenRequestData(code);
     const res = await this.requestAuthToken(requestData);
     return res;
@@ -54,7 +54,7 @@ export class GoogleLoginHandler extends BaseLoginHandler {
    * @param code - The Authorization Code from the social login provider.
    * @returns The request data for the Web3Auth Authentication Server.
    */
-  generateAuthTokenRequestData(code: string) {
+  generateAuthTokenRequestData(code: string): string {
     const { redirectUri, web3AuthNetwork } = this.options;
     const requestData = {
       code,
