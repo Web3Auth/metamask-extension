@@ -1,5 +1,4 @@
 import { BaseController, StateMetadata } from '@metamask/base-controller';
-import log from 'loglevel';
 import { AuthConnection } from '../../../../shared/constants/oauth';
 import {
   controllerName,
@@ -30,7 +29,7 @@ const controllerMetadata: StateMetadata<OAuthControllerState> = {
     persist: true,
     anonymous: true,
   },
-  provider: {
+  authConnection: {
     persist: true,
     anonymous: true,
   },
@@ -80,20 +79,15 @@ export default class OAuthController extends BaseController<
     });
 
     if (!redirectUrl) {
-      console.error('[identity auth redirectUrl is null]');
+      console.error('[identity auth] redirectUrl is null');
       throw new Error('No redirect URL found');
     }
 
-    return new Promise((resolve, reject) => {
-      this.#handleOAuthResponse(loginHandler, redirectUrl)
-        .then((res) => {
-          resolve(res);
-        })
-        .catch((error) => {
-          log.error('[OAuthController] startOAuthLogin error', error);
-          reject(error);
-        });
-    });
+    const loginResult = await this.#handleOAuthResponse(
+      loginHandler,
+      redirectUrl,
+    );
+    return loginResult;
   }
 
   async #handleOAuthResponse(
@@ -117,7 +111,7 @@ export default class OAuthController extends BaseController<
     const userInfo = await loginHandler.getUserInfo(idToken);
 
     this.update((state) => {
-      state.provider = loginHandler.provider;
+      state.authConnection = loginHandler.authConnection;
       state.socialLoginEmail = userInfo.email;
     });
 

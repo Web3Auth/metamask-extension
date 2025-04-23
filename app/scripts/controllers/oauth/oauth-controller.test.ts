@@ -17,17 +17,13 @@ function buildOAuthControllerMessenger() {
 }
 
 const DEFAULT_GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string;
-const DEFAULT_GOOGLE_AUTH_URI = process.env.GOOGLE_AUTH_URI as string;
 const DEFAULT_APPLE_CLIENT_ID = process.env.APPLE_CLIENT_ID as string;
-const DEFAULT_APPLE_AUTH_URI = process.env.APPLE_AUTH_URI as string;
 const OAUTH_AUD = 'metamask';
 
 function getOAuthLoginEnvs() {
   return {
     googleClientId: DEFAULT_GOOGLE_CLIENT_ID,
-    googleAuthUri: DEFAULT_GOOGLE_AUTH_URI,
     appleClientId: DEFAULT_APPLE_CLIENT_ID,
-    appleAuthUri: DEFAULT_APPLE_AUTH_URI,
     authServerUrl: process.env.AUTH_SERVER_URL as string,
     web3AuthNetwork: process.env.WEB3AUTH_NETWORK as Web3AuthNetwork,
   };
@@ -79,7 +75,7 @@ describe('OAuthController', () => {
       interactive: true,
       url: googleLoginHandler.getAuthUrl(),
     });
-    expect(controller.state.provider).toBe(AuthConnection.Google);
+    expect(controller.state.authConnection).toBe(AuthConnection.Google);
   });
 
   it('should start the OAuth login process with `Apple`', async () => {
@@ -117,6 +113,6 @@ describe('OAuthController', () => {
       url: appleLoginHandler.getAuthUrl(),
     });
 
-    expect(controller.state.provider).toBe(AuthConnection.Apple);
+    expect(controller.state.authConnection).toBe(AuthConnection.Apple);
   });
 });

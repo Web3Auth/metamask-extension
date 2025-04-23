@@ -3,7 +3,7 @@ import { BaseLoginHandler } from './base-login-handler';
 import { LoginHandlerOptions, OAuthUserInfo } from './types';
 
 export class AppleLoginHandler extends BaseLoginHandler {
-  public readonly PROVIDER = 'apple';
+  public readonly OAUTH_SERVER_URL = 'https://appleid.apple.com/auth/authorize';
 
   readonly #scope = ['name', 'email'];
 
@@ -19,7 +19,7 @@ export class AppleLoginHandler extends BaseLoginHandler {
     }
   }
 
-  get provider() {
+  get authConnection() {
     return AuthConnection.Apple;
   }
 
@@ -28,12 +28,12 @@ export class AppleLoginHandler extends BaseLoginHandler {
   }
 
   getAuthUrl(): string {
-    const authUrl = new URL(this.options.oAuthServerUrl);
+    const authUrl = new URL(this.OAUTH_SERVER_URL);
     authUrl.searchParams.set('client_id', this.options.oAuthClientId);
     authUrl.searchParams.set('response_type', 'code');
     authUrl.searchParams.set('redirect_uri', this.serverRedirectUri);
     authUrl.searchParams.set('response_mode', 'form_post');
-    authUrl.searchParams.set('nonce', this.#generateNonce());
+    authUrl.searchParams.set('nonce', this.nonce);
     authUrl.searchParams.set('scope', this.#scope.join(' '));
 
     return authUrl.toString();
@@ -51,7 +51,7 @@ export class AppleLoginHandler extends BaseLoginHandler {
       code,
       client_id: this.options.oAuthClientId,
       redirect_uri: serverRedirectUri,
-      login_provider: this.provider,
+      login_provider: this.authConnection,
       network: web3AuthNetwork,
     };
 
@@ -59,25 +59,11 @@ export class AppleLoginHandler extends BaseLoginHandler {
   }
 
   async getUserInfo(idToken: string): Promise<OAuthUserInfo> {
-    const base64Url = idToken.split('.')[1];
-    const base64 = base64Url.replace(/-/u, '+').replace(/_/u, '/');
-    const jsonPayload = decodeURIComponent(
-      window
-        .atob(base64)
-        .split('')
-        .map(function (c) {
-          return `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`;
-        })
-        .join(''),
-    );
+    const jsonPayload = this.decodeIdToken(idToken);
     const payload = JSON.parse(jsonPayload);
     return {
       email: payload.email,
       sub: payload.sub,
     };
-  }
-
-  #generateNonce(): string {
-    return Math.random().toString(16).substring(2, 15);
   }
 }

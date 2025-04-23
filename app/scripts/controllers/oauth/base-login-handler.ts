@@ -1,14 +1,43 @@
 import { AuthConnection } from '../../../../shared/constants/oauth';
 import { LoginHandlerOptions, AuthTokenResponse, OAuthUserInfo } from './types';
 
+/**
+ * Pads a string to a length of 4 characters
+ *
+ * @param input - The string to pad
+ * @returns The padded string
+ */
+function padString(input: string) {
+  const segmentLength = 4;
+  const stringLength = input.length;
+  const diff = stringLength % segmentLength;
+  if (!diff) {
+    return input;
+  }
+  let position = stringLength;
+  let padLength = segmentLength - diff;
+  const paddedStringLength = stringLength + padLength;
+  const buffer = Buffer.alloc(paddedStringLength);
+  buffer.write(input);
+  while (padLength > 0) {
+    buffer.write('=', position);
+    position += 1;
+    padLength -= 1;
+  }
+  return buffer.toString();
+}
+
 export abstract class BaseLoginHandler {
   public options: LoginHandlerOptions;
 
+  public nonce: string;
+
   constructor(options: LoginHandlerOptions) {
     this.options = options;
+    this.nonce = this.#generateNonce();
   }
 
-  abstract get provider(): AuthConnection;
+  abstract get authConnection(): AuthConnection;
 
   abstract get scope(): string[];
 
@@ -36,5 +65,20 @@ export abstract class BaseLoginHandler {
 
     const data = await res.json();
     return data;
+  }
+
+  protected decodeIdToken(idToken: string): string {
+    const [, idTokenPayload] = idToken.split('.');
+    const base64String = padString(idTokenPayload)
+      .replace(/-/u, '+')
+      .replace(/_/u, '/');
+    // Using buffer here instead of atob because userinfo can contain emojis which are not supported by atob
+    // the browser replacement for atob is https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array/fromBase64
+    // which is not supported in all chrome yet
+    return Buffer.from(base64String, 'base64').toString('utf-8');
+  }
+
+  #generateNonce(): string {
+    return Math.random().toString(16).substring(2, 15);
   }
 }

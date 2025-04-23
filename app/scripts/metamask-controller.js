@@ -974,9 +974,7 @@ export default class MetamaskController extends EventEmitter {
         web3AuthNetwork: process.env.WEB3AUTH_NETWORK,
         authServerUrl: process.env.AUTH_SERVER_URL,
         googleClientId: process.env.GOOGLE_CLIENT_ID,
-        googleAuthUri: process.env.GOOGLE_AUTH_URI,
         appleClientId: process.env.APPLE_CLIENT_ID,
-        appleAuthUri: process.env.APPLE_AUTH_URI,
       },
     });
 
