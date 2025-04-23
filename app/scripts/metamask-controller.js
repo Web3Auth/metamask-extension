@@ -105,6 +105,7 @@ import { InstitutionalFeaturesController } from '@metamask-institutional/institu
 import { CustodyController } from '@metamask-institutional/custody-controller';
 import { TransactionUpdateController } from '@metamask-institutional/transaction-update';
 ///: END:ONLY_INCLUDE_IF
+import { RecoveryError } from '@metamask/seedless-onboarding-controller';
 import { SignatureController } from '@metamask/signature-controller';
 import { wordlist } from '@metamask/scure-bip39/dist/wordlists/english';
 
@@ -4687,6 +4688,10 @@ export default class MetamaskController extends EventEmitter {
     }
   }
 
+  //=============================================================================
+  // VAULT / KEYRING RELATED METHODS
+  //=============================================================================
+
   /**
    * Login with social login provider and get User Onboarding details.
    *
@@ -4798,6 +4803,20 @@ export default class MetamaskController extends EventEmitter {
   }
 
   /**
+   * Changes the password for the seedless onboarding.
+   *
+   * @param {string} newPassword - The new password.
+   * @param {string} oldPassword - The old password.
+   * @returns {Promise<void>}
+   */
+  async changePassword(newPassword, oldPassword) {
+    await this.seedlessOnboardingController.changePassword(
+      newPassword,
+      oldPassword,
+    );
+  }
+
+  /**
    * Get all accounts for a given keyring id.
    *
    * @param {string} keyringId - The keyring id.
@@ -4810,10 +4829,6 @@ export default class MetamaskController extends EventEmitter {
     );
     return accounts;
   }
-
-  //=============================================================================
-  // VAULT / KEYRING RELATED METHODS
-  //=============================================================================
 
   /**
    * Creates a new Vault and create a new keychain.

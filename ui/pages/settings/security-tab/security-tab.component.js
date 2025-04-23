@@ -173,7 +173,8 @@ export default class SecurityTab extends PureComponent {
   renderSeedWords() {
     const { t } = this.context;
     const {
-      history, hasMultipleHdKeyrings,
+      history,
+      hasMultipleHdKeyrings,
       socialLoginEmail,
       socialLoginEnabled,
       allSrpBackupsEnabled,

@@ -416,6 +416,7 @@ export function restoreBackupAndGetSeedPhrase(
     dispatch(showLoadingIndication());
 
     try {
+      // fetch all the backup seed phrases
       const seedPhrases = await fetchAllSeedPhrases(password);
       if (seedPhrases === null || seedPhrases.length === 0) {
         return null;
@@ -427,14 +428,46 @@ export function restoreBackupAndGetSeedPhrase(
         Buffer.from(firstSeedPhrase).values(),
       );
 
-      const keyringsMetadata = await submitRequestToBackground<
-        KeyringMetadata[]
-      >('createNewVaultAndRestore', [password, encodedSeedPhrase]);
+      // restore the vault using the seed phrase
+      const [firstKeyring] = await submitRequestToBackground<KeyringMetadata[]>(
+        'createNewVaultAndRestore',
+        [password, encodedSeedPhrase],
+      );
 
-      const [firstKeyring] = keyringsMetadata;
+      if (!firstKeyring) {
+        throw new Error('No keyring found');
+      }
+
+      // update the backup metadata state for the seedless onboarding flow
       await updateBackupMetadataState(firstKeyring.id, firstSeedPhrase);
+
       await forceUpdateMetamaskState(dispatch);
       return firstSeedPhrase;
+    } catch (error) {
+      dispatch(displayWarning(error));
+      throw error;
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
+  };
+}
+
+/**
+ * Changes the password for the seedless onboarding.
+ *
+ * @param newPassword - The new password.
+ * @param oldPassword - The old password.
+ */
+export function changePassword(
+  newPassword: string,
+  oldPassword: string,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    try {
+      await submitRequestToBackground<void>('changePassword', [
+        newPassword,
+        oldPassword,
+      ]);
     } catch (error) {
       dispatch(displayWarning(error));
       throw error;

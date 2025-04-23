@@ -474,12 +474,12 @@ class SettingsPage extends PureComponent {
         <Route exact path={REVEAL_SRP_LIST_ROUTE} component={RevealSrpList} />
         <Route
           exact
-          path={SECURITY_PASSWORD_CHANGE_ROUTE}
+          path={SECURITY_PASSWORD_HINT_ROUTE}
           component={PasswordHint}
         />
         <Route
           exact
-          path={SECURITY_PASSWORD_HINT_ROUTE}
+          path={SECURITY_PASSWORD_CHANGE_ROUTE}
           component={ChangePassword}
         />
         <Route

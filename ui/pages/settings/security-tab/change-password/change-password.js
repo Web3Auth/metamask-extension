@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import React, { useMemo, useState } from 'react';
 import zxcvbn from 'zxcvbn';
+import { useDispatch } from 'react-redux';
 import {
   Box,
   Button,
@@ -23,6 +24,7 @@ import Mascot from '../../../../components/ui/mascot';
 import Spinner from '../../../../components/ui/spinner';
 import { useI18nContext } from '../../../../hooks/useI18nContext';
 import { PASSWORD_MIN_LENGTH } from '../../../../helpers/constants/common';
+import { changePassword } from '../../../../store/actions';
 
 const ChangePasswordSteps = {
   CurrentPassword: 1,
@@ -32,6 +34,7 @@ const ChangePasswordSteps = {
 
 const ChangePassword = () => {
   const t = useI18nContext();
+  const dispatch = useDispatch();
   const [eventEmitter] = useState(new EventEmitter());
   const [step, setStep] = useState(ChangePasswordSteps.CurrentPassword);
 
@@ -152,11 +155,13 @@ const ChangePassword = () => {
     return !confirmPasswordError;
   }, [newPassword, confirmPassword, confirmPasswordError]);
 
-  const handleSubmitNewPassword = () => {
-    // TODO: validate new password and move to next step
+  const handleSubmitNewPassword = async () => {
     if (!isValid) {
       return;
     }
+
+    await dispatch(changePassword(newPassword, currentPassword));
+
     setIsIncorrectPasswordError(true);
     if (!isIncorrectPasswordError) {
       setStep(ChangePasswordSteps.CreatingPassword);
