@@ -32,40 +32,43 @@ const PasswordHint = () => {
   };
 
   return (
-    <div className="password-hint">
-      <Text
-        variant={TextVariant.bodyMd}
-        color={TextColor.textAlternative}
-        marginBottom={4}
-      >
-        {t('passwordHintDescription')}
-      </Text>
-
-      <Text
-        variant={TextVariant.bodyMd}
-        color={TextColor.textAlternative}
-        marginBottom={4}
-      >
-        {t('passwordHintLeaveHint')}
-      </Text>
-
+    <div className="settings-password-hint">
       <form
+        className="settings-password-hint__form"
         onSubmit={(e) => {
           e.preventDefault();
           handleSubmitHint();
         }}
       >
-        <FormTextField
-          value={hint}
-          placeholder="e.g. mom’s home"
-          width={BlockSize.Full}
-          borderRadius={BorderRadius.LG}
-          error={isSamePasswordError}
-          helpText={isSamePasswordError ? t('passwordHintError') : null}
-          onChange={(e) => setHint(e.target.value)}
-          onFocus={() => setIsSamePasswordError(false)}
-          marginBottom={4}
-        />
+        <div className="settings-password-hint__content">
+          <Text
+            variant={TextVariant.bodyMd}
+            color={TextColor.textAlternative}
+            marginBottom={4}
+          >
+            {t('passwordHintDescription')}
+          </Text>
+
+          <Text
+            variant={TextVariant.bodyMd}
+            color={TextColor.textAlternative}
+            marginBottom={4}
+          >
+            {t('passwordHintLeaveHint')}
+          </Text>
+
+          <FormTextField
+            value={hint}
+            placeholder="e.g. mom’s home"
+            width={BlockSize.Full}
+            borderRadius={BorderRadius.LG}
+            error={isSamePasswordError}
+            helpText={isSamePasswordError ? t('passwordHintError') : null}
+            onChange={(e) => setHint(e.target.value)}
+            onFocus={() => setIsSamePasswordError(false)}
+            marginBottom={4}
+          />
+        </div>
         <Button
           data-testid="password-hint-save"
           variant={ButtonVariant.Primary}
