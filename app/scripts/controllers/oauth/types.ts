@@ -26,8 +26,7 @@ export type LoginHandlerOptions = {
  * The state of the {@link OAuthController}
  */
 export type OAuthControllerState = {
-  authConnection?: AuthConnection;
-  socialLoginEmail?: string;
+  // OAuth Controller is stateless
 };
 
 export type OAuthControllerGetStateAction = ControllerGetStateAction<
@@ -71,6 +70,8 @@ export type OAuthProviderConfig = {
 };
 
 export type OAuthLoginEnv = {
+  authConnectionId: string;
+  groupedAuthConnectionId: string;
   googleClientId: string;
   appleClientId: string;
   authServerUrl: string;
@@ -91,10 +92,12 @@ export type AuthTokenResponse = {
 };
 
 export type OAuthLoginResult = {
+  authConnection: AuthConnection;
   authConnectionId: string;
   groupedAuthConnectionId: string;
   userId: string;
   idTokens: string[];
+  socialLoginEmail: string;
 };
 
 export type OAuthUserInfo = {

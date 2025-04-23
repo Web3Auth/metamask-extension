@@ -3,7 +3,7 @@ import { AuthConnection } from '../../../../shared/constants/oauth';
 import OAuthController, {
   getDefaultOAuthControllerState,
 } from './oauth-controller';
-import { OAuthControllerMessenger } from './types';
+import { OAuthControllerMessenger, OAuthLoginEnv } from './types';
 import { createLoginHandler } from './login-handler-factory';
 
 function buildOAuthControllerMessenger() {
@@ -20,12 +20,14 @@ const DEFAULT_GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string;
 const DEFAULT_APPLE_CLIENT_ID = process.env.APPLE_CLIENT_ID as string;
 const OAUTH_AUD = 'metamask';
 
-function getOAuthLoginEnvs() {
+function getOAuthLoginEnvs(): OAuthLoginEnv {
   return {
     googleClientId: DEFAULT_GOOGLE_CLIENT_ID,
     appleClientId: DEFAULT_APPLE_CLIENT_ID,
     authServerUrl: process.env.AUTH_SERVER_URL as string,
     web3AuthNetwork: process.env.WEB3AUTH_NETWORK as Web3AuthNetwork,
+    authConnectionId: process.env.AUTH_CONNECTION_ID as string,
+    groupedAuthConnectionId: process.env.GROUPED_AUTH_CONNECTION_ID as string,
   };
 }
 
@@ -75,7 +77,6 @@ describe('OAuthController', () => {
       interactive: true,
       url: googleLoginHandler.getAuthUrl(),
     });
-    expect(controller.state.authConnection).toBe(AuthConnection.Google);
   });
 
   it('should start the OAuth login process with `Apple`', async () => {
@@ -112,7 +113,5 @@ describe('OAuthController', () => {
       interactive: true,
       url: appleLoginHandler.getAuthUrl(),
     });
-
-    expect(controller.state.authConnection).toBe(AuthConnection.Apple);
   });
 });

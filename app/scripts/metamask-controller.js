@@ -975,6 +975,8 @@ export default class MetamaskController extends EventEmitter {
         authServerUrl: process.env.AUTH_SERVER_URL,
         googleClientId: process.env.GOOGLE_CLIENT_ID,
         appleClientId: process.env.APPLE_CLIENT_ID,
+        authConnectionId: process.env.AUTH_CONNECTION_ID,
+        groupedAuthConnectionId: process.env.GROUPED_AUTH_CONNECTION_ID,
       },
     });
 

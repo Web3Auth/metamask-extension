@@ -1,4 +1,4 @@
-import { BaseController, StateMetadata } from '@metamask/base-controller';
+import { BaseController } from '@metamask/base-controller';
 import { AuthConnection } from '../../../../shared/constants/oauth';
 import {
   controllerName,
@@ -17,24 +17,6 @@ import { BaseLoginHandler } from './base-login-handler';
 export const getDefaultOAuthControllerState =
   (): Partial<OAuthControllerState> => ({});
 
-/**
- * {@link OAuthController}'s metadata.
- *
- * This allows us to choose if fields of the state should be persisted or not
- * using the `persist` flag; and if they can be sent to Sentry or not, using
- * the `anonymous` flag.
- */
-const controllerMetadata: StateMetadata<OAuthControllerState> = {
-  socialLoginEmail: {
-    persist: true,
-    anonymous: true,
-  },
-  authConnection: {
-    persist: true,
-    anonymous: true,
-  },
-};
-
 export default class OAuthController extends BaseController<
   typeof controllerName,
   OAuthControllerState,
@@ -46,14 +28,10 @@ export default class OAuthController extends BaseController<
 
   readonly #OAuthAud = 'metamask';
 
-  readonly #AuthConnectionId = 'byoa-server';
-
-  readonly #GroupedAuthConnectionId = 'mm-seedless-onboarding';
-
   constructor({ state, messenger, env }: OAuthControllerOptions) {
     super({
       messenger,
-      metadata: controllerMetadata,
+      metadata: {}, // OAuth Controller is stateless and does not need metadata
       name: controllerName,
       state: {
         ...getDefaultOAuthControllerState(),
@@ -106,20 +84,18 @@ export default class OAuthController extends BaseController<
     loginHandler: BaseLoginHandler,
     authCode: string,
   ): Promise<OAuthLoginResult> {
+    const { authConnectionId, groupedAuthConnectionId } = this.#env;
     const authTokenData = await loginHandler.getAuthIdToken(authCode);
     const idToken = authTokenData.jwt_tokens[this.#OAuthAud];
     const userInfo = await loginHandler.getUserInfo(idToken);
 
-    this.update((state) => {
-      state.authConnection = loginHandler.authConnection;
-      state.socialLoginEmail = userInfo.email;
-    });
-
     return {
-      authConnectionId: this.#AuthConnectionId,
-      groupedAuthConnectionId: this.#GroupedAuthConnectionId,
+      authConnectionId,
+      groupedAuthConnectionId,
       userId: userInfo.sub,
       idTokens: [idToken],
+      authConnection: loginHandler.authConnection,
+      socialLoginEmail: userInfo.email,
     };
   }
 
