@@ -1237,7 +1237,7 @@ export default function TermsOfUsePopup({ isOpen, onClose, onAccept }) {
             disabled={!isTermsOfUseChecked || !isScrolledToBottom}
             onClick={onAccept}
           >
-            {t('agree')}
+            {t('termsOfUseAgree')}
           </Button>
           <Text
             as="p"

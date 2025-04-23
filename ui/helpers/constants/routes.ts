@@ -33,15 +33,6 @@ PATH_NAME_MAP[EXPERIMENTAL_ROUTE] = 'Experimental Settings Page';
 export const SECURITY_ROUTE = '/settings/security';
 PATH_NAME_MAP[SECURITY_ROUTE] = 'Security Settings Page';
 
-export const SECURITY_MULTI_SRP_ROUTE = '/settings/security/multi-srp';
-PATH_NAME_MAP[SECURITY_MULTI_SRP_ROUTE] = 'Protect your wallet';
-
-export const SECURITY_PASSWORD_ROUTE = '/settings/security/password';
-PATH_NAME_MAP[SECURITY_PASSWORD_ROUTE] = 'Change Password';
-
-export const SECURITY_PASSWORD_HINT_ROUTE = '/settings/security/password-hint';
-PATH_NAME_MAP[SECURITY_PASSWORD_HINT_ROUTE] = 'Password Hint';
-
 export const ABOUT_US_ROUTE = '/settings/about-us';
 PATH_NAME_MAP[ABOUT_US_ROUTE] = 'About Us Page';
 
@@ -74,8 +65,23 @@ PATH_NAME_MAP[`${CONTACT_VIEW_ROUTE}/:address`] = 'View Contact Settings Page';
 export const SNAP_SETTINGS_ROUTE = '/settings/snap';
 PATH_NAME_MAP[`${SNAP_SETTINGS_ROUTE}/:snapId`] = 'Snap Settings Page';
 
+export const REVEAL_SRP_LIST_ROUTE =
+  '/settings/security-and-privacy/reveal-srp-list';
+PATH_NAME_MAP[REVEAL_SRP_LIST_ROUTE] =
+  'Reveal Secret Recovery Phrase List Page';
+
+export const SECURITY_PASSWORD_CHANGE_ROUTE =
+  '/settings/security-and-privacy/password-change';
+PATH_NAME_MAP[SECURITY_PASSWORD_CHANGE_ROUTE] = 'Change Password';
+
+export const SECURITY_PASSWORD_HINT_ROUTE =
+  '/settings/security-and-privacy/password-hint';
+PATH_NAME_MAP[SECURITY_PASSWORD_HINT_ROUTE] = 'Password Hint';
+
 export const REVEAL_SEED_ROUTE = '/seed';
-PATH_NAME_MAP[REVEAL_SEED_ROUTE] = 'Reveal Secret Recovery Phrase Page';
+// This `:keyringId` parameter is actually optional.
+PATH_NAME_MAP[`${REVEAL_SEED_ROUTE}/:keyringId`] =
+  'Reveal Secret Recovery Phrase Page';
 
 export const RESTORE_VAULT_ROUTE = '/restore-vault';
 PATH_NAME_MAP[RESTORE_VAULT_ROUTE] = 'Restore Vault Page';
@@ -105,6 +111,17 @@ PATH_NAME_MAP[CONNECT_HARDWARE_ROUTE] = 'Connect Hardware Wallet Page';
 
 export const SEND_ROUTE = '/send';
 PATH_NAME_MAP[SEND_ROUTE] = 'Send Page';
+
+export const REMOTE_ROUTE = '/remote';
+PATH_NAME_MAP[REMOTE_ROUTE] = 'Remote Mode Page';
+
+export const REMOTE_ROUTE_SETUP_SWAPS = '/remote/setup-swaps';
+PATH_NAME_MAP[REMOTE_ROUTE_SETUP_SWAPS] = 'Remote Mode Setup Swaps Page';
+
+export const REMOTE_ROUTE_SETUP_DAILY_ALLOWANCE =
+  '/remote/setup-daily-allowance';
+PATH_NAME_MAP[REMOTE_ROUTE_SETUP_DAILY_ALLOWANCE] =
+  'Remote Mode Setup Daily Allowance Page';
 
 export const CONNECTIONS = '/connections';
 PATH_NAME_MAP[CONNECTIONS] = 'Connections';

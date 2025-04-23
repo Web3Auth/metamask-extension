@@ -1,26 +1,12 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import classnames from 'classnames';
-// TODO: Remove restricted import
-// eslint-disable-next-line import/no-restricted-paths
-import { addUrlProtocolPrefix } from '../../../../app/scripts/lib/util';
-
-import {
-  useEnableProfileSyncing,
-  useDisableProfileSyncing,
-} from '../../../hooks/identity/useProfileSyncing';
 import {
   MetaMetricsEventCategory,
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
-import {
-  COINGECKO_LINK,
-  CONSENSYS_PRIVACY_LINK,
-  CRYPTOCOMPARE_LINK,
-  PRIVACY_POLICY_LINK,
-  TRANSACTION_SIMULATIONS_LEARN_MORE_LINK,
-} from '../../../../shared/lib/ui-utils';
+import { CONSENSYS_PRIVACY_LINK } from '../../../../shared/lib/ui-utils';
 
 import {
   Box,
@@ -42,34 +28,11 @@ import {
 } from '../../../helpers/constants/design-system';
 import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
 import { useI18nContext } from '../../../hooks/useI18nContext';
-import {
-  getPetnamesEnabled,
-  getExternalServicesOnboardingToggleState,
-} from '../../../selectors';
-import { getNetworkConfigurationsByChainId } from '../../../../shared/modules/selectors/networks';
-import {
-  setIpfsGateway,
-  setUseCurrencyRateCheck,
-  setUseMultiAccountBalanceChecker,
-  setUse4ByteResolution,
-  setUseTokenDetection,
-  setUseAddressBarEnsResolution,
-  showModal,
-  toggleNetworkMenu,
-  setIncomingTransactionsPreferences,
-  setUseTransactionSimulations,
-  setPetnamesEnabled,
-  setEditedNetwork,
-} from '../../../store/actions';
+import { getExternalServicesOnboardingToggleState } from '../../../selectors';
 import {
   onboardingToggleBasicFunctionalityOn,
   openBasicFunctionalityModal,
 } from '../../../ducks/app/app';
-import IncomingTransactionToggle from '../../../components/app/incoming-trasaction-toggle/incoming-transaction-toggle';
-import {
-  CHAIN_ID_TO_NETWORK_IMAGE_URL_MAP,
-  TEST_CHAINS,
-} from '../../../../shared/constants/network';
 import { selectIsProfileSyncingEnabled } from '../../../selectors/identity/profile-syncing';
 import { PRIVACY_TAGS } from '../../../helpers/constants/privacy-tags';
 import { Setting } from './setting';
@@ -87,40 +50,15 @@ export default function PrivacySettings() {
   const [hiddenClass, setHiddenClass] = useState(true);
 
   const defaultState = useSelector((state) => state.metamask);
-  const {
-    incomingTransactionsPreferences,
-    use4ByteResolution,
-    useTokenDetection,
-    useCurrencyRateCheck,
-    useMultiAccountBalanceChecker,
-    ipfsGateway,
-    useAddressBarEnsResolution,
-    useTransactionSimulations,
-  } = defaultState;
-  const petnamesEnabled = useSelector(getPetnamesEnabled);
-
-  const [turnOn4ByteResolution, setTurnOn4ByteResolution] =
-    useState(use4ByteResolution);
-  const [turnOnTokenDetection, setTurnOnTokenDetection] =
-    useState(useTokenDetection);
-  const [turnOnCurrencyRateCheck, setTurnOnCurrencyRateCheck] =
-    useState(useCurrencyRateCheck);
+  const { incomingTransactionsPreferences, useMultiAccountBalanceChecker } =
+    defaultState;
 
   const [
     isMultiAccountBalanceCheckerEnabled,
     setMultiAccountBalanceCheckerEnabled,
   ] = useState(useMultiAccountBalanceChecker);
-  const [isTransactionSimulationsEnabled, setTransactionSimulationsEnabled] =
-    useState(useTransactionSimulations);
-  const [ipfsURL, setIPFSURL] = useState(ipfsGateway);
-  const [ipfsError, setIPFSError] = useState(null);
-  const [addressBarResolution, setAddressBarResolution] = useState(
-    useAddressBarEnsResolution,
-  );
-  const [turnOnPetnames, setTurnOnPetnames] = useState(petnamesEnabled);
 
   const trackEvent = useContext(MetaMetricsContext);
-  const networkConfigurations = useSelector(getNetworkConfigurationsByChainId);
 
   const externalServicesOnboardingToggleState = useSelector(
     getExternalServicesOnboardingToggleState,
@@ -128,44 +66,7 @@ export default function PrivacySettings() {
 
   const isProfileSyncingEnabled = useSelector(selectIsProfileSyncingEnabled);
 
-  const { enableProfileSyncing, error: enableProfileSyncingError } =
-    useEnableProfileSyncing();
-  const { disableProfileSyncing, error: disableProfileSyncingError } =
-    useDisableProfileSyncing();
-
-  useEffect(() => {
-    if (externalServicesOnboardingToggleState) {
-      enableProfileSyncing();
-    } else {
-      disableProfileSyncing();
-    }
-  }, [
-    externalServicesOnboardingToggleState,
-    enableProfileSyncing,
-    disableProfileSyncing,
-  ]);
-
   const handleSubmit = () => {
-    dispatch(setUse4ByteResolution(turnOn4ByteResolution));
-    dispatch(setUseTokenDetection(turnOnTokenDetection));
-    dispatch(
-      setUseMultiAccountBalanceChecker(isMultiAccountBalanceCheckerEnabled),
-    );
-    dispatch(setUseCurrencyRateCheck(turnOnCurrencyRateCheck));
-    dispatch(setUseAddressBarEnsResolution(addressBarResolution));
-    setUseTransactionSimulations(isTransactionSimulationsEnabled);
-    dispatch(setPetnamesEnabled(turnOnPetnames));
-
-    // Profile Syncing Setup
-    if (!externalServicesOnboardingToggleState) {
-      disableProfileSyncing();
-    }
-
-    if (ipfsURL && !ipfsError) {
-      const { host } = new URL(addUrlProtocolPrefix(ipfsURL));
-      dispatch(setIpfsGateway(host));
-    }
-
     trackEvent({
       category: MetaMetricsEventCategory.Onboarding,
       event: MetaMetricsEventName.OnboardingWalletAdvancedSettings,
@@ -174,39 +75,10 @@ export default function PrivacySettings() {
         is_profile_syncing_enabled: isProfileSyncingEnabled,
         is_basic_functionality_enabled: externalServicesOnboardingToggleState,
         show_incoming_tx: incomingTransactionsPreferences,
-        turnon_token_detection: turnOnTokenDetection,
       },
     });
 
     history.push(ONBOARDING_COMPLETION_ROUTE);
-  };
-
-  const handleProfileSyncToggleSetValue = async () => {
-    if (isProfileSyncingEnabled) {
-      dispatch(
-        showModal({
-          name: 'CONFIRM_TURN_OFF_PROFILE_SYNCING',
-          turnOffProfileSyncing: () => {
-            disableProfileSyncing();
-          },
-        }),
-      );
-    } else {
-      enableProfileSyncing();
-    }
-  };
-
-  const handleIPFSChange = (url) => {
-    setIPFSURL(url);
-    try {
-      const { host } = new URL(addUrlProtocolPrefix(url));
-      if (!host || host === 'gateway.ipfs.io') {
-        throw new Error();
-      }
-      setIPFSError(null);
-    } catch (error) {
-      setIPFSError(t('onboardingAdvancedPrivacyIPFSInvalid'));
-    }
   };
 
   const showThirdPartySettings = () => {
@@ -339,7 +211,9 @@ export default function PrivacySettings() {
                   dataTestId="profile-sync-toggle"
                   disabled={!externalServicesOnboardingToggleState}
                   value={isProfileSyncingEnabled}
-                  setValue={handleProfileSyncToggleSetValue}
+                  setValue={() => {
+                    console.log('Profile sync toggle setValue');
+                  }}
                   title={t('defaultSettingsProfileSyncTitle')}
                   descriptions={[
                     t('defaultSettingsProfileSyncDescription1'),
@@ -501,8 +375,10 @@ export default function PrivacySettings() {
                * check with petnamesEnabledToggle
                */}
               <Setting
-                value={turnOnPetnames}
-                setValue={setTurnOnPetnames}
+                value={false}
+                setValue={() => {
+                  console.log('Proposed nicknames toggle setValue');
+                }}
                 title={t('thirdPartyProposedNicknamesTitle')}
                 descriptions={[t('thirdPartyProposedNicknamesDescription')]}
                 tags={[PRIVACY_TAGS.THIRD_PARTY, PRIVACY_TAGS.IP_ADDRESS]}

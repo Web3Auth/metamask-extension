@@ -35,9 +35,9 @@ import {
   ADD_NETWORK_ROUTE,
   ADD_POPULAR_CUSTOM_NETWORK,
   SNAP_SETTINGS_ROUTE,
-  SECURITY_MULTI_SRP_ROUTE,
-  SECURITY_PASSWORD_ROUTE,
   SECURITY_PASSWORD_HINT_ROUTE,
+  REVEAL_SRP_LIST_ROUTE,
+  SECURITY_PASSWORD_CHANGE_ROUTE,
 } from '../../helpers/constants/routes';
 import { getProviderConfig } from '../../../shared/modules/selectors/networks';
 import { toggleNetworkMenu } from '../../store/actions';
@@ -59,9 +59,9 @@ const ROUTES_TO_I18N_KEYS = {
   [GENERAL_ROUTE]: 'general',
   [NETWORKS_FORM_ROUTE]: 'networks',
   [NETWORKS_ROUTE]: 'networks',
+  [REVEAL_SRP_LIST_ROUTE]: 'revealSecretRecoveryPhrase',
   [SECURITY_ROUTE]: 'securityAndPrivacy',
-  [SECURITY_MULTI_SRP_ROUTE]: 'securityMultiSrp',
-  [SECURITY_PASSWORD_ROUTE]: 'securityPassword',
+  [SECURITY_PASSWORD_CHANGE_ROUTE]: 'securityPassword',
   [SECURITY_PASSWORD_HINT_ROUTE]: 'securityPasswordHint',
 };
 
@@ -80,6 +80,13 @@ const mapStateToProps = (state, ownProps) => {
   const isAddressEntryPage = pathNameTail.includes('0x');
   const isAddContactPage = Boolean(pathname.match(CONTACT_ADD_ROUTE));
   const isEditContactPage = Boolean(pathname.match(CONTACT_EDIT_ROUTE));
+  const isRevealSrpListPage = Boolean(pathname.match(REVEAL_SRP_LIST_ROUTE));
+  const isPasswordChangePage = Boolean(
+    pathname.match(SECURITY_PASSWORD_CHANGE_ROUTE),
+  );
+  const isPasswordHintPage = Boolean(
+    pathname.match(SECURITY_PASSWORD_HINT_ROUTE),
+  );
   const isNetworksFormPage =
     Boolean(pathname.match(NETWORKS_FORM_ROUTE)) ||
     Boolean(pathname.match(ADD_NETWORK_ROUTE));
@@ -102,6 +109,12 @@ const mapStateToProps = (state, ownProps) => {
     backRoute = NETWORKS_ROUTE;
   } else if (isAddPopularCustomNetwork) {
     backRoute = NETWORKS_ROUTE;
+  } else if (
+    isRevealSrpListPage ||
+    isPasswordChangePage ||
+    isPasswordHintPage
+  ) {
+    backRoute = SECURITY_ROUTE;
   }
 
   let initialBreadCrumbRoute;

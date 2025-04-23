@@ -31,6 +31,7 @@ import {
   ButtonSize,
 } from '../../../components/component-library';
 import SRPDetailsModal from '../../../components/app/srp-details-modal';
+import { getHDEntropyIndex } from '../../../selectors/selectors';
 
 const hasUpperCase = (draftSrp) => {
   return draftSrp !== draftSrp.toLowerCase();
@@ -41,6 +42,7 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
   const [srpError, setSrpError] = useState('');
   const history = useHistory();
   const t = useI18nContext();
+  const hdEntropyIndex = useSelector(getHDEntropyIndex);
   const currentKeyring = useSelector(getCurrentKeyring);
 
   useEffect(() => {
@@ -69,6 +71,9 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
     trackEvent({
       category: MetaMetricsEventCategory.Onboarding,
       event: MetaMetricsEventName.OnboardingWalletSecurityPhraseConfirmed,
+      properties: {
+        hd_entropy_index: hdEntropyIndex,
+      },
     });
     history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
   };

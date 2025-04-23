@@ -56,13 +56,7 @@ export default function Welcome() {
     <div className="welcome">
       <div className="welcome__wrapper">
         <div className="welcome__title">
-          <Text
-            className="welcome__title-text"
-            variant={TextVariant.headingLg}
-            color={TextColor.primaryDefault}
-          >
-            {t('welcomeTitle')}
-          </Text>
+          <Text className="welcome__title-text">{t('welcomeTitle')}</Text>
         </div>
         <div className="welcome__mascot">{renderMascot()}</div>
         <Box

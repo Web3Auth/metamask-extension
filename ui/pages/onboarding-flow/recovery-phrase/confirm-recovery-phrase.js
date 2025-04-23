@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Box,
   Button,
@@ -27,6 +27,7 @@ import {
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
 import { ONBOARDING_METAMETRICS } from '../../../helpers/constants/routes';
+import { getHDEntropyIndex } from '../../../selectors/selectors';
 import ConfirmSrpModal from './confirm-srp-modal';
 import RecoveryPhraseChips from './recovery-phrase-chips';
 
@@ -55,6 +56,8 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
   const history = useHistory();
   const t = useI18nContext();
   const dispatch = useDispatch();
+  const hdEntropyIndex = useSelector(getHDEntropyIndex);
+
   const trackEvent = useContext(MetaMetricsContext);
 
   const splitSecretRecoveryPhrase = secretRecoveryPhrase.split(' ');
@@ -90,11 +93,14 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
     setShowConfirmModal(true);
   };
 
-  const handleConfirmedPhrase = () => {
-    dispatch(setSeedPhraseBackedUp(true));
+  const handleConfirmedPhrase = async () => {
+    await dispatch(setSeedPhraseBackedUp(true));
     trackEvent({
       category: MetaMetricsEventCategory.Onboarding,
       event: MetaMetricsEventName.OnboardingWalletSecurityPhraseConfirmed,
+      properties: {
+        hd_entropy_index: hdEntropyIndex,
+      },
     });
     history.push(ONBOARDING_METAMETRICS);
   };
