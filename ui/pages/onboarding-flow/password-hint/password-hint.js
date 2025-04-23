@@ -51,67 +51,64 @@ export default function PasswordHint() {
   };
 
   return (
-    <Box
-      className="password-hint"
-      data-testid="password-hint"
-      display={Display.Flex}
-      flexDirection={FlexDirection.Column}
-    >
-      <Box
-        justifyContent={JustifyContent.flexStart}
-        marginBottom={4}
-        width={BlockSize.Full}
-      >
-        <ButtonIcon
-          iconName={IconName.ArrowLeft}
-          color={IconColor.iconDefault}
-          size={ButtonIconSize.Md}
-          data-testid="password-hint-back-button"
-          onClick={() => history.goBack()}
-        />
-      </Box>
-      <Box
-        display={Display.Flex}
-        flexDirection={FlexDirection.Column}
-        justifyContent={JustifyContent.center}
-        alignItems={AlignItems.flexStart}
-      >
-        <Text
-          variant={TextVariant.headingLg}
-          as="h2"
-          justifyContent={JustifyContent.center}
-          style={{
-            alignSelf: AlignItems.flexStart,
-          }}
+    <Box className="password-hint" data-testid="password-hint">
+      <div className="password-hint__content">
+        <Box
+          justifyContent={JustifyContent.flexStart}
           marginBottom={4}
-        >
-          {t('passwordHintTitle')}
-        </Text>
-        <Text
-          variant={TextVariant.bodyMd}
-          color={TextColor.textAlternative}
-          marginBottom={6}
-        >
-          {t('passwordHintDescription')}
-        </Text>
-        <Text
-          variant={TextVariant.bodyMd}
-          color={TextColor.textAlternative}
-          marginBottom={6}
-        >
-          {t('passwordHintLeaveHint')}
-        </Text>
-        <FormTextField
-          value={hint}
-          placeholder="e.g. mom’s home"
           width={BlockSize.Full}
-          borderRadius={BorderRadius.LG}
-          error={isSamePasswordError}
-          helpText={isSamePasswordError ? t('passwordHintError') : null}
-          onChange={(e) => setHint(e.target.value)}
-          onFocus={() => setIsSamePasswordError(false)}
-        />
-      </Box>
+        >
+          <ButtonIcon
+            iconName={IconName.ArrowLeft}
+            color={IconColor.iconDefault}
+            size={ButtonIconSize.Md}
+            data-testid="password-hint-back-button"
+            onClick={() => history.goBack()}
+          />
+        </Box>
+        <Box
+          display={Display.Flex}
+          flexDirection={FlexDirection.Column}
+          justifyContent={JustifyContent.center}
+          alignItems={AlignItems.flexStart}
+        >
+          <Text
+            variant={TextVariant.headingLg}
+            as="h2"
+            justifyContent={JustifyContent.center}
+            style={{
+              alignSelf: AlignItems.flexStart,
+            }}
+            marginBottom={4}
+          >
+            {t('passwordHintTitle')}
+          </Text>
+          <Text
+            variant={TextVariant.bodyMd}
+            color={TextColor.textAlternative}
+            marginBottom={6}
+          >
+            {t('passwordHintDescription')}
+          </Text>
+          <Text
+            variant={TextVariant.bodyMd}
+            color={TextColor.textAlternative}
+            marginBottom={6}
+          >
+            {t('passwordHintLeaveHint')}
+          </Text>
+          <FormTextField
+            value={hint}
+            placeholder="e.g. mom’s home"
+            width={BlockSize.Full}
+            borderRadius={BorderRadius.LG}
+            error={isSamePasswordError}
+            helpText={isSamePasswordError ? t('passwordHintError') : null}
+            onChange={(e) => setHint(e.target.value)}
+            onFocus={() => setIsSamePasswordError(false)}
+          />
+        </Box>
+      </div>
 
       <Box
         className="password-hint__actions"

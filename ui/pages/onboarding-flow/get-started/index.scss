@@ -6,6 +6,12 @@
 @use "react-responsive-carousel/lib/styles/carousel";
 
 .get-started {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  height: 100%;
+
   &__logo {
     text-align: center;
   }
@@ -73,9 +79,7 @@
   }
 
   &__buttons {
-    margin: 223px auto 0 auto;
-
-    li {
+    li:not(:last-child) {
       margin-bottom: 16px;
     }
 

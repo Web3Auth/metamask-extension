@@ -92,84 +92,90 @@ export default function OnboardingPinExtension() {
       {
         ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
         <>
-          <Carousel
-            selectedItem={selectedIndex}
-            showThumbs={false}
-            showStatus={false}
-            dynamicHeight
-            renderArrowPrev={(onClickHandler, hasPrev, label) => (
-              <ButtonIcon
-                iconName={IconName.Arrow2Left}
-                size={ButtonIconSize.Lg}
-                iconProps={{
-                  color: hasPrev ? IconColor.textDefault : IconColor.textMuted,
-                }}
-                borderRadius={BorderRadius.full}
-                className="onboarding-pin-extension__arrow"
-                disabled={!hasPrev}
-                title={label}
-                onClick={onClickHandler}
-              />
-            )}
-            renderArrowNext={(onClickHandler, hasNext, label) => (
-              <ButtonIcon
-                iconName={IconName.Arrow2Right}
-                size={ButtonIconSize.Lg}
-                iconProps={{
-                  color: hasNext ? IconColor.textDefault : IconColor.textMuted,
-                }}
-                borderRadius={BorderRadius.full}
-                className="onboarding-pin-extension__arrow onboarding-pin-extension__arrow--next"
-                disabled={!hasNext}
-                title={label}
-                onClick={onClickHandler}
-              />
-            )}
-            onChange={(index) => setSelectedIndex(index)}
-          >
-            <div className="onboarding-pin-extension__image-container">
-              <img src="/images/onboarding-extension-pin.svg" alt="" />
-            </div>
-            <div className="onboarding-pin-extension__image-container">
-              <img src="/images/onboarding-extension-launch.svg" alt="" />
-            </div>
-          </Carousel>
-          <Box
-            display={Display.Flex}
-            flexDirection={FlexDirection.Column}
-            justifyContent={JustifyContent.flexStart}
-            width={BlockSize.Full}
-            marginTop={4}
-            gap={4}
-          >
-            <Text
-              variant={TextVariant.headingLg}
-              as="h2"
-              fontWeight={FontWeight.Bold}
+          <div className="onboarding-pin-extension__content">
+            <Carousel
+              selectedItem={selectedIndex}
+              showThumbs={false}
+              showStatus={false}
+              dynamicHeight
+              renderArrowPrev={(onClickHandler, hasPrev, label) => (
+                <ButtonIcon
+                  iconName={IconName.Arrow2Left}
+                  size={ButtonIconSize.Lg}
+                  iconProps={{
+                    color: hasPrev
+                      ? IconColor.textDefault
+                      : IconColor.textMuted,
+                  }}
+                  borderRadius={BorderRadius.full}
+                  className="onboarding-pin-extension__arrow"
+                  disabled={!hasPrev}
+                  title={label}
+                  onClick={onClickHandler}
+                />
+              )}
+              renderArrowNext={(onClickHandler, hasNext, label) => (
+                <ButtonIcon
+                  iconName={IconName.Arrow2Right}
+                  size={ButtonIconSize.Lg}
+                  iconProps={{
+                    color: hasNext
+                      ? IconColor.textDefault
+                      : IconColor.textMuted,
+                  }}
+                  borderRadius={BorderRadius.full}
+                  className="onboarding-pin-extension__arrow onboarding-pin-extension__arrow--next"
+                  disabled={!hasNext}
+                  title={label}
+                  onClick={onClickHandler}
+                />
+              )}
+              onChange={(index) => setSelectedIndex(index)}
             >
-              {t('onboardingPinExtensionTitle')}
-            </Text>
-            {selectedIndex === 0 ? (
-              <Box>
-                <Text variant={TextVariant.bodyMd}>
-                  {t('onboardingPinExtensionDescription')}
-                </Text>
-              </Box>
-            ) : (
-              <Box
-                display={Display.Flex}
-                flexDirection={FlexDirection.Column}
-                gap={4}
+              <div className="onboarding-pin-extension__image-container">
+                <img src="/images/onboarding-extension-pin.svg" alt="" />
+              </div>
+              <div className="onboarding-pin-extension__image-container">
+                <img src="/images/onboarding-extension-launch.svg" alt="" />
+              </div>
+            </Carousel>
+            <Box
+              display={Display.Flex}
+              flexDirection={FlexDirection.Column}
+              justifyContent={JustifyContent.flexStart}
+              width={BlockSize.Full}
+              marginTop={4}
+              gap={4}
+            >
+              <Text
+                variant={TextVariant.headingLg}
+                as="h2"
+                fontWeight={FontWeight.Bold}
               >
-                <Text variant={TextVariant.bodyMd}>
-                  {t('onboardingPinExtensionDescription2')}
-                </Text>
-                <Text variant={TextVariant.bodyMd}>
-                  {t('onboardingPinExtensionDescription3')}
-                </Text>
-              </Box>
-            )}
-          </Box>
+                {t('onboardingPinExtensionTitle')}
+              </Text>
+              {selectedIndex === 0 ? (
+                <Box>
+                  <Text variant={TextVariant.bodyMd}>
+                    {t('onboardingPinExtensionDescription')}
+                  </Text>
+                </Box>
+              ) : (
+                <Box
+                  display={Display.Flex}
+                  flexDirection={FlexDirection.Column}
+                  gap={4}
+                >
+                  <Text variant={TextVariant.bodyMd}>
+                    {t('onboardingPinExtensionDescription2')}
+                  </Text>
+                  <Text variant={TextVariant.bodyMd}>
+                    {t('onboardingPinExtensionDescription3')}
+                  </Text>
+                </Box>
+              )}
+            </Box>
+          </div>
           <div className="onboarding-pin-extension__buttons">
             <Button
               variant={ButtonVariant.Primary}

@@ -1,6 +1,6 @@
 .toasts-container {
-  position: fixed;
-  bottom: 96px;
+  position: sticky;
+  bottom: 16px;
   margin-inline-start: 16px;
   margin-inline-end: 16px;
   z-index: 200;

@@ -139,7 +139,8 @@ export default function SrpInputImport({ onChange }) {
     // if srp length is valid and no empty word trigger onChange
     if (
       SRP_LENGTHS.includes(draftSrp.length) &&
-      !draftSrp.some((word) => word.word.length === 0)
+      !draftSrp.some((word) => word.word.length === 0) &&
+      wordsNotInWordList.length === 0
     ) {
       const stringSrp = draftSrp.map((word) => word.word).join(' ');
       onChange(stringSrp);
@@ -160,7 +161,13 @@ export default function SrpInputImport({ onChange }) {
                   ref={(el) => (srpRefs.current[word.id] = el)}
                   error={missSpelledWords.includes(word.word)}
                   value={word.word}
-                  type={word.active || showAll ? 'text' : 'password'}
+                  type={
+                    word.active ||
+                    showAll ||
+                    missSpelledWords.includes(word.word)
+                      ? 'text'
+                      : 'password'
+                  }
                   startAccessory={
                     <Text
                       color={TextColor.textAlternative}
