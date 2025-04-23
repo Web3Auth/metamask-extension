@@ -74,8 +74,3 @@ export const getOnboardingInitiator = (state) => {
     tabId,
   };
 };
-
-export const getUserSocialLoginEmail = (state) => {
-  console.log('state.metamask', state.metamask);
-  return state.metamask.socialLoginEmail;
-};

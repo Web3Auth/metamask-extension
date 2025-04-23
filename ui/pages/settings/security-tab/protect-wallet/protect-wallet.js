@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import {
   AvatarAccount,
   AvatarAccountSize,
@@ -21,16 +22,31 @@ import {
 import { shortenAddress } from '../../../../helpers/utils/util';
 // eslint-disable-next-line import/no-restricted-paths
 import { normalizeSafeAddress } from '../../../../../app/scripts/lib/multichain/address';
+import {
+  getBackupState,
+  getMetaMaskAccountBalances,
+} from '../../../../selectors';
+import { getAccountsByKeyringId } from '../../../../store/actions';
 
 const ProtectWallet = () => {
-  const account1Address = '0x5CfE73b6021E818B776b421B1c4Db2474086a7e1';
-  const shortenedAccount1Address = shortenAddress(
-    normalizeSafeAddress(account1Address),
-  );
-  const account2Address = '0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe6';
-  const shortenedAccount2Address = shortenAddress(
-    normalizeSafeAddress(account2Address),
-  );
+  const backUps = useSelector(getBackupState);
+  const accountsWithBalances = useSelector(getMetaMaskAccountBalances);
+  const [backupsWithAccounts, setBackupsWithAccounts] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const _backupsWithAccounts = await Promise.all(
+        backUps.map(async (backup) => getAccountsByKeyringId(backup.id)),
+      );
+
+      setBackupsWithAccounts(
+        _backupsWithAccounts.map((accounts, index) => ({
+          ...backUps[index],
+          accounts,
+        })),
+      );
+    })();
+  }, [backUps, accountsWithBalances]);
 
   return (
     <div className="protect-wallet">
@@ -68,85 +84,99 @@ const ProtectWallet = () => {
           </Box>
         </Box>
       </div>
-      <div className="protect-wallet__container">
-        <Box
-          display={Display.Flex}
-          flexDirection={FlexDirection.Column}
-          padding={4}
-        >
+      {backupsWithAccounts.map((backUp) => (
+        <div className="protect-wallet__container" key={backUp.id}>
           <Box
             display={Display.Flex}
-            justifyContent={JustifyContent.spaceBetween}
+            flexDirection={FlexDirection.Column}
+            padding={4}
           >
-            <Text variant={TextVariant.bodyMd}>Secret Recovery Phrase 1</Text>
-            <Box display={Display.Flex} alignItems={AlignItems.center} gap={1}>
-              <Icon name={IconName.Warning} color={IconColor.warningDefault} />
-              <Text
-                variant={TextVariant.bodyMd}
-                color={TextColor.warningDefault}
-              >
-                Back up
+            <Box
+              display={Display.Flex}
+              justifyContent={JustifyContent.spaceBetween}
+            >
+              <Text variant={TextVariant.bodyMd}>
+                Secret Recovery Phrase 1 {backUp.id}
               </Text>
-              <Box>
-                <ButtonIcon
-                  iconName={IconName.ArrowRight}
-                  size={ButtonIconSize.Sm}
-                  color={IconColor.iconAlternative}
-                  ariaLabel="Back up"
+              <Box
+                display={Display.Flex}
+                alignItems={AlignItems.center}
+                gap={1}
+              >
+                <Icon
+                  name={
+                    backUp.hasBackup ? IconName.Confirmation : IconName.Warning
+                  }
+                  color={
+                    backUp.hasBackup
+                      ? IconColor.successDefault
+                      : IconColor.warningDefault
+                  }
                 />
+                <Text
+                  variant={TextVariant.bodyMd}
+                  color={
+                    backUp.hasBackup
+                      ? TextColor.successDefault
+                      : TextColor.warningDefault
+                  }
+                >
+                  Back up
+                </Text>
+                <Box>
+                  <ButtonIcon
+                    iconName={IconName.ArrowRight}
+                    size={ButtonIconSize.Sm}
+                    color={IconColor.iconAlternative}
+                    ariaLabel="Back up"
+                  />
+                </Box>
               </Box>
             </Box>
           </Box>
-        </Box>
-        <Box
-          className="protect-wallet__container-body"
-          padding={4}
-          gap={2}
-          display={Display.Flex}
-          flexDirection={FlexDirection.Column}
-        >
           <Box
+            className="protect-wallet__container-body"
+            padding={4}
+            gap={2}
             display={Display.Flex}
-            justifyContent={JustifyContent.spaceBetween}
-            alignItems={AlignItems.center}
+            flexDirection={FlexDirection.Column}
           >
-            <Box display={Display.Flex} alignItems={AlignItems.center} gap={2}>
-              <AvatarAccount
-                address={account1Address}
-                size={AvatarAccountSize.Sm}
-              />
-              <Text variant={TextVariant.bodySmMedium}>Account 1</Text>
-              <Text
-                variant={TextVariant.bodySm}
-                color={TextColor.textAlternative}
+            {backUp.accounts?.map((account) => (
+              <Box
+                key={account}
+                display={Display.Flex}
+                justifyContent={JustifyContent.spaceBetween}
+                alignItems={AlignItems.center}
               >
-                {shortenedAccount1Address}
-              </Text>
-            </Box>
-            <Text variant={TextVariant.bodySm}>$1,841.09</Text>
+                <Box
+                  display={Display.Flex}
+                  alignItems={AlignItems.center}
+                  gap={2}
+                >
+                  <AvatarAccount
+                    address={account}
+                    size={AvatarAccountSize.Sm}
+                  />
+                  <Text variant={TextVariant.bodySmMedium}>Account 1</Text>
+                  <Text
+                    variant={TextVariant.bodySm}
+                    color={TextColor.textAlternative}
+                  >
+                    {shortenAddress(normalizeSafeAddress(account))}
+                  </Text>
+                </Box>
+                <Text variant={TextVariant.bodySm}>
+                  ${' '}
+                  {parseInt(
+                    accountsWithBalances[account]?.balance || '0x0',
+                    16,
+                  )}
+                </Text>
+              </Box>
+            ))}
           </Box>
-          <Box
-            display={Display.Flex}
-            justifyContent={JustifyContent.spaceBetween}
-            alignItems={AlignItems.center}
-          >
-            <Box display={Display.Flex} alignItems={AlignItems.center} gap={2}>
-              <AvatarAccount
-                address={account2Address}
-                size={AvatarAccountSize.Sm}
-              />
-              <Text variant={TextVariant.bodySmMedium}>Solana Account 1</Text>
-              <Text
-                variant={TextVariant.bodySm}
-                color={TextColor.textAlternative}
-              >
-                {shortenedAccount2Address}
-              </Text>
-            </Box>
-            <Text variant={TextVariant.bodySm}>$45.29</Text>
-          </Box>
-        </Box>
-      </div>
+        </div>
+      ))}
     </div>
   );
 };

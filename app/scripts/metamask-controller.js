@@ -3486,6 +3486,7 @@ export default class MetamaskController extends EventEmitter {
       // seedless onboarding
       createSeedPhraseBackup: this.createSeedPhraseBackup.bind(this),
       fetchAllSeedPhrases: this.fetchAllSeedPhrases.bind(this),
+      updateBackupMetadataState: this.updateBackupMetadataState.bind(this),
 
       // hardware wallets
       connectHardware: this.connectHardware.bind(this),
@@ -3737,6 +3738,7 @@ export default class MetamaskController extends EventEmitter {
       importMnemonicToVault: this.importMnemonicToVault.bind(this),
       ///: END:ONLY_INCLUDE_IF
       exportAccount: this.exportAccount.bind(this),
+      getAccountsByKeyringId: this.getAccountsByKeyringId.bind(this),
 
       // txController
       updateTransaction: txController.updateTransaction.bind(txController),
@@ -4489,10 +4491,11 @@ export default class MetamaskController extends EventEmitter {
    * Generate Encryption Key from the password using the Threshold OPRF and encrypt the seed phrase with the key.
    * Save the encrypted seed phrase in the metadata store.
    *
-   * @param {number[]} encodedSeedPhrase - The seed phrase to backup.
    * @param {string} password - The user's password.
+   * @param {number[]} encodedSeedPhrase - The seed phrase to backup.
+   * @param {string} keyringId - The keyring id of the backup seed phrase.
    */
-  async createSeedPhraseBackup(encodedSeedPhrase, password) {
+  async createSeedPhraseBackup(password, encodedSeedPhrase, keyringId) {
     try {
       const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
 
@@ -4502,6 +4505,7 @@ export default class MetamaskController extends EventEmitter {
       await this.seedlessOnboardingController.createToprfKeyAndBackupSeedPhrase(
         password,
         seedPhrase,
+        keyringId,
       );
     } catch (error) {
       log.error('[createSeedPhraseBackup] error', error);
@@ -4547,6 +4551,34 @@ export default class MetamaskController extends EventEmitter {
     }
   }
 
+  /**
+   * Updates the Seedless Onboarding backup metadata state, with backup seed phrase id and backup seed phrase.
+   *
+   * @param {string} keyringId - The keyring id of the backup seed phrase.
+   * @param {string} encodedSeedPhrase - The backup seed phrase.
+   */
+  async updateBackupMetadataState(keyringId, encodedSeedPhrase) {
+    const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
+    this.seedlessOnboardingController.updateBackupMetadataState(
+      keyringId,
+      this._convertMnemonicToWordlistIndices(seedPhraseAsBuffer),
+    );
+  }
+
+  /**
+   * Get all accounts for a given keyring id.
+   *
+   * @param {string} keyringId - The keyring id.
+   * @returns {Promise<`0x${string}`[]>} The accounts.
+   */
+  async getAccountsByKeyringId(keyringId) {
+    const accounts = await this.keyringController.withKeyring(
+      { id: keyringId },
+      async ({ keyring }) => keyring.getAccounts(),
+    );
+    return accounts;
+  }
+
   //=============================================================================
   // VAULT / KEYRING RELATED METHODS
   //=============================================================================
@@ -4562,12 +4594,14 @@ export default class MetamaskController extends EventEmitter {
    * For example, a mnemonic phrase can generate many accounts, and is a keyring.
    *
    * @param {string} password
-   * @returns {object} vault
+   * @returns {Array} created keyrings metadata
    */
   async createNewVaultAndKeychain(password) {
     const releaseLock = await this.createVaultMutex.acquire();
     try {
-      return await this.keyringController.createNewVaultAndKeychain(password);
+      await this.keyringController.createNewVaultAndKeychain(password);
+
+      return this.keyringController.state.keyringsMetadata;
     } finally {
       releaseLock();
     }
@@ -4703,6 +4737,8 @@ export default class MetamaskController extends EventEmitter {
           async (keyring) => this.setLedgerTransportPreference(keyring),
         );
       }
+
+      return this.keyringController.state.keyringsMetadata;
     } finally {
       releaseLock();
     }

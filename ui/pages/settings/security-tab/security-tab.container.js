@@ -27,6 +27,7 @@ import {
   getMetaMetricsDataDeletionId,
   getPetnamesEnabled,
 } from '../../../selectors/selectors';
+import { getBackupState } from '../../../selectors/backup';
 import { getNetworkConfigurationsByChainId } from '../../../../shared/modules/selectors/networks';
 import { openBasicFunctionalityModal } from '../../../ducks/app/app';
 import {
@@ -59,6 +60,7 @@ const mapStateToProps = (state, ownProps) => {
     use4ByteResolution,
     useExternalServices,
     useExternalNameSources,
+    socialLoginEmail,
   } = metamask;
 
   const networkConfigurations = getNetworkConfigurationsByChainId(state);
@@ -69,6 +71,11 @@ const mapStateToProps = (state, ownProps) => {
   );
   const isSecurityPasswordHintPage = Boolean(
     pathname.match(SECURITY_PASSWORD_HINT_ROUTE),
+  );
+
+  const socialLoginEnabled = Boolean(socialLoginEmail);
+  const allSrpBackupsEnabled = getBackupState(state).every(
+    (backup) => backup.hasBackup,
   );
 
   return {
@@ -95,6 +102,9 @@ const mapStateToProps = (state, ownProps) => {
     isSecuritySrpPage,
     isSecurityPasswordPage,
     isSecurityPasswordHintPage,
+    socialLoginEmail,
+    socialLoginEnabled,
+    allSrpBackupsEnabled,
   };
 };
 

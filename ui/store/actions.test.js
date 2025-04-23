@@ -2815,7 +2815,7 @@ describe('Actions', () => {
         { type: 'HIDE_LOADING_INDICATION' },
       ];
 
-      await store.dispatch(actions.restoreAndGetSeedPhrase('password'));
+      await store.dispatch(actions.restoreBackupAndGetSeedPhrase('password'));
 
       expect(fetchAllSeedPhrasesStub.callCount).toStrictEqual(1);
       expect(createNewVaultAndRestoreStub.callCount).toStrictEqual(1);
@@ -2840,7 +2840,7 @@ describe('Actions', () => {
         { type: 'HIDE_LOADING_INDICATION' },
       ];
 
-      await store.dispatch(actions.restoreAndGetSeedPhrase('password'));
+      await store.dispatch(actions.restoreBackupAndGetSeedPhrase('password'));
 
       expect(fetchAllSeedPhrasesStub.callCount).toStrictEqual(1);
       expect(createNewVaultAndRestoreStub.callCount).toStrictEqual(0);

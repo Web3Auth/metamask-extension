@@ -116,6 +116,9 @@ export default class SecurityTab extends PureComponent {
     isSecuritySrpPage: PropTypes.bool,
     isSecurityPasswordPage: PropTypes.bool,
     isSecurityPasswordHintPage: PropTypes.bool,
+    socialLoginEmail: PropTypes.string,
+    socialLoginEnabled: PropTypes.bool,
+    allSrpBackupsEnabled: PropTypes.bool,
   };
 
   state = {
@@ -227,7 +230,12 @@ export default class SecurityTab extends PureComponent {
   // TODO: if using social login use this
   renderSeedWords() {
     const { t } = this.context;
-    const { history } = this.props;
+    const {
+      history,
+      socialLoginEmail,
+      socialLoginEnabled,
+      allSrpBackupsEnabled,
+    } = this.props;
 
     return (
       <>
@@ -241,14 +249,17 @@ export default class SecurityTab extends PureComponent {
           <div className="settings-page__content-description">
             {t('securitySrpDescription')}
           </div>
-          {/* TODO: get email and severity from controller */}
           <BannerAlert
             title={t('securitySrpLoginWithAppleOrGoogle')}
-            description="yourusername@gmail.com"
+            description={socialLoginEmail}
             paddingTop={2}
             paddingBottom={2}
             marginTop={4}
-            severity={BannerAlertSeverity.Success}
+            severity={
+              socialLoginEnabled
+                ? BannerAlertSeverity.Success
+                : BannerAlertSeverity.Warning
+            }
           />
           {/* TODO: get severity from controller */}
           <BannerAlert
@@ -256,7 +267,11 @@ export default class SecurityTab extends PureComponent {
             paddingTop={2}
             paddingBottom={2}
             marginTop={4}
-            severity={BannerAlertSeverity.Success}
+            severity={
+              allSrpBackupsEnabled
+                ? BannerAlertSeverity.Success
+                : BannerAlertSeverity.Warning
+            }
           />
           <Button
             width={BlockSize.Full}

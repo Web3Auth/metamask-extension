@@ -27,17 +27,14 @@ import {
   ONBOARDING_WELCOME_ROUTE,
   ONBOARDING_UNLOCK_ROUTE,
 } from '../../../helpers/constants/routes';
-import {
-  getFirstTimeFlowType,
-  getUserSocialLoginEmail,
-} from '../../../selectors';
+import { getFirstTimeFlowType, getSocialLoginEmail } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 
 export default function AccountExist() {
   const history = useHistory();
   const t = useI18nContext();
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
-  const userSocialLoginEmail = useSelector(getUserSocialLoginEmail);
+  const userSocialLoginEmail = useSelector(getSocialLoginEmail);
 
   const onDone = async () => {
     history.push(ONBOARDING_UNLOCK_ROUTE);
