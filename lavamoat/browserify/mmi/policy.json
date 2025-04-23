@@ -1778,8 +1778,7 @@
       "packages": {
         "@metamask/scure-bip39": true,
         "@metamask/utils": true,
-        "@metamask/snaps-sdk>@metamask/key-tree>@noble/curves": true,
-        "viem>webauthn-p256>@noble/curves": true,
+        "@noble/curves": true,
         "@noble/hashes": true,
         "@metamask/utils>@scure/base": true
       }
@@ -2300,7 +2299,6 @@
         "@metamask/utils>@metamask/superstruct": true,
         "@metamask/utils": true,
         "@metamask/snaps-utils>@metamask/snaps-registry>@noble/curves": true,
-        "viem>webauthn-p256>@noble/curves": true,
         "@noble/hashes": true
       }
     },
@@ -2313,7 +2311,7 @@
         "@metamask/snaps-utils": true,
         "@metamask/utils>@metamask/superstruct": true,
         "@metamask/utils": true,
-        "@noble/hashes": true,
+        "@metamask/snaps-rpc-methods>@noble/hashes": true,
         "luxon": true
       }
     },
@@ -2351,7 +2349,7 @@
         "@metamask/snaps-sdk": true,
         "@metamask/utils>@metamask/superstruct": true,
         "@metamask/utils": true,
-        "@noble/hashes": true,
+        "@metamask/snaps-utils>@noble/hashes": true,
         "@metamask/utils>@scure/base": true,
         "chalk": true,
         "@metamask/snaps-utils>cron-parser": true,
@@ -2599,14 +2597,6 @@
         "@noble/curves>@noble/hashes": true
       }
     },
-    "@metamask/snaps-sdk>@metamask/key-tree>@noble/curves": {
-      "globals": {
-        "TextEncoder": true
-      },
-      "packages": {
-        "@metamask/snaps-sdk>@metamask/key-tree>@noble/curves>@noble/hashes": true
-      }
-    },
     "@metamask/snaps-utils>@metamask/snaps-registry>@noble/curves": {
       "globals": {
         "TextEncoder": true
@@ -2631,14 +2621,6 @@
         "@ethereumjs/tx>ethereum-cryptography>@noble/hashes": true
       }
     },
-    "viem>webauthn-p256>@noble/curves": {
-      "globals": {
-        "TextEncoder": true
-      },
-      "packages": {
-        "@noble/hashes": true
-      }
-    },
     "@noble/hashes": {
       "globals": {
         "TextEncoder": true,
@@ -2657,6 +2639,18 @@
         "crypto": true
       }
     },
+    "@metamask/snaps-rpc-methods>@noble/hashes": {
+      "globals": {
+        "TextEncoder": true,
+        "crypto": true
+      }
+    },
+    "@metamask/snaps-utils>@noble/hashes": {
+      "globals": {
+        "TextEncoder": true,
+        "crypto": true
+      }
+    },
     "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@noble/hashes": {
       "globals": {
         "TextEncoder": true,
@@ -2669,14 +2663,9 @@
         "crypto": true
       }
     },
-    "@metamask/snaps-sdk>@metamask/key-tree>@noble/curves>@noble/hashes": {
-      "globals": {
-        "TextEncoder": true,
-        "crypto": true
-      }
-    },
     "@metamask/snaps-utils>@metamask/snaps-registry>@noble/curves>@noble/hashes": {
       "globals": {
+        "TextDecoder": true,
         "TextEncoder": true,
         "crypto": true
       }

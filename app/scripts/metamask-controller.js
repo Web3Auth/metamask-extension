@@ -4709,12 +4709,7 @@ export default class MetamaskController extends EventEmitter {
       );
 
       const { isNewUser } =
-        await this.seedlessOnboardingController.authenticate({
-          idTokens: oAuthLoginResult.idTokens,
-          authConnectionId: oAuthLoginResult.authConnectionId,
-          groupedAuthConnectionId: oAuthLoginResult.groupedAuthConnectionId,
-          userId: oAuthLoginResult.userId,
-        });
+        await this.seedlessOnboardingController.authenticate(oAuthLoginResult);
 
       return isNewUser;
     } catch (error) {

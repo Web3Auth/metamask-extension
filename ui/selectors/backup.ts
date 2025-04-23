@@ -1,9 +1,8 @@
 import { KeyringControllerState, KeyringMetadata } from "@metamask/keyring-controller";
 import { SeedlessOnboardingControllerState } from "@metamask/seedless-onboarding-controller";
-import { OAuthControllerState } from "../../app/scripts/controllers/oauth/types";
 
 export type BackupState = {
-  metamask: KeyringControllerState & SeedlessOnboardingControllerState & OAuthControllerState;
+  metamask: KeyringControllerState & SeedlessOnboardingControllerState;
 };
 
 export function getSocialLoginEmail(state: BackupState): string | undefined {

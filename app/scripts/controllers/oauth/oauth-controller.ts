@@ -25,16 +25,7 @@ export const getDefaultOAuthControllerState =
  * using the `persist` flag; and if they can be sent to Sentry or not, using
  * the `anonymous` flag.
  */
-const controllerMetadata: StateMetadata<OAuthControllerState> = {
-  socialLoginEmail: {
-    persist: true,
-    anonymous: true,
-  },
-  provider: {
-    persist: true,
-    anonymous: true,
-  },
-};
+const controllerMetadata: StateMetadata<OAuthControllerState> = {};
 
 export default class OAuthController extends BaseController<
   typeof controllerName,
@@ -113,16 +104,13 @@ export default class OAuthController extends BaseController<
     const idToken = authTokenData.jwt_tokens[this.#OAuthAud];
     const userInfo = await loginHandler.getUserInfo(idToken);
 
-    this.update((state) => {
-      state.provider = loginHandler.provider;
-      state.socialLoginEmail = userInfo.email;
-    });
-
     return {
       authConnectionId,
       groupedAuthConnectionId,
       userId: userInfo.sub,
       idTokens: [idToken],
+      authConnection: loginHandler.provider,
+      socialLoginEmail: userInfo.email,
     };
   }
 
