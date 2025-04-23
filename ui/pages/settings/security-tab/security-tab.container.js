@@ -28,18 +28,12 @@ import {
 } from '../../../selectors/selectors';
 import { getNetworkConfigurationsByChainId } from '../../../../shared/modules/selectors/networks';
 import { openBasicFunctionalityModal } from '../../../ducks/app/app';
-import {
-  SECURITY_MULTI_SRP_ROUTE,
-  SECURITY_PASSWORD_HINT_ROUTE,
-  SECURITY_PASSWORD_ROUTE,
-} from '../../../helpers/constants/routes';
+
 import { getMetaMaskHdKeyrings } from '../../../selectors';
 import SecurityTab from './security-tab.component';
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
   const { metamask } = state;
-  const { location } = ownProps;
-  const { pathname } = location;
 
   const {
     participateInMetaMetrics,
@@ -60,13 +54,6 @@ const mapStateToProps = (state, ownProps) => {
 
   const networkConfigurations = getNetworkConfigurationsByChainId(state);
 
-  const isSecuritySrpPage = Boolean(pathname.match(SECURITY_MULTI_SRP_ROUTE));
-  const isSecurityPasswordPage = Boolean(
-    pathname.match(SECURITY_PASSWORD_ROUTE),
-  );
-  const isSecurityPasswordHintPage = Boolean(
-    pathname.match(SECURITY_PASSWORD_HINT_ROUTE),
-  );
   const hasMultipleHdKeyrings = getMetaMaskHdKeyrings(state).length > 1;
 
   return {
@@ -88,9 +75,6 @@ const mapStateToProps = (state, ownProps) => {
     securityAlertsEnabled: getIsSecurityAlertsEnabled(state),
     useTransactionSimulations: metamask.useTransactionSimulations,
     metaMetricsDataDeletionId: getMetaMetricsDataDeletionId(state),
-    isSecuritySrpPage,
-    isSecurityPasswordPage,
-    isSecurityPasswordHintPage,
     hdEntropyIndex: getHDEntropyIndex(state),
     hasMultipleHdKeyrings,
   };

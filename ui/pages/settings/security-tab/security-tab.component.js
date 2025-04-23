@@ -51,8 +51,8 @@ import {
 import {
   ADD_POPULAR_CUSTOM_NETWORK,
   SECURITY_PASSWORD_HINT_ROUTE,
-  SECURITY_PASSWORD_ROUTE,
   REVEAL_SRP_LIST_ROUTE,
+  SECURITY_PASSWORD_CHANGE_ROUTE,
 } from '../../../helpers/constants/routes';
 import {
   getNumberOfSettingRoutesInTab,
@@ -64,9 +64,6 @@ import SRPQuiz from '../../../components/app/srp-quiz-modal';
 import MetametricsToggle from './metametrics-toggle';
 import ProfileSyncToggle from './profile-sync-toggle';
 import DeleteMetametricsDataButton from './delete-metametrics-data-button';
-import ProtectWallet from './protect-wallet';
-import ChangePassword from './change-password';
-import PasswordHint from './password-hint';
 
 export default class SecurityTab extends PureComponent {
   static contextTypes = {
@@ -112,9 +109,6 @@ export default class SecurityTab extends PureComponent {
     toggleExternalServices: PropTypes.func,
     setSecurityAlertsEnabled: PropTypes.func,
     metaMetricsDataDeletionId: PropTypes.string,
-    isSecuritySrpPage: PropTypes.bool,
-    isSecurityPasswordPage: PropTypes.bool,
-    isSecurityPasswordHintPage: PropTypes.bool,
     hdEntropyIndex: PropTypes.number,
     hasMultipleHdKeyrings: PropTypes.bool,
   };
@@ -274,7 +268,7 @@ export default class SecurityTab extends PureComponent {
             marginTop={4}
             block
             onClick={() => {
-              history.push(SECURITY_PASSWORD_ROUTE);
+              history.push(SECURITY_PASSWORD_CHANGE_ROUTE);
             }}
           >
             {t('securityChangePasswordChange')}
@@ -1210,19 +1204,8 @@ export default class SecurityTab extends PureComponent {
       petnamesEnabled,
       dataCollectionForMarketing,
       setDataCollectionForMarketing,
-      isSecuritySrpPage,
-      isSecurityPasswordPage,
-      isSecurityPasswordHintPage,
     } = this.props;
     const { showDataCollectionDisclaimer } = this.state;
-
-    if (isSecurityPasswordHintPage) {
-      return <PasswordHint />;
-    } else if (isSecurityPasswordPage) {
-      return <ChangePassword />;
-    } else if (isSecuritySrpPage) {
-      return <ProtectWallet />;
-    }
 
     return (
       <div className="settings-page__body">

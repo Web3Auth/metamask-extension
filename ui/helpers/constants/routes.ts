@@ -33,15 +33,6 @@ PATH_NAME_MAP[EXPERIMENTAL_ROUTE] = 'Experimental Settings Page';
 export const SECURITY_ROUTE = '/settings/security';
 PATH_NAME_MAP[SECURITY_ROUTE] = 'Security Settings Page';
 
-export const SECURITY_MULTI_SRP_ROUTE = '/settings/security/multi-srp';
-PATH_NAME_MAP[SECURITY_MULTI_SRP_ROUTE] = 'Protect your wallet';
-
-export const SECURITY_PASSWORD_ROUTE = '/settings/security/password';
-PATH_NAME_MAP[SECURITY_PASSWORD_ROUTE] = 'Change Password';
-
-export const SECURITY_PASSWORD_HINT_ROUTE = '/settings/security/password-hint';
-PATH_NAME_MAP[SECURITY_PASSWORD_HINT_ROUTE] = 'Password Hint';
-
 export const ABOUT_US_ROUTE = '/settings/about-us';
 PATH_NAME_MAP[ABOUT_US_ROUTE] = 'About Us Page';
 
@@ -78,6 +69,14 @@ export const REVEAL_SRP_LIST_ROUTE =
   '/settings/security-and-privacy/reveal-srp-list';
 PATH_NAME_MAP[REVEAL_SRP_LIST_ROUTE] =
   'Reveal Secret Recovery Phrase List Page';
+
+export const SECURITY_PASSWORD_CHANGE_ROUTE =
+  '/settings/security-and-privacy/password-change';
+PATH_NAME_MAP[SECURITY_PASSWORD_CHANGE_ROUTE] = 'Change Password';
+
+export const SECURITY_PASSWORD_HINT_ROUTE =
+  '/settings/security-and-privacy/password-hint';
+PATH_NAME_MAP[SECURITY_PASSWORD_HINT_ROUTE] = 'Password Hint';
 
 export const REVEAL_SEED_ROUTE = '/seed';
 // This `:keyringId` parameter is actually optional.
