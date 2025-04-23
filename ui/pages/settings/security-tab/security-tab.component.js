@@ -210,6 +210,8 @@ export default class SecurityTab extends PureComponent {
             data-testid="reveal-seed-words"
             type="danger"
             size={ButtonSize.Lg}
+            block
+            marginTop={4}
             onClick={(event) => {
               event.preventDefault();
               this.context.trackEvent({
