@@ -2,7 +2,7 @@ import { BaseLoginHandler } from './base-login-handler';
 import { LoginHandlerOptions, AuthConnection, OAuthUserInfo } from './types';
 
 export class AppleLoginHandler extends BaseLoginHandler {
-  public readonly PROVIDER = 'apple';
+  public readonly OAUTH_SERVER_URL = 'https://appleid.apple.com/auth/authorize';
 
   readonly #scope = ['name', 'email'];
 
@@ -27,7 +27,7 @@ export class AppleLoginHandler extends BaseLoginHandler {
   }
 
   getAuthUrl(): string {
-    const authUrl = new URL(this.options.oAuthServerUrl);
+    const authUrl = new URL(this.OAUTH_SERVER_URL);
     authUrl.searchParams.set('client_id', this.options.oAuthClientId);
     authUrl.searchParams.set('response_type', 'code');
     authUrl.searchParams.set('redirect_uri', this.serverRedirectUri);

@@ -14,7 +14,6 @@ export enum AuthConnection {
 
 export type LoginHandlerOptions = {
   oAuthClientId: string;
-  oAuthServerUrl: string;
   authServerUrl: string;
   web3AuthNetwork: Web3AuthNetwork;
   redirectUri: string;
@@ -72,15 +71,14 @@ export type OAuthProviderConfig = {
   redirectUri?: string;
   /** for apple, we need to redirect to a server endpoint that will handle the post request and redirect back to client */
   serverRedirectUri?: string;
-  authUri: string;
   scopes?: string[];
 };
 
 export type OAuthLoginEnv = {
+  authConnectionId: string;
+  groupedAuthConnectionId: string;
   googleClientId: string;
-  googleAuthUri: string;
   appleClientId: string;
-  appleAuthUri: string;
   authServerUrl: string;
   web3AuthNetwork: Web3AuthNetwork;
   serverRedirectUri?: string;

@@ -19,13 +19,11 @@ export function createLoginHandler(
       return new GoogleLoginHandler({
         ...commonHandlerOptions,
         oAuthClientId: env.googleClientId,
-        oAuthServerUrl: env.googleAuthUri,
       });
     case AuthConnection.Apple:
       return new AppleLoginHandler({
         ...commonHandlerOptions,
         oAuthClientId: env.appleClientId,
-        oAuthServerUrl: env.appleAuthUri,
         serverRedirectUri: env.serverRedirectUri,
       });
     default:

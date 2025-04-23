@@ -468,11 +468,12 @@ export function changePassword(
         newPassword,
         oldPassword,
       ]);
+      dispatch(hideLoadingIndication());
     } catch (error) {
+      dispatch(hideLoadingIndication());
+
       dispatch(displayWarning(error));
       throw error;
-    } finally {
-      dispatch(hideLoadingIndication());
     }
   };
 }

@@ -976,9 +976,9 @@ export default class MetamaskController extends EventEmitter {
         web3AuthNetwork: process.env.WEB3AUTH_NETWORK,
         authServerUrl: process.env.AUTH_SERVER_URL,
         googleClientId: process.env.GOOGLE_CLIENT_ID,
-        googleAuthUri: process.env.GOOGLE_AUTH_URI,
         appleClientId: process.env.APPLE_CLIENT_ID,
-        appleAuthUri: process.env.APPLE_AUTH_URI,
+        authConnectionId: process.env.AUTH_CONNECTION_ID,
+        groupedAuthConnectionId: process.env.GROUPED_AUTH_CONNECTION_ID,
       },
     });
 
@@ -3552,6 +3552,7 @@ export default class MetamaskController extends EventEmitter {
       createSeedPhraseBackup: this.createSeedPhraseBackup.bind(this),
       fetchAllSeedPhrases: this.fetchAllSeedPhrases.bind(this),
       updateBackupMetadataState: this.updateBackupMetadataState.bind(this),
+      changePassword: this.changePassword.bind(this),
 
       // hardware wallets
       connectHardware: this.connectHardware.bind(this),
@@ -4810,10 +4811,14 @@ export default class MetamaskController extends EventEmitter {
    * @returns {Promise<void>}
    */
   async changePassword(newPassword, oldPassword) {
+    // change password for the seedless onboarding flow
     await this.seedlessOnboardingController.changePassword(
       newPassword,
       oldPassword,
     );
+
+    // also update the vault password for keyring controller
+    await this.keyringController.changePassword(newPassword);
   }
 
   /**

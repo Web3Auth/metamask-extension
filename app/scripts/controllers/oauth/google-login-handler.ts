@@ -5,6 +5,9 @@ export class GoogleLoginHandler extends BaseLoginHandler {
   // This prompt value is used to force the user to select an account before OAuth login
   readonly #prompt = 'select_account';
 
+  public readonly OAUTH_SERVER_URL =
+    'https://accounts.google.com/o/oauth2/v2/auth';
+
   readonly #scope = ['openid', 'profile', 'email'];
 
   get provider() {
@@ -16,7 +19,7 @@ export class GoogleLoginHandler extends BaseLoginHandler {
   }
 
   getAuthUrl(): string {
-    const authUrl = new URL(this.options.oAuthServerUrl);
+    const authUrl = new URL(this.OAUTH_SERVER_URL);
     authUrl.searchParams.set('client_id', this.options.oAuthClientId);
     authUrl.searchParams.set('response_type', 'code');
     authUrl.searchParams.set('scope', this.#scope.join(' '));

@@ -47,10 +47,6 @@ export default class OAuthController extends BaseController<
 
   readonly #OAuthAud = 'metamask';
 
-  readonly #AuthConnectionId = 'byoa-server';
-
-  readonly #GroupedAuthConnectionId = 'mm-seedless-onboarding';
-
   constructor({ state, messenger, env }: OAuthControllerOptions) {
     super({
       messenger,
@@ -112,6 +108,7 @@ export default class OAuthController extends BaseController<
     loginHandler: BaseLoginHandler,
     authCode: string,
   ): Promise<OAuthLoginResult> {
+    const { authConnectionId, groupedAuthConnectionId } = this.#env;
     const authTokenData = await loginHandler.getAuthIdToken(authCode);
     const idToken = authTokenData.jwt_tokens[this.#OAuthAud];
     const userInfo = await loginHandler.getUserInfo(idToken);
@@ -122,8 +119,8 @@ export default class OAuthController extends BaseController<
     });
 
     return {
-      authConnectionId: this.#AuthConnectionId,
-      groupedAuthConnectionId: this.#GroupedAuthConnectionId,
+      authConnectionId,
+      groupedAuthConnectionId,
       userId: userInfo.sub,
       idTokens: [idToken],
     };

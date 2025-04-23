@@ -2,6 +2,7 @@ import EventEmitter from 'events';
 import React, { useMemo, useState } from 'react';
 import zxcvbn from 'zxcvbn';
 import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -24,7 +25,7 @@ import Mascot from '../../../../components/ui/mascot';
 import Spinner from '../../../../components/ui/spinner';
 import { useI18nContext } from '../../../../hooks/useI18nContext';
 import { PASSWORD_MIN_LENGTH } from '../../../../helpers/constants/common';
-import { changePassword } from '../../../../store/actions';
+import { changePassword, verifyPassword } from '../../../../store/actions';
 
 const ChangePasswordSteps = {
   CurrentPassword: 1,
@@ -35,6 +36,7 @@ const ChangePasswordSteps = {
 const ChangePassword = () => {
   const t = useI18nContext();
   const dispatch = useDispatch();
+  const history = useHistory();
   const [eventEmitter] = useState(new EventEmitter());
   const [step, setStep] = useState(ChangePasswordSteps.CurrentPassword);
 
@@ -50,16 +52,6 @@ const ChangePassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const handleSubmitCurrentPassword = () => {
-    // TODO: validate current password and move to next step
-    const isIncorrectPassword = currentPassword !== '123';
-    setIsIncorrectPasswordError(isIncorrectPassword);
-
-    if (!isIncorrectPassword) {
-      setStep(ChangePasswordSteps.ChangePassword);
-    }
-  };
 
   const getPasswordStrengthLabel = (isTooShort, score) => {
     if (isTooShort) {
@@ -155,15 +147,30 @@ const ChangePassword = () => {
     return !confirmPasswordError;
   }, [newPassword, confirmPassword, confirmPasswordError]);
 
+  const handleSubmitCurrentPassword = async () => {
+    try {
+      await verifyPassword(currentPassword);
+      setIsIncorrectPasswordError(false);
+      setStep(ChangePasswordSteps.ChangePassword);
+    } catch (error) {
+      setIsIncorrectPasswordError(true);
+    }
+  };
+
   const handleSubmitNewPassword = async () => {
     if (!isValid) {
       return;
     }
 
-    await dispatch(changePassword(newPassword, currentPassword));
+    try {
+      setStep(ChangePasswordSteps.CreatingPassword);
+      await dispatch(changePassword(newPassword, currentPassword));
 
-    setIsIncorrectPasswordError(true);
-    if (!isIncorrectPasswordError) {
+      // upon successful password change, go back to the settings page
+      history.goBack();
+    } catch (error) {
+      setIsIncorrectPasswordError(true);
+    } finally {
       setStep(ChangePasswordSteps.CreatingPassword);
     }
   };
