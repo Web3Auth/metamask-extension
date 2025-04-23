@@ -3,8 +3,10 @@ import {
   ControllerStateChangeEvent,
   RestrictedMessenger,
 } from '@metamask/base-controller';
-import { Web3AuthNetwork } from '@metamask/seedless-onboarding-controller';
-import { AuthConnection } from '../../../../shared/constants/oauth';
+import {
+  Web3AuthNetwork,
+  AuthConnection,
+} from '@metamask/seedless-onboarding-controller';
 
 export const controllerName = 'OAuthController';
 

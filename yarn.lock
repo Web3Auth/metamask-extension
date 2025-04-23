@@ -6265,7 +6265,7 @@ __metadata:
 
 "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz::locator=metamask-crx%40workspace%3A.":
   version: 0.0.0
-  resolution: "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz#./seedless-onboarding-controller.tgz::hash=000ce1&locator=metamask-crx%40workspace%3A."
+  resolution: "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz#./seedless-onboarding-controller.tgz::hash=910c5e&locator=metamask-crx%40workspace%3A."
   dependencies:
     "@metamask/auth-network-utils": ./auth-network-utils.tgz
     "@metamask/base-controller": "npm:^8.0.0"
@@ -6273,7 +6273,7 @@ __metadata:
     "@metamask/toprf-secure-backup": ./toprf-secure-backup.tgz
     "@metamask/utils": "npm:^11.2.0"
     async-mutex: "npm:^0.5.0"
-  checksum: 10/899c21f32bd189ae2ca6a816b7971894aa943a9f85e7c4ce0e8dacd6e8667f8e0edcbc476159a6e339e188d9cb3bfe4877ecbcae4dbffa9c63ec7019d76543ce
+  checksum: 10/de1e6a7963b1d1d0597e597b1506269c16b2ebbfb47b4452134ff9a4ee5f852cbcd3ec784269c906d197369581e53c2387e39df438edf40983ead0676bc5b22c
   languageName: node
   linkType: hard
 

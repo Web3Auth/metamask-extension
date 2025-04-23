@@ -53,6 +53,7 @@ import { Patch } from 'immer';
 import { HandlerType } from '@metamask/snaps-utils';
 ///: END:ONLY_INCLUDE_IF
 import { BACKUPANDSYNC_FEATURES } from '@metamask/profile-sync-controller/user-storage';
+import { AuthConnection } from '@metamask/seedless-onboarding-controller';
 import switchDirection from '../../shared/lib/switch-direction';
 import {
   ENVIRONMENT_TYPE_NOTIFICATION,
@@ -133,7 +134,6 @@ import { EndTraceRequest } from '../../shared/lib/trace';
 import { isInternalAccountInPermittedAccountIds } from '../../shared/lib/multichain/chain-agnostic-permission-utils/caip-accounts';
 import { SortCriteria } from '../components/app/assets/util/sort';
 import { NOTIFICATIONS_EXPIRATION_DELAY } from '../helpers/constants/notifications';
-import { AuthConnection } from '../../shared/constants/oauth';
 import * as actionConstants from './actionConstants';
 
 import {
@@ -3352,18 +3352,18 @@ export function resetOnboardingAction() {
   };
 }
 
-export function startOAuthLogin(
-  provider: AuthConnection,
+export function startSocialLogin(
+  authConnection: AuthConnection,
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
   return async (dispatch: MetaMaskReduxDispatch) => {
     dispatch(showLoadingIndication());
 
     try {
-      const oAuthLoginResult = await submitRequestToBackground(
-        'startOAuthLogin',
-        [provider],
+      const socialLoginResult = await submitRequestToBackground(
+        'startSocialLogin',
+        [authConnection],
       );
-      return oAuthLoginResult;
+      return socialLoginResult;
     } catch (err) {
       dispatch(displayWarning(error));
       if (isErrorWithMessage(error)) {

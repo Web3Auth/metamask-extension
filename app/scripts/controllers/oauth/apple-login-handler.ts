@@ -1,4 +1,4 @@
-import { AuthConnection } from '../../../../shared/constants/oauth';
+import { AuthConnection } from '@metamask/seedless-onboarding-controller';
 import { BaseLoginHandler } from './base-login-handler';
 import { LoginHandlerOptions, OAuthUserInfo } from './types';
 
