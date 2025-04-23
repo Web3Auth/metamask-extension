@@ -1,5 +1,7 @@
-import { Web3AuthNetwork } from '@metamask/seedless-onboarding-controller';
-import { AuthConnection } from '../../../../shared/constants/oauth';
+import {
+  Web3AuthNetwork,
+  AuthConnection,
+} from '@metamask/seedless-onboarding-controller';
 import OAuthController, {
   getDefaultOAuthControllerState,
 } from './oauth-controller';
@@ -19,6 +21,9 @@ function buildOAuthControllerMessenger() {
 const DEFAULT_GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID as string;
 const DEFAULT_APPLE_CLIENT_ID = process.env.APPLE_CLIENT_ID as string;
 const OAUTH_AUD = 'metamask';
+const MOCK_USER_ID = 'user-id';
+const MOCK_JWT_TOKEN =
+  'eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InN3bmFtOTA5QGdtYWlsLmNvbSIsInN1YiI6InN3bmFtOTA5QGdtYWlsLmNvbSIsImlzcyI6Im1ldGFtYXNrIiwiYXVkIjoibWV0YW1hc2siLCJpYXQiOjE3NDUyMDc1NjYsImVhdCI6MTc0NTIwNzg2NiwiZXhwIjoxNzQ1MjA3ODY2fQ.nXRRLB7fglRll7tMzFFCU0u7Pu6EddqEYf_DMyRgOENQ6tJ8OLtVknNf83_5a67kl_YKHFO-0PEjvJviPID6xg';
 
 function getOAuthLoginEnvs(): OAuthLoginEnv {
   return {
@@ -40,6 +45,18 @@ describe('OAuthController', () => {
     launchWebAuthFlowSpy = jest
       .spyOn(chrome.identity, 'launchWebAuthFlow')
       .mockResolvedValueOnce('https://mocked-redirect-uri?code=mocked-code');
+
+    // mock the fetch call to auth-server
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      json: jest.fn().mockResolvedValue({
+        verifier_id: MOCK_USER_ID,
+        jwt_tokens: {
+          [OAUTH_AUD]: MOCK_JWT_TOKEN,
+        },
+      }),
+    });
+    // mock the Math.random to return a fixed value nonce
+    jest.spyOn(global.Math, 'random').mockReturnValue(0.1);
   });
 
   afterEach(() => {
@@ -47,24 +64,12 @@ describe('OAuthController', () => {
   });
 
   it('should start the OAuth login process with `Google`', async () => {
-    const userId = 'user-id';
-    const idTokens = ['id-token'];
-
     const controller = new OAuthController({
       messenger,
       state: getDefaultOAuthControllerState(),
       env: getOAuthLoginEnvs(),
     });
 
-    // mock the fetch call to auth-server
-    jest.spyOn(global, 'fetch').mockResolvedValue({
-      json: jest.fn().mockResolvedValue({
-        verifier_id: userId,
-        jwt_tokens: {
-          [OAUTH_AUD]: idTokens[0],
-        },
-      }),
-    });
     await controller.startOAuthLogin(AuthConnection.Google);
 
     const googleLoginHandler = createLoginHandler(
@@ -80,26 +85,11 @@ describe('OAuthController', () => {
   });
 
   it('should start the OAuth login process with `Apple`', async () => {
-    const userId = 'apple-user-id';
-    const idTokens = ['id-token'];
-
     const controller = new OAuthController({
       messenger,
       state: getDefaultOAuthControllerState(),
       env: getOAuthLoginEnvs(),
     });
-
-    // mock the fetch call to auth-server
-    jest.spyOn(global, 'fetch').mockResolvedValue({
-      json: jest.fn().mockResolvedValue({
-        verifier_id: userId,
-        jwt_tokens: {
-          [OAUTH_AUD]: idTokens[0],
-        },
-      }),
-    });
-    // mock the Math.random to return a fixed value nonce
-    jest.spyOn(global.Math, 'random').mockReturnValueOnce(0.1);
 
     await controller.startOAuthLogin(AuthConnection.Apple);
 
