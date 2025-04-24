@@ -6,18 +6,12 @@ import {
   TextAlign,
   TextVariant,
   JustifyContent,
-  BackgroundColor,
-  BorderRadius,
   AlignItems,
   FlexDirection,
   Display,
   BlockSize,
   TextColor,
 } from '../../../helpers/constants/design-system';
-import {
-  ThreeStepProgressBar,
-  threeStepStages,
-} from '../../../components/app/step-progress-bar';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import { ONBOARDING_REVIEW_SRP_ROUTE } from '../../../helpers/constants/routes';
@@ -28,13 +22,14 @@ import {
 import {
   Box,
   Button,
-  BUTTON_VARIANT,
-  BUTTON_SIZES,
   Text,
   ButtonSize,
   ButtonVariant,
+  ButtonLink,
+  ButtonLinkSize,
 } from '../../../components/component-library';
 import { getHDEntropyIndex } from '../../../selectors/selectors';
+import SRPDetailsModal from '../../../components/app/srp-details-modal';
 import SkipSRPBackup from './skip-srp-backup-popover';
 
 export default function SecureYourWallet() {
@@ -44,6 +39,7 @@ export default function SecureYourWallet() {
   const hdEntropyIndex = useSelector(getHDEntropyIndex);
   const [showSkipSRPBackupPopover, setShowSkipSRPBackupPopover] =
     useState(false);
+  const [showSrpDetailsModal, setShowSrpDetailsModal] = useState(false);
   const searchParams = new URLSearchParams(search);
   const isFromReminderParam = searchParams.get('isFromReminder')
     ? '/?isFromReminder=true'
@@ -82,13 +78,19 @@ export default function SecureYourWallet() {
       className="secure-your-wallet"
       data-testid="secure-your-wallet"
     >
+      {showSkipSRPBackupPopover && (
+        <SkipSRPBackup onClose={() => setShowSkipSRPBackupPopover(false)} />
+      )}
+      {showSrpDetailsModal && (
+        <SRPDetailsModal onClose={() => setShowSrpDetailsModal(false)} />
+      )}
       <Box
         justifyContent={JustifyContent.flexStart}
         marginBottom={4}
         width={BlockSize.Full}
       >
         <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          Step 2 of 3
+          {t('stepOf', [2, 3])}
         </Text>
         <Text variant={TextVariant.headingLg}>{t('seedPhraseIntroTitle')}</Text>
       </Box>
@@ -106,12 +108,22 @@ export default function SecureYourWallet() {
       </Box>
       <Box marginBottom={6}>
         <Text variant={TextVariant.bodyMd} marginBottom={6}>
-          Don’t risk losing your funds. Protect your wallet by saving your
-          Secret Recovery Phrase in a place you trust.
+          {t('secureWalletWalletSaveSrp', [
+            [
+              <ButtonLink
+                key="secureWalletWalletSaveSrp"
+                size={ButtonLinkSize.Inherit}
+                onClick={() => {
+                  setShowSrpDetailsModal(true);
+                }}
+              >
+                {t('secretRecoveryPhrase')}
+              </ButtonLink>,
+            ],
+          ])}
         </Text>
         <Text variant={TextVariant.bodyMd}>
-          It’s the only way to recover your wallet if you get locked out of the
-          app or get a new device.
+          {t('secureWalletWalletRecover')}
         </Text>
       </Box>
       <Box
@@ -127,7 +139,7 @@ export default function SecureYourWallet() {
           block
           onClick={handleClickRecommended}
         >
-          Get started
+          {t('secureWalletGetStartedButton')}
         </Button>
         <Button
           data-testid="secure-wallet-later"
@@ -136,7 +148,7 @@ export default function SecureYourWallet() {
           block
           onClick={handleClickNotRecommended}
         >
-          Remind me later
+          {t('secureWalletRemindLaterButton')}
         </Button>
       </Box>
     </Box>
