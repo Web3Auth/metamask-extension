@@ -2,7 +2,6 @@ import React, { useState, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import Button from '../../../components/ui/button';
 import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { ONBOARDING_CONFIRM_SRP_ROUTE } from '../../../helpers/constants/routes';
@@ -11,18 +10,17 @@ import {
   Icon,
   IconName,
   Box,
+  Button,
+  ButtonPrimary,
+  ButtonVariant,
 } from '../../../components/component-library';
 import {
   TextVariant,
-  TextAlign,
   JustifyContent,
-  FontWeight,
   IconColor,
+  BlockSize,
+  TextColor,
 } from '../../../helpers/constants/design-system';
-import {
-  ThreeStepProgressBar,
-  threeStepStages,
-} from '../../../components/app/step-progress-bar';
 import {
   MetaMetricsEventCategory,
   MetaMetricsEventName,
@@ -47,136 +45,41 @@ export default function RecoveryPhrase({ secretRecoveryPhrase }) {
 
   return (
     <div className="recovery-phrase" data-testid="recovery-phrase">
-      <ThreeStepProgressBar stage={threeStepStages.RECOVERY_PHRASE_REVIEW} />
       <Box
-        justifyContent={JustifyContent.center}
-        textAlign={TextAlign.Center}
+        justifyContent={JustifyContent.flexStart}
         marginBottom={4}
+        width={BlockSize.Full}
       >
-        <Text
-          variant={TextVariant.headingLg}
-          fontWeight={FontWeight.Bold}
-          className="recovery-phrase__header"
-        >
-          {t('seedPhraseWriteDownHeader')}
+        <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
+          Step 2 of 3
+        </Text>
+        <Text variant={TextVariant.headingLg}>
+          Save your Secret Recovery Phrase
         </Text>
       </Box>
-      <Box
-        justifyContent={JustifyContent.center}
-        textAlign={TextAlign.Center}
-        marginBottom={4}
-      >
-        <Text variant={TextVariant.headingSm} fontWeight={FontWeight.Normal}>
-          {t('seedPhraseWriteDownDetails')}
+      <Box marginBottom={6}>
+        <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
+          This is your Secret Recovery Phrase. Write it down in the correct
+          order and keep it safe. If someone has your Secret Recovery Phrase,
+          they can access your wallet. Don’t share it with anyone, ever.
         </Text>
-      </Box>
-      <Box
-        textAlign={TextAlign.Left}
-        marginBottom={4}
-        className="recovery-phrase__tips"
-      >
-        <Text variant={TextVariant.headingSm}>{t('tips')}:</Text>
-        <ul>
-          <li>
-            <Text
-              variant={TextVariant.headingSm}
-              fontWeight={FontWeight.Normal}
-            >
-              {t('seedPhraseIntroSidebarBulletOne')}
-            </Text>
-          </li>
-          <li>
-            <Text
-              variant={TextVariant.headingSm}
-              fontWeight={FontWeight.Normal}
-            >
-              {t('seedPhraseIntroSidebarBulletTwo')}
-            </Text>
-          </li>
-        </ul>
       </Box>
       <RecoveryPhraseChips
         secretRecoveryPhrase={secretRecoveryPhrase.split(' ')}
         phraseRevealed={phraseRevealed && !hiddenPhrase}
         hiddenPhrase={hiddenPhrase}
       />
-      <div className="recovery-phrase__footer">
-        {phraseRevealed ? (
-          <div className="recovery-phrase__footer__copy-and-hide">
-            <div className="recovery-phrase__footer__copy-and-hide__area">
-              <Button
-                type="link"
-                icon={
-                  <i
-                    className={`far fa-eye${hiddenPhrase ? '' : '-slash'}`}
-                    color="var(--color-primary-default)"
-                  />
-                }
-                className="recovery-phrase__footer__copy-and-hide__button recovery-phrase__footer__copy-and-hide__button__hide-seed"
-                onClick={() => {
-                  setHiddenPhrase(!hiddenPhrase);
-                }}
-              >
-                {hiddenPhrase ? t('revealTheSeedPhrase') : t('hideSeedPhrase')}
-              </Button>
-              <Button
-                onClick={() => {
-                  handleCopy(secretRecoveryPhrase);
-                }}
-                icon={
-                  <Icon
-                    name={copied ? IconName.CopySuccess : IconName.Copy}
-                    color={IconColor.primaryDefault}
-                  />
-                }
-                className="recovery-phrase__footer__copy-and-hide__button recovery-phrase__footer__copy-and-hide__button__copy-to-clipboard"
-                type="link"
-              >
-                {copied ? t('copiedExclamation') : t('copyToClipboard')}
-              </Button>
-            </div>
-            <Button
-              data-testid="recovery-phrase-next"
-              type="primary"
-              className="recovery-phrase__footer--button"
-              onClick={() => {
-                trackEvent({
-                  category: MetaMetricsEventCategory.Onboarding,
-                  event:
-                    MetaMetricsEventName.OnboardingWalletSecurityPhraseWrittenDown,
-                  properties: {
-                    hd_entropy_index: hdEntropyIndex,
-                  },
-                });
-                history.push(
-                  `${ONBOARDING_CONFIRM_SRP_ROUTE}${isFromReminderParam}`,
-                );
-              }}
-            >
-              {t('next')}
-            </Button>
-          </div>
-        ) : (
-          <Button
-            data-testid="recovery-phrase-reveal"
-            type="primary"
-            className="recovery-phrase__footer--button"
-            onClick={() => {
-              trackEvent({
-                category: MetaMetricsEventCategory.Onboarding,
-                event:
-                  MetaMetricsEventName.OnboardingWalletSecurityPhraseRevealed,
-                properties: {
-                  hd_entropy_index: hdEntropyIndex,
-                },
-              });
-              setPhraseRevealed(true);
-            }}
-          >
-            {t('revealSeedWords')}
-          </Button>
-        )}
-      </div>
+      <Box width={BlockSize.Full}>
+        <Button
+          width={BlockSize.Full}
+          variant={ButtonVariant.Primary}
+          data-testid="recovery-phrase-reveal"
+          className="recovery-phrase__footer--button"
+          onClick={() => console.log('Continue')}
+        >
+          Continue
+        </Button>
+      </Box>
     </div>
   );
 }
