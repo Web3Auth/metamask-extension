@@ -41,6 +41,14 @@
     &__container {
       width: fit-content;
     }
+
+    &__dropdown {
+      display: none;
+
+      @include design-system.screen-sm-min {
+        display: block;
+      }
+    }
   }
 
   &__address-copy-button {
@@ -54,6 +62,7 @@
   &__lock-contents {
     flex-flow: row nowrap;
     height: 68px;
+    justify-content: center;
 
     @include design-system.screen-sm-max {
       height: $height-screen-sm-max;
@@ -61,6 +70,7 @@
 
     @include design-system.screen-sm-min {
       width: $width-screen-sm-min;
+      justify-content: space-between;
     }
 
     @include design-system.screen-md-min {
@@ -69,6 +79,19 @@
 
     @include design-system.screen-lg-min {
       width: $width-screen-lg-min;
+    }
+
+    // always display horizontal logo on locked screen
+    .app-header__metafox-logo {
+      &--icon {
+        display: none;
+      }
+
+      &--horizontal {
+        @include design-system.screen-sm-max {
+          display: block;
+        }
+      }
     }
   }
 }

@@ -250,7 +250,7 @@ export default class UnlockPage extends Component {
             display={Display.Flex}
             flexDirection={FlexDirection.Column}
             width={BlockSize.Full}
-            gap={8}
+            gap={4}
           >
             <Button
               variant={ButtonVariant.Primary}
