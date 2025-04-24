@@ -38,6 +38,25 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0.5rem;
+    // SRP_OVERRIDE: custom text field style
+    .mm-text-field {
+      padding-left: 8px;
+      border-radius: 8px;
+      border-color: var(--color-border-muted);
+    }
+    // SRP_OVERRIDE: custom text field style
+    .mm-text-field.mm-text-field--focused {
+      outline: 5px auto var(--color-primary-default);
+    }
+    // SRP_OVERRIDE: custom text field style
+    .mm-input {
+      padding-right: 8px;
+      padding-left: 4px;
+    }
+  }
+
+  &__word-index {
+    width: 20px;
   }
 
   &__actions {
