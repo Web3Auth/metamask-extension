@@ -153,7 +153,7 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
           onClick={tryContinue}
           disabled={!completedQuizWords}
         >
-          {t('confirm')}
+          {t('continue')}
         </Button>
       </div>
     </div>

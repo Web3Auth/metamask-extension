@@ -2002,6 +2002,18 @@
   "enterYourPassword": {
     "message": "Enter your password"
   },
+  "eraseWalletTitle": {
+    "message": "Are you sure you want to erase your wallet?"
+  },
+  "eraseWalletDescription": {
+    "message": "Your wallet, accounts, and assets will be permanently removed from this app. This action can’t be undone."
+  },
+  "eraseWalletDescription2": {
+    "message": "You can only get this wallet back with the info used when creating it, such as your Secret Recovery Phrase, Google account, or Apple account. MetaMask doesn’t have this info."
+  },
+  "eraseWalletButton": {
+    "message": "Yes, erase wallet"
+  },
   "errorCode": {
     "message": "Code: $1",
     "description": "Displayed error code for debugging purposes. $1 is the error code"
@@ -3819,11 +3831,15 @@
   "onboardingPinExtensionTitle": {
     "message": "Installation is complete!"
   },
+  "onboardingSignInWith": {
+    "message": "Sign in with $1",
+    "description": "$1 is the type of login used Google, Apple, etc."
+  },
   "onboardingSrpCreate": {
     "message": "Continue with Secret Recovery Phrase "
   },
   "onboardingSrpImport": {
-    "message": "Import using secret recovery phrase"
+    "message": "Import using Secret Recovery Phrase"
   },
   "onboardingSrpInputClearAll": {
     "message": "Clear all"
@@ -4611,6 +4627,28 @@
   "reset": {
     "message": "Reset"
   },
+  "resetPassword": {
+    "message": "Reset your password"
+  },
+  "resetPasswordDescription": {
+    "message": "If you have a mobile device where you’re already logged in, you can reset your password there."
+  },
+  "resetPasswordStep1": {
+    "message": "Open MetaMask mobile app and go to $1.",
+    "description": "$1 is bold Settings > Security and passwords."
+  },
+  "resetPasswordStep1Settings": {
+    "message": "Settings > Security and passwords."
+  },
+  "resetPasswordStep2": {
+    "message": "Select “Change password” and update your password with Face ID."
+  },
+  "resetPasswordStep3": {
+    "message": "Login with your new password on any device."
+  },
+  "resetPasswordAnotherOption": {
+    "message": "Another option: Erase your wallet"
+  },
   "resetWallet": {
     "message": "Reset wallet"
   },
@@ -4769,7 +4807,7 @@
     "description": "The $1 is the button text 'Secret Recovery Phrase'"
   },
   "secureWalletWalletRecover": {
-    "message": "If you get locked out of the app or get a new device, you can recover your wallet using your Secret Recovery Phrase."
+    "message": "It’s the only way to recover your wallet if you get locked out of the app or get a new device."
   },
   "secureWalletGetStartedButton": {
     "message": "Get started"
@@ -4863,7 +4901,7 @@
     "description": "The $1 is the bolded text 'Secret Recovery Phrase' and $2 is 'seedPhraseReviewDetails2'"
   },
   "seedPhraseReviewDetails2": {
-    "message": "Don’t share it with anyone, ever.'s in bold"
+    "message": "Don’t share it with anyone, ever."
   },
   "seedPhraseWriteDownDetails": {
     "message": "Write down this 12-word Secret Recovery Phrase and save it in a place that you trust and only you can access."
@@ -6591,6 +6629,10 @@
   },
   "unlockMessage": {
     "message": "The decentralized web awaits"
+  },
+  "unlockPageHint": {
+    "message": "Hint: $1",
+    "description": "$1 is the password hint"
   },
   "unpin": {
     "message": "Unpin"

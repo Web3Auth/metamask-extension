@@ -32,6 +32,8 @@ import {
 import { isFlask, isBeta } from '../../helpers/utils/build-types';
 import { SUPPORT_LINK } from '../../../shared/lib/ui-utils';
 import { getCaretCoordinates } from './unlock-page.util';
+import ResetPasswordModal from './reset-password-modal';
+import EraseWalletModal from './erase-wallet-modal';
 
 export default class UnlockPage extends Component {
   static contextTypes = {
@@ -48,10 +50,6 @@ export default class UnlockPage extends Component {
      * If isUnlocked is true will redirect to most recent route in history
      */
     isUnlocked: PropTypes.bool,
-    /**
-     * onClick handler for "Forgot password?" link
-     */
-    onRestore: PropTypes.func,
     /**
      * onSubmit handler when form is submitted
      */
@@ -70,6 +68,8 @@ export default class UnlockPage extends Component {
     password: '',
     error: null,
     showHint: false,
+    showResetPasswordModal: false,
+    showEraseWalletModal: false,
   };
 
   submitting = false;
@@ -171,27 +171,62 @@ export default class UnlockPage extends Component {
   renderHelpText = () => {
     const { error, showHint } = this.state;
     const { passwordHint } = this.props;
+    const { t } = this.context;
+
     if (showHint) {
       return (
-        <HelpText color={TextColor.textMuted}>Hint: {passwordHint}</HelpText>
+        <HelpText color={TextColor.textMuted}>
+          {t('unlockPageHint', [passwordHint])}
+        </HelpText>
       );
     }
     if (error) {
       return <HelpText severity={HelpTextSeverity.Danger}>{error}</HelpText>;
     }
+    // empty help text to keep the input field from shifting when no help text is present
     return <HelpText color={TextColor.textMuted}>&nbsp;</HelpText>;
   };
 
+  onRestore = () => {
+    this.setState({ showResetPasswordModal: true });
+  };
+
   render() {
-    const { password, error, showHint } = this.state;
+    const {
+      password,
+      error,
+      showHint,
+      showResetPasswordModal,
+      showEraseWalletModal,
+    } = this.state;
     const { t } = this.context;
-    const { onRestore } = this.props;
+    const { passwordHint } = this.props;
 
     const needHelpText = t('needHelpLinkText');
 
     return (
       <div className="unlock-page__container">
         <div className="unlock-page" data-testid="unlock-page">
+          {showResetPasswordModal && (
+            <ResetPasswordModal
+              onClose={() => this.setState({ showResetPasswordModal: false })}
+              onEraseWallet={() =>
+                this.setState({
+                  showResetPasswordModal: false,
+                  showEraseWalletModal: true,
+                })
+              }
+            />
+          )}
+          {showEraseWalletModal && (
+            <EraseWalletModal
+              onClose={() => this.setState({ showEraseWalletModal: false })}
+              onEraseWallet={() =>
+                // TODO: erase wallet
+                this.setState({ showEraseWalletModal: false })
+              }
+            />
+          )}
           <div className="unlock-page__mascot-container">
             {this.renderMascot()}
             {isBeta() ? (
@@ -223,13 +258,15 @@ export default class UnlockPage extends Component {
                   <Text variant={TextVariant.bodyMdMedium}>
                     {t('password')}
                   </Text>
-                  <ButtonLink
-                    onClick={() => {
-                      this.setState({ showHint: !showHint });
-                    }}
-                  >
-                    {showHint ? 'Hide hint' : 'Show hint'}
-                  </ButtonLink>
+                  {passwordHint && (
+                    <ButtonLink
+                      onClick={() => {
+                        this.setState({ showHint: !showHint });
+                      }}
+                    >
+                      {showHint ? 'Hide hint' : 'Show hint'}
+                    </ButtonLink>
+                  )}
                 </Box>
               }
               type="password"
@@ -263,7 +300,7 @@ export default class UnlockPage extends Component {
             >
               {this.context.t('unlock')}
             </Button>
-            <ButtonLink key="import-account" onClick={() => onRestore()}>
+            <ButtonLink key="import-account" onClick={() => this.onRestore()}>
               {t('forgotPassword')}
             </ButtonLink>
           </Box>
