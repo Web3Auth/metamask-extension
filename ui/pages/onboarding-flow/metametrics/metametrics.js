@@ -115,27 +115,15 @@ export default function OnboardingMetametrics() {
     >
       <Text
         variant={TextVariant.headingLg}
-        textAlign={TextAlign.Center}
+        textAlign={TextAlign.Left}
         fontWeight={FontWeight.Bold}
+        marginBottom={4}
       >
         {t('onboardingMetametricsTitle')}
       </Text>
       <Text className="onboarding-metametrics__desc" textAlign={TextAlign.Left}>
-        {t('onboardingMetametricsDescription')}
-      </Text>
-      <Box paddingTop={2} paddingBottom={2}>
-        <Text
-          color={TextColor.primaryDefault}
-          as="a"
-          href="https://support.metamask.io/privacy-and-security/profile-privacy#how-is-the-profile-created"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {t('onboardingMetametricsPrivacyDescription')}
-        </Text>
-      </Box>
-      <Text className="onboarding-metametrics__desc" textAlign={TextAlign.Left}>
-        {t('onboardingMetametricsDescription2')}
+        We’d like to gather basic usage and diagnostics data to improve
+        MetaMask. It will always be:
       </Text>
       <ul>
         <li>
@@ -205,6 +193,7 @@ export default function OnboardingMetametrics() {
           dispatch(setDataCollectionForMarketing(!dataCollectionForMarketing))
         }
         label={t('onboardingMetametricsUseDataCheckbox')}
+        fontWeight={FontWeight.Medium}
         paddingBottom={3}
       />
       <Text
@@ -213,7 +202,10 @@ export default function OnboardingMetametrics() {
         variant={TextVariant.bodySm}
         className="onboarding-metametrics__terms"
       >
-        {t('onboardingMetametricsInfuraTerms', [
+        We’ll let you know if we plan to use this data for other purposes. You
+        can review our Privacy Policy any time (we never sell the data you
+        provide here).
+        {/* {t('onboardingMetametricsInfuraTerms', [
           <a
             href={
               getPlatform() === PLATFORM_FIREFOX
@@ -226,7 +218,7 @@ export default function OnboardingMetametrics() {
           >
             {t('onboardingMetametricsInfuraTermsPolicy')}
           </a>,
-        ])}
+        ])} */}
       </Text>
 
       <Box
