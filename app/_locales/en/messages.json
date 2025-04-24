@@ -341,6 +341,9 @@
   "advancedPriorityFeeToolTip": {
     "message": "Priority fee (aka “miner tip”) goes directly to miners and incentivizes them to prioritize your transaction."
   },
+  "agree": {
+    "message": "Agree"
+  },
   "agreeTermsOfUse": {
     "message": "I agree to MetaMask's $1",
     "description": "$1 is the `terms` link"
@@ -6120,7 +6123,7 @@
     "message": "Please scroll to read all sections"
   },
   "termsOfUseTitle": {
-    "message": "Our Terms of Use have updated"
+    "message": "Review our Terms of Use"
   },
   "testnets": {
     "message": "Testnets"
@@ -6651,11 +6654,17 @@
   "welcomeExploreTitle": {
     "message": "Explore decentralized apps"
   },
+  "welcomeGetStarted": {
+    "message": "Get started"
+  },
   "welcomeLoginDescription": {
     "message": "Use your MetaMask to login to decentralized apps - no signup needed."
   },
   "welcomeLoginTitle": {
     "message": "Say hello to your wallet"
+  },
+  "welcomeTitle": {
+    "message": "Welcome to MetaMask"
   },
   "welcomeToMetaMask": {
     "message": "Let's get started"

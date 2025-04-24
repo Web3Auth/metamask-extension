@@ -4,9 +4,12 @@ import { debounce } from 'lodash';
 import { I18nContext } from '../../../contexts/i18n';
 import {
   Box,
+  Button,
   ButtonIcon,
   ButtonLink,
+  ButtonVariant,
   Checkbox,
+  ContainerMaxWidth,
   IconName,
   IconSize,
   Modal,
@@ -25,6 +28,7 @@ import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
   AlignItems,
   BackgroundColor,
+  BlockSize,
   BorderRadius,
   Display,
   FlexDirection,
@@ -86,7 +90,7 @@ export default function TermsOfUsePopup({ isOpen, onClose, onAccept }) {
       <ModalContent size={ModalContentSize.Md}>
         <ModalHeader onClose={onClose}>
           <Text textAlign={TextAlign.Center} variant={TextVariant.headingMd}>
-            Review our Terms of Use
+            {t('termsOfUseTitle')}
           </Text>
         </ModalHeader>
         <Box
@@ -1202,36 +1206,46 @@ export default function TermsOfUsePopup({ isOpen, onClose, onAccept }) {
             </div>
           )}
         </Box>
-        <ModalFooter
-          onSubmit={onAccept}
-          submitButtonProps={{
-            disabled: !isTermsOfUseChecked || !isScrolledToBottom,
-          }}
+        {/* Not using ModalFooter since the confirm button text can't be changed to `agree`*/}
+        <Box
+          display={Display.Flex}
+          flexDirection={FlexDirection.Column}
+          alignItems={AlignItems.center}
+          marginTop={6}
+          marginLeft={4}
+          marginRight={4}
+          gap={6}
         >
-          <Box
-            flexDirection={FlexDirection.Row}
-            alignItems={AlignItems.flexStart}
-            marginLeft={3}
-            marginRight={3}
-            gap={2}
+          <Checkbox
+            id="terms-of-use__checkbox"
+            className="terms-of-use__checkbox"
+            data-testid="terms-of-use-checkbox"
+            isChecked={isTermsOfUseChecked}
+            onChange={() => {
+              setIsTermsOfUseChecked(!isTermsOfUseChecked);
+            }}
+            label={
+              <Text variant={TextVariant.bodySmMedium}>
+                {t('termsOfUseAgreeText')}
+              </Text>
+            }
+          />
+          <Button
+            variant={ButtonVariant.Primary}
+            width={BlockSize.Full}
+            disabled={!isTermsOfUseChecked || !isScrolledToBottom}
+            onClick={onAccept}
           >
-            <Checkbox
-              id="terms-of-use__checkbox"
-              className="terms-of-use__checkbox"
-              data-testid="terms-of-use-checkbox"
-              isChecked={isTermsOfUseChecked}
-              onChange={() => {
-                setIsTermsOfUseChecked(!isTermsOfUseChecked);
-              }}
-              label={
-                <Text variant={TextVariant.bodyXsMedium}>
-                  {t('termsOfUseAgreeText')}
-                </Text>
-              }
-              marginBottom={6}
-            />
-          </Box>
-        </ModalFooter>
+            {t('agree')}
+          </Button>
+          <Text
+            as="p"
+            color={TextColor.textAlternative}
+            variant={TextVariant.bodySm}
+          >
+            {t('termsOfUseFooterText')}
+          </Text>
+        </Box>
       </ModalContent>
     </Modal>
   );
