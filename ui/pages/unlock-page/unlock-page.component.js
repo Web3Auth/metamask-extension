@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Text,
@@ -51,6 +51,33 @@ const formatTimeToUnlock = (timeInSeconds) => {
     .padStart(2, '0')}s`;
 };
 
+function Counter({ remainingTime, unlock }) {
+  const [time, setTime] = useState(remainingTime);
+  const [timeDisplay, setTimeDisplay] = useState(
+    formatTimeToUnlock(remainingTime),
+  );
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newTime = time - 1;
+      if (newTime < 0) {
+        unlock();
+      } else {
+        setTime(newTime);
+        setTimeDisplay(formatTimeToUnlock(newTime));
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [time, unlock]);
+
+  return <span>{timeDisplay}</span>;
+}
+
+Counter.propTypes = {
+  remainingTime: PropTypes.number.isRequired,
+  unlock: PropTypes.func.isRequired,
+};
+
 export default class UnlockPage extends Component {
   static contextTypes = {
     trackEvent: PropTypes.func,
@@ -86,6 +113,7 @@ export default class UnlockPage extends Component {
     showHint: false,
     showResetPasswordModal: false,
     showEraseWalletModal: false,
+    isLocked: false,
   };
 
   submitting = false;
@@ -221,6 +249,7 @@ export default class UnlockPage extends Component {
       showHint,
       showResetPasswordModal,
       showEraseWalletModal,
+      isLocked,
     } = this.state;
     const { t } = this.context;
     const { passwordHint } = this.props;
@@ -300,6 +329,7 @@ export default class UnlockPage extends Component {
               helpText={this.renderHelpText()}
               autoComplete="current-password"
               autoFocus
+              disabled={isLocked}
               width={BlockSize.Full}
               textFieldProps={{
                 borderRadius: BorderRadius.LG,
@@ -319,7 +349,7 @@ export default class UnlockPage extends Component {
               block
               type="submit"
               data-testid="unlock-submit"
-              disabled={!this.state.password}
+              disabled={!this.state.password || isLocked}
               onClick={this.handleSubmit}
             >
               {this.context.t('unlock')}
