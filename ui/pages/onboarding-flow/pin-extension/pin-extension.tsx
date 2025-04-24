@@ -104,14 +104,15 @@ export default function OnboardingPinExtension() {
                   size={ButtonIconSize.Lg}
                   iconProps={{
                     color: hasPrev
-                      ? IconColor.textDefault
-                      : IconColor.textMuted,
+                      ? IconColor.iconDefault
+                      : IconColor.iconMuted,
                   }}
                   borderRadius={BorderRadius.full}
                   className="onboarding-pin-extension__arrow"
                   disabled={!hasPrev}
                   title={label}
                   onClick={onClickHandler}
+                  ariaLabel="prev"
                 />
               )}
               renderArrowNext={(onClickHandler, hasNext, label) => (
@@ -120,14 +121,15 @@ export default function OnboardingPinExtension() {
                   size={ButtonIconSize.Lg}
                   iconProps={{
                     color: hasNext
-                      ? IconColor.textDefault
-                      : IconColor.textMuted,
+                      ? IconColor.iconDefault
+                      : IconColor.iconMuted,
                   }}
                   borderRadius={BorderRadius.full}
                   className="onboarding-pin-extension__arrow onboarding-pin-extension__arrow--next"
                   disabled={!hasNext}
                   title={label}
                   onClick={onClickHandler}
+                  ariaLabel="next"
                 />
               )}
               onChange={(index) => setSelectedIndex(index)}

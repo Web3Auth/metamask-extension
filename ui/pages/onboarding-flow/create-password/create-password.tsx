@@ -11,8 +11,10 @@ import {
   TextColor,
   BlockSize,
   IconColor,
+  Size,
 } from '../../../helpers/constants/design-system';
 import {
+  ONBOARDING_COMPLETION_ROUTE,
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
   ONBOARDING_METAMETRICS,
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
@@ -41,14 +43,24 @@ import {
   FormTextField,
   FormTextFieldSize,
   IconName,
+  InputType,
   Text,
+  TextFieldType,
 } from '../../../components/component-library';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
+import { MetaMaskState } from '../../../../app/scripts/controllers/metametrics-controller';
 
 export default function CreatePassword({
   createNewAccount,
   importWithRecoveryPhrase,
   secretRecoveryPhrase,
+}: {
+  createNewAccount: (password: string) => Promise<void>;
+  importWithRecoveryPhrase: (
+    password: string,
+    secretRecoveryPhrase: string,
+  ) => Promise<void>;
+  secretRecoveryPhrase: string;
 }) {
   const t = useI18nContext();
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -67,8 +79,9 @@ export default function CreatePassword({
   const trackEvent = useContext(MetaMetricsContext);
   const currentKeyring = useSelector(getCurrentKeyring);
 
-  const participateInMetaMetrics = useSelector((state) =>
-    Boolean(state.metamask.participateInMetaMetrics),
+  const participateInMetaMetrics = useSelector(
+    (state: { metamask: MetaMaskState }) =>
+      Boolean(state.metamask.participateInMetaMetrics),
   );
   const metametricsId = useSelector(getMetaMetricsId);
   const base64MetametricsId = Buffer.from(metametricsId ?? '').toString(
@@ -116,7 +129,7 @@ export default function CreatePassword({
     return !passwordError && !confirmPasswordError;
   }, [password, confirmPassword, passwordError, confirmPasswordError]);
 
-  const getPasswordStrengthLabel = (isTooShort, score) => {
+  const getPasswordStrengthLabel = (isTooShort: boolean, score: number) => {
     if (isTooShort) {
       return {
         className: 'create-password__weak',
@@ -149,9 +162,9 @@ export default function CreatePassword({
     };
   };
 
-  const handlePasswordChange = (passwordInput) => {
+  const handlePasswordChange = (passwordInput: string) => {
     const isTooShort =
-      passwordInput.length && passwordInput.length < PASSWORD_MIN_LENGTH;
+      passwordInput.length > 0 && passwordInput.length < PASSWORD_MIN_LENGTH;
     const { score } = zxcvbn(passwordInput);
     const passwordStrengthLabel = getPasswordStrengthLabel(isTooShort, score);
     const passwordStrengthComponent = t('passwordStrength', [
@@ -174,7 +187,7 @@ export default function CreatePassword({
     setConfirmPasswordError(confirmError);
   };
 
-  const handleConfirmPasswordChange = (confirmPasswordInput) => {
+  const handleConfirmPasswordChange = (confirmPasswordInput: string) => {
     const error =
       password === confirmPasswordInput ? '' : t('passwordsDontMatch');
 
@@ -182,7 +195,7 @@ export default function CreatePassword({
     setConfirmPasswordError(error);
   };
 
-  const handleCreate = async (event) => {
+  const handleCreate = async (event: React.FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
 
     if (!isValid) {
@@ -218,7 +231,7 @@ export default function CreatePassword({
           ///: END:ONLY_INCLUDE_IF
         }
       } catch (error) {
-        setPasswordError(error.message);
+        setPasswordError((error as Error).message);
       }
     }
   };
@@ -252,6 +265,7 @@ export default function CreatePassword({
               size={ButtonIconSize.Md}
               data-testid="create-password-back-button"
               onClick={() => history.goBack()}
+              ariaLabel="back"
             />
           </Box>
           <Box
@@ -271,16 +285,18 @@ export default function CreatePassword({
             <Text variant={TextVariant.headingLg}>{t('createPassword')}</Text>
           </Box>
           <FormTextField
+            // @ts-ignore
             passwordStrength={passwordStrength}
             passwordStrengthText={passwordStrengthText}
             dataTestId="create-password-new"
             autoFocus
             placeholder={t('newPasswordPlaceholder')}
-            label={t('newPassword')}
-            labelProps={{ marginBottom: 1 }}
+            labelProps={{ marginBottom: 1, children: t('newPassword') }}
             size={FormTextFieldSize.Lg}
             value={password}
-            type={showPassword ? 'text' : 'password'}
+            inputProps={{
+              type: showPassword ? InputType.Text : InputType.Password,
+            }}
             onChange={(e) => {
               handlePasswordChange(e.target.value);
             }}
@@ -308,20 +324,23 @@ export default function CreatePassword({
                   e.preventDefault();
                   setShowPassword(!showPassword);
                 }}
+                ariaLabel={showPassword ? 'hide password' : 'show password'}
               />
             }
           />
+          {/* @ts-ignore */}
           <FormTextField
-            dataTestId="create-password-confirm"
+            data-testid="create-password-confirm"
             marginTop={4}
             placeholder={t('confirmPasswordPlaceholder')}
-            label={t('confirmPassword')}
-            labelProps={{ marginBottom: 1 }}
+            labelProps={{ marginBottom: 1, children: t('confirmPassword') }}
             size={FormTextFieldSize.Lg}
             error={Boolean(confirmPasswordError)}
             helpText={confirmPasswordError}
             value={confirmPassword}
-            type={showConfirmPassword ? 'text' : 'password'}
+            inputProps={{
+              type: showConfirmPassword ? InputType.Text : InputType.Password,
+            }}
             onChange={(e) => {
               handleConfirmPasswordChange(e.target.value);
             }}
@@ -335,6 +354,9 @@ export default function CreatePassword({
                   e.preventDefault();
                   setShowConfirmPassword(!showConfirmPassword);
                 }}
+                ariaLabel={
+                  showConfirmPassword ? 'hide password' : 'show password'
+                }
               />
             }
           />
@@ -371,7 +393,7 @@ export default function CreatePassword({
               data-testid="create-password-submit"
               variant={ButtonVariant.Primary}
               width={BlockSize.Full}
-              size={ButtonSize.Large}
+              size={ButtonSize.Lg}
               className="create-password__form--submit-button"
               disabled={!isValid || !termsChecked}
             >

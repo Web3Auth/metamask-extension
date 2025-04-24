@@ -39,7 +39,7 @@ export default function OnboardingAppHeader() {
           isOnboarding
         />
         <Dropdown
-          id="select-locale"
+          data-testid="select-locale"
           className={`onboarding-app-header__dropdown ${
             pathname === ONBOARDING_WELCOME_ROUTE
               ? 'onboarding-app-header__dropdown--welcome'

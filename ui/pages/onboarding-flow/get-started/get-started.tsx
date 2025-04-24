@@ -33,6 +33,7 @@ import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { isFlask, isBeta } from '../../../helpers/utils/build-types';
 import LoadingScreen from '../../../components/ui/loading-screen';
 import LoginOptions from './login-options';
+import { LOGIN_TYPE, LoginType } from './types';
 
 export default function GetStarted() {
   const t = useI18nContext();
@@ -114,8 +115,8 @@ export default function GetStarted() {
     );
   };
 
-  const handleLogin = (loginType) => {
-    if (loginType === 'srp') {
+  const handleLogin = (loginType: LoginType) => {
+    if (loginType === LOGIN_TYPE.SRP) {
       if (loginOption === 'new') {
         onCreateClick();
       } else {
@@ -187,7 +188,7 @@ export default function GetStarted() {
           handleLogin={handleLogin}
         />
       )}
-      {isLoggingIn && <LoadingScreen className="get-started__loading-screen" />}
+      {isLoggingIn && <LoadingScreen />}
     </div>
   );
 }

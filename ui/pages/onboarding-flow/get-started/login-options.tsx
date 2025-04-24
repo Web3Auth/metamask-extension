@@ -1,6 +1,5 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { I18nContext } from '../../../contexts/i18n';
 import {
   Box,
   Button,
@@ -24,13 +23,23 @@ import {
   TextColor,
   TextVariant,
 } from '../../../helpers/constants/design-system';
+import { LOGIN_TYPE, LoginType } from './types';
+import { useI18nContext } from '../../../hooks/useI18nContext';
 
-export default function LoginOptions({ onClose, loginOption, handleLogin }) {
-  const t = useContext(I18nContext);
-
-  const onLogin = (loginType) => {
+export default function LoginOptions({
+  onClose,
+  loginOption,
+  handleLogin,
+}: {
+  onClose: () => void;
+  loginOption: string;
+  handleLogin: (loginType: LoginType) => void;
+}) {
+  const onLogin = (loginType: LoginType) => {
     handleLogin(loginType);
   };
+
+  const t = useI18nContext();
 
   return (
     <Modal
@@ -51,8 +60,7 @@ export default function LoginOptions({ onClose, loginOption, handleLogin }) {
             <li>
               <button
                 className="get-started__plain-button"
-                // eslint-disable-next-line react-hooks/rules-of-hooks
-                onClick={() => onLogin('google')}
+                onClick={() => onLogin(LOGIN_TYPE.GOOGLE)}
               >
                 {
                   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
@@ -78,8 +86,7 @@ export default function LoginOptions({ onClose, loginOption, handleLogin }) {
             <li>
               <button
                 className="get-started__plain-button"
-                // eslint-disable-next-line react-hooks/rules-of-hooks
-                onClick={() => onLogin('apple')}
+                onClick={() => onLogin(LOGIN_TYPE.APPLE)}
               >
                 {
                   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
@@ -120,8 +127,7 @@ export default function LoginOptions({ onClose, loginOption, handleLogin }) {
                 variant={ButtonVariant.Secondary}
                 width={BlockSize.Full}
                 size={ButtonSize.Lg}
-                // eslint-disable-next-line react-hooks/rules-of-hooks
-                onClick={() => onLogin('srp')}
+                onClick={() => onLogin(LOGIN_TYPE.SRP)}
               >
                 {loginOption === 'existing'
                   ? t('onboardingSrpImport')

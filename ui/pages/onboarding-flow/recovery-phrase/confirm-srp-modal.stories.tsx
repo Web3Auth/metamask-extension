@@ -49,6 +49,7 @@ export const DefaultStory = () => {
       </Button>
       {isShowingModal && (
         <ConfirmSrpModal
+          onContinue={() => console.log('continue')}
           onClose={() => updateArgs({ isShowingModal: false })}
           isError={isError}
         />

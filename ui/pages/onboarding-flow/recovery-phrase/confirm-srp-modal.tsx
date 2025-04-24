@@ -21,7 +21,15 @@ import {
   IconName,
 } from '../../../components/component-library';
 
-export default function ConfirmSrpModal({ onContinue, onClose, isError }) {
+export default function ConfirmSrpModal({
+  onContinue,
+  onClose,
+  isError,
+}: {
+  onContinue: () => void;
+  onClose: () => void;
+  isError: boolean;
+}) {
   const t = useI18nContext();
 
   const handleContinue = () => {

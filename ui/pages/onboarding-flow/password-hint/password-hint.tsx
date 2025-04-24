@@ -64,6 +64,7 @@ export default function PasswordHint() {
             size={ButtonIconSize.Md}
             data-testid="password-hint-back-button"
             onClick={() => history.goBack()}
+            ariaLabel={t('back')}
           />
         </Box>
         <Box

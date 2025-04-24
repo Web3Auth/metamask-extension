@@ -63,7 +63,9 @@ export default function OnboardingMetametrics() {
       await dispatch(setDataCollectionForMarketing(false));
     }
 
-    const [, metaMetricsId] = await dispatch(setParticipateInMetaMetrics(true));
+    // returns [participationPreference, metaMetricsId]
+    const response = await dispatch(setParticipateInMetaMetrics(true));
+    const metaMetricsId = (response as unknown as [boolean, string])[1];
     try {
       trackEvent(
         {

@@ -53,6 +53,7 @@ export default function AccountNotFound() {
             size={ButtonIconSize.Md}
             data-testid="create-password-back-button"
             onClick={() => history.goBack()}
+            ariaLabel="back"
           />
         </Box>
         <Box

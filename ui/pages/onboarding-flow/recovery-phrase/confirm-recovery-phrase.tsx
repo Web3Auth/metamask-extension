@@ -30,11 +30,12 @@ import { getHDEntropyIndex } from '../../../selectors/selectors';
 import { ONBOARDING_METAMETRICS } from '../../../helpers/constants/routes';
 import ConfirmSrpModal from './confirm-srp-modal';
 import RecoveryPhraseChips from './recovery-phrase-chips';
+import { QuizWords } from './types';
 
 const QUIZ_WORDS_COUNT = 3;
 
-const generateQuizWords = (secretRecoveryPhrase) => {
-  const randomIndices = new Set();
+const generateQuizWords = (secretRecoveryPhrase: string[]) => {
+  const randomIndices = new Set<number>();
   const srpLength = secretRecoveryPhrase.length;
 
   while (randomIndices.size < QUIZ_WORDS_COUNT) {
@@ -72,7 +73,7 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
     setQuizWords(newQuizWords);
   };
 
-  const handleQuizInput = (inputValue) => {
+  const handleQuizInput = (inputValue: QuizWords) => {
     const isAnswered = inputValue.every((answer) => answer.word !== '');
     if (isAnswered) {
       const copySplitSrp = [...splitSecretRecoveryPhrase];
@@ -130,6 +131,7 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
             size={ButtonIconSize.Md}
             data-testid="confirm-recovery-phrase-back-button"
             onClick={() => history.goBack()}
+            ariaLabel={t('back')}
           />
         </Box>
         <Box
@@ -161,7 +163,7 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
           variant={ButtonVariant.Primary}
           width={BlockSize.Full}
           data-testid="recovery-phrase-confirm"
-          size={ButtonSize.Large}
+          size={ButtonSize.Lg}
           className="recovery-phrase__footer__confirm--button"
           onClick={() => tryContinue()}
           disabled={!answerSrp}

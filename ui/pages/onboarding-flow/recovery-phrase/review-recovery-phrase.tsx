@@ -33,7 +33,11 @@ import { getHDEntropyIndex } from '../../../selectors/selectors';
 import SRPDetailsModal from '../../../components/app/srp-details-modal';
 import RecoveryPhraseChips from './recovery-phrase-chips';
 
-export default function RecoveryPhrase({ secretRecoveryPhrase }) {
+export default function RecoveryPhrase({
+  secretRecoveryPhrase,
+}: {
+  secretRecoveryPhrase: string;
+}) {
   const history = useHistory();
   const t = useI18nContext();
   const { search } = useLocation();
@@ -52,10 +56,7 @@ export default function RecoveryPhrase({ secretRecoveryPhrase }) {
     <div className="recovery-phrase" data-testid="recovery-phrase">
       <div className="recovery-phrase__content">
         {showSrpDetailsModal && (
-          <SRPDetailsModal
-            onClose={() => setShowSrpDetailsModal(false)}
-            marginBottom={4}
-          />
+          <SRPDetailsModal onClose={() => setShowSrpDetailsModal(false)} />
         )}
         <Box
           justifyContent={JustifyContent.flexStart}
@@ -68,6 +69,7 @@ export default function RecoveryPhrase({ secretRecoveryPhrase }) {
             size={ButtonIconSize.Md}
             data-testid="review-srp-back-button"
             onClick={() => history.goBack()}
+            ariaLabel={t('back')}
           />
         </Box>
         <Box
