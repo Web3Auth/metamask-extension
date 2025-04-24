@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import TextField from '../../ui/text-field';
 import { clearClipboard } from '../../../helpers/utils/util';
-import { BannerAlert, Text } from '../../component-library';
+import { BannerAlert, BannerAlertSeverity, Text } from '../../component-library';
 import Dropdown from '../../ui/dropdown';
 import ShowHideToggle from '../../ui/show-hide-toggle';
 import {
@@ -16,11 +16,16 @@ import { parseSecretRecoveryPhrase } from './parse-secret-recovery-phrase';
 
 const defaultNumberOfWords = 12;
 
-const hasUpperCase = (draftSrp) => {
+const hasUpperCase = (draftSrp: string) => {
   return draftSrp !== draftSrp.toLowerCase();
 };
 
-export default function SrpInput({ onChange, srpText }) {
+type SrpInputProps = {
+  onChange: (srp: string) => void;
+  srpText: string;
+};
+
+export default function SrpInput({ onChange, srpText }: SrpInputProps) {
   const [srpError, setSrpError] = useState('');
   const [pasteFailed, setPasteFailed] = useState(false);
   const [draftSrp, setDraftSrp] = useState(
@@ -38,14 +43,13 @@ export default function SrpInput({ onChange, srpText }) {
       let newSrpError = '';
       const joinedDraftSrp = newDraftSrp.join(' ').trim();
 
-      if (newDraftSrp.some((word) => word !== '')) {
-        if (newDraftSrp.some((word) => word === '')) {
-          newSrpError = t('seedPhraseReq');
-        } else if (hasUpperCase(joinedDraftSrp)) {
-          newSrpError = t('invalidSeedPhraseCaseSensitive');
-        } else if (!isValidMnemonic(joinedDraftSrp)) {
-          newSrpError = t('invalidSeedPhrase');
-        }
+      const isFilled = newDraftSrp.every((word: string) => word !== '');
+      if (!isFilled) {
+        newSrpError = t('seedPhraseReq');
+      } else if (hasUpperCase(joinedDraftSrp)) {
+        newSrpError = t('invalidSeedPhraseCaseSensitive');
+      } else if (!isValidMnemonic(joinedDraftSrp)) {
+        newSrpError = t('invalidSeedPhrase');
       }
 
       setDraftSrp(newDraftSrp);
@@ -128,13 +132,13 @@ export default function SrpInput({ onChange, srpText }) {
   return (
     <div className="import-srp__container">
       <label className="import-srp__srp-label">
-        <Text align={TextAlign.Left} variant={TextVariant.headingSm} as="h4">
+        <Text textAlign={TextAlign.Left} variant={TextVariant.headingSm} as="h4">
           {srpText}
         </Text>
       </label>
       <BannerAlert
         className="import-srp__paste-tip"
-        severity={Severity.Info}
+        severity={BannerAlertSeverity.Info}
         description={t('srpPasteTip')}
         descriptionProps={{ className: 'import-srp__banner-alert-text' }}
       />
@@ -171,13 +175,13 @@ export default function SrpInput({ onChange, srpText }) {
                 id={id}
                 data-testid={id}
                 type={showSrp[index] ? 'text' : 'password'}
-                onChange={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   e.preventDefault();
                   onSrpWordChange(index, e.target.value);
                 }}
                 value={draftSrp[index]}
                 autoComplete="off"
-                onPaste={(event) => {
+                onPaste={(event: React.ClipboardEvent<HTMLInputElement>) => {
                   const newSrp = event.clipboardData.getData('text');
 
                   if (newSrp.trim().match(/\s/u)) {
@@ -202,7 +206,7 @@ export default function SrpInput({ onChange, srpText }) {
       {srpError ? (
         <BannerAlert
           className="import-srp__srp-error"
-          severity={Severity.Danger}
+          severity={BannerAlertSeverity.Danger}
           description={srpError}
           descriptionProps={{ className: 'import-srp__banner-alert-text' }}
         />
@@ -210,7 +214,7 @@ export default function SrpInput({ onChange, srpText }) {
       {pasteFailed ? (
         <BannerAlert
           className="import-srp__srp-too-many-words-error"
-          severity={Severity.Danger}
+          severity={BannerAlertSeverity.Danger}
           actionButtonLabel={t('dismiss')}
           actionButtonOnClick={() => setPasteFailed(false)}
           description={t('srpPasteFailedTooManyWords')}

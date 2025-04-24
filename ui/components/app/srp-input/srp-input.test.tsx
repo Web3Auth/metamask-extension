@@ -1844,10 +1844,10 @@ describe('srp-input', () => {
 
       expect(queryByTestId('import-srp__srp-word-14')).toBeInTheDocument();
       expect(queryByTestId('import-srp__srp-word-15')).not.toBeInTheDocument();
-      expect(queryByTestId('import-srp__srp-word-11').value).toBe('test');
-      expect(queryByTestId('import-srp__srp-word-12').value).toBe('');
-      expect(queryByTestId('import-srp__srp-word-13').value).toBe('');
-      expect(queryByTestId('import-srp__srp-word-14').value).toBe('');
+      expect(queryByTestId('import-srp__srp-word-11')?.textContent).toBe('test');
+      expect(queryByTestId('import-srp__srp-word-12')?.textContent).toBe('');
+      expect(queryByTestId('import-srp__srp-word-13')?.textContent).toBe('');
+      expect(queryByTestId('import-srp__srp-word-14')?.textContent).toBe('');
     });
   });
 

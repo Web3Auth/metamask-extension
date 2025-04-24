@@ -3,6 +3,15 @@ import PropTypes from 'prop-types';
 
 import { TextField } from '../../component-library';
 
+type SrpWordProps = {
+  onRender: (inputRef: React.RefObject<HTMLInputElement>) => void;
+  word: string;
+  index: number;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onNextWord: (index: number, value: string) => void;
+  onDelete: (index: number) => void;
+};
+
 export default function SrpWord({
   onRender,
   word,
@@ -10,16 +19,16 @@ export default function SrpWord({
   onChange,
   onNextWord,
   onDelete,
-}) {
-  const inputRef = useRef(null);
+}: SrpWordProps) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     // listen for keydown event for spacebar
-    inputRef.current.addEventListener('keydown', (e) => {
+    inputRef.current?.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
-        onNextWord(index, e.target.value);
-      } else if (e.key === 'Backspace' && e.target.value === '') {
+        onNextWord(index, inputRef.current?.value ?? '');
+      } else if (e.key === 'Backspace' && inputRef.current?.value === '') {
         onDelete(index);
       }
     });

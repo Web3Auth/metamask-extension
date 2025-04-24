@@ -34,7 +34,9 @@ describe('parseSecretRecoveryPhrase', () => {
   });
 
   it('should return an empty string for both null and undefined', () => {
+    // @ts-expect-error Intentially testing undefined
     expect(parseSecretRecoveryPhrase(undefined)).toStrictEqual('');
+    // @ts-expect-error Intentially testing null
     expect(parseSecretRecoveryPhrase(null)).toStrictEqual('');
   });
 });
