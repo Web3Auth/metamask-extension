@@ -18,13 +18,13 @@ import {
 import { Box, Text, TextField } from '../../../components/component-library';
 import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
 
-export default function SRPHint() {
+export default function PasswordHint() {
   const history = useHistory();
 
   return (
     <Box
-      className="srp-hint"
-      data-testid="srp-hint"
+      className="password-hint"
+      data-testid="password-hint"
       display={Display.Flex}
       flexDirection={FlexDirection.Column}
     >
@@ -70,14 +70,14 @@ export default function SRPHint() {
       </Box>
 
       <Box
-        className="srp-hint__actions"
+        className="password-hint__actions"
         display={Display.Flex}
         flexDirection={FlexDirection.Column}
         justifyContent={JustifyContent.center}
         alignItems={AlignItems.center}
       >
         <Button
-          data-testid="srp-hint-save"
+          data-testid="password-hint-save"
           variant={ButtonVariant.Primary}
           size={ButtonSize.Lg}
           width={BlockSize.Full}
