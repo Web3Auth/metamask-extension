@@ -20,7 +20,7 @@ import {
   TextColor,
   IconColor,
 } from '../../../helpers/constants/design-system';
-import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
+import { ONBOARDING_METAMETRICS } from '../../../helpers/constants/routes';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { setSeedPhraseBackedUp } from '../../../store/actions';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
@@ -86,7 +86,7 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
         hd_entropy_index: hdEntropyIndex,
       },
     });
-    history.push(ONBOARDING_COMPLETION_ROUTE);
+    history.push(ONBOARDING_METAMETRICS);
   };
 
   const handleSetPhraseElements = (values) => {

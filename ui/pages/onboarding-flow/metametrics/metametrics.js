@@ -12,7 +12,6 @@ import {
   TextColor,
   IconColor,
   BlockSize,
-  TypographyVariant,
   AlignItems,
 } from '../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../hooks/useI18nContext';
@@ -23,7 +22,6 @@ import {
 import {
   getDataCollectionForMarketing,
   getFirstTimeFlowType,
-  getFirstTimeFlowTypeRouteAfterMetaMetricsOptIn,
 } from '../../../selectors';
 
 import {
@@ -47,13 +45,13 @@ import {
 } from '../../../components/component-library';
 
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
+import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
 
 export default function OnboardingMetametrics() {
   const t = useI18nContext();
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const nextRoute = useSelector(getFirstTimeFlowTypeRouteAfterMetaMetricsOptIn);
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
 
   const dataCollectionForMarketing = useSelector(getDataCollectionForMarketing);
@@ -100,14 +98,14 @@ export default function OnboardingMetametrics() {
         },
       });
     } finally {
-      history.push(nextRoute);
+      history.push(ONBOARDING_COMPLETION_ROUTE);
     }
   };
 
   const onCancel = async () => {
     await dispatch(setParticipateInMetaMetrics(false));
     await dispatch(setDataCollectionForMarketing(false));
-    history.push(nextRoute);
+    history.push(ONBOARDING_COMPLETION_ROUTE);
   };
 
   return (

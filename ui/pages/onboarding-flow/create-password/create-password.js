@@ -14,7 +14,7 @@ import {
 } from '../../../helpers/constants/design-system';
 import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-  ONBOARDING_COMPLETION_ROUTE,
+  ONBOARDING_METAMETRICS,
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
   ///: END:ONLY_INCLUDE_IF
 } from '../../../helpers/constants/routes';
@@ -89,7 +89,7 @@ export default function CreatePassword({
     if (currentKeyring && !newAccountCreationInProgress) {
       if (firstTimeFlowType === FirstTimeFlowType.import) {
         ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-        history.replace(ONBOARDING_COMPLETION_ROUTE);
+        history.replace(ONBOARDING_METAMETRICS);
         ///: END:ONLY_INCLUDE_IF
       } else {
         ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
@@ -201,7 +201,7 @@ export default function CreatePassword({
     ) {
       await importWithRecoveryPhrase(password, secretRecoveryPhrase);
       ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-      history.push(ONBOARDING_COMPLETION_ROUTE);
+      history.push(ONBOARDING_METAMETRICS);
       ///: END:ONLY_INCLUDE_IF
     } else {
       // Otherwise we are in create new wallet flow
