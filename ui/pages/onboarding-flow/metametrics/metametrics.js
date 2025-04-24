@@ -13,6 +13,7 @@ import {
   IconColor,
   BlockSize,
   TypographyVariant,
+  AlignItems,
 } from '../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
@@ -217,6 +218,7 @@ export default function OnboardingMetametrics() {
           </Text>
         }
         paddingBottom={3}
+        alignItems={AlignItems.flexStart}
       />
       <Text
         color={TextColor.textAlternative}

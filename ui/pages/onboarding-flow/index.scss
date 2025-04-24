@@ -7,6 +7,7 @@
 @import 'create-password/index';
 @import 'create-password-old/index';
 @import 'creation-successful/index';
+@import 'wallet-ready/index';
 @import 'welcome/index';
 @import 'import-srp/index';
 @import 'import-srp-old/index';
@@ -26,7 +27,7 @@
   &__wrapper {
     margin: 24px auto;
     padding: 32px 16px;
-    max-width: 600px;
+    max-width: 446px;
     border: 1px solid var(--color-border-muted);
     border-radius: 24px;
 
