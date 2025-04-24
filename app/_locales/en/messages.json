@@ -3912,6 +3912,9 @@
   "passwordHintError": {
     "message": "You can’t use the password as a hint"
   },
+  "passwordHintSaved": {
+    "message": "Password hint saved"
+  },
   "passwordNotLongEnough": {
     "message": "Password not long enough"
   },

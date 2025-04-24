@@ -28,6 +28,7 @@ import {
 import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { setPasswordHint } from '../../../store/actions';
+import { setShowPasswordHintSavedToast } from '../../../components/app/toast-master/utils';
 
 export default function PasswordHint() {
   const t = useI18nContext();
@@ -44,6 +45,7 @@ export default function PasswordHint() {
       return;
     }
     dispatch(setPasswordHint(hint));
+    dispatch(setShowPasswordHintSavedToast(true));
     history.push(ONBOARDING_COMPLETION_ROUTE);
   };
 
@@ -123,7 +125,7 @@ export default function PasswordHint() {
           size={ButtonSize.Lg}
           width={BlockSize.Full}
           onClick={handleSubmitHint}
-          disabled={isSamePasswordError}
+          disabled={isSamePasswordError || !hint}
         >
           {t('done')}
         </Button>
