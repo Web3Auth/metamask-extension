@@ -42,7 +42,7 @@ export default function ConfirmSrpModal({ onContinue, onClose, isError }) {
           <Box textAlign={TextAlign.Center}>
             {/* TODO: Fix check icon */}
             <Icon
-              name={isError ? IconName.CircleX : IconName.CircleCheck}
+              name={isError ? IconName.CircleX : IconName.Confirmation}
               size={IconSize.Xl}
               className="skip-srp-backup-popover__icon"
               color={

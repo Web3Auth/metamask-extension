@@ -3894,6 +3894,18 @@
   "password": {
     "message": "Password"
   },
+  "passwordHintTitle": {
+    "message": "Password hint"
+  },
+  "passwordHintDescription": {
+    "message": "Leave yourself a hint to help remember where your Secret Recovery Phrase is stored. This hint is stored on your device, and won’t be shared."
+  },
+  "passwordHintLeaveHint": {
+    "message": "Leave yourself a hint to help remember where your Secret Recovery Phrase is stored."
+  },
+  "passwordHintError": {
+    "message": "You can’t use the password as a hint"
+  },
   "passwordNotLongEnough": {
     "message": "Password not long enough"
   },
