@@ -248,6 +248,7 @@ import { BridgeStatusAction } from '../../shared/types/bridge-status';
 import { addDiscoveredSolanaAccounts } from '../../shared/lib/accounts';
 import { SOLANA_WALLET_SNAP_ID } from '../../shared/lib/accounts/solana-wallet-snap';
 ///: END:ONLY_INCLUDE_IF
+import { FirstTimeFlowType } from '../../shared/constants/onboarding';
 import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-mmi)
   handleMMITransactionUpdate,
@@ -4817,6 +4818,27 @@ export default class MetamaskController extends EventEmitter {
   }
 
   /**
+   * Adds a new seed phrase backup for the user.
+   *
+   * @param {string} mnemonic - The mnemonic to derive the seed phrase from.
+   * @param {string} keyringId - The keyring id of the backup seed phrase.
+   */
+  async addNewSeedPhraseBackup(mnemonic, keyringId) {
+    const encodedSeedPhrase = Array.from(
+      Buffer.from(mnemonic, 'utf8').values(),
+    );
+    const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
+
+    const seedPhrase =
+      this._convertMnemonicToWordlistIndices(seedPhraseAsBuffer);
+
+    await this.seedlessOnboardingController.addNewSeedPhraseBackup(
+      seedPhrase,
+      keyringId,
+    );
+  }
+
+  /**
    * Get all accounts for a given keyring id.
    *
    * @param {string} keyringId - The keyring id.
@@ -4858,9 +4880,10 @@ export default class MetamaskController extends EventEmitter {
    * Imports a new mnemonic to the vault.
    *
    * @param {string} mnemonic
+   * @param {boolean} shouldDoSocialBackup
    * @returns {object} new account address
    */
-  async importMnemonicToVault(mnemonic) {
+  async importMnemonicToVault(mnemonic, shouldDoSocialBackup = false) {
     const releaseLock = await this.createVaultMutex.acquire();
     try {
       // TODO: `getKeyringsByType` is deprecated, this logic should probably be moved to the `KeyringController`.
@@ -4888,6 +4911,17 @@ export default class MetamaskController extends EventEmitter {
           numberOfAccounts: 1,
         },
       );
+
+      const { firstTimeFlowType } = this.onboardingController.state;
+
+      if (
+        shouldDoSocialBackup &&
+        firstTimeFlowType === FirstTimeFlowType.seedless
+      ) {
+        // if social backup is requested, add the seed phrase backup
+        await this.addNewSeedPhraseBackup(mnemonic, id);
+      }
+
       const [newAccountAddress] = await this.keyringController.withKeyring(
         { id },
         async ({ keyring }) => keyring.getAccounts(),

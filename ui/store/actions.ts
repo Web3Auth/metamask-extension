@@ -77,6 +77,7 @@ import {
   getSelectedInternalAccount,
   getMetaMaskHdKeyrings,
   getAllPermittedAccountsForCurrentTab,
+  getFirstTimeFlowType,
 } from '../selectors';
 import {
   getSelectedNetworkClientId,
@@ -245,18 +246,29 @@ export function createNewVaultAndRestore(
 export function importMnemonicToVault(
   mnemonic: string,
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
-  return (dispatch: MetaMaskReduxDispatch) => {
+  return (
+    dispatch: MetaMaskReduxDispatch,
+    getState: () => MetaMaskReduxState,
+  ) => {
     dispatch(showLoadingIndication());
     log.debug(`background.importMnemonicToVault`);
 
+    const firstTimeFlowType = getFirstTimeFlowType(getState());
+    const shouldDoSocialBackup =
+      firstTimeFlowType === FirstTimeFlowType.seedless;
+
     return new Promise<void>((resolve, reject) => {
-      callBackgroundMethod('importMnemonicToVault', [mnemonic], (err) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve();
-      });
+      callBackgroundMethod(
+        'importMnemonicToVault',
+        [mnemonic, shouldDoSocialBackup],
+        (err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        },
+      );
     })
       .then(async () => {
         dispatch(hideLoadingIndication());
