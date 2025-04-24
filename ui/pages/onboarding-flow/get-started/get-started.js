@@ -34,6 +34,7 @@ import {
 import { getFirstTimeFlowType, getCurrentKeyring } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { isFlask, isBeta } from '../../../helpers/utils/build-types';
+import LoadingScreen from '../../../components/ui/loading-screen';
 import LoginOptions from './login-options';
 
 export default function GetStarted() {
@@ -46,6 +47,7 @@ export default function GetStarted() {
   const [loginOption, setLoginOption] = useState('');
   const [newAccountCreationInProgress, setNewAccountCreationInProgress] =
     useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // Don't allow users to come back to this screen after they
   // have already imported or created a wallet
@@ -69,10 +71,12 @@ export default function GetStarted() {
   const trackEvent = useContext(MetaMetricsContext);
 
   const onClickSocialLogin = async (provider) => {
+    setIsLoggingIn(true);
     setNewAccountCreationInProgress(true);
     dispatch(setFirstTimeFlowType(FirstTimeFlowType.seedless));
-    const isNewUser = await dispatch(startOAuthLogin(provider));
 
+    const isNewUser = await dispatch(startOAuthLogin(provider));
+    setIsLoggingIn(false);
     // if user is not new user and login option is new, redirect to account exist page
     if (loginOption === 'new' && !isNewUser) {
       history.push(ONBOARDING_ACCOUNT_EXIST);
@@ -222,6 +226,7 @@ export default function GetStarted() {
           handleLogin={handleLogin}
         />
       )}
+      {isLoggingIn && <LoadingScreen className="get-started__loading-screen" />}
     </div>
   );
 }
