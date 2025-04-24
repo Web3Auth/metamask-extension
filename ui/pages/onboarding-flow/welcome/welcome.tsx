@@ -7,7 +7,6 @@ import { isFlask, isBeta } from '../../../helpers/utils/build-types';
 import {
   Box,
   ButtonBase,
-  ButtonVariant,
   ButtonBaseSize,
   Text,
 } from '../../../components/component-library';
@@ -17,7 +16,6 @@ import {
   AlignItems,
   BlockSize,
   TextVariant,
-  TextColor,
 } from '../../../helpers/constants/design-system';
 import { ONBOARDING_GET_STARTED_ROUTE } from '../../../helpers/constants/routes';
 import TermsOfUsePopup from '../../../components/app/terms-of-use-popup';
@@ -68,7 +66,6 @@ export default function Welcome() {
           <ButtonBase
             className="welcome__button"
             width={BlockSize.Full}
-            variant={ButtonVariant.Primary}
             size={ButtonBaseSize.Lg}
             onClick={() => setShowTermsOfUse(true)}
           >
