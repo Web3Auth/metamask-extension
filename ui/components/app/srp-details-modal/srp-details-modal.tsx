@@ -14,10 +14,10 @@ import {
   ModalOverlay,
   ButtonPrimary,
   Text,
-  ButtonSize,
+  ButtonPrimarySize,
 } from '../../component-library';
 
-export default function SRPDetailsModal({ onClose }) {
+export default function SRPDetailsModal({ onClose }: { onClose: () => void }) {
   const t = useI18nContext();
 
   return (
@@ -57,7 +57,7 @@ export default function SRPDetailsModal({ onClose }) {
             </Box>
           </Box>
           <Box display={Display.Flex} marginTop={6} gap={2}>
-            <ButtonPrimary size={ButtonSize.Lg} onClick={() => onClose()} block>
+            <ButtonPrimary size={ButtonPrimarySize.Lg} onClick={() => onClose()} block>
               {t('gotIt')}
             </ButtonPrimary>
           </Box>
