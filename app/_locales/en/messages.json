@@ -90,6 +90,16 @@
   "accountDetails": {
     "message": "Account details"
   },
+  "accountAlreadyExistsLoginDescription": {
+    "message": "An account with “$1” already exists. Do you want to try logging in instead?",
+    "description": "$1 is the account email"
+  },
+  "accountAlreadyExistsLogin": {
+    "message": "Log in"
+  },
+  "accountAlreadyExistsTitle": {
+    "message": "Account already exists"
+  },
   "accountIdenticon": {
     "message": "Account identicon"
   },
