@@ -242,35 +242,38 @@ export default function CreatePassword({
   );
 
   return (
-    <div className="create-password__wrapper" data-testid="create-password">
-      <Box
-        justifyContent={JustifyContent.flexStart}
-        marginBottom={4}
-        width={BlockSize.Full}
-      >
-        <ButtonIcon
-          iconName={IconName.ArrowLeft}
-          color={IconColor.iconDefault}
-          size={ButtonIconSize.Md}
-          data-testid="create-password-back-button"
-          onClick={() => history.goBack()}
-        />
-      </Box>
-      <Box
-        justifyContent={JustifyContent.flexStart}
-        marginBottom={4}
-        width={BlockSize.Full}
-      >
-        <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          {t('stepOf', [
-            firstTimeFlowType === FirstTimeFlowType.import ? 2 : 1,
-            firstTimeFlowType === FirstTimeFlowType.import ? 2 : 3,
-          ])}
-        </Text>
-        <Text variant={TextVariant.headingLg}>{t('createPassword')}</Text>
-      </Box>
-      <Box justifyContent={JustifyContent.center} width={BlockSize.Full}>
-        <form className="create-password__form" onSubmit={handleCreate}>
+    <div className="create-password" data-testid="create-password">
+      <form className="create-password__form" onSubmit={handleCreate}>
+        <div className="create-password__content">
+          <Box
+            justifyContent={JustifyContent.flexStart}
+            marginBottom={4}
+            width={BlockSize.Full}
+          >
+            <ButtonIcon
+              iconName={IconName.ArrowLeft}
+              color={IconColor.iconDefault}
+              size={ButtonIconSize.Md}
+              data-testid="create-password-back-button"
+              onClick={() => history.goBack()}
+            />
+          </Box>
+          <Box
+            justifyContent={JustifyContent.flexStart}
+            marginBottom={4}
+            width={BlockSize.Full}
+          >
+            <Text
+              variant={TextVariant.bodyMd}
+              color={TextColor.textAlternative}
+            >
+              {t('stepOf', [
+                firstTimeFlowType === FirstTimeFlowType.import ? 2 : 1,
+                firstTimeFlowType === FirstTimeFlowType.import ? 2 : 3,
+              ])}
+            </Text>
+            <Text variant={TextVariant.headingLg}>{t('createPassword')}</Text>
+          </Box>
           <FormTextField
             passwordStrength={passwordStrength}
             passwordStrengthText={passwordStrengthText}
@@ -339,6 +342,8 @@ export default function CreatePassword({
               />
             }
           />
+        </div>
+        <div className="create-password__footer">
           <Box
             className="create-password__terms-container"
             alignItems={AlignItems.center}
@@ -378,8 +383,8 @@ export default function CreatePassword({
             </Button>
             ///: END:ONLY_INCLUDE_IF
           }
-        </form>
-      </Box>
+        </div>
+      </form>
       {shouldInjectMetametricsIframe ? (
         <iframe
           src={analyticsIframeUrl}

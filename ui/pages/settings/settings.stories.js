@@ -12,9 +12,8 @@ import {
   GENERAL_ROUTE,
   NETWORKS_FORM_ROUTE,
   NETWORKS_ROUTE,
-  SECURITY_MULTI_SRP_ROUTE,
   SECURITY_PASSWORD_HINT_ROUTE,
-  SECURITY_PASSWORD_ROUTE,
+  SECURITY_PASSWORD_CHANGE_ROUTE,
   SECURITY_ROUTE,
   SETTINGS_ROUTE,
 } from '../../helpers/constants/routes';
@@ -42,9 +41,8 @@ const ROUTES_TO_I18N_KEYS = {
   [GENERAL_ROUTE]: 'general',
   [NETWORKS_FORM_ROUTE]: 'networks',
   [NETWORKS_ROUTE]: 'networks',
-  [SECURITY_MULTI_SRP_ROUTE]: 'securityMultiSrp',
+  [SECURITY_PASSWORD_CHANGE_ROUTE]: 'securityPassword',
   [SECURITY_PASSWORD_HINT_ROUTE]: 'securityPasswordHint',
-  [SECURITY_PASSWORD_ROUTE]: 'securityPassword',
   [SECURITY_ROUTE]: 'securityAndPrivacy',
 };
 

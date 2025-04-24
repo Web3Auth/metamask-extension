@@ -178,21 +178,19 @@ const ChangePassword = () => {
     <div className="change-password">
       {step === ChangePasswordSteps.CurrentPassword && (
         <form
+          className="change-password__form"
           onSubmit={(e) => {
             e.preventDefault();
             handleSubmitCurrentPassword();
           }}
         >
-          <Box
-            display={Display.Flex}
-            flexDirection={FlexDirection.Column}
-            gap={4}
-          >
+          <Box className="change-password__form-container">
             <FormTextField
               id="current-password"
               label={t('enterPasswordContinue')}
               placeholder={t('makeSureNoOneWatching')}
               textFieldProps={{ type: TextFieldType.Password }}
+              labelProps={{ marginBottom: 1 }}
               value={currentPassword}
               error={isIncorrectPasswordError}
               helpText={
@@ -219,83 +217,85 @@ const ChangePassword = () => {
 
       {step === ChangePasswordSteps.ChangePassword && (
         <form
+          className="change-password__form"
           onSubmit={(e) => {
             e.preventDefault();
             handleSubmitNewPassword();
           }}
         >
-          <Box display={Display.Flex} flexDirection={FlexDirection.Column}>
-            <FormTextField
-              dataTestId="change-password-new"
-              passwordStrength={passwordStrength}
-              passwordStrengthText={passwordStrengthText}
-              autoFocus
-              placeholder={t('newPasswordPlaceholder')}
-              label={t('newPassword')}
-              labelProps={{ marginBottom: 1 }}
-              size={FormTextFieldSize.Lg}
-              value={newPassword}
-              type={showPassword ? 'text' : 'password'}
-              onChange={(e) => {
-                handleNewPasswordChange(e.target.value);
-              }}
-              helpText={
-                (passwordStrength || passwordStrengthText) && (
-                  <Box>
-                    {passwordStrength && (
-                      <Text as="div" variant={TextVariant.inherit}>
-                        {passwordStrength}
-                      </Text>
-                    )}
-                    {passwordStrengthText && (
-                      <Text as="div" variant={TextVariant.inherit}>
-                        {passwordStrengthText}
-                      </Text>
-                    )}
-                  </Box>
-                )
-              }
-              endAccessory={
-                <ButtonIcon
-                  iconName={showPassword ? IconName.EyeSlash : IconName.Eye}
-                  data-testid="show-password"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setShowPassword(!showPassword);
-                  }}
-                />
-              }
-            />
+          <Box className="change-password__form-container">
+            <div className="change-password__form-container__content">
+              <FormTextField
+                dataTestId="change-password-new"
+                passwordStrength={passwordStrength}
+                passwordStrengthText={passwordStrengthText}
+                autoFocus
+                placeholder={t('newPasswordPlaceholder')}
+                label={t('newPassword')}
+                labelProps={{ marginBottom: 1 }}
+                size={FormTextFieldSize.Lg}
+                value={newPassword}
+                type={showPassword ? 'text' : 'password'}
+                onChange={(e) => {
+                  handleNewPasswordChange(e.target.value);
+                }}
+                helpText={
+                  (passwordStrength || passwordStrengthText) && (
+                    <Box>
+                      {passwordStrength && (
+                        <Text as="div" variant={TextVariant.inherit}>
+                          {passwordStrength}
+                        </Text>
+                      )}
+                      {passwordStrengthText && (
+                        <Text as="div" variant={TextVariant.inherit}>
+                          {passwordStrengthText}
+                        </Text>
+                      )}
+                    </Box>
+                  )
+                }
+                endAccessory={
+                  <ButtonIcon
+                    iconName={showPassword ? IconName.EyeSlash : IconName.Eye}
+                    data-testid="show-password"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowPassword(!showPassword);
+                    }}
+                  />
+                }
+              />
 
-            <FormTextField
-              dataTestId="create-password-confirm"
-              marginTop={4}
-              placeholder={t('confirmPasswordPlaceholder')}
-              label={t('confirmPassword')}
-              labelProps={{ marginBottom: 1 }}
-              size={FormTextFieldSize.Lg}
-              error={Boolean(confirmPasswordError)}
-              helpText={confirmPasswordError}
-              value={confirmPassword}
-              type={showConfirmPassword ? 'text' : 'password'}
-              onChange={(e) => {
-                handleConfirmNewPasswordChange(e.target.value);
-              }}
-              endAccessory={
-                <ButtonIcon
-                  iconName={
-                    showConfirmPassword ? IconName.EyeSlash : IconName.Eye
-                  }
-                  data-testid="show-password"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setShowConfirmPassword(!showConfirmPassword);
-                  }}
-                />
-              }
-            />
-
-            <Button type="submit" disabled={!isValid} block marginTop={4}>
+              <FormTextField
+                dataTestId="create-password-confirm"
+                marginTop={4}
+                placeholder={t('confirmPasswordPlaceholder')}
+                label={t('confirmPassword')}
+                labelProps={{ marginBottom: 1 }}
+                size={FormTextFieldSize.Lg}
+                error={Boolean(confirmPasswordError)}
+                helpText={confirmPasswordError}
+                value={confirmPassword}
+                type={showConfirmPassword ? 'text' : 'password'}
+                onChange={(e) => {
+                  handleConfirmNewPasswordChange(e.target.value);
+                }}
+                endAccessory={
+                  <ButtonIcon
+                    iconName={
+                      showConfirmPassword ? IconName.EyeSlash : IconName.Eye
+                    }
+                    data-testid="show-password"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setShowConfirmPassword(!showConfirmPassword);
+                    }}
+                  />
+                }
+              />
+            </div>
+            <Button type="submit" disabled={!isValid} block>
               {t('save')}
             </Button>
           </Box>

@@ -54,54 +54,56 @@ export default function AccountExist() {
       display={Display.Flex}
       flexDirection={FlexDirection.Column}
     >
-      <Box
-        justifyContent={JustifyContent.flexStart}
-        marginBottom={4}
-        width={BlockSize.Full}
-      >
-        <ButtonIcon
-          iconName={IconName.ArrowLeft}
-          color={IconColor.iconDefault}
-          size={ButtonIconSize.Md}
-          data-testid="create-password-back-button"
-          onClick={() => history.goBack()}
-        />
-      </Box>
-      <Box
-        display={Display.Flex}
-        flexDirection={FlexDirection.Column}
-        justifyContent={JustifyContent.center}
-        alignItems={AlignItems.flexStart}
-      >
-        <Text
-          variant={TextVariant.headingLg}
-          as="h2"
-          justifyContent={JustifyContent.center}
-          style={{
-            alignSelf: AlignItems.flexStart,
-          }}
-          marginBottom={4}
-        >
-          {t('accountAlreadyExistsTitle')}
-        </Text>
+      <div className="account-exist__content">
         <Box
+          justifyContent={JustifyContent.flexStart}
+          marginBottom={4}
           width={BlockSize.Full}
-          display={Display.Flex}
-          justifyContent={JustifyContent.center}
-          alignItems={AlignItems.center}
-          marginBottom={6}
         >
-          <img
-            src="images/wallet-ready.svg"
-            width={276}
-            height={276}
-            alt="Account already exists"
+          <ButtonIcon
+            iconName={IconName.ArrowLeft}
+            color={IconColor.iconDefault}
+            size={ButtonIconSize.Md}
+            data-testid="create-password-back-button"
+            onClick={() => history.goBack()}
           />
         </Box>
-        <Text variant={TextVariant.bodyMd} marginBottom={6}>
-          {t('accountAlreadyExistsLoginDescription', [userSocialLoginEmail])}
-        </Text>
-      </Box>
+        <Box
+          display={Display.Flex}
+          flexDirection={FlexDirection.Column}
+          justifyContent={JustifyContent.center}
+          alignItems={AlignItems.flexStart}
+        >
+          <Text
+            variant={TextVariant.headingLg}
+            as="h2"
+            justifyContent={JustifyContent.center}
+            style={{
+              alignSelf: AlignItems.flexStart,
+            }}
+            marginBottom={4}
+          >
+            {t('accountAlreadyExistsTitle')}
+          </Text>
+          <Box
+            width={BlockSize.Full}
+            display={Display.Flex}
+            justifyContent={JustifyContent.center}
+            alignItems={AlignItems.center}
+            marginBottom={6}
+          >
+            <img
+              src="images/wallet-ready.svg"
+              width={276}
+              height={276}
+              alt="Account already exists"
+            />
+          </Box>
+          <Text variant={TextVariant.bodyMd} marginBottom={6}>
+            {t('accountAlreadyExistsLoginDescription', [userSocialLoginEmail])}
+          </Text>
+        </Box>
+      </div>
 
       <Box
         className="account-exist__actions"
@@ -109,6 +111,7 @@ export default function AccountExist() {
         flexDirection={FlexDirection.Column}
         justifyContent={JustifyContent.center}
         alignItems={AlignItems.center}
+        width={BlockSize.Full}
       >
         <Button
           data-testid="onboarding-complete-done"

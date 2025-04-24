@@ -164,51 +164,55 @@ export default function GetStarted() {
 
   return (
     <div className="get-started" data-testid="get-started">
-      <div className="get-started__mascot">{renderMascot()}</div>
+      <div className="get-started__content">
+        <div className="get-started__mascot">{renderMascot()}</div>
 
-      <div className="get-started__title">
-        <Text
-          variant={TextVariant.displayMd}
-          as="h2"
-          textAlign={TextAlign.Center}
-          fontWeight={FontWeight.Bold}
-        >
-          {t('welcomeToMetaMask')}!
-        </Text>
+        <div className="get-started__title">
+          <Text
+            variant={TextVariant.displayMd}
+            as="h2"
+            textAlign={TextAlign.Center}
+            fontWeight={FontWeight.Bold}
+          >
+            {t('welcomeToMetaMask')}!
+          </Text>
+        </div>
       </div>
 
-      <ul className="get-started__buttons">
-        <li>
-          <Button
-            data-testid="onboarding-create-wallet"
-            variant={ButtonVariant.Primary}
-            width={BlockSize.Full}
-            size={ButtonSize.Lg}
-            onClick={() => {
-              setLoginOption('new');
-            }}
-          >
-            {
-              ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-              t('onboardingCreateWallet')
-              ///: END:ONLY_INCLUDE_IF
-            }
-          </Button>
-        </li>
-        <li>
-          <Button
-            data-testid="onboarding-create-wallet"
-            variant={ButtonVariant.Secondary}
-            width={BlockSize.Full}
-            size={ButtonSize.Lg}
-            onClick={() => {
-              setLoginOption('existing');
-            }}
-          >
-            {t('onboardingImportWallet')}
-          </Button>
-        </li>
-      </ul>
+      <div className="get-started__footer">
+        <ul className="get-started__buttons">
+          <li>
+            <Button
+              data-testid="onboarding-create-wallet"
+              variant={ButtonVariant.Primary}
+              width={BlockSize.Full}
+              size={ButtonSize.Lg}
+              onClick={() => {
+                setLoginOption('new');
+              }}
+            >
+              {
+                ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+                t('onboardingCreateWallet')
+                ///: END:ONLY_INCLUDE_IF
+              }
+            </Button>
+          </li>
+          <li>
+            <Button
+              data-testid="onboarding-create-wallet"
+              variant={ButtonVariant.Secondary}
+              width={BlockSize.Full}
+              size={ButtonSize.Lg}
+              onClick={() => {
+                setLoginOption('existing');
+              }}
+            >
+              {t('onboardingImportWallet')}
+            </Button>
+          </li>
+        </ul>
+      </div>
       {loginOption && (
         <LoginOptions
           loginOption={loginOption}
