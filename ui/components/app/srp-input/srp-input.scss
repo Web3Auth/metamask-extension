@@ -31,9 +31,9 @@
     }
   }
 
-  &__srp-label {
-    grid-area: title;
-    text-align: center;
+  &__srp-container {
+    padding: 1rem;
+    flex: 1;
   }
 
   &__number-of-words-dropdown {

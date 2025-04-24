@@ -20,16 +20,14 @@ const hasUpperCase = (draftSrp) => {
   return draftSrp !== draftSrp.toLowerCase();
 };
 
-export default function SrpInput({ onChange, srpText }) {
-  const [srpError, setSrpError] = useState('');
-  const [pasteFailed, setPasteFailed] = useState(false);
-  const [draftSrp, setDraftSrp] = useState(
-    new Array(defaultNumberOfWords).fill(''),
-  );
-  const [showSrp, setShowSrp] = useState(
-    new Array(defaultNumberOfWords).fill(false),
-  );
-  const [numberOfWords, setNumberOfWords] = useState(defaultNumberOfWords);
+  // 12, 15, 18, 21, 24
+  // TODO: verify if we don't need this
+  // eslint-disable-next-line no-unused-vars
+  const incrementSrpLength = (currentDraftSrp) => {
+    let updatedDraftSrp = currentDraftSrp;
+    let arrayItemsToAdd = 0;
+    const currentSrpLength = updatedDraftSrp.length;
+    console.log('currentSrpLength', currentSrpLength);
 
   const t = useI18nContext();
 
@@ -48,12 +46,13 @@ export default function SrpInput({ onChange, srpText }) {
         }
       }
 
-      setDraftSrp(newDraftSrp);
-      setSrpError(newSrpError);
-      onChange(newSrpError ? '' : joinedDraftSrp);
-    },
-    [setDraftSrp, setSrpError, t, onChange],
-  );
+  const setupDraftSrp = (firstWord) => {
+    // const updatedDraftSrp = incrementSrpLength(draftSrp);
+    const updatedDraftSrp = [...draftSrp];
+    updatedDraftSrp[0] = { word: firstWord, isActive: false };
+    updatedDraftSrp[1] = { word: '', isActive: true };
+    setDraftSrp(updatedDraftSrp);
+  };
 
   const toggleShowSrp = useCallback((index) => {
     setShowSrp((currentShowSrp) => {
@@ -68,29 +67,32 @@ export default function SrpInput({ onChange, srpText }) {
     });
   }, []);
 
-  const onSrpWordChange = useCallback(
-    (index, newWord) => {
-      if (pasteFailed) {
-        setPasteFailed(false);
-      }
-      const newSrp = draftSrp.slice();
-      newSrp[index] = newWord.trim();
-      onSrpChange(newSrp);
-    },
-    [draftSrp, onSrpChange, pasteFailed],
-  );
+  const onNextWord = (word, index) => {
+    const updatedDraftSrp = [...draftSrp];
+    let newIndex = index;
+    updatedDraftSrp[index] = {
+      word,
+      isActive: false,
+    };
 
   const onSrpPaste = useCallback(
     (rawSrp) => {
       const parsedSrp = parseSecretRecoveryPhrase(rawSrp);
       let newDraftSrp = parsedSrp.split(' ');
 
-      if (newDraftSrp.length > 24) {
-        setPasteFailed(true);
-        return;
-      } else if (pasteFailed) {
-        setPasteFailed(false);
-      }
+    if (isLastWord && updatedDraftSrp.length < MAX_SRP_LENGTH) {
+      updatedDraftSrp[newIndex + 1] = {
+        word: '',
+        isActive: true,
+      };
+      // updatedDraftSrp = incrementSrpLength(updatedDraftSrp);
+    } else {
+      newIndex += 1;
+      updatedDraftSrp[newIndex] = {
+        ...updatedDraftSrp[newIndex],
+        isActive: true,
+      };
+    }
 
       let newNumberOfWords = numberOfWords;
       if (newDraftSrp.length !== numberOfWords) {
@@ -132,18 +134,25 @@ export default function SrpInput({ onChange, srpText }) {
         throw new Error('Unable to parse option as integer');
       }
 
-      let newDraftSrp = draftSrp.slice(0, newNumberOfWords);
-      if (newDraftSrp.length < newNumberOfWords) {
-        newDraftSrp = newDraftSrp.concat(
-          new Array(newNumberOfWords - newDraftSrp.length).fill(''),
-        );
-      }
-      setNumberOfWords(newNumberOfWords);
-      setShowSrp(new Array(newNumberOfWords).fill(false));
-      onSrpChange(newDraftSrp);
-    },
-    [draftSrp, onSrpChange],
-  );
+    if (newDraftSrp.length > 24) {
+      return;
+    }
+
+    newDraftSrp = newDraftSrp.map((word) => ({ word, isActive: false }));
+    // newDraftSrp = incrementSrpLength(newDraftSrp);
+    newDraftSrp[currentSrpLength - 1] = {
+      ...newDraftSrp[currentSrpLength - 1],
+      isActive: true,
+    };
+    setDraftSrp(newDraftSrp);
+  };
+
+  useEffect(() => {
+    const activeSrpIndex = draftSrp.findIndex((srp) => srp.isActive);
+    if (activeSrpIndex >= 0) {
+      srpRefs.current[activeSrpIndex].setFocus();
+    }
+  }, [draftSrp]);
 
   return (
     <div className="import-srp__container">
