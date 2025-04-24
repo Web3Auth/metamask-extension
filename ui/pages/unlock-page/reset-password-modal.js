@@ -110,7 +110,11 @@ export default function ResetPasswordModal({ onClose, onEraseWallet }) {
               justifyContent={JustifyContent.flexStart}
               onClick={() => onEraseWallet()}
             >
-              <Text variant={TextVariant.bodyMd} color={TextColor.errorDefault}>
+              <Text
+                variant={TextVariant.bodyMd}
+                color={TextColor.errorDefault}
+                textAlign={TextAlign.Left}
+              >
                 {t('resetPasswordAnotherOption')}
               </Text>
             </ButtonBase>
