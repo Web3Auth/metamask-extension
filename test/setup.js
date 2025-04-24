@@ -10,10 +10,10 @@ global.platform = {
   getVersion: () => '<version>',
 };
 
-// Required for: testing OAuth Controller login flow
 global.chrome = {
   identity: {
-    getRedirectURL: jest.fn().mockReturnValue('https://mocked-redirect-uri'),
-    launchWebAuthFlow: jest.fn(),
+    getRedirectURL: () => 'https://mocked-redirect-uri',
+    launchWebAuthFlow: () => Promise.resolve('https://mocked-redirect-uri?code=mocked-code'),
   },
 };
+

@@ -1,5 +1,6 @@
+import { AuthConnection } from '@metamask/seedless-onboarding-controller';
 import { BaseLoginHandler } from './base-login-handler';
-import { AuthConnection, OAuthUserInfo } from './types';
+import { AuthTokenResponse, OAuthUserInfo } from './types';
 
 export class GoogleLoginHandler extends BaseLoginHandler {
   // This prompt value is used to force the user to select an account before OAuth login
@@ -10,7 +11,7 @@ export class GoogleLoginHandler extends BaseLoginHandler {
 
   readonly #scope = ['openid', 'profile', 'email'];
 
-  get provider() {
+  get authConnection() {
     return AuthConnection.Google;
   }
 
@@ -18,48 +19,62 @@ export class GoogleLoginHandler extends BaseLoginHandler {
     return this.#scope;
   }
 
+  /**
+   * Generate the Auth URL to initiate the OAuth login to get the Authorization Code from Google Authorization server.
+   *
+   * @returns The URL to initiate the OAuth login.
+   */
   getAuthUrl(): string {
     const authUrl = new URL(this.OAUTH_SERVER_URL);
     authUrl.searchParams.set('client_id', this.options.oAuthClientId);
     authUrl.searchParams.set('response_type', 'code');
     authUrl.searchParams.set('scope', this.#scope.join(' '));
     authUrl.searchParams.set('redirect_uri', this.options.redirectUri);
+    authUrl.searchParams.set('nonce', this.nonce);
     authUrl.searchParams.set('prompt', this.#prompt);
 
     return authUrl.toString();
   }
 
-  async getAuthIdToken(code: string) {
+  /**
+   * Get the JWT Token from the Web3Auth Authentication Server.
+   *
+   * @param code - The Authorization Code from the social login provider.
+   * @returns The JWT Token from the Web3Auth Authentication Server.
+   */
+  async getAuthIdToken(code: string): Promise<AuthTokenResponse> {
     const requestData = this.generateAuthTokenRequestData(code);
     const res = await this.requestAuthToken(requestData);
     return res;
   }
 
-  generateAuthTokenRequestData(code: string) {
+  /**
+   * Generate the request body data to get the JWT Token from the Web3Auth Authentication Server.
+   *
+   * @param code - The Authorization Code from the social login provider.
+   * @returns The request data for the Web3Auth Authentication Server.
+   */
+  generateAuthTokenRequestData(code: string): string {
     const { redirectUri, web3AuthNetwork } = this.options;
     const requestData = {
       code,
       client_id: this.options.oAuthClientId,
       redirect_uri: redirectUri,
-      login_provider: this.provider,
+      login_provider: this.authConnection,
       network: web3AuthNetwork,
     };
 
     return JSON.stringify(requestData);
   }
 
+  /**
+   * Get the user's information from the JWT Token.
+   *
+   * @param idToken - The JWT Token from the Web3Auth Authentication Server.
+   * @returns The user's information from the JWT Token.
+   */
   async getUserInfo(idToken: string): Promise<OAuthUserInfo> {
-    const base64Url = idToken.split('.')[1];
-    const base64 = base64Url.replace(/-/u, '+').replace(/_/u, '/');
-    const jsonPayload = decodeURIComponent(
-      window
-        .atob(base64)
-        .split('')
-        .map(function (c) {
-          return `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`;
-        })
-        .join(''),
-    );
+    const jsonPayload = this.decodeIdToken(idToken);
     const payload = JSON.parse(jsonPayload);
     return {
       email: payload.email,

@@ -1,20 +1,20 @@
+import { AuthConnection } from '@metamask/seedless-onboarding-controller';
 import { AppleLoginHandler } from './apple-login-handler';
 import { GoogleLoginHandler } from './google-login-handler';
-import { OAuthLoginEnv, AuthConnection } from './types';
+import { LoginHandlerOptions, OAuthLoginEnv } from './types';
 
 export function createLoginHandler(
-  provider: AuthConnection,
+  authConnection: AuthConnection,
   redirectUri: string,
   env: OAuthLoginEnv,
 ) {
-  const commonHandlerOptions = {
-    provider,
+  const commonHandlerOptions: Omit<LoginHandlerOptions, 'oAuthClientId'> = {
     web3AuthNetwork: env.web3AuthNetwork,
     redirectUri,
     authServerUrl: env.authServerUrl,
   };
 
-  switch (provider) {
+  switch (authConnection) {
     case AuthConnection.Google:
       return new GoogleLoginHandler({
         ...commonHandlerOptions,

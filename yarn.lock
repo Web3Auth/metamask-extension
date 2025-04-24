@@ -4992,7 +4992,7 @@ __metadata:
 
 "@metamask/auth-network-utils@file:./auth-network-utils.tgz::locator=metamask-crx%40workspace%3A.":
   version: 0.0.0
-  resolution: "@metamask/auth-network-utils@file:./auth-network-utils.tgz#./auth-network-utils.tgz::hash=71b1b4&locator=metamask-crx%40workspace%3A."
+  resolution: "@metamask/auth-network-utils@file:./auth-network-utils.tgz#./auth-network-utils.tgz::hash=89f587&locator=metamask-crx%40workspace%3A."
   dependencies:
     "@noble/curves": "npm:^1.8.1"
     "@noble/hashes": "npm:^1.7.1"
@@ -5003,7 +5003,7 @@ __metadata:
     elliptic: "npm:^6.6.1"
     json-stable-stringify: "npm:^1.2.1"
     loglevel: "npm:^1.9.2"
-  checksum: 10/b3e5d557b6a9adcaca4cb6cb45f1c3ca59ac12c05601dff701272b2765c60d36235a9ea566064d4437f45cfb1de2888c35e61cd1bf34b2f909ac47e7e7a5d775
+  checksum: 10/71aa6b018eb628e974cacd9468d4ae0bd390809dafb60add858b9523ce5a1ac7b76009f13ef3d0a862f5e775ed6599f57022a062cf7b6b888724ed69d31d8bdc
   languageName: node
   linkType: hard
 
@@ -6265,7 +6265,7 @@ __metadata:
 
 "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz::locator=metamask-crx%40workspace%3A.":
   version: 0.0.0
-  resolution: "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz#./seedless-onboarding-controller.tgz::hash=1b0c4d&locator=metamask-crx%40workspace%3A."
+  resolution: "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz#./seedless-onboarding-controller.tgz::hash=910c5e&locator=metamask-crx%40workspace%3A."
   dependencies:
     "@metamask/auth-network-utils": ./auth-network-utils.tgz
     "@metamask/base-controller": "npm:^8.0.0"
@@ -6273,7 +6273,7 @@ __metadata:
     "@metamask/toprf-secure-backup": ./toprf-secure-backup.tgz
     "@metamask/utils": "npm:^11.2.0"
     async-mutex: "npm:^0.5.0"
-  checksum: 10/651b1008fe055996aa5f6fad9816c9c8416d240f49b24552962e1fbd2b20c3626312a4f499676f54d46ab43c277196c3fa5c27bf9666ca322a3bea2f3ddf8ff6
+  checksum: 10/de1e6a7963b1d1d0597e597b1506269c16b2ebbfb47b4452134ff9a4ee5f852cbcd3ec784269c906d197369581e53c2387e39df438edf40983ead0676bc5b22c
   languageName: node
   linkType: hard
 
@@ -6587,7 +6587,7 @@ __metadata:
 
 "@metamask/toprf-secure-backup@file:./toprf-secure-backup.tgz::locator=metamask-crx%40workspace%3A.":
   version: 0.0.0
-  resolution: "@metamask/toprf-secure-backup@file:./toprf-secure-backup.tgz#./toprf-secure-backup.tgz::hash=928fb2&locator=metamask-crx%40workspace%3A."
+  resolution: "@metamask/toprf-secure-backup@file:./toprf-secure-backup.tgz#./toprf-secure-backup.tgz::hash=21c0d4&locator=metamask-crx%40workspace%3A."
   dependencies:
     "@metamask/auth-network-utils": "npm:^0.0.0"
     "@noble/ciphers": "npm:^1.2.1"
@@ -6599,7 +6599,7 @@ __metadata:
     "@toruslabs/fetch-node-details": "npm:^15.0.0"
     "@toruslabs/http-helpers": "npm:^8.1.1"
     bn.js: "npm:^5.2.1"
-  checksum: 10/e61959c0711a4b9478a59438d887129c30cb4153158b75ca1db3c06e0501b014a4f68bc011f99e41c374751a8d3782e5fd04f97c053aff8fb1208f1937ff7a74
+  checksum: 10/9be7a2652cb0407b3b2acacafbf683318b3104965319a99a181ee78fe2ed12b91f24a9e37c40687b499c956422f13441aaa747ea801546f73b79eee4fa4a3fe9
   languageName: node
   linkType: hard
 
@@ -8453,9 +8453,9 @@ __metadata:
   linkType: hard
 
 "@sentry/core@npm:^9.10.0":
-  version: 9.12.0
-  resolution: "@sentry/core@npm:9.12.0"
-  checksum: 10/dd5e9cc0bde5c52c873b40a51bb40ed72da9567a92dcd0baa924ba090fa6723839a012093517e0955b26d722fd8a9b5ba4462217a40920a0b0d05209144d3b61
+  version: 9.13.0
+  resolution: "@sentry/core@npm:9.13.0"
+  checksum: 10/31fa3a682c37080f3bcd40d8fa1d1b9434205d6c27d88f946cde34347de238dc291bd6d020ab9b00bdeca70f70cd47d48516d977757e0a9d629fece87eff341f
   languageName: node
   linkType: hard
 
@@ -15813,7 +15813,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"call-bound@npm:^1.0.3":
+"call-bound@npm:^1.0.4":
   version: 1.0.4
   resolution: "call-bound@npm:1.0.4"
   dependencies:
@@ -25951,15 +25951,15 @@ __metadata:
   linkType: hard
 
 "json-stable-stringify@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "json-stable-stringify@npm:1.2.1"
+  version: 1.3.0
+  resolution: "json-stable-stringify@npm:1.3.0"
   dependencies:
     call-bind: "npm:^1.0.8"
-    call-bound: "npm:^1.0.3"
+    call-bound: "npm:^1.0.4"
     isarray: "npm:^2.0.5"
     jsonify: "npm:^0.0.1"
     object-keys: "npm:^1.1.1"
-  checksum: 10/f4600d34605e1da81a615ddf7dc62f021a5a5c822aee38b3c878e9a703bbd72623402944dbd7848140602c9ec54bfa2df65dfe75cc40afcfd79f3f072ca5307b
+  checksum: 10/6661e9704733d2826b2012fea7b152ca216c82d8c725c8d390ee6434eabdf43c66fa6e6b423cce9bf95f8fec0ef52004c09a99043c7daf6e58595a0cff204629
   languageName: node
   linkType: hard
 
