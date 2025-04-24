@@ -40,6 +40,7 @@ import {
 import { getFirstTimeFlowType, getCurrentKeyring } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { isFlask, isBeta } from '../../../helpers/utils/build-types';
+import LoginOptions from './login-options';
 
 export default function GetStarted() {
   const t = useI18nContext();
@@ -48,6 +49,7 @@ export default function GetStarted() {
   const [eventEmitter] = useState(new EventEmitter());
   const currentKeyring = useSelector(getCurrentKeyring);
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
+  const [loginOption, setLoginOption] = useState('');
   const [newAccountCreationInProgress, setNewAccountCreationInProgress] =
     useState(false);
 
@@ -141,60 +143,18 @@ export default function GetStarted() {
 
       <ul className="get-started__buttons">
         <li>
-          <button className="get-started__plain-button">
-            {
-              ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-              <div className="get-started__plain-button-content">
-                <img
-                  src="images/icons/google.svg"
-                  className="get-started__social-icon"
-                  alt="Google icon"
-                />
-                <Text variant={TextVariant.bodyMd}>Continue with Google</Text>
-              </div>
-              ///: END:ONLY_INCLUDE_IF
-            }
-          </button>
-        </li>
-        <li>
-          <button className="get-started__plain-button">
-            {
-              ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-              <div className="get-started__plain-button-content">
-                <Icon
-                  name={IconName.Apple}
-                  color={IconColor.iconDefault}
-                  size={IconSize.Lg}
-                />
-                <Text variant={TextVariant.bodyMd}>Continue with Apple</Text>
-              </div>
-              ///: END:ONLY_INCLUDE_IF
-            }
-          </button>
-        </li>
-        <li>
-          <div className="get-started__or">
-            <Text
-              className="get-started__or-text"
-              variant={TextVariant.bodyMd}
-              color={TextColor.textMuted}
-              as="div"
-            >
-              OR
-            </Text>
-          </div>
-        </li>
-        <li>
           <Button
             data-testid="onboarding-create-wallet"
             variant={ButtonVariant.Primary}
             width={BlockSize.Full}
             size={ButtonSize.Lg}
-            onClick={onCreateClick}
+            onClick={() => {
+              setLoginOption('new');
+            }}
           >
             {
               ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-              t('onboardingCreateWallet')
+              'Create new wallet'
               ///: END:ONLY_INCLUDE_IF
             }
           </Button>
@@ -205,12 +165,26 @@ export default function GetStarted() {
             variant={ButtonVariant.Secondary}
             width={BlockSize.Full}
             size={ButtonSize.Lg}
-            onClick={onImportClick}
+            onClick={() => {
+              setLoginOption('existing');
+            }}
           >
-            {t('onboardingImportWallet')}
+            I have an existing wallet
           </Button>
         </li>
       </ul>
+      {loginOption && (
+        <LoginOptions
+          loginOption={loginOption}
+          onClose={() => {
+            console.log('onClose');
+            setLoginOption('');
+          }}
+          handleLogin={(loginType) => {
+            console.log('handleLogin', loginType, loginOption);
+          }}
+        />
+      )}
     </div>
   );
 }
