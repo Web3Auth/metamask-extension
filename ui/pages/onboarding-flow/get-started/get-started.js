@@ -7,18 +7,13 @@ import {
   Button,
   ButtonSize,
   ButtonVariant,
-  Icon,
-  IconName,
-  IconSize,
   Text,
 } from '../../../components/component-library';
 import {
   TextVariant,
   TextAlign,
   FontWeight,
-  TextColor,
   BlockSize,
-  IconColor,
 } from '../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
@@ -138,9 +133,6 @@ export default function GetStarted() {
 
   return (
     <div className="get-started" data-testid="get-started">
-      {/* <div className="get-started__logo">
-        <MetaFoxLogo theme="light" />
-      </div> */}
       <div className="get-started__mascot">{renderMascot()}</div>
 
       <div className="get-started__title">
@@ -167,7 +159,7 @@ export default function GetStarted() {
           >
             {
               ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-              'Create new wallet'
+              t('onboardingCreateWallet')
               ///: END:ONLY_INCLUDE_IF
             }
           </Button>
@@ -182,7 +174,7 @@ export default function GetStarted() {
               setLoginOption('existing');
             }}
           >
-            I have an existing wallet
+            {t('onboardingImportWallet')}
           </Button>
         </li>
       </ul>

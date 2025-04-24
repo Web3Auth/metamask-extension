@@ -41,7 +41,7 @@ const SrpText = forwardRef((props, ref) => {
       value={tempWord}
       disabled={props.disabled}
       borderRadius={BorderRadius.LG}
-      type={props.word.isActive ? 'text' : 'password'}
+      type={props.word.isActive || props.forceShow ? 'text' : 'password'}
       width={BlockSize.Full}
       startAccessory={wordLabel()}
       onChange={onChange}
@@ -73,6 +73,7 @@ SrpText.propTypes = {
   updateWord: PropTypes.func,
   setActive: PropTypes.func,
   disabled: PropTypes.bool,
+  forceShow: PropTypes.bool,
 };
 
 SrpText.displayName = 'SrpText';
