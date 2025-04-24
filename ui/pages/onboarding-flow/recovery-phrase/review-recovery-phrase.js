@@ -40,8 +40,6 @@ export default function RecoveryPhrase({ secretRecoveryPhrase }) {
   // TODO: Check on copy to clipboard
   // const [copied, handleCopy] = useCopyToClipboard();
   const [phraseRevealed, setPhraseRevealed] = useState(false);
-  // TODO: Check on hide phrase
-  // const [hiddenPhrase, setHiddenPhrase] = useState(false);
   const [showSrpDetailsModal, setShowSrpDetailsModal] = useState(false);
   const searchParams = new URLSearchParams(search);
   const isFromReminderParam = searchParams.get('isFromReminder')
@@ -107,7 +105,6 @@ export default function RecoveryPhrase({ secretRecoveryPhrase }) {
       <RecoveryPhraseChips
         secretRecoveryPhrase={secretRecoveryPhrase.split(' ')}
         phraseRevealed={phraseRevealed}
-        // hiddenPhrase={hiddenPhrase}
         revealPhrase={() => {
           trackEvent({
             category: MetaMetricsEventCategory.Onboarding,
