@@ -28,6 +28,7 @@ export enum IconSize {
 export enum IconName {
   AddSquare = 'add-square',
   Add = 'add',
+  Apple = 'apple',
   Arrow2Down = 'arrow-2-down',
   Arrow2Left = 'arrow-2-left',
   Arrow2Right = 'arrow-2-right',
@@ -87,6 +88,7 @@ export enum IconName {
   Gas = 'gas',
   GlobalSearch = 'global-search',
   Global = 'global',
+  Google = 'google',
   Graph = 'graph',
   Hardware = 'hardware',
   Heart = 'heart',

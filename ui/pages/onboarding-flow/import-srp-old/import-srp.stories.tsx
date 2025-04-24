@@ -3,7 +3,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import type { Meta, StoryObj } from '@storybook/react';
-import ImportSRP from './import-srp-new';
+import ImportSRP from './import-srp';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import type { UITrackEventMethod } from '../../../contexts/metametrics';
 
@@ -50,7 +50,7 @@ const Wrapper = ({ children }) => (
 );
 
 const meta: Meta<typeof ImportSRP> = {
-  title: 'Pages/OnboardingFlow/ImportSRPNew',
+  title: 'Pages/OnboardingFlow/ImportSRPOld',
   component: ImportSRP,
   decorators: [
     (Story) => (

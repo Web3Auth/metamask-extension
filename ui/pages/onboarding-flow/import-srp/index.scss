@@ -1,29 +1,20 @@
 .import-srp {
   margin-bottom: 24px;
 
+  &__step {
+    text-align: left;
+  }
+
   &__header {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-    margin-bottom: 24px;
+    text-align: left;
+    margin-bottom: 4px;
   }
 
   &__description {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-    margin-bottom: 30px;
-
-    a {
-      color: var(--color-primary-default);
-
-      &:hover {
-        cursor: pointer;
-        color: var(--color-primary-default);
-      }
-    }
+    align-items: center;
+    margin-bottom: 16px;
+    gap: 4px;
   }
 
   &__actions {
