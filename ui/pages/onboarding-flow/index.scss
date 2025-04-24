@@ -19,12 +19,21 @@
   padding: 0 16px;
   width: 100%;
 
+  &--welcome {
+    background-color: #EAC2FF;
+  }
+
   &__wrapper {
     margin: 24px auto;
     padding: 32px 16px;
     max-width: 600px;
     border: 1px solid var(--color-border-muted);
     border-radius: 24px;
+
+    &--welcome {
+      border: none;
+      max-width: inherit;
+    }
 
     @include design-system.screen-sm-min {
       margin: 64px auto 40px;

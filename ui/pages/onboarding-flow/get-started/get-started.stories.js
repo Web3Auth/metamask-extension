@@ -5,6 +5,6 @@ export default {
   title: 'Pages/OnboardingFlow/GetStarted',
 };
 
-export const DefaultStory = (args) => <GetStarted {...args} />;
+export const DefaultStory = () => <GetStarted />;
 
 DefaultStory.storyName = 'Default';

@@ -32,7 +32,7 @@ import {
   TextVariant,
 } from '../../../helpers/constants/design-system';
 
-export default function TermsOfUsePopup({ isOpen, onClose }) {
+export default function TermsOfUsePopup({ isOpen, onClose, onAccept }) {
   const t = useContext(I18nContext);
   const [isTermsOfUseChecked, setIsTermsOfUseChecked] = useState(false);
 
@@ -1183,7 +1183,7 @@ export default function TermsOfUsePopup({ isOpen, onClose }) {
             />
           </div>
         </Box>
-        <ModalFooter onSubmit={onClose}>
+        <ModalFooter onSubmit={onAccept}>
           <Box
             flexDirection={FlexDirection.Row}
             alignItems={AlignItems.flexStart}
@@ -1216,4 +1216,5 @@ export default function TermsOfUsePopup({ isOpen, onClose }) {
 TermsOfUsePopup.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
+  onAccept: PropTypes.func.isRequired,
 };

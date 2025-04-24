@@ -14,7 +14,7 @@ import {
   ONBOARDING_COMPLETION_ROUTE,
 } from '../../../helpers/constants/routes';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
-import OnboardingWelcome from './welcome';
+import GetStarted from './get-started';
 
 const mockHistoryReplace = jest.fn();
 const mockHistoryPush = jest.fn();
@@ -63,7 +63,7 @@ describe('Onboarding Welcome Component', () => {
     it('should route to secure your wallet when keyring is present but not imported first time flow type', () => {
       const mockStore = configureMockStore([thunk])(initializedMockState);
 
-      renderWithProvider(<OnboardingWelcome />, mockStore);
+      renderWithProvider(<GetStarted />, mockStore);
       expect(mockHistoryReplace).toHaveBeenCalledWith(
         ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
       );
@@ -79,7 +79,7 @@ describe('Onboarding Welcome Component', () => {
       };
       const mockStore = configureMockStore([thunk])(importFirstTimeFlowState);
 
-      renderWithProvider(<OnboardingWelcome />, mockStore);
+      renderWithProvider(<GetStarted />, mockStore);
       expect(mockHistoryReplace).toHaveBeenCalledWith(
         ONBOARDING_COMPLETION_ROUTE,
       );
@@ -90,13 +90,13 @@ describe('Onboarding Welcome Component', () => {
     const mockStore = configureMockStore([thunk])(mockState);
 
     it('should render', () => {
-      renderWithProvider(<OnboardingWelcome />, mockStore);
+      renderWithProvider(<GetStarted />, mockStore);
       const onboardingWelcome = screen.queryByTestId('onboarding-welcome');
       expect(onboardingWelcome).toBeInTheDocument();
     });
 
     it('should set first time flow to create and route to metametrics', () => {
-      renderWithProvider(<OnboardingWelcome />, mockStore);
+      renderWithProvider(<GetStarted />, mockStore);
       const termsCheckbox = screen.getByTestId('onboarding-terms-checkbox');
       fireEvent.click(termsCheckbox);
       const createWallet = screen.getByTestId('onboarding-create-wallet');
@@ -109,7 +109,7 @@ describe('Onboarding Welcome Component', () => {
     });
 
     it('should set first time flow to import and route to metametrics', async () => {
-      renderWithProvider(<OnboardingWelcome />, mockStore);
+      renderWithProvider(<GetStarted />, mockStore);
       const termsCheckbox = screen.getByTestId('onboarding-terms-checkbox');
       fireEvent.click(termsCheckbox);
 
