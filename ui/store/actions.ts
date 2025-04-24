@@ -53,6 +53,7 @@ import { Patch } from 'immer';
 import { HandlerType } from '@metamask/snaps-utils';
 ///: END:ONLY_INCLUDE_IF
 import { BACKUPANDSYNC_FEATURES } from '@metamask/profile-sync-controller/user-storage';
+import { AuthConnection } from '@metamask/seedless-onboarding-controller';
 import switchDirection from '../../shared/lib/switch-direction';
 import {
   ENVIRONMENT_TYPE_NOTIFICATION,
@@ -3369,6 +3370,31 @@ export function resetOnboarding(): ThunkAction<
 export function resetOnboardingAction() {
   return {
     type: actionConstants.RESET_ONBOARDING,
+  };
+}
+
+export function startOAuthLogin(
+  provider: AuthConnection,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      const oAuthLoginResult = await submitRequestToBackground(
+        'startOAuthLogin',
+        [provider],
+      );
+      dispatch(hideLoadingIndication());
+      return oAuthLoginResult;
+    } catch (err) {
+      dispatch(displayWarning(error));
+      dispatch(hideLoadingIndication());
+      if (isErrorWithMessage(error)) {
+        throw new Error(getErrorMessage(error));
+      } else {
+        throw error;
+      }
+    }
   };
 }
 
