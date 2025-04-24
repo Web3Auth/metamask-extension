@@ -239,7 +239,6 @@ export default function CreatePassword({
 
   return (
     <div className="create-password__wrapper" data-testid="create-password">
-      {/* TODO: check fully it should just go back to the previous page */}
       <Box
         justifyContent={JustifyContent.flexStart}
         marginBottom={4}
@@ -260,8 +259,8 @@ export default function CreatePassword({
       >
         <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
           {t('stepOf', [
-            firstTimeFlowType === FirstTimeFlowType.import ? 2 : 2,
-            firstTimeFlowType === FirstTimeFlowType.import ? 1 : 3,
+            firstTimeFlowType === FirstTimeFlowType.import ? 2 : 1,
+            firstTimeFlowType === FirstTimeFlowType.import ? 2 : 3,
           ])}
         </Text>
         <Text variant={TextVariant.headingLg}>{t('createPassword')}</Text>
@@ -372,24 +371,6 @@ export default function CreatePassword({
             >
               {t('confirm')}
             </Button>
-            // <Button
-            //   data-testid={
-            //     secretRecoveryPhrase &&
-            //     firstTimeFlowType === FirstTimeFlowType.import
-            //       ? 'create-password-import'
-            //       : 'create-password-wallet'
-            //   }
-            //   type="primary"
-            //   large
-            //   className="create-password-old__form--submit-button"
-            //   disabled={!isValid || !termsChecked}
-            //   onClick={handleCreate}
-            // >
-            //   {secretRecoveryPhrase &&
-            //   firstTimeFlowType === FirstTimeFlowType.import
-            //     ? t('importMyWallet')
-            //     : t('createNewWallet')}
-            // </Button>
             ///: END:ONLY_INCLUDE_IF
           }
         </form>

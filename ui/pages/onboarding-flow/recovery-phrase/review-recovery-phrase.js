@@ -55,7 +55,6 @@ export default function RecoveryPhrase({ secretRecoveryPhrase }) {
           marginBottom={4}
         />
       )}
-      {/* TODO: check fully it should just go back to the previous page */}
       <Box
         justifyContent={JustifyContent.flexStart}
         marginBottom={4}
