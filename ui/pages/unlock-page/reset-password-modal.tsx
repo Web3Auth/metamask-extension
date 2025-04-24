@@ -6,7 +6,7 @@ import {
   AvatarBaseSize,
   Box,
   ButtonBase,
-  ButtonSize,
+  ButtonBaseSize,
   IconName,
   Modal,
   ModalContent,
@@ -26,7 +26,13 @@ import {
   TextVariant,
 } from '../../helpers/constants/design-system';
 
-export default function ResetPasswordModal({ onClose, onEraseWallet }) {
+export default function ResetPasswordModal({
+  onClose,
+  onEraseWallet,
+}: {
+  onClose: () => void;
+  onEraseWallet: () => void;
+}) {
   const t = useI18nContext();
 
   return (
@@ -99,7 +105,7 @@ export default function ResetPasswordModal({ onClose, onEraseWallet }) {
           </Box>
           <Box display={Display.Flex} marginTop={6}>
             <ButtonBase
-              size={ButtonSize.Lg}
+              size={ButtonBaseSize.Lg}
               startIconName={IconName.Trash}
               startIconProps={{
                 color: IconColor.errorDefault,

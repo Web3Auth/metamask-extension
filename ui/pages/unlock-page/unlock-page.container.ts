@@ -14,9 +14,10 @@ import {
   markPasswordForgotten,
   forceUpdateMetamaskState,
 } from '../../store/actions';
+import { MetaMaskReduxDispatch, MetaMaskReduxState } from '../../store/store';
 import UnlockPage from './unlock-page.component';
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: MetaMaskReduxState) => {
   const {
     metamask: { isUnlocked, preferences },
   } = state;
@@ -27,36 +28,38 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch: MetaMaskReduxDispatch) => {
   return {
-    tryUnlockMetamask: (password) => dispatch(tryUnlockMetamask(password)),
+    tryUnlockMetamask: (password: string) =>
+      dispatch(tryUnlockMetamask(password)),
     markPasswordForgotten: () => dispatch(markPasswordForgotten()),
     forceUpdateMetamaskState: () => forceUpdateMetamaskState(dispatch),
   };
 };
 
-const mergeProps = (stateProps, dispatchProps, ownProps) => {
+const mergeProps = (
+  stateProps: ReturnType<typeof mapStateToProps>,
+  dispatchProps: ReturnType<typeof mapDispatchToProps>,
+  ownProps: ReturnType<typeof withRouter>,
+) => {
   const {
-    // eslint-disable-next-line no-shadow
-    markPasswordForgotten,
-    // eslint-disable-next-line no-shadow
-    tryUnlockMetamask,
+    markPasswordForgotten: propsMarkPasswordForgotten,
+    tryUnlockMetamask: propsTryUnlockMetamask,
     ...restDispatchProps
   } = dispatchProps;
   const { history, onSubmit: ownPropsSubmit, ...restOwnProps } = ownProps;
 
   // TODO: might remove this once new forget password flow is implemented
   const onImport = async () => {
-    await markPasswordForgotten();
+    await propsMarkPasswordForgotten();
     history.push(RESTORE_VAULT_ROUTE);
-
     if (getEnvironmentType() === ENVIRONMENT_TYPE_POPUP) {
-      global.platform.openExtensionInBrowser(RESTORE_VAULT_ROUTE);
+      global.platform.openExtensionInBrowser?.(RESTORE_VAULT_ROUTE);
     }
   };
 
-  const onSubmit = async (password) => {
-    await tryUnlockMetamask(password);
+  const onSubmit = async (password: string) => {
+    await propsTryUnlockMetamask(password);
     history.push(DEFAULT_ROUTE);
   };
 

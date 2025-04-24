@@ -22,7 +22,13 @@ import {
   TextVariant,
 } from '../../helpers/constants/design-system';
 
-export default function EraseWalletModal({ onClose, onEraseWallet }) {
+export default function EraseWalletModal({
+  onClose,
+  onEraseWallet,
+}: {
+  onClose: () => void;
+  onEraseWallet: () => void;
+}) {
   const t = useI18nContext();
 
   return (

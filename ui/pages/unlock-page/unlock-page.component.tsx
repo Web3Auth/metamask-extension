@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 import React, { Component, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { HashHistory } from 'history';
 import {
   Text,
   FormTextField,
@@ -11,6 +12,7 @@ import {
   ButtonVariant,
   HelpText,
   HelpTextSeverity,
+  InputType,
 } from '../../components/component-library';
 import {
   TextVariant,
@@ -36,7 +38,7 @@ import { getCaretCoordinates } from './unlock-page.util';
 import ResetPasswordModal from './reset-password-modal';
 import EraseWalletModal from './erase-wallet-modal';
 
-const formatTimeToUnlock = (timeInSeconds) => {
+const formatTimeToUnlock = (timeInSeconds: number) => {
   if (timeInSeconds <= 60) {
     return `${timeInSeconds}s`;
   } else if (timeInSeconds < 3600) {
@@ -52,7 +54,13 @@ const formatTimeToUnlock = (timeInSeconds) => {
     .padStart(2, '0')}s`;
 };
 
-function Counter({ remainingTime, unlock }) {
+function Counter({
+  remainingTime,
+  unlock,
+}: {
+  remainingTime: number;
+  unlock: () => void;
+}) {
   const [time, setTime] = useState(remainingTime);
   const [timeDisplay, setTimeDisplay] = useState(
     formatTimeToUnlock(remainingTime),
@@ -79,7 +87,15 @@ Counter.propTypes = {
   unlock: PropTypes.func.isRequired,
 };
 
-export default class UnlockPage extends Component {
+type UnlockPageProps = {
+  history: HashHistory;
+  isUnlocked: boolean;
+  onSubmit: (password: string) => Promise<void>;
+  forceUpdateMetamaskState: () => void;
+  passwordHint: string;
+};
+
+export default class UnlockPage extends Component<UnlockPageProps> {
   static contextTypes = {
     trackEvent: PropTypes.func,
     t: PropTypes.func,
@@ -131,7 +147,7 @@ export default class UnlockPage extends Component {
     }
   }
 
-  handleSubmit = async (event) => {
+  handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -159,13 +175,14 @@ export default class UnlockPage extends Component {
           isNewVisit: true,
         },
       );
-    } catch ({ message }) {
+    } catch (error) {
       this.failed_attempts += 1;
+      const errorMessage = error instanceof Error ? error.message : error;
 
       // TODO: add remainingTime and isPermanent on UI
       // remainingTime: seconds
       // isPermanent: boolean
-      if (message === 'Incorrect password') {
+      if (errorMessage === 'Incorrect password') {
         await forceUpdateMetamaskState();
         this.context.trackEvent({
           category: MetaMetricsEventCategory.Navigation,
@@ -177,23 +194,22 @@ export default class UnlockPage extends Component {
         });
       }
 
-      this.setState({ error: message });
+      this.setState({ error: errorMessage });
       this.submitting = false;
     }
   };
 
-  handleInputChange({ target }) {
+  handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const { target } = event;
     this.setState({ password: target.value, error: null });
-    // tell mascot to look at page action
-    if (target.getBoundingClientRect) {
-      const element = target;
-      const boundingRect = element.getBoundingClientRect();
-      const coordinates = getCaretCoordinates(element, element.selectionEnd);
-      this.animationEventEmitter.emit('point', {
-        x: boundingRect.left + coordinates.left - element.scrollLeft,
-        y: boundingRect.top + coordinates.top - element.scrollTop,
-      });
-    }
+
+    const element = target;
+    const boundingRect = element.getBoundingClientRect();
+    const coordinates = getCaretCoordinates(element, element.selectionEnd ?? 0);
+    this.animationEventEmitter.emit('point', {
+      x: boundingRect.left + coordinates.left - element.scrollLeft,
+      y: boundingRect.top + coordinates.top - element.scrollTop,
+    });
   }
 
   renderMascot = () => {
@@ -269,45 +285,47 @@ export default class UnlockPage extends Component {
     return (
       <div className="unlock-page__container">
         <div className="unlock-page" data-testid="unlock-page">
-          <div className="unlock-page__content">
-            {showResetPasswordModal && (
-              <ResetPasswordModal
-                onClose={() => this.setState({ showResetPasswordModal: false })}
-                onEraseWallet={() =>
-                  this.setState({
-                    showResetPasswordModal: false,
-                    showEraseWalletModal: true,
-                  })
-                }
-              />
-            )}
-            {showEraseWalletModal && (
-              <EraseWalletModal
-                onClose={() => this.setState({ showEraseWalletModal: false })}
-                onEraseWallet={() =>
-                  // TODO: erase wallet
-                  this.setState({ showEraseWalletModal: false })
-                }
-              />
-            )}
-            <div className="unlock-page__mascot-container">
-              {this.renderMascot()}
-              {isBeta() ? (
-                <div className="unlock-page__mascot-container__beta">
-                  {t('beta')}
-                </div>
-              ) : null}
-            </div>
-            <Text
-              data-testid="unlock-page-title"
-              as="h1"
-              variant={TextVariant.headingLg}
-              marginTop={1}
-              color={TextColor.textDefault}
-            >
-              {t('welcomeBack')}
-            </Text>
-            <form className="unlock-page__form" onSubmit={this.handleSubmit}>
+          <form className="unlock-page__form" onSubmit={this.handleSubmit}>
+            <div className="unlock-page__content">
+              {showResetPasswordModal && (
+                <ResetPasswordModal
+                  onClose={() =>
+                    this.setState({ showResetPasswordModal: false })
+                  }
+                  onEraseWallet={() =>
+                    this.setState({
+                      showResetPasswordModal: false,
+                      showEraseWalletModal: true,
+                    })
+                  }
+                />
+              )}
+              {showEraseWalletModal && (
+                <EraseWalletModal
+                  onClose={() => this.setState({ showEraseWalletModal: false })}
+                  onEraseWallet={() =>
+                    // TODO: erase wallet
+                    this.setState({ showEraseWalletModal: false })
+                  }
+                />
+              )}
+              <div className="unlock-page__mascot-container">
+                {this.renderMascot()}
+                {isBeta() ? (
+                  <div className="unlock-page__mascot-container__beta">
+                    {t('beta')}
+                  </div>
+                ) : null}
+              </div>
+              <Text
+                data-testid="unlock-page-title"
+                as="h1"
+                variant={TextVariant.headingLg}
+                marginTop={1}
+                color={TextColor.textDefault}
+              >
+                {t('welcomeBack')}
+              </Text>
               <FormTextField
                 id="password"
                 data-testid="unlock-password"
@@ -333,12 +351,15 @@ export default class UnlockPage extends Component {
                     )}
                   </Box>
                 }
-                type="password"
-                value={password}
-                onChange={(event) => this.handleInputChange(event)}
-                error={error}
+                inputProps={{
+                  type: InputType.Password,
+                }}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                  this.handleInputChange(event)
+                }
+                error={Boolean(error)}
                 helpText={this.renderHelpText()}
-                autoComplete="current-password"
+                autoComplete
                 autoFocus
                 disabled={isLocked}
                 width={BlockSize.Full}
@@ -346,60 +367,62 @@ export default class UnlockPage extends Component {
                   borderRadius: BorderRadius.LG,
                 }}
               />
-            </form>
-          </div>
-          <div className="unlock-page__footer">
-            <Box
-              className="unlock-page__buttons"
-              display={Display.Flex}
-              flexDirection={FlexDirection.Column}
-              width={BlockSize.Full}
-              gap={4}
-            >
-              <Button
-                variant={ButtonVariant.Primary}
-                size={ButtonSize.Lg}
-                block
-                type="submit"
-                data-testid="unlock-submit"
-                disabled={!this.state.password || isLocked}
-                onClick={this.handleSubmit}
-              >
-                {this.context.t('unlock')}
-              </Button>
-              <ButtonLink key="import-account" onClick={() => this.onRestore()}>
-                {t('forgotPassword')}
-              </ButtonLink>
-            </Box>
-            <div className="unlock-page__support">
-              {t('needHelp', [
-                <a
-                  href={SUPPORT_LINK}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  key="need-help-link"
-                  onClick={() => {
-                    this.context.trackEvent(
-                      {
-                        category: MetaMetricsEventCategory.Navigation,
-                        event: MetaMetricsEventName.SupportLinkClicked,
-                        properties: {
-                          url: SUPPORT_LINK,
-                        },
-                      },
-                      {
-                        contextPropsIntoEventProperties: [
-                          MetaMetricsContextProp.PageTitle,
-                        ],
-                      },
-                    );
-                  }}
-                >
-                  {needHelpText}
-                </a>,
-              ])}
             </div>
-          </div>
+            <div className="unlock-page__footer">
+              <Box
+                className="unlock-page__buttons"
+                display={Display.Flex}
+                flexDirection={FlexDirection.Column}
+                width={BlockSize.Full}
+                gap={4}
+              >
+                <Button
+                  variant={ButtonVariant.Primary}
+                  size={ButtonSize.Lg}
+                  block
+                  type="submit"
+                  data-testid="unlock-submit"
+                  disabled={!password || isLocked}
+                >
+                  {this.context.t('unlock')}
+                </Button>
+                <ButtonLink
+                  key="import-account"
+                  onClick={() => this.onRestore()}
+                >
+                  {t('forgotPassword')}
+                </ButtonLink>
+              </Box>
+              <div className="unlock-page__support">
+                {t('needHelp', [
+                  <a
+                    href={SUPPORT_LINK}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    key="need-help-link"
+                    onClick={() => {
+                      this.context.trackEvent(
+                        {
+                          category: MetaMetricsEventCategory.Navigation,
+                          event: MetaMetricsEventName.SupportLinkClicked,
+                          properties: {
+                            url: SUPPORT_LINK,
+                          },
+                        },
+                        {
+                          contextPropsIntoEventProperties: [
+                            MetaMetricsContextProp.PageTitle,
+                          ],
+                        },
+                      );
+                    }}
+                  >
+                    {needHelpText}
+                  </a>,
+                ])}
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     );
