@@ -4802,6 +4802,13 @@
   "seedPhraseReq": {
     "message": "Secret Recovery Phrases contain 12, 15, 18, 21, or 24 words"
   },
+  "seedPhraseReviewTitle": {
+    "message": "Save your Secret Recovery Phrase"
+  },
+  "seedPhraseReviewDetails": {
+    "message": "This is your $1. Write it down in the correct order and keep it safe. If someone has your Secret Recovery Phrase, they can access your wallet. Don’t share it with anyone, ever.",
+    "description": "The $1 is the bolded text 'Secret Recovery Phrase'"
+  },
   "seedPhraseWriteDownDetails": {
     "message": "Write down this 12-word Secret Recovery Phrase and save it in a place that you trust and only you can access."
   },

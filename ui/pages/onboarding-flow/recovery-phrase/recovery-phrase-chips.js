@@ -26,6 +26,7 @@ export default function RecoveryPhraseChips({
   inputValue,
   indicesToCheck,
   hiddenPhrase,
+  revealPhrase,
 }) {
   const t = useI18nContext();
   const hideSeedPhrase = phraseRevealed === false;
@@ -78,7 +79,12 @@ export default function RecoveryPhraseChips({
         <div className="recovery-phrase__secret-blocker-container">
           <div className="recovery-phrase__secret-blocker" />
           {!hiddenPhrase && (
-            <div className="recovery-phrase__secret-blocker-text">
+            <Box
+              className="recovery-phrase__secret-blocker-text"
+              onClick={() => {
+                revealPhrase();
+              }}
+            >
               <Icon
                 name={IconName.EyeSlash}
                 color={TextColor.textDefault}
@@ -94,7 +100,7 @@ export default function RecoveryPhraseChips({
               <Text variant={TextVariant.bodySm} color={TextColor.textDefault}>
                 Make sure no one is watching your screen.
               </Text>
-            </div>
+            </Box>
           )}
         </div>
       )}
@@ -110,4 +116,5 @@ RecoveryPhraseChips.propTypes = {
   inputValue: PropTypes.object,
   indicesToCheck: PropTypes.array,
   hiddenPhrase: PropTypes.bool,
+  revealPhrase: PropTypes.func,
 };
