@@ -21,7 +21,7 @@ import {
   IconName,
 } from '../../../components/component-library';
 
-export default function ConfirmModal({ onContinue, onClose, isError }) {
+export default function ConfirmSrpModal({ onContinue, onClose, isError }) {
   const t = useI18nContext();
 
   const handleContinue = () => {
@@ -29,7 +29,6 @@ export default function ConfirmModal({ onContinue, onClose, isError }) {
     onClose();
   };
 
-  // TODO: update locales
   return (
     <Modal
       isOpen
@@ -43,7 +42,7 @@ export default function ConfirmModal({ onContinue, onClose, isError }) {
           <Box textAlign={TextAlign.Center}>
             {/* TODO: Fix check icon */}
             <Icon
-              name={isError ? IconName.CircleX : IconName.Check}
+              name={isError ? IconName.CircleX : IconName.CircleCheck}
               size={IconSize.Xl}
               className="skip-srp-backup-popover__icon"
               color={
@@ -55,15 +54,17 @@ export default function ConfirmModal({ onContinue, onClose, isError }) {
               textAlign={TextAlign.Center}
               marginTop={4}
             >
-              {isError ? 'Not quite right' : 'Perfect'}
+              {isError
+                ? t('confirmSrpErrorTitle')
+                : t('confirmSrpSuccessTitle')}
             </Text>
           </Box>
         </ModalHeader>
         <Box paddingLeft={4} paddingRight={4}>
           <Text variant={TextVariant.bodyMd}>
             {isError
-              ? 'Double-check your Secret Recovery Phrase and try again.'
-              : 'That’s right! And remember: never share this phrase with anyone, ever.'}
+              ? t('confirmSrpErrorDescription')
+              : t('confirmSrpSuccessDescription')}
           </Text>
           <Box marginTop={6}>
             <Button
@@ -72,7 +73,7 @@ export default function ConfirmModal({ onContinue, onClose, isError }) {
               onClick={handleContinue}
               block
             >
-              {isError ? 'Try again' : t('gotIt')}
+              {isError ? t('tryAgain') : t('gotIt')}
             </Button>
           </Box>
         </Box>
@@ -81,7 +82,7 @@ export default function ConfirmModal({ onContinue, onClose, isError }) {
   );
 }
 
-ConfirmModal.propTypes = {
+ConfirmSrpModal.propTypes = {
   onContinue: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
   isError: PropTypes.bool.isRequired,

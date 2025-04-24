@@ -174,6 +174,7 @@ export enum IconName {
   Unpin = 'unpin',
   Ban = 'ban',
   Bold = 'bold',
+  CircleCheck = 'circle-check',
   CircleX = 'circle-x',
   Download = 'download',
   FileIcon = 'file',
