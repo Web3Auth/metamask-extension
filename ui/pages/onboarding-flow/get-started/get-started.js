@@ -31,6 +31,7 @@ import {
 import { getFirstTimeFlowType, getCurrentKeyring } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { isFlask, isBeta } from '../../../helpers/utils/build-types';
+import LoadingScreen from '../../../components/ui/loading-screen';
 import LoginOptions from './login-options';
 
 export default function GetStarted() {
@@ -43,6 +44,7 @@ export default function GetStarted() {
   const [loginOption, setLoginOption] = useState('');
   const [newAccountCreationInProgress, setNewAccountCreationInProgress] =
     useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // Don't allow users to come back to this screen after they
   // have already imported or created a wallet
@@ -185,6 +187,7 @@ export default function GetStarted() {
           handleLogin={handleLogin}
         />
       )}
+      {isLoggingIn && <LoadingScreen className="get-started__loading-screen" />}
     </div>
   );
 }
