@@ -147,7 +147,6 @@ export default function WalletReady() {
         >
           {currentKeyring && (
             <ButtonBase
-              variant={ButtonVariant.Secondary}
               borderRadius={BorderRadius.LG}
               width={BlockSize.Full}
               onClick={() => history.push(ONBOARDING_PASSWORD_HINT)}
@@ -176,7 +175,6 @@ export default function WalletReady() {
             </ButtonBase>
           )}
           <ButtonBase
-            variant={ButtonVariant.Secondary}
             borderRadius={BorderRadius.LG}
             width={BlockSize.Full}
             onClick={() => history.push(ONBOARDING_PRIVACY_SETTINGS_ROUTE)}
