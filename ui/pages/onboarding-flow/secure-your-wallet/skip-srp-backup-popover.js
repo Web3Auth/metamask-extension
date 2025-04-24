@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import React, { useContext, useState } from 'react';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
+  AlignItems,
   Display,
   IconColor,
   TextAlign,
@@ -33,7 +34,7 @@ import { getHDEntropyIndex } from '../../../selectors/selectors';
 import { setSeedPhraseBackedUp } from '../../../store/actions';
 import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
 
-export default function SkipSRPBackup({ onClose }) {
+export default function SkipSRPBackup({ onClose, secureYourWallet }) {
   const [checked, setChecked] = useState(false);
   const t = useI18nContext();
   const dispatch = useDispatch();
@@ -44,8 +45,8 @@ export default function SkipSRPBackup({ onClose }) {
     <Modal
       isOpen
       onClose={onClose}
-      className="srp-details-modal"
-      data-testid="srp-details-modal"
+      className="skip-srp-backup-modal"
+      data-testid="skip-srp-backup-modal"
     >
       <ModalOverlay />
       <ModalContent>
@@ -72,6 +73,7 @@ export default function SkipSRPBackup({ onClose }) {
             className="skip-srp-backup__checkbox"
             data-testid="skip-srp-backup-checkbox"
             isChecked={checked}
+            alignItems={AlignItems.flexStart}
             onChange={() => {
               setChecked(!checked);
             }}
@@ -94,7 +96,7 @@ export default function SkipSRPBackup({ onClose }) {
                     hd_entropy_index: hdEntropyIndex,
                   },
                 });
-                onClose();
+                secureYourWallet();
               }}
               block
             >
@@ -102,6 +104,7 @@ export default function SkipSRPBackup({ onClose }) {
             </Button>
             <Button
               size={ButtonSize.Lg}
+              disabled={!checked}
               onClick={async () => {
                 await dispatch(setSeedPhraseBackedUp(false));
                 trackEvent({
@@ -127,4 +130,5 @@ export default function SkipSRPBackup({ onClose }) {
 
 SkipSRPBackup.propTypes = {
   onClose: PropTypes.func.isRequired,
+  secureYourWallet: PropTypes.func.isRequired,
 };

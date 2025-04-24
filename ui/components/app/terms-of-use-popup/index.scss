@@ -41,4 +41,9 @@
   @include design-system.screen-sm-max {
     max-height: 568px;
   }
+
+  // SRP_OVERRIDE: center modal content
+  .mm-modal-content {
+    align-items: center;
+  }
 }

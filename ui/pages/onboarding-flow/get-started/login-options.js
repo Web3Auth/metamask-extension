@@ -18,6 +18,7 @@ import {
 } from '../../../components/component-library';
 import {
   BlockSize,
+  FontWeight,
   IconColor,
   TextAlign,
   TextColor,
@@ -61,7 +62,10 @@ export default function LoginOptions({ onClose, loginOption, handleLogin }) {
                       className="get-started__social-icon"
                       alt="Google icon"
                     />
-                    <Text variant={TextVariant.bodyMd}>
+                    <Text
+                      variant={TextVariant.bodyMd}
+                      fontWeight={FontWeight.Medium}
+                    >
                       {t('onboardingContinueWith', ['Google'])}
                     </Text>
                   </div>
@@ -83,7 +87,10 @@ export default function LoginOptions({ onClose, loginOption, handleLogin }) {
                       color={IconColor.iconDefault}
                       size={IconSize.Lg}
                     />
-                    <Text variant={TextVariant.bodyMd}>
+                    <Text
+                      variant={TextVariant.bodyMd}
+                      fontWeight={FontWeight.Medium}
+                    >
                       {t('onboardingContinueWith', ['Apple'])}
                     </Text>
                   </div>
