@@ -1,0 +1,11 @@
+@use "design-system";
+
+.account-exist {
+  img {
+    align-self: center;
+  }
+
+  &__actions {
+    margin-top: 64px;
+  }
+}

@@ -18,12 +18,10 @@ import UnlockPage from './unlock-page.component';
 
 const mapStateToProps = (state) => {
   const {
-    metamask: { isUnlocked, preferences },
+    metamask: { isUnlocked },
   } = state;
-  const { passwordHint } = preferences;
   return {
     isUnlocked,
-    passwordHint,
   };
 };
 
