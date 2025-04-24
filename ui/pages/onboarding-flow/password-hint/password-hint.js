@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import {
   Button,
   ButtonSize,
@@ -26,9 +27,11 @@ import {
 } from '../../../components/component-library';
 import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
 import { useI18nContext } from '../../../hooks/useI18nContext';
+import { setPasswordHint } from '../../../store/actions';
 
 export default function PasswordHint() {
   const t = useI18nContext();
+  const dispatch = useDispatch();
   const history = useHistory();
   const [isSamePasswordError, setIsSamePasswordError] = useState(false);
   const [hint, setHint] = useState('');
@@ -40,7 +43,7 @@ export default function PasswordHint() {
       setIsSamePasswordError(true);
       return;
     }
-
+    dispatch(setPasswordHint(hint));
     history.push(ONBOARDING_COMPLETION_ROUTE);
   };
 
