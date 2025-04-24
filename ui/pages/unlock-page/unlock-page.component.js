@@ -35,6 +35,22 @@ import { getCaretCoordinates } from './unlock-page.util';
 import ResetPasswordModal from './reset-password-modal';
 import EraseWalletModal from './erase-wallet-modal';
 
+const formatTimeToUnlock = (timeInSeconds) => {
+  if (timeInSeconds <= 60) {
+    return `${timeInSeconds}s`;
+  } else if (timeInSeconds < 3600) {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${minutes}m:${seconds.toString().padStart(2, '0')}s`;
+  }
+  const hours = Math.floor(timeInSeconds / 3600);
+  const minutes = Math.floor((timeInSeconds % 3600) / 60);
+  const seconds = timeInSeconds % 60;
+  return `${hours}hr:${minutes.toString().padStart(2, '0')}m:${seconds
+    .toString()
+    .padStart(2, '0')}s`;
+};
+
 export default class UnlockPage extends Component {
   static contextTypes = {
     trackEvent: PropTypes.func,
@@ -176,18 +192,22 @@ export default class UnlockPage extends Component {
     const { passwordHint } = this.props;
     const { t } = this.context;
 
-    if (showHint) {
-      return (
-        <HelpText color={TextColor.textMuted}>
-          {t('unlockPageHint', [passwordHint])}
-        </HelpText>
-      );
-    }
-    if (error) {
-      return <HelpText severity={HelpTextSeverity.Danger}>{error}</HelpText>;
-    }
-    // empty help text to keep the input field from shifting when no help text is present
-    return <HelpText color={TextColor.textMuted}>&nbsp;</HelpText>;
+    return (
+      <Box
+        className="unlock-page__help-text"
+        display={Display.Flex}
+        flexDirection={FlexDirection.Column}
+      >
+        {error && (
+          <HelpText severity={HelpTextSeverity.Danger}>{error}</HelpText>
+        )}
+        {showHint && (
+          <HelpText color={TextColor.textMuted}>
+            {t('unlockPageHint', [passwordHint])}
+          </HelpText>
+        )}
+      </Box>
+    );
   };
 
   onRestore = () => {
