@@ -14,13 +14,13 @@ import {
   FlexDirection,
   BorderRadius,
   BlockSize,
+  FontWeight,
+  TextColor,
 } from '../../../helpers/constants/design-system';
 import {
   Box,
   Text,
   IconName,
-  ButtonLink,
-  ButtonLinkSize,
   IconSize,
   ButtonBase,
   Icon,
@@ -30,7 +30,6 @@ import {
   ONBOARDING_PIN_EXTENSION_ROUTE,
   ONBOARDING_PRIVACY_SETTINGS_ROUTE,
 } from '../../../helpers/constants/routes';
-import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { getFirstTimeFlowType } from '../../../selectors';
 import { getSeedPhraseBackedUp } from '../../../ducks/metamask/metamask';
 import {
@@ -106,7 +105,34 @@ export default function WalletReady() {
         flexDirection={FlexDirection.Column}
         alignItems={AlignItems.flexStart}
         className="wallet-ready__settings-actions"
+        gap={4}
       >
+        <ButtonBase
+          variant={ButtonVariant.Secondary}
+          borderRadius={BorderRadius.LG}
+          width={BlockSize.Full}
+          onClick={() => history.push(ONBOARDING_PRIVACY_SETTINGS_ROUTE)}
+        >
+          <Box display={Display.Flex} alignItems={AlignItems.center}>
+            <Icon
+              name={IconName.AddSquare}
+              size={IconSize.Md}
+              marginInlineEnd={3}
+            />
+            <Box>
+              <Text variant={TextVariant.bodyLgMedium}>
+                Create a Secret Recovery Phrase hint
+              </Text>
+              <Text
+                variant={TextVariant.bodySm}
+                color={TextColor.textAlternative}
+              >
+                Mom’s room
+              </Text>
+            </Box>
+          </Box>
+          <Icon name={IconName.ArrowRight} size={IconSize.Sm} />
+        </ButtonBase>
         <ButtonBase
           variant={ButtonVariant.Secondary}
           borderRadius={BorderRadius.LG}
@@ -119,7 +145,9 @@ export default function WalletReady() {
               size={IconSize.Md}
               marginInlineEnd={3}
             />
-            {t('manageDefaultSettings')}
+            <Text variant={TextVariant.bodyMd} fontWeight={FontWeight.Medium}>
+              Manage default settings
+            </Text>
           </Box>
           <Icon name={IconName.ArrowRight} size={IconSize.Sm} />
         </ButtonBase>
