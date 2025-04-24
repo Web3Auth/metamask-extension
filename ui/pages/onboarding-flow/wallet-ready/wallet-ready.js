@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Button,
   ButtonSize,
@@ -31,11 +31,10 @@ import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
   ONBOARDING_PRIVACY_SETTINGS_ROUTE,
   ONBOARDING_PASSWORD_HINT,
-  DEFAULT_ROUTE,
+  ONBOARDING_PIN_EXTENSION_ROUTE,
 } from '../../../helpers/constants/routes';
 import {
   getCurrentKeyring,
-  getExternalServicesOnboardingToggleState,
   getFirstTimeFlowType,
   getPasswordHint,
 } from '../../../selectors';
@@ -45,29 +44,21 @@ import {
 } from '../../../../shared/constants/metametrics';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import { selectIsProfileSyncingEnabled } from '../../../selectors/identity/profile-syncing';
-import {
-  setCompletedOnboarding,
-  toggleExternalServices,
-} from '../../../store/actions';
-import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
+import { getSeedPhraseBackedUp } from '../../../ducks/metamask/metamask';
 
 export default function WalletReady() {
   const history = useHistory();
   const t = useI18nContext();
-  const dispatch = useDispatch();
   const trackEvent = useContext(MetaMetricsContext);
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const currentKeyring = useSelector(getCurrentKeyring);
+  const seedPhraseBackedUp = useSelector(getSeedPhraseBackedUp);
   const learnMoreLink =
     'https://support.metamask.io/hc/en-us/articles/360015489591-Basic-Safety-and-Security-Tips-for-MetaMask';
   // const learnHowToKeepWordsSafe =
   //   'https://community.metamask.io/t/what-is-a-secret-recovery-phrase-and-how-to-keep-your-crypto-wallet-secure/3440';
 
   const isProfileSyncingEnabled = useSelector(selectIsProfileSyncingEnabled);
-
-  const externalServicesOnboardingToggleState = useSelector(
-    getExternalServicesOnboardingToggleState,
-  );
 
   const passwordHint = useSelector(getPasswordHint);
 
@@ -81,23 +72,7 @@ export default function WalletReady() {
       },
     });
 
-    ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-    await dispatch(
-      toggleExternalServices(externalServicesOnboardingToggleState),
-    );
-    await dispatch(setCompletedOnboarding());
-
-    trackEvent({
-      category: MetaMetricsEventCategory.Onboarding,
-      event: MetaMetricsEventName.OnboardingWalletSetupComplete,
-      properties: {
-        wallet_setup_type:
-          firstTimeFlowType === FirstTimeFlowType.import ? 'import' : 'new',
-        new_wallet: firstTimeFlowType === FirstTimeFlowType.create,
-      },
-    });
-    history.push(DEFAULT_ROUTE);
-    ///: END:ONLY_INCLUDE_IF
+    history.push(ONBOARDING_PIN_EXTENSION_ROUTE);
   };
   return (
     <Box
@@ -121,7 +96,9 @@ export default function WalletReady() {
           }}
           marginBottom={4}
         >
-          {t('yourWalletIsReady')}
+          {seedPhraseBackedUp
+            ? t('yourWalletIsReady')
+            : t('yourWalletIsReadyRemind')}
         </Text>
         <Box
           width={BlockSize.Full}
@@ -138,25 +115,29 @@ export default function WalletReady() {
           />
         </Box>
         <Text variant={TextVariant.bodyMd} marginBottom={6}>
-          {t('walletReadyLoseSrp')}
+          {seedPhraseBackedUp
+            ? t('walletReadyLoseSrp')
+            : t('walletReadyLoseSrpRemind')}
         </Text>
         <Text variant={TextVariant.bodyMd} marginBottom={6}>
-          {t('walletReadyLearn', [
-            <ButtonLink
-              key="walletReadyLearn"
-              size={ButtonLinkSize.Inherit}
-              textProps={{
-                variant: TextVariant.bodyMd,
-                alignItems: AlignItems.flexStart,
-              }}
-              as="a"
-              href={learnMoreLink}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {t('learnHow')}
-            </ButtonLink>,
-          ])}
+          {seedPhraseBackedUp
+            ? t('walletReadyLearn', [
+                <ButtonLink
+                  key="walletReadyLearn"
+                  size={ButtonLinkSize.Inherit}
+                  textProps={{
+                    variant: TextVariant.bodyMd,
+                    alignItems: AlignItems.flexStart,
+                  }}
+                  as="a"
+                  href={learnMoreLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {t('learnHow')}
+                </ButtonLink>,
+              ])
+            : t('walletReadyLearnRemind')}
         </Text>
       </Box>
 
@@ -181,7 +162,7 @@ export default function WalletReady() {
                 marginInlineEnd={3}
               />
               <Box>
-                <Text variant={TextVariant.bodyMdBold}>
+                <Text variant={TextVariant.bodyMdMedium}>
                   {t('passwordHintCreate')}
                 </Text>
                 {passwordHint && (

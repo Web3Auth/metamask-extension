@@ -32,7 +32,7 @@ import {
 } from '../../../../shared/constants/metametrics';
 import { getHDEntropyIndex } from '../../../selectors/selectors';
 import { setSeedPhraseBackedUp } from '../../../store/actions';
-import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
+import { ONBOARDING_METAMETRICS } from '../../../helpers/constants/routes';
 
 export default function SkipSRPBackup({ onClose, secureYourWallet }) {
   const [checked, setChecked] = useState(false);
@@ -115,7 +115,7 @@ export default function SkipSRPBackup({ onClose, secureYourWallet }) {
                     hd_entropy_index: hdEntropyIndex,
                   },
                 });
-                history.push(ONBOARDING_COMPLETION_ROUTE);
+                history.push(ONBOARDING_METAMETRICS);
               }}
               block
             >
