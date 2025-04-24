@@ -259,7 +259,10 @@ export default function CreatePassword({
         width={BlockSize.Full}
       >
         <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          {t('stepOf', [2, 2])}
+          {t('stepOf', [
+            firstTimeFlowType === FirstTimeFlowType.import ? 2 : 2,
+            firstTimeFlowType === FirstTimeFlowType.import ? 1 : 3,
+          ])}
         </Text>
         <Text variant={TextVariant.headingLg}>{t('createPassword')}</Text>
       </Box>
