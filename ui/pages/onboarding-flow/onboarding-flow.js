@@ -49,7 +49,8 @@ import ReviewRecoveryPhrase from './recovery-phrase/review-recovery-phrase';
 import SecureYourWallet from './secure-your-wallet/secure-your-wallet';
 import ConfirmRecoveryPhrase from './recovery-phrase/confirm-recovery-phrase';
 import PrivacySettings from './privacy-settings/privacy-settings';
-import CreationSuccessful from './creation-successful/creation-successful';
+// import CreationSuccessful from './creation-successful/creation-successful';
+import WalletReady from './wallet-ready/wallet-ready';
 import Welcome from './welcome/welcome';
 import ImportSRP from './import-srp/import-srp';
 import OnboardingPinExtension from './pin-extension/pin-extension';
@@ -194,10 +195,7 @@ export default function OnboardingFlow() {
             path={ONBOARDING_PRIVACY_SETTINGS_ROUTE}
             component={PrivacySettings}
           />
-          <Route
-            path={ONBOARDING_COMPLETION_ROUTE}
-            component={CreationSuccessful}
-          />
+          <Route path={ONBOARDING_COMPLETION_ROUTE} component={WalletReady} />
           <Route path={ONBOARDING_WELCOME_ROUTE} component={Welcome} />
           <Route path={ONBOARDING_GET_STARTED_ROUTE} component={GetStarted} />
           <Route

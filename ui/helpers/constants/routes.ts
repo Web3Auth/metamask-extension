@@ -261,7 +261,7 @@ export const ONBOARDING_REVIEW_SRP_ROUTE = '/onboarding/review-recovery-phrase';
 export const ONBOARDING_CONFIRM_SRP_ROUTE =
   '/onboarding/confirm-recovery-phrase';
 export const ONBOARDING_CREATE_PASSWORD_ROUTE = '/onboarding/create-password';
-export const ONBOARDING_COMPLETION_ROUTE = '/onboarding/completion';
+export const ONBOARDING_COMPLETION_ROUTE = '/onboarding/wallet-ready';
 export const ONBOARDING_UNLOCK_ROUTE = '/onboarding/unlock';
 export const ONBOARDING_HELP_US_IMPROVE_ROUTE = '/onboarding/help-us-improve';
 export const ONBOARDING_IMPORT_WITH_SRP_ROUTE =
