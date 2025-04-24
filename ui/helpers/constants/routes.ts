@@ -275,6 +275,7 @@ export const ONBOARDING_GET_STARTED_ROUTE = '/onboarding/get-started';
 export const ONBOARDING_METAMETRICS = '/onboarding/metametrics';
 export const ONBOARDING_PASSWORD_HINT = '/onboarding/password-hint';
 export const ONBOARDING_ACCOUNT_EXIST = '/onboarding/account-exist';
+export const ONBOARDING_ACCOUNT_NOT_FOUND = '/onboarding/account-not-found';
 ///: BEGIN:ONLY_INCLUDE_IF(build-flask)
 export const INITIALIZE_EXPERIMENTAL_AREA = '/initialize/experimental-area';
 export const ONBOARDING_EXPERIMENTAL_AREA = '/onboarding/experimental-area';

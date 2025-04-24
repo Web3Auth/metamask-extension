@@ -1,0 +1,11 @@
+@use "design-system";
+
+.account-not-found {
+  img {
+    align-self: center;
+  }
+
+  &__actions {
+    margin-top: 64px;
+  }
+}
