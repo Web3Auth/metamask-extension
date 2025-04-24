@@ -1,6 +1,12 @@
 @use "design-system";
 
 .wallet-ready {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  gap: 1.5rem;
+
   img {
     align-self: center;
   }
@@ -15,9 +21,5 @@
     .mm-button-base {
       height: 60px;
     }
-  }
-
-  &__actions {
-    margin-top: 130px;
   }
 }

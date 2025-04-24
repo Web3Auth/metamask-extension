@@ -82,73 +82,64 @@ export default function SecureYourWallet() {
       className="secure-your-wallet"
       data-testid="secure-your-wallet"
     >
-      {showSkipSRPBackupPopover && (
-        <SkipSRPBackup
-          onClose={() => setShowSkipSRPBackupPopover(false)}
-          secureYourWallet={handleClickRecommended}
-        />
-      )}
-      {showSrpDetailsModal && (
-        <SRPDetailsModal onClose={() => setShowSrpDetailsModal(false)} />
-      )}
-      {/* TODO: verify if this is needed */}
-      {/* <Box
-        justifyContent={JustifyContent.flexStart}
-        marginBottom={4}
-        width={BlockSize.Full}
-      >
-        <ButtonIcon
-          iconName={IconName.ArrowLeft}
-          color={IconColor.iconDefault}
-          size={ButtonIconSize.Md}
-          data-testid="secure-your-wallet-back-button"
-          onClick={() => history.goBack()}
-        />
-      </Box> */}
+      <div className="secure-your-wallet__content">
+        {showSkipSRPBackupPopover && (
+          <SkipSRPBackup
+            onClose={() => setShowSkipSRPBackupPopover(false)}
+            secureYourWallet={handleClickRecommended}
+          />
+        )}
+        {showSrpDetailsModal && (
+          <SRPDetailsModal onClose={() => setShowSrpDetailsModal(false)} />
+        )}
+        <Box
+          justifyContent={JustifyContent.flexStart}
+          marginBottom={4}
+          width={BlockSize.Full}
+        >
+          <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
+            {t('stepOf', [2, 3])}
+          </Text>
+          <Text variant={TextVariant.headingLg}>
+            {t('seedPhraseIntroTitle')}
+          </Text>
+        </Box>
+        <Box
+          className="secure-your-wallet__srp-design-container"
+          marginBottom={6}
+          width={BlockSize.Full}
+          textAlign={TextAlign.Center}
+        >
+          <img
+            className="secure-your-wallet__srp-design-image"
+            src="./images/srp-lock-design.png"
+            alt="SRP Design"
+          />
+        </Box>
+        <Box>
+          <Text variant={TextVariant.bodyMd} marginBottom={6}>
+            {t('secureWalletWalletSaveSrp', [
+              [
+                <ButtonLink
+                  key="secureWalletWalletSaveSrp"
+                  size={ButtonLinkSize.Inherit}
+                  onClick={() => {
+                    setShowSrpDetailsModal(true);
+                  }}
+                >
+                  {t('secretRecoveryPhrase')}
+                </ButtonLink>,
+              ],
+            ])}
+          </Text>
+          <Text variant={TextVariant.bodyMd}>
+            {t('secureWalletWalletRecover')}
+          </Text>
+        </Box>
+      </div>
+
       <Box
-        justifyContent={JustifyContent.flexStart}
-        marginBottom={4}
-        width={BlockSize.Full}
-      >
-        <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          {t('stepOf', [2, 3])}
-        </Text>
-        <Text variant={TextVariant.headingLg}>{t('seedPhraseIntroTitle')}</Text>
-      </Box>
-      <Box
-        className="secure-your-wallet__srp-design-container"
-        marginBottom={6}
-        width={BlockSize.Full}
-        textAlign={TextAlign.Center}
-      >
-        <img
-          className="secure-your-wallet__srp-design-image"
-          src="./images/srp-lock-design.png"
-          alt="SRP Design"
-        />
-      </Box>
-      <Box marginBottom={6}>
-        <Text variant={TextVariant.bodyMd} marginBottom={6}>
-          {t('secureWalletWalletSaveSrp', [
-            [
-              <ButtonLink
-                key="secureWalletWalletSaveSrp"
-                size={ButtonLinkSize.Inherit}
-                onClick={() => {
-                  setShowSrpDetailsModal(true);
-                }}
-              >
-                {t('secretRecoveryPhrase')}
-              </ButtonLink>,
-            ],
-          ])}
-        </Text>
-        <Text variant={TextVariant.bodyMd}>
-          {t('secureWalletWalletRecover')}
-        </Text>
-      </Box>
-      <Box
-        className="secure-your-wallet__actions"
+        className="secure-your-wallet__footer"
         width={BlockSize.Full}
         display={Display.Flex}
         flexDirection={FlexDirection.Column}

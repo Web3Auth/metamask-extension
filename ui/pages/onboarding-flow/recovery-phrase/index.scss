@@ -4,6 +4,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 100%;
+  justify-content: space-between;
+  gap: 1.5rem;
 
   &__header {
     max-width: 420px;
@@ -73,10 +76,6 @@
 
   &__word-index {
     width: 20px;
-  }
-
-  &__footer--button {
-    margin-top: 100px;
   }
 
   &__secret {

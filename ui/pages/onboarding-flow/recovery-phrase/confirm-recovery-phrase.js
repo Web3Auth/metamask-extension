@@ -105,56 +105,58 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
 
   return (
     <div
-      className="recovery-phrase__confirm"
+      className="recovery-phrase recovery-phrase__confirm"
       data-testid="confirm-recovery-phrase"
     >
-      {showConfirmModal && (
-        <ConfirmSrpModal
-          isError={!matching}
-          onContinue={handleConfirmedPhrase}
-          onClose={() => {
-            resetQuizWords();
-            setShowConfirmModal(false);
-          }}
+      <div className="recovery-phrase__content">
+        {showConfirmModal && (
+          <ConfirmSrpModal
+            isError={!matching}
+            onContinue={handleConfirmedPhrase}
+            onClose={() => {
+              resetQuizWords();
+              setShowConfirmModal(false);
+            }}
+          />
+        )}
+        <Box
+          justifyContent={JustifyContent.flexStart}
+          marginBottom={4}
+          width={BlockSize.Full}
+        >
+          <ButtonIcon
+            iconName={IconName.ArrowLeft}
+            color={IconColor.iconDefault}
+            size={ButtonIconSize.Md}
+            data-testid="confirm-recovery-phrase-back-button"
+            onClick={() => history.goBack()}
+          />
+        </Box>
+        <Box
+          justifyContent={JustifyContent.flexStart}
+          marginBottom={4}
+          width={BlockSize.Full}
+        >
+          <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
+            {t('stepOf', [3, 3])}
+          </Text>
+          <Text variant={TextVariant.headingLg}>
+            {t('confirmRecoveryPhraseTitle')}
+          </Text>
+        </Box>
+        <Box marginBottom={6}>
+          <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
+            {t('confirmRecoveryPhraseDetails')}
+          </Text>
+        </Box>
+        <RecoveryPhraseChips
+          secretRecoveryPhrase={splitSecretRecoveryPhrase}
+          quizWords={quizWords}
+          confirmPhase
+          setInputValue={handleQuizInput}
         />
-      )}
-      <Box
-        justifyContent={JustifyContent.flexStart}
-        marginBottom={4}
-        width={BlockSize.Full}
-      >
-        <ButtonIcon
-          iconName={IconName.ArrowLeft}
-          color={IconColor.iconDefault}
-          size={ButtonIconSize.Md}
-          data-testid="confirm-recovery-phrase-back-button"
-          onClick={() => history.goBack()}
-        />
-      </Box>
-      <Box
-        justifyContent={JustifyContent.flexStart}
-        marginBottom={4}
-        width={BlockSize.Full}
-      >
-        <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          {t('stepOf', [3, 3])}
-        </Text>
-        <Text variant={TextVariant.headingLg}>
-          {t('confirmRecoveryPhraseTitle')}
-        </Text>
-      </Box>
-      <Box marginBottom={6}>
-        <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          {t('confirmRecoveryPhraseDetails')}
-        </Text>
-      </Box>
-      <RecoveryPhraseChips
-        secretRecoveryPhrase={splitSecretRecoveryPhrase}
-        quizWords={quizWords}
-        confirmPhase
-        setInputValue={handleQuizInput}
-      />
-      <div className="recovery-phrase__footer--button">
+      </div>
+      <Box width={BlockSize.Full}>
         <Button
           variant={ButtonVariant.Primary}
           width={BlockSize.Full}
@@ -166,7 +168,7 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
         >
           {t('continue')}
         </Button>
-      </div>
+      </Box>
     </div>
   );
 }

@@ -45,6 +45,7 @@ import {
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import { selectIsProfileSyncingEnabled } from '../../../selectors/identity/profile-syncing';
 import { getSeedPhraseBackedUp } from '../../../ducks/metamask/metamask';
+import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 
 export default function WalletReady() {
   const history = useHistory();
@@ -75,128 +76,125 @@ export default function WalletReady() {
     history.push(ONBOARDING_PIN_EXTENSION_ROUTE);
   };
   return (
-    <Box
-      className="wallet-ready"
-      data-testid="wallet-ready"
-      display={Display.Flex}
-      flexDirection={FlexDirection.Column}
-    >
-      <Box
-        display={Display.Flex}
-        flexDirection={FlexDirection.Column}
-        justifyContent={JustifyContent.center}
-        alignItems={AlignItems.flexStart}
-      >
-        <Text
-          variant={TextVariant.headingLg}
-          as="h2"
-          justifyContent={JustifyContent.center}
-          style={{
-            alignSelf: AlignItems.flexStart,
-          }}
-          marginBottom={4}
-        >
-          {seedPhraseBackedUp
-            ? t('yourWalletIsReady')
-            : t('yourWalletIsReadyRemind')}
-        </Text>
+    <Box className="wallet-ready" data-testid="wallet-ready">
+      <div className="wallet-ready__content">
         <Box
-          width={BlockSize.Full}
           display={Display.Flex}
+          flexDirection={FlexDirection.Column}
           justifyContent={JustifyContent.center}
-          alignItems={AlignItems.center}
-          marginBottom={6}
+          alignItems={AlignItems.flexStart}
         >
-          <img
-            src="images/wallet-ready.svg"
-            width={165}
-            height={165}
-            alt="Wallet Ready"
-          />
+          <Text
+            variant={TextVariant.headingLg}
+            as="h2"
+            justifyContent={JustifyContent.center}
+            style={{
+              alignSelf: AlignItems.flexStart,
+            }}
+            marginBottom={4}
+          >
+            {firstTimeFlowType === FirstTimeFlowType.seedless
+              ? t('yourWalletIsReady')
+              : t('yourWalletIsReadyRemind')}
+          </Text>
+          <Box
+            width={BlockSize.Full}
+            display={Display.Flex}
+            justifyContent={JustifyContent.center}
+            alignItems={AlignItems.center}
+            marginBottom={6}
+          >
+            <img
+              src="images/wallet-ready.svg"
+              width={165}
+              height={165}
+              alt="Wallet Ready"
+            />
+          </Box>
+          <Text variant={TextVariant.bodyMd} marginBottom={6}>
+            {seedPhraseBackedUp
+              ? t('walletReadyLoseSrp')
+              : t('walletReadyLoseSrpRemind')}
+          </Text>
+          <Text variant={TextVariant.bodyMd} marginBottom={6}>
+            {seedPhraseBackedUp
+              ? t('walletReadyLearn', [
+                  <ButtonLink
+                    key="walletReadyLearn"
+                    size={ButtonLinkSize.Inherit}
+                    textProps={{
+                      variant: TextVariant.bodyMd,
+                      alignItems: AlignItems.flexStart,
+                    }}
+                    as="a"
+                    href={learnMoreLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {t('learnHow')}
+                  </ButtonLink>,
+                ])
+              : t('walletReadyLearnRemind')}
+          </Text>
         </Box>
-        <Text variant={TextVariant.bodyMd} marginBottom={6}>
-          {seedPhraseBackedUp
-            ? t('walletReadyLoseSrp')
-            : t('walletReadyLoseSrpRemind')}
-        </Text>
-        <Text variant={TextVariant.bodyMd} marginBottom={6}>
-          {seedPhraseBackedUp
-            ? t('walletReadyLearn', [
-                <ButtonLink
-                  key="walletReadyLearn"
-                  size={ButtonLinkSize.Inherit}
-                  textProps={{
-                    variant: TextVariant.bodyMd,
-                    alignItems: AlignItems.flexStart,
-                  }}
-                  as="a"
-                  href={learnMoreLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t('learnHow')}
-                </ButtonLink>,
-              ])
-            : t('walletReadyLearnRemind')}
-        </Text>
-      </Box>
 
-      <Box
-        display={Display.Flex}
-        flexDirection={FlexDirection.Column}
-        alignItems={AlignItems.flexStart}
-        className="wallet-ready__settings-actions"
-        gap={4}
-      >
-        {currentKeyring && (
+        <Box
+          display={Display.Flex}
+          flexDirection={FlexDirection.Column}
+          alignItems={AlignItems.flexStart}
+          className="wallet-ready__settings-actions"
+          gap={4}
+        >
+          {currentKeyring && (
+            <ButtonBase
+              variant={ButtonVariant.Secondary}
+              borderRadius={BorderRadius.LG}
+              width={BlockSize.Full}
+              onClick={() => history.push(ONBOARDING_PASSWORD_HINT)}
+            >
+              <Box display={Display.Flex} alignItems={AlignItems.center}>
+                <Icon
+                  name={IconName.AddSquare}
+                  size={IconSize.Md}
+                  marginInlineEnd={3}
+                />
+                <Box>
+                  <Text variant={TextVariant.bodyMdMedium}>
+                    {t('passwordHintCreate')}
+                  </Text>
+                  {passwordHint && (
+                    <Text
+                      variant={TextVariant.bodySm}
+                      color={TextColor.textAlternative}
+                    >
+                      {passwordHint}
+                    </Text>
+                  )}
+                </Box>
+              </Box>
+              <Icon name={IconName.ArrowRight} size={IconSize.Sm} />
+            </ButtonBase>
+          )}
           <ButtonBase
             variant={ButtonVariant.Secondary}
             borderRadius={BorderRadius.LG}
             width={BlockSize.Full}
-            onClick={() => history.push(ONBOARDING_PASSWORD_HINT)}
+            onClick={() => history.push(ONBOARDING_PRIVACY_SETTINGS_ROUTE)}
           >
             <Box display={Display.Flex} alignItems={AlignItems.center}>
               <Icon
-                name={IconName.AddSquare}
+                name={IconName.Setting}
                 size={IconSize.Md}
                 marginInlineEnd={3}
               />
-              <Box>
-                <Text variant={TextVariant.bodyMdMedium}>
-                  {t('passwordHintCreate')}
-                </Text>
-                {passwordHint && (
-                  <Text
-                    variant={TextVariant.bodySm}
-                    color={TextColor.textAlternative}
-                  >
-                    {passwordHint}
-                  </Text>
-                )}
-              </Box>
+              <Text variant={TextVariant.bodyMd} fontWeight={FontWeight.Medium}>
+                {t('manageDefaultSettings')}
+              </Text>
             </Box>
             <Icon name={IconName.ArrowRight} size={IconSize.Sm} />
           </ButtonBase>
-        )}
-        <ButtonBase
-          variant={ButtonVariant.Secondary}
-          borderRadius={BorderRadius.LG}
-          width={BlockSize.Full}
-          onClick={() => history.push(ONBOARDING_PRIVACY_SETTINGS_ROUTE)}
-        >
-          <Box display={Display.Flex} alignItems={AlignItems.center}>
-            <Icon
-              name={IconName.Setting}
-              size={IconSize.Md}
-              marginInlineEnd={3}
-            />
-            <Text variant={TextVariant.bodyMd} fontWeight={FontWeight.Medium}>
-              {t('manageDefaultSettings')}
-            </Text>
-          </Box>
-          <Icon name={IconName.ArrowRight} size={IconSize.Sm} />
-        </ButtonBase>
-      </Box>
+        </Box>
+      </div>
 
       <Box
         className="wallet-ready__actions"

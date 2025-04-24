@@ -41,54 +41,56 @@ export default function AccountNotFound() {
       display={Display.Flex}
       flexDirection={FlexDirection.Column}
     >
-      <Box
-        justifyContent={JustifyContent.flexStart}
-        marginBottom={4}
-        width={BlockSize.Full}
-      >
-        <ButtonIcon
-          iconName={IconName.ArrowLeft}
-          color={IconColor.iconDefault}
-          size={ButtonIconSize.Md}
-          data-testid="create-password-back-button"
-          onClick={() => history.goBack()}
-        />
-      </Box>
-      <Box
-        display={Display.Flex}
-        flexDirection={FlexDirection.Column}
-        justifyContent={JustifyContent.center}
-        alignItems={AlignItems.flexStart}
-      >
-        <Text
-          variant={TextVariant.headingLg}
-          as="h2"
-          justifyContent={JustifyContent.center}
-          style={{
-            alignSelf: AlignItems.flexStart,
-          }}
-          marginBottom={4}
-        >
-          {t('accountNotFoundTitle')}
-        </Text>
+      <div className="account-not-found__content">
         <Box
+          justifyContent={JustifyContent.flexStart}
+          marginBottom={4}
           width={BlockSize.Full}
-          display={Display.Flex}
-          justifyContent={JustifyContent.center}
-          alignItems={AlignItems.center}
-          marginBottom={6}
         >
-          <img
-            src="images/wallet-ready.svg"
-            width={276}
-            height={276}
-            alt="Account already exists"
+          <ButtonIcon
+            iconName={IconName.ArrowLeft}
+            color={IconColor.iconDefault}
+            size={ButtonIconSize.Md}
+            data-testid="create-password-back-button"
+            onClick={() => history.goBack()}
           />
         </Box>
-        <Text variant={TextVariant.bodyMd} marginBottom={6}>
-          {t('accountNotFoundDescription', [accountEmail])}
-        </Text>
-      </Box>
+        <Box
+          display={Display.Flex}
+          flexDirection={FlexDirection.Column}
+          justifyContent={JustifyContent.center}
+          alignItems={AlignItems.flexStart}
+        >
+          <Text
+            variant={TextVariant.headingLg}
+            as="h2"
+            justifyContent={JustifyContent.center}
+            style={{
+              alignSelf: AlignItems.flexStart,
+            }}
+            marginBottom={4}
+          >
+            {t('accountNotFoundTitle')}
+          </Text>
+          <Box
+            width={BlockSize.Full}
+            display={Display.Flex}
+            justifyContent={JustifyContent.center}
+            alignItems={AlignItems.center}
+            marginBottom={6}
+          >
+            <img
+              src="images/wallet-ready.svg"
+              width={276}
+              height={276}
+              alt="Account already exists"
+            />
+          </Box>
+          <Text variant={TextVariant.bodyMd} marginBottom={6}>
+            {t('accountNotFoundDescription', [accountEmail])}
+          </Text>
+        </Box>
+      </div>
 
       <Box
         className="account-not-found__actions"
@@ -96,6 +98,7 @@ export default function AccountNotFound() {
         flexDirection={FlexDirection.Column}
         justifyContent={JustifyContent.center}
         alignItems={AlignItems.center}
+        width={BlockSize.Full}
       >
         <Button
           data-testid="onboarding-complete-done"

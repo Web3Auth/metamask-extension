@@ -87,35 +87,35 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
       {showSrpDetailsModal && (
         <SRPDetailsModal onClose={() => setShowSrpDetailsModal(false)} />
       )}
-      <Box marginBottom={4}>
-        <ButtonIcon
-          iconName={IconName.ArrowLeft}
-          color={IconColor.iconDefault}
-          size={ButtonIconSize.Md}
-          data-testid="import-srp-back-button"
-          onClick={() => history.push(ONBOARDING_GET_STARTED_ROUTE)}
-        />
-      </Box>
-      <div className="import-srp__step">
-        <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          {t('stepOf', [1, 2])}
-        </Text>
-      </div>
-      <div className="import-srp__header">
-        <Text variant={TextVariant.headingLg}>{t('importAWallet')}</Text>
-      </div>
-      <div className="import-srp__description">
-        <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          {t('typeYourSRP')}
-        </Text>
-        <ButtonIcon
-          iconName={IconName.Info}
-          size={ButtonIconSize.Sm}
-          color={IconColor.iconAlternative}
-          onClick={() => setShowSrpDetailsModal(true)}
-        />
-      </div>
-      <div className="import-srp__actions">
+      <div className="import-srp__content">
+        <Box marginBottom={4}>
+          <ButtonIcon
+            iconName={IconName.ArrowLeft}
+            color={IconColor.iconDefault}
+            size={ButtonIconSize.Md}
+            data-testid="import-srp-back-button"
+            onClick={() => history.push(ONBOARDING_GET_STARTED_ROUTE)}
+          />
+        </Box>
+        <div className="import-srp__step">
+          <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
+            {t('stepOf', [1, 2])}
+          </Text>
+        </div>
+        <div className="import-srp__header">
+          <Text variant={TextVariant.headingLg}>{t('importAWallet')}</Text>
+        </div>
+        <div className="import-srp__description">
+          <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
+            {t('typeYourSRP')}
+          </Text>
+          <ButtonIcon
+            iconName={IconName.Info}
+            size={ButtonIconSize.Sm}
+            color={IconColor.iconAlternative}
+            onClick={() => setShowSrpDetailsModal(true)}
+          />
+        </div>
         <Box width={BlockSize.Full}>
           <form onSubmit={(e) => e.preventDefault()}>
             <SrpInputImport onChange={setSecretRecoveryPhrase} />
@@ -131,6 +131,8 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
             )}
           </form>
         </Box>
+      </div>
+      <div className="import-srp__footer">
         <Button
           width={BlockSize.Full}
           size={ButtonSize.Lg}

@@ -1,5 +1,18 @@
 .import-srp {
-  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  gap: 1rem;
+
+  &__footer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: left;
+  }
 
   &__step {
     text-align: left;
@@ -15,15 +28,6 @@
     align-items: center;
     margin-bottom: 16px;
     gap: 4px;
-  }
-
-  &__actions {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: left;
-    margin: auto;
   }
 
   &__confirm-button {
