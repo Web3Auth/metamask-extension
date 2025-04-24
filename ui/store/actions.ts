@@ -194,36 +194,6 @@ export function tryUnlockMetamask(
 }
 
 /**
- * Tries to restore seedphrase from metadata store and unlock the metamask.
- *
- * @param password - The password.
- * @returns The updated state of metamask.
- */
-export function tryRestoreAndUnlockMetamask(
-  password: string,
-): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
-  return async (dispatch: MetaMaskReduxDispatch) => {
-    dispatch(showLoadingIndication());
-    dispatch(unlockInProgress());
-
-    try {
-      const seedPhrases = await fetchAllSeedPhrases(password);
-      if (seedPhrases === null) {
-        throw new Error('Seed phrase not found');
-      }
-
-      dispatch(unlockSucceeded());
-      return forceUpdateMetamaskState(dispatch);
-    } catch (error) {
-      dispatch(unlockFailed(getErrorMessage(error)));
-      throw error;
-    } finally {
-      dispatch(hideLoadingIndication());
-    }
-  };
-}
-
-/**
  * Adds a new account where all data is encrypted using the given password and
  * where all addresses are generated from a given seed phrase.
  *

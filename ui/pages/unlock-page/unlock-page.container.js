@@ -13,9 +13,7 @@ import {
   tryUnlockMetamask,
   markPasswordForgotten,
   forceUpdateMetamaskState,
-  tryRestoreAndUnlockMetamask,
 } from '../../store/actions';
-import { FirstTimeFlowType } from '../../../shared/constants/onboarding';
 import UnlockPage from './unlock-page.component';
 
 const mapStateToProps = (state) => {
@@ -33,8 +31,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     tryUnlockMetamask: (password) => dispatch(tryUnlockMetamask(password)),
-    tryRestoreAndUnlockMetamask: (password) =>
-      dispatch(tryRestoreAndUnlockMetamask(password)),
     markPasswordForgotten: () => dispatch(markPasswordForgotten()),
     forceUpdateMetamaskState: () => forceUpdateMetamaskState(dispatch),
   };
@@ -61,13 +57,7 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
   };
 
   const onSubmit = async (password) => {
-    const isSeedlessFlow =
-      stateProps.firstTimeFlow === FirstTimeFlowType.seedless;
-    if (isSeedlessFlow) {
-      await tryRestoreAndUnlockMetamask(password);
-    } else {
-      await tryUnlockMetamask(password);
-    }
+    await tryUnlockMetamask(password);
 
     history.push(DEFAULT_ROUTE);
   };

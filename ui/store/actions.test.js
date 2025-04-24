@@ -3181,7 +3181,7 @@ describe('Actions', () => {
       ];
 
       await expect(
-        store.dispatch(actions.tryRestoreAndUnlockMetamask('password')),
+        store.dispatch(actions.restoreBackupAndGetSeedPhrase('password')),
       ).rejects.toThrow('error');
       expect(store.getActions()).toStrictEqual(expectedActions);
     });
