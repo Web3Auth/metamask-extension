@@ -38,7 +38,10 @@
       max-width: inherit;
     }
 
-    @include design-system.screen-sm-min {
+    &--unlock {
+      margin: auto;
+      padding: 0;
+      border: none;
     }
   }
 

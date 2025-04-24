@@ -1,6 +1,5 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import {
   Button,
   ButtonSize,
@@ -12,70 +11,27 @@ import {
   AlignItems,
   JustifyContent,
   FlexDirection,
-  BorderRadius,
   BlockSize,
-  FontWeight,
-  TextColor,
   IconColor,
 } from '../../../helpers/constants/design-system';
 import {
   Box,
   Text,
   IconName,
-  IconSize,
-  ButtonBase,
-  Icon,
-  ButtonLink,
-  ButtonLinkSize,
   ButtonIcon,
   ButtonIconSize,
 } from '../../../components/component-library';
 import { useI18nContext } from '../../../hooks/useI18nContext';
-import {
-  ONBOARDING_PRIVACY_SETTINGS_ROUTE,
-  ONBOARDING_PASSWORD_HINT,
-  ONBOARDING_PIN_EXTENSION_ROUTE,
-} from '../../../helpers/constants/routes';
-import {
-  getCurrentKeyring,
-  getFirstTimeFlowType,
-  getPasswordHint,
-} from '../../../selectors';
-import {
-  MetaMetricsEventCategory,
-  MetaMetricsEventName,
-} from '../../../../shared/constants/metametrics';
-import { MetaMetricsContext } from '../../../contexts/metametrics';
-import { selectIsProfileSyncingEnabled } from '../../../selectors/identity/profile-syncing';
-import { getSeedPhraseBackedUp } from '../../../ducks/metamask/metamask';
+import { UNLOCK_ROUTE } from '../../../helpers/constants/routes';
 
 export default function AccountExist() {
   const history = useHistory();
   const t = useI18nContext();
-  const trackEvent = useContext(MetaMetricsContext);
-  const firstTimeFlowType = useSelector(getFirstTimeFlowType);
-  const currentKeyring = useSelector(getCurrentKeyring);
-  const seedPhraseBackedUp = useSelector(getSeedPhraseBackedUp);
-  const learnMoreLink =
-    'https://support.metamask.io/hc/en-us/articles/360015489591-Basic-Safety-and-Security-Tips-for-MetaMask';
-  // const learnHowToKeepWordsSafe =
-  //   'https://community.metamask.io/t/what-is-a-secret-recovery-phrase-and-how-to-keep-your-crypto-wallet-secure/3440';
-
-  const isProfileSyncingEnabled = useSelector(selectIsProfileSyncingEnabled);
-
-  const passwordHint = useSelector(getPasswordHint);
+  // TODO: get account email from controllers
+  const accountEmail = 'username@gmail.com';
 
   const onDone = async () => {
-    trackEvent({
-      category: MetaMetricsEventCategory.Onboarding,
-      event: MetaMetricsEventName.OnboardingWalletCreationComplete,
-      properties: {
-        method: firstTimeFlowType,
-        is_profile_syncing_enabled: isProfileSyncingEnabled,
-      },
-    });
-
-    history.push(ONBOARDING_PIN_EXTENSION_ROUTE);
+    history.push(UNLOCK_ROUTE);
   };
   return (
     <Box
@@ -129,7 +85,7 @@ export default function AccountExist() {
           />
         </Box>
         <Text variant={TextVariant.bodyMd} marginBottom={6}>
-          {t('accountAlreadyExistsLoginDescription', ['username@gmail.com'])}
+          {t('accountAlreadyExistsLoginDescription', [accountEmail])}
         </Text>
       </Box>
 
