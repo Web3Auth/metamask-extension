@@ -33,10 +33,14 @@ import {
 } from '../../../components/component-library';
 import SRPDetailsModal from '../../../components/app/srp-details-modal';
 
-const hasUpperCase = (draftSrp) => {
+const hasUpperCase = (draftSrp: string) => {
   return draftSrp !== draftSrp.toLowerCase();
 };
-export default function ImportSRP({ submitSecretRecoveryPhrase }) {
+export default function ImportSRP({
+  submitSecretRecoveryPhrase,
+}: {
+  submitSecretRecoveryPhrase: (secretRecoveryPhrase: string) => void;
+}) {
   const [secretRecoveryPhrase, setSecretRecoveryPhrase] = useState('');
   const [showSrpDetailsModal, setShowSrpDetailsModal] = useState(false);
   const [srpError, setSrpError] = useState('');
@@ -95,6 +99,7 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
             size={ButtonIconSize.Md}
             data-testid="import-srp-back-button"
             onClick={() => history.push(ONBOARDING_GET_STARTED_ROUTE)}
+            ariaLabel={t('back')}
           />
         </Box>
         <div className="import-srp__step">
@@ -114,6 +119,7 @@ export default function ImportSRP({ submitSecretRecoveryPhrase }) {
             size={ButtonIconSize.Sm}
             color={IconColor.iconAlternative}
             onClick={() => setShowSrpDetailsModal(true)}
+            ariaLabel="info"
           />
         </div>
         <Box width={BlockSize.Full}>
