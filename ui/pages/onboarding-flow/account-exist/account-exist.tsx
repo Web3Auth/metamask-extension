@@ -52,6 +52,7 @@ export default function AccountExist() {
             size={ButtonIconSize.Md}
             data-testid="create-password-back-button"
             onClick={() => history.goBack()}
+            ariaLabel="back"
           />
         </Box>
         <Box
