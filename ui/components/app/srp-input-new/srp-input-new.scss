@@ -1,0 +1,42 @@
+@use "design-system";
+
+.srp-input {
+  &__container {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-background-muted);
+    border-radius: 0.5rem;
+    min-height: 264px;
+  }
+
+  &__srp-container {
+    flex: 1;
+    padding: 1rem;
+  }
+
+  &__words_list {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+  }
+
+  &__srp-note {
+    flex: 1;
+    padding: 1rem;
+  }
+
+  &__actions {
+    height: 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid #fff;
+
+    div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+
