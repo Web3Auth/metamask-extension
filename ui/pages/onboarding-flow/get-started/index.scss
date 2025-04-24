@@ -2,8 +2,11 @@
 
 .get-started {
   &__title {
+    text-align: center;
+  }
+
+  &__title-text {
     font-size: 104px;
-    font-weight: 400;
     line-height: 110px;
     text-align: center;
     text-transform: uppercase;
@@ -16,8 +19,12 @@
     margin-top: -45px;
   }
 
-  &__button {
+  &__button-container {
     width: 343px;
     margin: 0 auto;
+  }
+
+  &__button {
+    background-color: #fff;
   }
 }
