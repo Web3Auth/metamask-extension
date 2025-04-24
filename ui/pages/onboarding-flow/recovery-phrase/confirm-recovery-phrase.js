@@ -26,6 +26,7 @@ import {
 } from '../../../../shared/constants/metametrics';
 import { getHDEntropyIndex } from '../../../selectors/selectors';
 import RecoveryPhraseChips from './recovery-phrase-chips';
+import ConfirmModal from './confirm-modal';
 
 export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
   const history = useHistory();
@@ -36,6 +37,8 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
   const indicesToCheck = [2, 3, 7];
   const [matching, setMatching] = useState(false);
   const trackEvent = useContext(MetaMetricsContext);
+  const [completedQuizWords, setCompletedQuizWords] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   // Removes seed phrase words from chips corresponding to the
   // indicesToCheck so that user has to complete the phrase and confirm
@@ -51,17 +54,40 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
     initializePhraseElements(),
   );
 
-  const validate = useMemo(
+  const validateQuizWords = useMemo(
     () =>
       debounce((elements) => {
-        setMatching(Object.values(elements).join(' ') === secretRecoveryPhrase);
+        const quizWords = Object.values(elements).filter(
+          (value) => value !== '',
+        );
+        const srpLength = secretRecoveryPhrase.split(' ').length;
+        setCompletedQuizWords(quizWords.length === srpLength);
       }, 500),
-    [setMatching, secretRecoveryPhrase],
+    [setCompletedQuizWords, secretRecoveryPhrase],
   );
+
+  const tryContinue = async () => {
+    const isMatching =
+      Object.values(phraseElements).join(' ') === secretRecoveryPhrase;
+    setMatching(isMatching);
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmedPhrase = () => {
+    dispatch(setSeedPhraseBackedUp(true));
+    trackEvent({
+      category: MetaMetricsEventCategory.Onboarding,
+      event: MetaMetricsEventName.OnboardingWalletSecurityPhraseConfirmed,
+      properties: {
+        hd_entropy_index: hdEntropyIndex,
+      },
+    });
+    history.push(ONBOARDING_COMPLETION_ROUTE);
+  };
 
   const handleSetPhraseElements = (values) => {
     setPhraseElements(values);
-    validate(values);
+    validateQuizWords(values);
   };
 
   return (
@@ -69,21 +95,28 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
       className="recovery-phrase__confirm"
       data-testid="confirm-recovery-phrase"
     >
+      {showConfirmModal && (
+        <ConfirmModal
+          isError={!matching}
+          onContinue={handleConfirmedPhrase}
+          onClose={() => setShowConfirmModal(false)}
+        />
+      )}
       <Box
         justifyContent={JustifyContent.flexStart}
         marginBottom={4}
         width={BlockSize.Full}
       >
         <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          Step 3 of 3
+          {t('stepOf', [3, 3])}
         </Text>
         <Text variant={TextVariant.headingLg}>
-          Confirm your Secret Recovery Phrase
+          {t('confirmRecoveryPhraseTitle')}
         </Text>
       </Box>
       <Box marginBottom={6}>
         <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
-          Select the missing words in the correct order.
+          {t('confirmRecoveryPhraseDetails')}
         </Text>
       </Box>
       <RecoveryPhraseChips
@@ -100,19 +133,8 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
           data-testid="recovery-phrase-confirm"
           size={ButtonSize.Large}
           className="recovery-phrase__footer__confirm--button"
-          onClick={async () => {
-            await dispatch(setSeedPhraseBackedUp(true));
-            trackEvent({
-              category: MetaMetricsEventCategory.Onboarding,
-              event:
-                MetaMetricsEventName.OnboardingWalletSecurityPhraseConfirmed,
-              properties: {
-                hd_entropy_index: hdEntropyIndex,
-              },
-            });
-            history.push(ONBOARDING_COMPLETION_ROUTE);
-          }}
-          disabled={!matching}
+          onClick={tryContinue}
+          disabled={!completedQuizWords}
         >
           {t('confirm')}
         </Button>

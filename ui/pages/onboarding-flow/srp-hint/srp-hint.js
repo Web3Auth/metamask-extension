@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import {
   Button,
   ButtonSize,
@@ -15,8 +16,11 @@ import {
   TextColor,
 } from '../../../helpers/constants/design-system';
 import { Box, Text, TextField } from '../../../components/component-library';
+import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
 
 export default function SRPHint() {
+  const history = useHistory();
+
   return (
     <Box
       className="srp-hint"
@@ -39,7 +43,7 @@ export default function SRPHint() {
           }}
           marginBottom={4}
         >
-          Secret Recovery Phrase hint
+          Password hint
         </Text>
         <Text
           variant={TextVariant.bodyMd}
@@ -66,17 +70,18 @@ export default function SRPHint() {
       </Box>
 
       <Box
+        className="srp-hint__actions"
         display={Display.Flex}
         flexDirection={FlexDirection.Column}
         justifyContent={JustifyContent.center}
         alignItems={AlignItems.center}
-        marginTop={6}
       >
         <Button
           data-testid="srp-hint-save"
           variant={ButtonVariant.Primary}
           size={ButtonSize.Lg}
           width={BlockSize.Full}
+          onClick={() => history.push(ONBOARDING_COMPLETION_ROUTE)}
         >
           Save
         </Button>

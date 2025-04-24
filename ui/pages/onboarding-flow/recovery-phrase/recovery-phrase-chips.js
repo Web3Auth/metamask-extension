@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import {
   Box,
+  Button,
+  ButtonVariant,
   Icon,
   IconName,
   IconSize,
@@ -15,6 +17,8 @@ import {
   Display,
   TextColor,
   FontWeight,
+  BorderRadius,
+  BlockSize,
 } from '../../../helpers/constants/design-system';
 import SrpText from '../../../components/app/srp-input-import/srp-text';
 
@@ -24,12 +28,31 @@ export default function RecoveryPhraseChips({
   confirmPhase,
   setInputValue,
   inputValue,
-  indicesToCheck,
+  indicesToCheck = [],
   hiddenPhrase,
   revealPhrase,
 }) {
   const t = useI18nContext();
   const hideSeedPhrase = phraseRevealed === false;
+  const [selectedQuizWords, setSelectedQuizWords] = useState([]);
+  const srpRefs = useRef([]);
+  const shuffledPhrases = indicesToCheck.map((index) => {
+    return secretRecoveryPhrase[index];
+  });
+
+  const addQuizWord = (phrase) => {
+    const newSelectedQuizWords = [...selectedQuizWords];
+    const targetIndex = newSelectedQuizWords.length;
+    newSelectedQuizWords.push(phrase);
+    setSelectedQuizWords(newSelectedQuizWords);
+    srpRefs.current[indicesToCheck[targetIndex]].setQuizWord(phrase);
+    setInputValue({ ...inputValue, [indicesToCheck[targetIndex]]: phrase });
+  };
+
+  useEffect(() => {
+    console.log('selectedQuizWords', selectedQuizWords);
+  }, [selectedQuizWords]);
+
   return (
     <Box
       padding={4}
@@ -51,6 +74,14 @@ export default function RecoveryPhraseChips({
             indicesToCheck.includes(index)
           );
 
+          let inputWord = '';
+
+          if (confirmPhase) {
+            inputWord = inputValue[index];
+          } else {
+            inputWord = inputValue ? inputValue[index] : word;
+          }
+
           return (
             <div
               className={classnames('recovery-phrase__chip-item', {
@@ -60,8 +91,9 @@ export default function RecoveryPhraseChips({
             >
               <SrpText
                 dataTestId={`recovery-phrase-input-${index}`}
+                ref={(el) => (srpRefs.current[index] = el)}
                 word={{
-                  word: inputValue ? inputValue[index] : word,
+                  word: inputWord,
                   isActive: true,
                 }}
                 index={index}
@@ -74,6 +106,33 @@ export default function RecoveryPhraseChips({
           );
         })}
       </div>
+
+      {shuffledPhrases && (
+        <Box
+          display={Display.Flex}
+          marginTop={6}
+          gap={2}
+          width={BlockSize.Full}
+        >
+          {/* TODO: Fix text color showing primary when hovered */}
+          {shuffledPhrases.map((value, index) => {
+            return (
+              <Button
+                variant={ButtonVariant.Secondary}
+                borderRadius={BorderRadius.LG}
+                key={index}
+                block
+                disabled={selectedQuizWords.includes(value)}
+                onClick={() => {
+                  addQuizWord(value);
+                }}
+              >
+                {value}
+              </Button>
+            );
+          })}
+        </Box>
+      )}
 
       {hideSeedPhrase && (
         <div className="recovery-phrase__secret-blocker-container">
@@ -95,10 +154,10 @@ export default function RecoveryPhraseChips({
                 color={TextColor.textDefault}
                 fontWeight={FontWeight.Medium}
               >
-                Tap to reveal
+                {t('tapToReveal')}
               </Text>
               <Text variant={TextVariant.bodySm} color={TextColor.textDefault}>
-                Make sure no one is watching your screen.
+                {t('tapToRevealNote')}
               </Text>
             </Box>
           )}
