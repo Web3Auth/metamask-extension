@@ -129,6 +129,27 @@ describe('Actions', () => {
     sinon.restore();
   });
 
+  describe('#startOAuthLogin', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    // eslint-disable-next-line jest/no-focused-tests
+    it.only('calls startOAuthLogin in the background', async () => {
+      const store = mockStore();
+
+      const startOAuthLoginMock = background.startOAuthLogin.callsFake(
+        (_, cb) => cb(),
+      );
+
+      setBackgroundConnection(background);
+
+      await store.dispatch(actions.startOAuthLogin('google'));
+
+      expect(startOAuthLoginMock.callCount).toStrictEqual(1);
+    });
+  });
+
   describe('#tryUnlockMetamask', () => {
     afterEach(() => {
       sinon.restore();
