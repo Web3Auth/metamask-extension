@@ -134,19 +134,20 @@ describe('Actions', () => {
       sinon.restore();
     });
 
-    // eslint-disable-next-line jest/no-focused-tests
-    it.only('calls startOAuthLogin in the background', async () => {
+    it('calls startOAuthLogin in the background', async () => {
       const store = mockStore();
 
-      const startOAuthLoginMock = background.startOAuthLogin.callsFake(
-        (_, cb) => cb(),
-      );
-
-      setBackgroundConnection(background);
+      const startOAuthLoginStub = sinon
+        .stub()
+        .callsFake((_, cb) => cb(null, {}));
+      background.getApi.returns({
+        startOAuthLogin: startOAuthLoginStub,
+      });
+      setBackgroundConnection(background.getApi());
 
       await store.dispatch(actions.startOAuthLogin('google'));
 
-      expect(startOAuthLoginMock.callCount).toStrictEqual(1);
+      expect(startOAuthLoginStub.callCount).toStrictEqual(1);
     });
   });
 
