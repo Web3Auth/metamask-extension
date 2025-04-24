@@ -750,12 +750,6 @@ export default function reduceApp(
         ...appState,
         showNewSrpAddedToast: action.payload,
       };
-    case actionConstants.ONBOARDING_SET_PASSWORD_HINT:
-      return {
-        ...appState,
-        passwordHint: action.payload,
-      };
-
     default:
       return appState;
   }
@@ -789,15 +783,6 @@ export function onboardingToggleBasicFunctionalityOn(): Action {
 export function onboardingToggleBasicFunctionalityOff(): Action {
   return {
     type: actionConstants.ONBOARDING_TOGGLE_BASIC_FUNCTIONALITY_OFF,
-  };
-}
-
-export function onboardingSetPasswordHint(
-  payload: string,
-): PayloadAction<string> {
-  return {
-    type: actionConstants.ONBOARDING_SET_PASSWORD_HINT,
-    payload,
   };
 }
 
