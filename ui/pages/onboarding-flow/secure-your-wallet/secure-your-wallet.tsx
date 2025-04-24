@@ -11,7 +11,6 @@ import {
   Display,
   BlockSize,
   TextColor,
-  // IconColor,
 } from '../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
@@ -28,9 +27,6 @@ import {
   ButtonVariant,
   ButtonLink,
   ButtonLinkSize,
-  // ButtonIcon,
-  // IconName,
-  // ButtonIconSize,
 } from '../../../components/component-library';
 import { getHDEntropyIndex } from '../../../selectors/selectors';
 import SRPDetailsModal from '../../../components/app/srp-details-modal';

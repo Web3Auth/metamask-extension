@@ -34,7 +34,13 @@ import { getHDEntropyIndex } from '../../../selectors/selectors';
 import { setSeedPhraseBackedUp } from '../../../store/actions';
 import { ONBOARDING_METAMETRICS } from '../../../helpers/constants/routes';
 
-export default function SkipSRPBackup({ onClose, secureYourWallet }) {
+export default function SkipSRPBackup({
+  onClose,
+  secureYourWallet,
+}: {
+  onClose: () => void;
+  secureYourWallet: () => void;
+}) {
   const [checked, setChecked] = useState(false);
   const t = useI18nContext();
   const dispatch = useDispatch();
