@@ -12,33 +12,31 @@
     align-self: baseline;
   }
 
-  ul {
-    margin: 24px 0 0 0;
-    width: 100%;
 
-    li {
-      padding-bottom: 20px;
-      display: flex;
-
-      > span {
-        width: 90%;
-      }
-    }
+  // override Checkbox
+  .mm-checkbox__input-wrapper {
+    margin-top: -20px;
   }
 
-  &__terms a {
-    color: var(--color-primary-default);
+  ul {
+    margin: 16px 0 0 0;
+    width: 100%;
+  }
+
+  &__terms {
+    border-top: 1px solid var(--color-border-muted);
+    padding-top: 16px;
+
+    a {
+      color: var(--color-primary-default);
+    }
   }
 
   &__buttons {
     margin-top: 24px;
 
-    @include design-system.screen-sm-min {
-      margin-top: 40px;
-    }
-
     button {
-      margin-bottom: 24px;
+      margin-bottom: 16px;
       width: 50%;
     }
   }
