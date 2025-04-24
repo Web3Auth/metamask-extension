@@ -15,14 +15,15 @@ import {
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
   TextVariant,
-  Size,
   Display,
   TextColor,
   FontWeight,
   FlexDirection,
   BlockSize,
   BorderRadius,
+  IconColor,
 } from '../../../helpers/constants/design-system';
+import { QuizWords } from './types';
 
 export default function RecoveryPhraseChips({
   secretRecoveryPhrase,
@@ -31,6 +32,13 @@ export default function RecoveryPhraseChips({
   confirmPhase,
   quizWords = [],
   setInputValue,
+}: {
+  secretRecoveryPhrase: string[];
+  phraseRevealed?: boolean;
+  revealPhrase?: () => void;
+  confirmPhase?: boolean;
+  quizWords?: QuizWords;
+  setInputValue?: (quizAnswers: QuizWords) => void;
 }) {
   const t = useI18nContext();
   const hideSeedPhrase = phraseRevealed === false;
@@ -43,7 +51,7 @@ export default function RecoveryPhraseChips({
     })),
   );
 
-  const setNextTargetIndex = (newQuizAnswers) => {
+  const setNextTargetIndex = (newQuizAnswers: QuizWords) => {
     const emptyAnswers = newQuizAnswers
       .filter((answer) => answer.word === '')
       .map((answer) => answer.index);
@@ -55,7 +63,7 @@ export default function RecoveryPhraseChips({
     setNextTargetIndex(quizAnswers),
   );
 
-  const addQuizWord = (word) => {
+  const addQuizWord = (word: string) => {
     const newQuizAnswers = [...quizAnswers];
     const targetIndex = newQuizAnswers.findIndex(
       (answer) => answer.index === indexToFocus,
@@ -65,7 +73,7 @@ export default function RecoveryPhraseChips({
     setIndexToFocus(setNextTargetIndex(newQuizAnswers));
   };
 
-  const removeQuizWord = (answerWord) => {
+  const removeQuizWord = (answerWord: string) => {
     const newQuizAnswers = [...quizAnswers];
     const targetIndex = newQuizAnswers.findIndex(
       (answer) => answer.word === answerWord,
@@ -99,7 +107,7 @@ export default function RecoveryPhraseChips({
     <Box display={Display.Flex} flexDirection={FlexDirection.Column} gap={4}>
       <Box
         padding={4}
-        borderRadius={Size.LG}
+        borderRadius={BorderRadius.LG}
         display={Display.Grid}
         className="recovery-phrase__secret"
       >
@@ -153,12 +161,12 @@ export default function RecoveryPhraseChips({
             <Box
               className="recovery-phrase__secret-blocker-text"
               onClick={() => {
-                revealPhrase();
+                revealPhrase && revealPhrase();
               }}
             >
               <Icon
                 name={IconName.EyeSlash}
-                color={TextColor.textDefault}
+                color={IconColor.iconDefault}
                 size={IconSize.Md}
               />
               <Text
