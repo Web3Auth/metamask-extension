@@ -72,39 +72,43 @@ export default function GetStarted() {
 
   const onClickSocialLogin = async (provider) => {
     setIsLoggingIn(true);
-    setNewAccountCreationInProgress(true);
-    dispatch(setFirstTimeFlowType(FirstTimeFlowType.seedless));
+    try {
+      setNewAccountCreationInProgress(true);
+      dispatch(setFirstTimeFlowType(FirstTimeFlowType.seedless));
 
-    const isNewUser = await dispatch(startOAuthLogin(provider));
-    setIsLoggingIn(false);
-    // if user is not new user and login option is new, redirect to account exist page
-    if (loginOption === 'new' && !isNewUser) {
-      history.push(ONBOARDING_ACCOUNT_EXIST);
-      return;
-    } else if (loginOption === 'existing' && isNewUser) {
-      // if user is new user and login option is existing, redirect to account not found page
-      history.push(ONBOARDING_ACCOUNT_NOT_FOUND);
-      return;
+      const isNewUser = await dispatch(startOAuthLogin(provider));
+      setIsLoggingIn(false);
+      // if user is not new user and login option is new, redirect to account exist page
+      if (loginOption === 'new' && !isNewUser) {
+        history.push(ONBOARDING_ACCOUNT_EXIST);
+        return;
+      } else if (loginOption === 'existing' && isNewUser) {
+        // if user is new user and login option is existing, redirect to account not found page
+        history.push(ONBOARDING_ACCOUNT_NOT_FOUND);
+        return;
+      }
+
+      if (!isNewUser) {
+        // redirect to login page
+        history.push(ONBOARDING_UNLOCK_ROUTE);
+        return;
+      }
+
+      trackEvent({
+        category: MetaMetricsEventCategory.Onboarding,
+        // TODO: add seedless onboarding event to MetaMetrics?
+        event: MetaMetricsEventName.OnboardingWalletCreationStarted,
+        properties: {
+          account_type: 'metamask',
+        },
+      });
+
+      ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+      history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
+      ///: END:ONLY_INCLUDE_IF
+    } finally {
+      setIsLoggingIn(false);
     }
-
-    if (!isNewUser) {
-      // redirect to login page
-      history.push(ONBOARDING_UNLOCK_ROUTE);
-      return;
-    }
-
-    trackEvent({
-      category: MetaMetricsEventCategory.Onboarding,
-      // TODO: add seedless onboarding event?
-      event: MetaMetricsEventName.OnboardingWalletCreationStarted,
-      properties: {
-        account_type: 'metamask',
-      },
-    });
-
-    ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-    history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
-    ///: END:ONLY_INCLUDE_IF
   };
 
   const onCreateClick = async () => {
