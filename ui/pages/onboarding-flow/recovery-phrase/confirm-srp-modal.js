@@ -25,8 +25,11 @@ export default function ConfirmSrpModal({ onContinue, onClose, isError }) {
   const t = useI18nContext();
 
   const handleContinue = () => {
-    onContinue();
-    onClose();
+    if (isError) {
+      onClose();
+    } else {
+      onContinue();
+    }
   };
 
   return (

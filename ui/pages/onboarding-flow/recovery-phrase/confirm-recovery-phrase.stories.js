@@ -12,7 +12,7 @@ export default {
   },
   args: {
     secretRecoveryPhrase:
-      'debris dizzy just program just float decrease vacant alarm reduce speak stadium',
+      'coast cost miracle area solid ranch supreme ticket shove input train art',
   },
 };
 
