@@ -12,12 +12,16 @@ import {
   ButtonLink,
   ButtonLinkSize,
   ButtonSize,
+  ButtonIcon,
+  IconName,
+  ButtonIconSize,
 } from '../../../components/component-library';
 import {
   TextVariant,
   JustifyContent,
   BlockSize,
   TextColor,
+  IconColor,
 } from '../../../helpers/constants/design-system';
 import {
   MetaMetricsEventCategory,
@@ -50,6 +54,20 @@ export default function RecoveryPhrase({ secretRecoveryPhrase }) {
       {showSrpDetailsModal && (
         <SRPDetailsModal onClose={() => setShowSrpDetailsModal(false)} />
       )}
+      {/* TODO: check fully it should just go back to the previous page */}
+      <Box
+        justifyContent={JustifyContent.flexStart}
+        marginBottom={4}
+        width={BlockSize.Full}
+      >
+        <ButtonIcon
+          iconName={IconName.ArrowLeft}
+          color={IconColor.iconDefault}
+          size={ButtonIconSize.Md}
+          data-testid="review-srp-back-button"
+          onClick={() => history.goBack()}
+        />
+      </Box>
       <Box
         justifyContent={JustifyContent.flexStart}
         marginBottom={4}

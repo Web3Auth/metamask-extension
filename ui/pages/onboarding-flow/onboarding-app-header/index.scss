@@ -40,6 +40,16 @@
     }
   }
 
+  // SRP_OVERRIDE: dropdown on welcome page
+  &__dropdown--welcome {
+    .dropdown__select {
+      border: 0;
+    }
+    .dropdown__icon-caret-down {
+      color: var(--color-text-default);
+    }
+  }
+
   &__contents {
     display: flex;
     flex-flow: row nowrap;

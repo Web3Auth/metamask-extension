@@ -3803,7 +3803,7 @@
     "message": "Your MetaMask install is complete!"
   },
   "onboardingSrpCreate": {
-    "message": "Continue with secret recovery phrase"
+    "message": "Continue with manual setup"
   },
   "onboardingSrpImport": {
     "message": "Import using secret recovery phrase"
@@ -3893,6 +3893,9 @@
   },
   "password": {
     "message": "Password"
+  },
+  "passwordHintCreate": {
+    "message": "Create a password hint"
   },
   "passwordHintTitle": {
     "message": "Password hint"
@@ -5538,7 +5541,7 @@
     "message": "Spending caps"
   },
   "srpDetailsTitle": {
-    "message": "What is a Secret Recovery Phrase?"
+    "message": "What’s a Secret Recovery Phrase?"
   },
   "srpDetailsDescription": {
     "message": "A Secret Recovery Phrase, also called a seed phrase or mnemonic, is a set of words that lets you access and control your crypto wallet. To move your wallet to MetaMask, you need this phrase."
@@ -5554,9 +5557,6 @@
   },
   "srpDetailsOwnsAccessListItemThree": {
     "message": "Change your login information"
-  },
-  "srpHintCreate": {
-    "message": "Create a Secret Recovery Phrase hint"
   },
   "srpInputNumberOfWords": {
     "message": "I have a $1-word phrase",

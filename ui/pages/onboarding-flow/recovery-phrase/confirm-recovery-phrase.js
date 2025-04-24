@@ -6,8 +6,11 @@ import PropTypes from 'prop-types';
 import {
   Box,
   Button,
+  ButtonIcon,
+  ButtonIconSize,
   ButtonSize,
   ButtonVariant,
+  IconName,
   Text,
 } from '../../../components/component-library';
 import {
@@ -15,6 +18,7 @@ import {
   JustifyContent,
   BlockSize,
   TextColor,
+  IconColor,
 } from '../../../helpers/constants/design-system';
 import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
 import { useI18nContext } from '../../../hooks/useI18nContext';
@@ -102,6 +106,20 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
           onClose={() => setShowConfirmModal(false)}
         />
       )}
+      {/* TODO: check fully it should just go back to the previous page */}
+      <Box
+        justifyContent={JustifyContent.flexStart}
+        marginBottom={4}
+        width={BlockSize.Full}
+      >
+        <ButtonIcon
+          iconName={IconName.ArrowLeft}
+          color={IconColor.iconDefault}
+          size={ButtonIconSize.Md}
+          data-testid="confirm-recovery-phrase-back-button"
+          onClick={() => history.goBack()}
+        />
+      </Box>
       <Box
         justifyContent={JustifyContent.flexStart}
         marginBottom={4}

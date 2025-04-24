@@ -139,8 +139,8 @@ export default function WalletReady() {
                 marginInlineEnd={3}
               />
               <Box>
-                <Text variant={TextVariant.bodyLgMedium}>
-                  {t('srpHintCreate')}
+                <Text variant={TextVariant.bodyMdBold}>
+                  {t('passwordHintCreate')}
                 </Text>
                 {srpHint && (
                   <Text
