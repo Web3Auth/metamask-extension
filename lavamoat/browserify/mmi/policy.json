@@ -1100,6 +1100,16 @@
         "webpack>events": true
       }
     },
+    "@metamask-previews/seedless-onboarding-controller": {
+      "packages": {
+        "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils": true,
+        "@metamask/base-controller": true,
+        "@metamask/browser-passworder": true,
+        "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup": true,
+        "@metamask/utils": true,
+        "@metamask/name-controller>async-mutex": true
+      }
+    },
     "@metamask/abi-utils": {
       "packages": {
         "@metamask/utils>@metamask/superstruct": true,
@@ -1233,7 +1243,7 @@
         "uuid": true
       }
     },
-    "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils": {
       "globals": {
         "setTimeout": true
       },
@@ -1243,7 +1253,7 @@
         "bn.js": true,
         "browserify>buffer": true,
         "@metamask/ppom-validator>elliptic": true,
-        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify": true
+        "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify": true
       }
     },
     "@metamask/base-controller": {
@@ -2189,16 +2199,6 @@
         "@metamask/utils>@scure/base": true
       }
     },
-    "@metamask/seedless-onboarding-controller": {
-      "packages": {
-        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils": true,
-        "@metamask/base-controller": true,
-        "@metamask/browser-passworder": true,
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup": true,
-        "@metamask/utils": true,
-        "@metamask/name-controller>async-mutex": true
-      }
-    },
     "@metamask/selected-network-controller": {
       "packages": {
         "@metamask/selected-network-controller>@metamask/base-controller": true,
@@ -2396,20 +2396,20 @@
         "@metamask/snaps-utils>validate-npm-package-name": true
       }
     },
-    "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup": {
       "globals": {
         "URL": true,
         "console.error": true,
         "fetch": true
       },
       "packages": {
-        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils": true,
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@noble/ciphers": true,
+        "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils": true,
+        "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@noble/ciphers": true,
         "viem>webauthn-p256>@noble/curves": true,
         "@noble/hashes": true,
-        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>@toruslabs/eccrypto": true,
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details": true,
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/http-helpers": true,
+        "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils>@toruslabs/eccrypto": true,
+        "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details": true,
+        "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/http-helpers": true,
         "bn.js": true,
         "browserify>buffer": true
       }
@@ -2546,7 +2546,7 @@
         "crypto": true
       }
     },
-    "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@noble/ciphers": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@noble/ciphers": {
       "globals": {
         "TextDecoder": true,
         "TextEncoder": true,
@@ -2989,7 +2989,7 @@
         "browserify>browser-resolve": true
       }
     },
-    "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>@toruslabs/eccrypto": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils>@toruslabs/eccrypto": {
       "globals": {
         "crypto": true,
         "msCrypto": true
@@ -2999,21 +2999,21 @@
         "@metamask/ppom-validator>elliptic": true
       }
     },
-    "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details": {
       "packages": {
         "@babel/runtime": true,
-        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>@toruslabs/constants": true,
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/fnd-base": true,
-        "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/http-helpers": true,
+        "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils>@toruslabs/constants": true,
+        "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/fnd-base": true,
+        "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/http-helpers": true,
         "loglevel": true
       }
     },
-    "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/fnd-base": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/fnd-base": {
       "packages": {
-        "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>@toruslabs/constants": true
+        "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils>@toruslabs/constants": true
       }
     },
-    "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/http-helpers": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/http-helpers": {
       "globals": {
         "URL": true,
         "clearTimeout": true,
@@ -3026,7 +3026,7 @@
         "loglevel": true
       }
     },
-    "@metamask/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/http-helpers": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/http-helpers": {
       "globals": {
         "URL": true,
         "clearTimeout": true,
@@ -4445,7 +4445,7 @@
         "define": true
       }
     },
-    "@metamask/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify": {
       "packages": {
         "string.prototype.matchall>call-bind": true,
         "string.prototype.matchall>side-channel>side-channel-map>call-bound": true,

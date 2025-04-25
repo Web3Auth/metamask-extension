@@ -1,5 +1,5 @@
 import { BaseController } from '@metamask/base-controller';
-import { AuthConnection } from '@metamask/seedless-onboarding-controller';
+import { AuthConnection } from '@metamask-previews/seedless-onboarding-controller';
 import {
   controllerName,
   OAuthControllerMessenger,
