@@ -3,7 +3,7 @@ import configureMockStore from 'redux-mock-store';
 import { fireEvent } from '@testing-library/react';
 import thunk from 'redux-thunk';
 import { renderWithProvider } from '../../../test/lib/render-helpers';
-import UnlockPage from '.';
+import UnlockPage from './unlock-page.component';
 
 const mockMarkPasswordForgotten = jest.fn();
 

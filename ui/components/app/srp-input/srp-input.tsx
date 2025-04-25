@@ -4,13 +4,16 @@ import PropTypes from 'prop-types';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import TextField from '../../ui/text-field';
 import { clearClipboard } from '../../../helpers/utils/util';
-import { BannerAlert, BannerAlertSeverity, Text } from '../../component-library';
+import {
+  BannerAlert,
+  BannerAlertSeverity,
+  Text,
+} from '../../component-library';
 import Dropdown from '../../ui/dropdown';
 import ShowHideToggle from '../../ui/show-hide-toggle';
 import {
   TextAlign,
   TextVariant,
-  Severity,
 } from '../../../helpers/constants/design-system';
 import { parseSecretRecoveryPhrase } from './parse-secret-recovery-phrase';
 
@@ -132,7 +135,11 @@ export default function SrpInput({ onChange, srpText }: SrpInputProps) {
   return (
     <div className="import-srp__container">
       <label className="import-srp__srp-label">
-        <Text textAlign={TextAlign.Left} variant={TextVariant.headingSm} as="h4">
+        <Text
+          textAlign={TextAlign.Left}
+          variant={TextVariant.headingSm}
+          as="h4"
+        >
           {srpText}
         </Text>
       </label>

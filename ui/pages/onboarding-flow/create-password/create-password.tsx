@@ -11,7 +11,6 @@ import {
   TextColor,
   BlockSize,
   IconColor,
-  Size,
 } from '../../../helpers/constants/design-system';
 import {
   ONBOARDING_COMPLETION_ROUTE,
@@ -26,6 +25,7 @@ import {
   getFirstTimeFlowType,
   getCurrentKeyring,
   getMetaMetricsId,
+  getParticipateInMetaMetrics,
 } from '../../../selectors';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
@@ -45,10 +45,8 @@ import {
   IconName,
   InputType,
   Text,
-  TextFieldType,
 } from '../../../components/component-library';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
-import { MetaMaskState } from '../../../../app/scripts/controllers/metametrics-controller';
 
 export default function CreatePassword({
   createNewAccount,
@@ -79,10 +77,7 @@ export default function CreatePassword({
   const trackEvent = useContext(MetaMetricsContext);
   const currentKeyring = useSelector(getCurrentKeyring);
 
-  const participateInMetaMetrics = useSelector(
-    (state: { metamask: MetaMaskState }) =>
-      Boolean(state.metamask.participateInMetaMetrics),
-  );
+  const participateInMetaMetrics = useSelector(getParticipateInMetaMetrics);
   const metametricsId = useSelector(getMetaMetricsId);
   const base64MetametricsId = Buffer.from(metametricsId ?? '').toString(
     'base64',
@@ -285,10 +280,9 @@ export default function CreatePassword({
             <Text variant={TextVariant.headingLg}>{t('createPassword')}</Text>
           </Box>
           <FormTextField
-            // @ts-ignore
-            passwordStrength={passwordStrength}
-            passwordStrengthText={passwordStrengthText}
-            dataTestId="create-password-new"
+            label={t('newPassword')}
+            id="create-password-new"
+            data-testid="create-password-new"
             autoFocus
             placeholder={t('newPasswordPlaceholder')}
             labelProps={{ marginBottom: 1, children: t('newPassword') }}
@@ -320,7 +314,7 @@ export default function CreatePassword({
               <ButtonIcon
                 iconName={showPassword ? IconName.EyeSlash : IconName.Eye}
                 data-testid="show-password"
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.preventDefault();
                   setShowPassword(!showPassword);
                 }}
@@ -328,8 +322,9 @@ export default function CreatePassword({
               />
             }
           />
-          {/* @ts-ignore */}
           <FormTextField
+            label={t('confirmPassword')}
+            id="create-password-confirm"
             data-testid="create-password-confirm"
             marginTop={4}
             placeholder={t('confirmPasswordPlaceholder')}
@@ -350,7 +345,7 @@ export default function CreatePassword({
                   showConfirmPassword ? IconName.EyeSlash : IconName.Eye
                 }
                 data-testid="show-password"
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   e.preventDefault();
                   setShowConfirmPassword(!showConfirmPassword);
                 }}

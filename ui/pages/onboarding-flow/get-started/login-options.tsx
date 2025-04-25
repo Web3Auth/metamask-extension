@@ -23,8 +23,8 @@ import {
   TextColor,
   TextVariant,
 } from '../../../helpers/constants/design-system';
-import { LOGIN_TYPE, LoginType } from './types';
 import { useI18nContext } from '../../../hooks/useI18nContext';
+import { LOGIN_TYPE, LoginType } from './types';
 
 export default function LoginOptions({
   onClose,

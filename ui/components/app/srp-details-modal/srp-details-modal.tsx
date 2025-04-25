@@ -57,7 +57,11 @@ export default function SRPDetailsModal({ onClose }: { onClose: () => void }) {
             </Box>
           </Box>
           <Box display={Display.Flex} marginTop={6} gap={2}>
-            <ButtonPrimary size={ButtonPrimarySize.Lg} onClick={() => onClose()} block>
+            <ButtonPrimary
+              size={ButtonPrimarySize.Lg}
+              onClick={() => onClose()}
+              block
+            >
               {t('gotIt')}
             </ButtonPrimary>
           </Box>

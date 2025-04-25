@@ -38,7 +38,7 @@ import { getCaretCoordinates } from './unlock-page.util';
 import ResetPasswordModal from './reset-password-modal';
 import EraseWalletModal from './erase-wallet-modal';
 
-const formatTimeToUnlock = (timeInSeconds: number) => {
+const formatTimeToUnlock = (timeInSeconds) => {
   if (timeInSeconds <= 60) {
     return `${timeInSeconds}s`;
   } else if (timeInSeconds < 3600) {
@@ -57,9 +57,6 @@ const formatTimeToUnlock = (timeInSeconds: number) => {
 function Counter({
   remainingTime,
   unlock,
-}: {
-  remainingTime: number;
-  unlock: () => void;
 }) {
   const [time, setTime] = useState(remainingTime);
   const [timeDisplay, setTimeDisplay] = useState(
@@ -87,15 +84,7 @@ Counter.propTypes = {
   unlock: PropTypes.func.isRequired,
 };
 
-type UnlockPageProps = {
-  history: HashHistory;
-  isUnlocked: boolean;
-  onSubmit: (password: string) => Promise<void>;
-  forceUpdateMetamaskState: () => void;
-  passwordHint: string;
-};
-
-export default class UnlockPage extends Component<UnlockPageProps> {
+export default class UnlockPage extends Component{
   static contextTypes = {
     trackEvent: PropTypes.func,
     t: PropTypes.func,
@@ -147,7 +136,7 @@ export default class UnlockPage extends Component<UnlockPageProps> {
     }
   }
 
-  handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  handleSubmit = async (event) => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -199,7 +188,7 @@ export default class UnlockPage extends Component<UnlockPageProps> {
     }
   };
 
-  handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+  handleInputChange(event) {
     const { target } = event;
     this.setState({ password: target.value, error: null });
 
@@ -354,9 +343,7 @@ export default class UnlockPage extends Component<UnlockPageProps> {
                 inputProps={{
                   type: InputType.Password,
                 }}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                  this.handleInputChange(event)
-                }
+                onChange={(event) => this.handleInputChange(event)}
                 error={Boolean(error)}
                 helpText={this.renderHelpText()}
                 autoComplete

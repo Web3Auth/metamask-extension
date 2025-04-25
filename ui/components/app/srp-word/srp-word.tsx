@@ -33,7 +33,9 @@ export default function SrpWord({
       }
     });
 
-    if (onRender) onRender(inputRef);
+    if (onRender) {
+      onRender(inputRef);
+    }
   }, []);
 
   return (

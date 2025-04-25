@@ -14,10 +14,9 @@ import {
   markPasswordForgotten,
   forceUpdateMetamaskState,
 } from '../../store/actions';
-import { MetaMaskReduxDispatch, MetaMaskReduxState } from '../../store/store';
 import UnlockPage from './unlock-page.component';
 
-const mapStateToProps = (state: MetaMaskReduxState) => {
+const mapStateToProps = (state) => {
   const {
     metamask: { isUnlocked, preferences },
   } = state;
@@ -28,20 +27,15 @@ const mapStateToProps = (state: MetaMaskReduxState) => {
   };
 };
 
-const mapDispatchToProps = (dispatch: MetaMaskReduxDispatch) => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    tryUnlockMetamask: (password: string) =>
-      dispatch(tryUnlockMetamask(password)),
+    tryUnlockMetamask: (password) => dispatch(tryUnlockMetamask(password)),
     markPasswordForgotten: () => dispatch(markPasswordForgotten()),
     forceUpdateMetamaskState: () => forceUpdateMetamaskState(dispatch),
   };
 };
 
-const mergeProps = (
-  stateProps: ReturnType<typeof mapStateToProps>,
-  dispatchProps: ReturnType<typeof mapDispatchToProps>,
-  ownProps: ReturnType<typeof withRouter>,
-) => {
+const mergeProps = (stateProps, dispatchProps, ownProps) => {
   const {
     markPasswordForgotten: propsMarkPasswordForgotten,
     tryUnlockMetamask: propsTryUnlockMetamask,
@@ -58,7 +52,7 @@ const mergeProps = (
     }
   };
 
-  const onSubmit = async (password: string) => {
+  const onSubmit = async (password) => {
     await propsTryUnlockMetamask(password);
     history.push(DEFAULT_ROUTE);
   };

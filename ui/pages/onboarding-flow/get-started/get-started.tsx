@@ -69,6 +69,7 @@ export default function GetStarted() {
   const trackEvent = useContext(MetaMetricsContext);
 
   const onCreateClick = async () => {
+    setIsLoggingIn(true);
     setNewAccountCreationInProgress(true);
     dispatch(setFirstTimeFlowType(FirstTimeFlowType.create));
     trackEvent({
@@ -85,6 +86,7 @@ export default function GetStarted() {
   };
 
   const onImportClick = async () => {
+    setIsLoggingIn(true);
     await dispatch(setFirstTimeFlowType(FirstTimeFlowType.import));
     trackEvent({
       category: MetaMetricsEventCategory.Onboarding,
