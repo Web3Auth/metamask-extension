@@ -415,13 +415,14 @@ export function restoreBackupAndGetSeedPhrase(
 
     try {
       // fetch all the backup seed phrases
-      const seedPhrases = await fetchAllSeedPhrases(password);
-      if (seedPhrases === null || seedPhrases.length === 0) {
+      // get the first seed phrase from the array, this is the oldest seed phrase
+      // and we will use it to create the initial vault
+      const [firstSeedPhrase, ...remainingSeedPhrases] =
+        await fetchAllSeedPhrases(password);
+      if (!firstSeedPhrase) {
         return null;
       }
 
-      // get the first seed phrase from the array
-      const firstSeedPhrase = seedPhrases.pop();
       const encodedSeedPhrase = Array.from(
         Buffer.from(firstSeedPhrase).values(),
       );
@@ -433,18 +434,17 @@ export function restoreBackupAndGetSeedPhrase(
       ]);
 
       // restore the remaining Mnemonics/SeedPhrases to the vault
-      const remainingSeedPhrases = seedPhrases;
       if (remainingSeedPhrases.length > 0) {
         await restoreSeedPhrasesToVault(password, remainingSeedPhrases);
       }
 
       await forceUpdateMetamaskState(dispatch);
+      dispatch(hideLoadingIndication());
       return firstSeedPhrase;
     } catch (error) {
+      dispatch(hideLoadingIndication());
       dispatch(displayWarning(error));
       throw error;
-    } finally {
-      dispatch(hideLoadingIndication());
     }
   };
 }

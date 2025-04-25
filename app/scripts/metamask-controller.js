@@ -4911,6 +4911,11 @@ export default class MetamaskController extends EventEmitter {
 
     // These mnemonics are restored from the Social Backup, so we don't need to do it again
     const shouldCreateSocialBackup = false;
+
+    // This is used to select the new account in the wallet.
+    // During the restore seed phrases, we just do the import, but don't change the selected account.
+    // Just let the user select the account manually after the restore.
+    const shouldSetSelectedAccount = false;
     for (const seedPhrase of seedPhrases) {
       // convert the seed phrase to a mnemonic (string)
       const mnemonicToRestore = Buffer.from(seedPhrase).toString('utf8');
@@ -4919,6 +4924,7 @@ export default class MetamaskController extends EventEmitter {
       await this.importMnemonicToVault(
         mnemonicToRestore,
         shouldCreateSocialBackup,
+        shouldSetSelectedAccount,
       );
 
       const updatedKeyringsMetadata =
@@ -4957,9 +4963,14 @@ export default class MetamaskController extends EventEmitter {
    *
    * @param {string} mnemonic - The mnemonic to import.
    * @param {boolean} shouldCreateSocialBackup - whether to create a backup for the seedless onboarding flow
+   * @param {boolean} shouldSelectAccount - whether to select the new account in the wallet
    * @returns {Promise<string>} new account address
    */
-  async importMnemonicToVault(mnemonic, shouldCreateSocialBackup = false) {
+  async importMnemonicToVault(
+    mnemonic,
+    shouldCreateSocialBackup = false,
+    shouldSelectAccount = true,
+  ) {
     const releaseLock = await this.createVaultMutex.acquire();
     try {
       // TODO: `getKeyringsByType` is deprecated, this logic should probably be moved to the `KeyringController`.
@@ -5002,9 +5013,11 @@ export default class MetamaskController extends EventEmitter {
         { id },
         async ({ keyring }) => keyring.getAccounts(),
       );
-      const account =
-        this.accountsController.getAccountByAddress(newAccountAddress);
-      this.accountsController.setSelectedAccount(account.id);
+      if (shouldSelectAccount) {
+        const account =
+          this.accountsController.getAccountByAddress(newAccountAddress);
+        this.accountsController.setSelectedAccount(account.id);
+      }
 
       ///: BEGIN:ONLY_INCLUDE_IF(solana)
       await this._addSolanaAccount(id);
