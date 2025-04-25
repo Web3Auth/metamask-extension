@@ -8,6 +8,7 @@ import { USER_STORAGE_FEATURE_NAMES } from '@metamask/profile-sync-controller/sd
 import { BACKUPANDSYNC_FEATURES } from '@metamask/profile-sync-controller/user-storage';
 // TODO: Remove restricted import
 // eslint-disable-next-line import/no-restricted-paths
+import { AuthConnection } from '@metamask/seedless-onboarding-controller';
 import enLocale from '../../app/_locales/en/messages.json';
 // TODO: Remove restricted import
 // eslint-disable-next-line import/no-restricted-paths
@@ -127,6 +128,33 @@ describe('Actions', () => {
     });
 
     sinon.restore();
+  });
+
+  describe('#socialLogin', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('calls socialLogin in background', async () => {
+      const store = mockStore();
+
+      const startSocialLogin = background.startSocialLogin.callsFake((_, cb) =>
+        cb(),
+      );
+
+      setBackgroundConnection(background);
+
+      const expectedActions = [
+        { type: 'SHOW_LOADING_INDICATION', payload: undefined },
+        { type: 'HIDE_LOADING_INDICATION' },
+      ];
+
+      await store.dispatch(actions.startSocialLogin(AuthConnection.Google));
+
+      expect(startSocialLogin.callCount).toStrictEqual(1);
+
+      expect(store.getActions()).toStrictEqual(expectedActions);
+    });
   });
 
   describe('#tryUnlockMetamask', () => {

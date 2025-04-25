@@ -53,6 +53,7 @@ import { Patch } from 'immer';
 import { HandlerType } from '@metamask/snaps-utils';
 ///: END:ONLY_INCLUDE_IF
 import { BACKUPANDSYNC_FEATURES } from '@metamask/profile-sync-controller/user-storage';
+import { AuthConnection } from '@metamask/seedless-onboarding-controller';
 import switchDirection from '../../shared/lib/switch-direction';
 import {
   ENVIRONMENT_TYPE_NOTIFICATION,
@@ -3369,6 +3370,37 @@ export function resetOnboarding(): ThunkAction<
 export function resetOnboardingAction() {
   return {
     type: actionConstants.RESET_ONBOARDING,
+  };
+}
+
+/**
+ * Starts the social login process for the given Social Login type.
+ *
+ * @param authConnection - The authentication connection to use (apple | google).
+ * @returns The social login result.
+ */
+export function startSocialLogin(
+  authConnection: AuthConnection,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      const socialLoginResult = await submitRequestToBackground(
+        'startSocialLogin',
+        [authConnection],
+      );
+      return socialLoginResult;
+    } catch (err) {
+      dispatch(displayWarning(error));
+      if (isErrorWithMessage(error)) {
+        throw new Error(getErrorMessage(error));
+      } else {
+        throw error;
+      }
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
   };
 }
 
