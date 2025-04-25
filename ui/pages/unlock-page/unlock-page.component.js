@@ -1,7 +1,6 @@
 import { EventEmitter } from 'events';
 import React, { Component, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { HashHistory } from 'history';
 import {
   Text,
   FormTextField,
@@ -54,10 +53,7 @@ const formatTimeToUnlock = (timeInSeconds) => {
     .padStart(2, '0')}s`;
 };
 
-function Counter({
-  remainingTime,
-  unlock,
-}) {
+function Counter({ remainingTime, unlock }) {
   const [time, setTime] = useState(remainingTime);
   const [timeDisplay, setTimeDisplay] = useState(
     formatTimeToUnlock(remainingTime),
@@ -84,7 +80,7 @@ Counter.propTypes = {
   unlock: PropTypes.func.isRequired,
 };
 
-export default class UnlockPage extends Component{
+export default class UnlockPage extends Component {
   static contextTypes = {
     trackEvent: PropTypes.func,
     t: PropTypes.func,
