@@ -208,6 +208,7 @@
     "fcmToken": "string",
     "isUpdatingFCMToken": "boolean"
   },
+  "OAuthController": "object",
   "OnboardingController": {
     "seedPhraseBackedUp": true,
     "firstTimeFlowType": "import",
