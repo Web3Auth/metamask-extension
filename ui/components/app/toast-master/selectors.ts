@@ -108,6 +108,7 @@ export function selectShowConnectAccountToast(
     account &&
     state.activeTab?.origin &&
     isConnectableAccount &&
+    connectedAccounts.length > 0 &&
     !isInternalAccountInPermittedAccountIds(account, connectedAccounts);
 
   return showConnectAccountToast;
