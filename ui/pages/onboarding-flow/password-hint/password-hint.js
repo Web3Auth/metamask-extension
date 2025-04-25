@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -31,23 +32,23 @@ import { setPasswordHint } from '../../../store/actions';
 import { setShowPasswordHintSavedToast } from '../../../components/app/toast-master/utils';
 import { getPasswordHint } from '../../../selectors';
 
-export default function PasswordHint() {
+export default function PasswordHint({ validatePasswordHint }) {
   const t = useI18nContext();
   const dispatch = useDispatch();
   const history = useHistory();
   const [isSamePasswordError, setIsSamePasswordError] = useState(false);
   const [hint, setHint] = useState(useSelector(getPasswordHint));
-  // TODO: how to compare hint with current password?
-  const currentPassword = null;
 
   const handleSubmitHint = () => {
-    if (currentPassword === hint) {
+    try {
+      validatePasswordHint(hint);
+
+      dispatch(setPasswordHint(hint));
+      dispatch(setShowPasswordHintSavedToast(true));
+      history.push(ONBOARDING_COMPLETION_ROUTE);
+    } catch (error) {
       setIsSamePasswordError(true);
-      return;
     }
-    dispatch(setPasswordHint(hint));
-    dispatch(setShowPasswordHintSavedToast(true));
-    history.push(ONBOARDING_COMPLETION_ROUTE);
   };
 
   return (
@@ -131,3 +132,7 @@ export default function PasswordHint() {
     </Box>
   );
 }
+
+PasswordHint.propTypes = {
+  validatePasswordHint: PropTypes.func,
+};

@@ -39,6 +39,12 @@ export class AppleLoginHandler extends BaseLoginHandler {
     authUrl.searchParams.set('redirect_uri', this.serverRedirectUri);
     authUrl.searchParams.set('response_mode', 'form_post');
     authUrl.searchParams.set('nonce', this.nonce);
+    authUrl.searchParams.set(
+      'state',
+      JSON.stringify({
+        client_redirect_back_uri: this.options.redirectUri,
+      }),
+    );
     authUrl.searchParams.set('scope', this.#scope.join(' '));
 
     return authUrl.toString();
@@ -63,11 +69,11 @@ export class AppleLoginHandler extends BaseLoginHandler {
    * @returns The request data for the Web3Auth Authentication Server.
    */
   generateAuthTokenRequestData(code: string): string {
-    const { serverRedirectUri, web3AuthNetwork } = this.options;
+    const { web3AuthNetwork } = this.options;
     const requestData = {
       code,
       client_id: this.options.oAuthClientId,
-      redirect_uri: serverRedirectUri,
+      redirect_uri: this.serverRedirectUri,
       login_provider: this.authConnection,
       network: web3AuthNetwork,
     };

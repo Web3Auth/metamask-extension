@@ -65,10 +65,11 @@ export default class OAuthController extends BaseController<
       this.#env,
     );
 
+    const oauthUrl = loginHandler.getAuthUrl();
     // launch the web auth flow to get the Authorization Code from the social login provider
     const redirectUrl = await chrome.identity.launchWebAuthFlow({
       interactive: true,
-      url: loginHandler.getAuthUrl(),
+      url: oauthUrl,
     });
 
     if (!redirectUrl) {
