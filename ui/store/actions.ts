@@ -3580,7 +3580,7 @@ export function startOAuthLogin(
         provider,
       ]);
       return isNewUser;
-    } catch (err) {
+    } catch (error) {
       dispatch(displayWarning(error));
       if (isErrorWithMessage(error)) {
         throw new Error(getErrorMessage(error));

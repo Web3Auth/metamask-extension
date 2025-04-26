@@ -3553,7 +3553,7 @@ export default class MetamaskController extends EventEmitter {
       ///: END:ONLY_INCLUDE_IF
 
       // oauth controller
-      startOAuthLogin: this.startSocialLogin.bind(this),
+      startOAuthLogin: this.startOAuthLogin.bind(this),
 
       // seedless onboarding
       createSeedPhraseBackup: this.createSeedPhraseBackup.bind(this),
@@ -4715,7 +4715,7 @@ export default class MetamaskController extends EventEmitter {
    * @param {AuthConnection} provider - social login provider, `google` | `apple`
    * @returns {Promise<boolean>} true if user has not completed the seedless onboarding flow, false otherwise
    */
-  async startSocialLogin(provider) {
+  async startOAuthLogin(provider) {
     try {
       const oAuthLoginResult = await this.oauthController.startOAuthLogin(
         provider,
