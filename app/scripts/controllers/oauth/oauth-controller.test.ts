@@ -1,10 +1,8 @@
 import {
   Web3AuthNetwork,
   AuthConnection,
-} from '@metamask/seedless-onboarding-controller';
-import OAuthController, {
-  getDefaultOAuthControllerState,
-} from './oauth-controller';
+} from '@metamask-previews/seedless-onboarding-controller';
+import OAuthController from './oauth-controller';
 import { OAuthControllerMessenger, OAuthLoginEnv } from './types';
 import { createLoginHandler } from './login-handler-factory';
 
@@ -66,7 +64,6 @@ describe('OAuthController', () => {
   it('should start the OAuth login process with `Google`', async () => {
     const controller = new OAuthController({
       messenger,
-      state: getDefaultOAuthControllerState(),
       env: getOAuthLoginEnvs(),
     });
 
@@ -87,7 +84,6 @@ describe('OAuthController', () => {
   it('should start the OAuth login process with `Apple`', async () => {
     const controller = new OAuthController({
       messenger,
-      state: getDefaultOAuthControllerState(),
       env: getOAuthLoginEnvs(),
     });
 

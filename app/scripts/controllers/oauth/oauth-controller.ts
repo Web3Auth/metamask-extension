@@ -1,5 +1,5 @@
 import { BaseController } from '@metamask/base-controller';
-import { AuthConnection } from '@metamask/seedless-onboarding-controller';
+import { AuthConnection } from '@metamask-previews/seedless-onboarding-controller';
 import {
   controllerName,
   OAuthControllerMessenger,
@@ -32,11 +32,6 @@ export default class OAuthController extends BaseController<
 > {
   #env: OAuthLoginEnv;
 
-  /**
-   * The redirect URI for the OAuth login.
-   */
-  readonly #redirectUri = chrome.identity.getRedirectURL();
-
   constructor({ messenger, env }: OAuthControllerOptions) {
     super({
       messenger,
@@ -57,22 +52,24 @@ export default class OAuthController extends BaseController<
   async startOAuthLogin(
     authConnection: AuthConnection,
   ): Promise<OAuthLoginResult> {
+    // get the redirect URI for the OAuth login
+    const redirectUri = chrome.identity.getRedirectURL();
+
     // create the login handler for the given social login type
     // this is to get the Jwt Token in the exchange for the Authorization Code
     const loginHandler = createLoginHandler(
       authConnection,
-      this.#redirectUri,
+      redirectUri,
       this.#env,
     );
 
-    const oauthUrl = loginHandler.getAuthUrl();
     // launch the web auth flow to get the Authorization Code from the social login provider
-    const redirectUrl = await chrome.identity.launchWebAuthFlow({
+    const redirectUrlFromOAuth = await chrome.identity.launchWebAuthFlow({
       interactive: true,
-      url: oauthUrl,
+      url: loginHandler.getAuthUrl(),
     });
 
-    if (!redirectUrl) {
+    if (!redirectUrlFromOAuth) {
       console.error('[identity auth] redirectUrl is null');
       throw new Error('No redirect URL found');
     }
@@ -80,7 +77,7 @@ export default class OAuthController extends BaseController<
     // handle the OAuth response from the social login provider and get the Jwt Token in exchange
     const loginResult = await this.#handleOAuthResponse(
       loginHandler,
-      redirectUrl,
+      redirectUrlFromOAuth,
     );
     return loginResult;
   }

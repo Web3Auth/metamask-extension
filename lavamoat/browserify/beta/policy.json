@@ -969,6 +969,16 @@
         "prop-types>react-is": true
       }
     },
+    "@metamask-previews/seedless-onboarding-controller": {
+      "packages": {
+        "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils": true,
+        "@metamask/base-controller": true,
+        "@metamask/browser-passworder": true,
+        "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup": true,
+        "@metamask/utils": true,
+        "@metamask/name-controller>async-mutex": true
+      }
+    },
     "@metamask/abi-utils": {
       "packages": {
         "@metamask/utils>@metamask/superstruct": true,
@@ -1102,17 +1112,17 @@
         "uuid": true
       }
     },
-    "@metamask/toprf-secure-backup>@metamask/auth-network-utils": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils": {
       "globals": {
         "setTimeout": true
       },
       "packages": {
-        "@noble/curves": true,
-        "@metamask/toprf-secure-backup>@metamask/auth-network-utils>@noble/hashes": true,
+        "viem>webauthn-p256>@noble/curves": true,
+        "@noble/hashes": true,
         "bn.js": true,
         "browserify>buffer": true,
         "@metamask/ppom-validator>elliptic": true,
-        "@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify": true
+        "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify": true
       }
     },
     "@metamask/base-controller": {
@@ -2265,20 +2275,20 @@
         "@metamask/snaps-utils>validate-npm-package-name": true
       }
     },
-    "@metamask/toprf-secure-backup": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup": {
       "globals": {
         "URL": true,
         "console.error": true,
         "fetch": true
       },
       "packages": {
-        "@metamask/toprf-secure-backup>@metamask/auth-network-utils": true,
-        "@metamask/toprf-secure-backup>@noble/ciphers": true,
-        "@noble/curves": true,
-        "@metamask/toprf-secure-backup>@noble/hashes": true,
-        "@metamask/toprf-secure-backup>@toruslabs/eccrypto": true,
-        "@metamask/toprf-secure-backup>@toruslabs/fetch-node-details": true,
-        "@metamask/toprf-secure-backup>@toruslabs/http-helpers": true,
+        "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils": true,
+        "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@noble/ciphers": true,
+        "viem>webauthn-p256>@noble/curves": true,
+        "@noble/hashes": true,
+        "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils>@toruslabs/eccrypto": true,
+        "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details": true,
+        "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/http-helpers": true,
         "bn.js": true,
         "browserify>buffer": true
       }
@@ -2415,14 +2425,14 @@
         "crypto": true
       }
     },
-    "@metamask/toprf-secure-backup>@noble/ciphers": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@noble/ciphers": {
       "globals": {
         "TextDecoder": true,
         "TextEncoder": true,
         "crypto": true
       }
     },
-    "@noble/curves": {
+    "viem>@scure/bip32>@noble/curves": {
       "globals": {
         "TextEncoder": true
       },
@@ -2903,7 +2913,7 @@
         "browserify>browser-resolve": true
       }
     },
-    "@metamask/toprf-secure-backup>@toruslabs/eccrypto": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils>@toruslabs/eccrypto": {
       "globals": {
         "crypto": true,
         "msCrypto": true
@@ -2913,21 +2923,21 @@
         "@metamask/ppom-validator>elliptic": true
       }
     },
-    "@metamask/toprf-secure-backup>@toruslabs/fetch-node-details": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details": {
       "packages": {
         "@babel/runtime": true,
-        "@metamask/toprf-secure-backup>@toruslabs/constants": true,
-        "@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/fnd-base": true,
-        "@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/http-helpers": true,
-        "@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>loglevel": true
+        "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils>@toruslabs/constants": true,
+        "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/fnd-base": true,
+        "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/http-helpers": true,
+        "loglevel": true
       }
     },
-    "@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/fnd-base": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/fnd-base": {
       "packages": {
-        "@metamask/toprf-secure-backup>@toruslabs/constants": true
+        "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils>@toruslabs/constants": true
       }
     },
-    "@metamask/toprf-secure-backup>@toruslabs/http-helpers": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/http-helpers": {
       "globals": {
         "URL": true,
         "clearTimeout": true,
@@ -2937,10 +2947,10 @@
       "packages": {
         "@babel/runtime": true,
         "addons-linter>deepmerge": true,
-        "@metamask/toprf-secure-backup>@toruslabs/http-helpers>loglevel": true
+        "loglevel": true
       }
     },
-    "@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/http-helpers": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/http-helpers": {
       "globals": {
         "URL": true,
         "clearTimeout": true,
@@ -2950,7 +2960,7 @@
       "packages": {
         "@babel/runtime": true,
         "addons-linter>deepmerge": true,
-        "@metamask/toprf-secure-backup>@toruslabs/fetch-node-details>@toruslabs/http-helpers>loglevel": true
+        "loglevel": true
       }
     },
     "@trezor/connect-web>@trezor/connect-common": {
@@ -3462,15 +3472,9 @@
         "semver": true
       }
     },
-    "@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify>call-bind>call-bind-apply-helpers": {
+    "string.prototype.matchall>call-bind>call-bind-apply-helpers": {
       "packages": {
-        "string.prototype.matchall>call-bind>es-errors": true,
-        "browserify>has>function-bind": true
-      }
-    },
-    "string.prototype.matchall>get-intrinsic>call-bind-apply-helpers": {
-      "packages": {
-        "string.prototype.matchall>call-bind>es-errors": true,
+        "string.prototype.matchall>es-abstract>es-errors": true,
         "browserify>has>function-bind": true
       }
     },
@@ -3483,9 +3487,8 @@
     },
     "string.prototype.matchall>call-bind": {
       "packages": {
+        "string.prototype.matchall>call-bind>call-bind-apply-helpers": true,
         "string.prototype.matchall>call-bind>es-define-property": true,
-        "string.prototype.matchall>call-bind>es-errors": true,
-        "browserify>has>function-bind": true,
         "string.prototype.matchall>get-intrinsic": true,
         "string.prototype.matchall>call-bind>set-function-length": true
       }
@@ -3498,7 +3501,7 @@
     },
     "string.prototype.matchall>side-channel>side-channel-map>call-bound": {
       "packages": {
-        "string.prototype.matchall>get-intrinsic>call-bind-apply-helpers": true,
+        "string.prototype.matchall>call-bind>call-bind-apply-helpers": true,
         "string.prototype.matchall>get-intrinsic": true
       }
     },
@@ -3772,7 +3775,7 @@
     "string.prototype.matchall>define-properties>define-data-property": {
       "packages": {
         "string.prototype.matchall>call-bind>es-define-property": true,
-        "string.prototype.matchall>call-bind>es-errors": true,
+        "string.prototype.matchall>es-abstract>es-errors": true,
         "string.prototype.matchall>es-abstract>gopd": true
       }
     },
@@ -3819,7 +3822,7 @@
     },
     "string.prototype.matchall>get-intrinsic>get-proto>dunder-proto": {
       "packages": {
-        "string.prototype.matchall>get-intrinsic>call-bind-apply-helpers": true,
+        "string.prototype.matchall>call-bind>call-bind-apply-helpers": true,
         "string.prototype.matchall>es-abstract>gopd": true
       }
     },
@@ -4081,7 +4084,7 @@
         "define": true
       }
     },
-    "@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify>call-bound>get-intrinsic": {
+    "string.prototype.matchall>get-intrinsic": {
       "globals": {
         "AggregateError": true,
         "FinalizationRegistry": true,
@@ -4089,28 +4092,9 @@
         "WeakRef": true
       },
       "packages": {
-        "@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify>call-bind>call-bind-apply-helpers": true,
+        "string.prototype.matchall>call-bind>call-bind-apply-helpers": true,
         "string.prototype.matchall>call-bind>es-define-property": true,
-        "string.prototype.matchall>call-bind>es-errors": true,
-        "@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify>call-bound>get-intrinsic>es-object-atoms": true,
-        "browserify>has>function-bind": true,
-        "string.prototype.matchall>get-intrinsic>get-proto": true,
-        "string.prototype.matchall>es-abstract>gopd": true,
-        "string.prototype.matchall>has-symbols": true,
-        "depcheck>is-core-module>hasown": true,
-        "string.prototype.matchall>get-intrinsic>math-intrinsics": true
-      }
-    },
-    "string.prototype.matchall>get-intrinsic": {
-      "globals": {
-        "AggregateError": true,
-        "FinalizationRegistry": true,
-        "WeakRef": true
-      },
-      "packages": {
-        "string.prototype.matchall>get-intrinsic>call-bind-apply-helpers": true,
-        "string.prototype.matchall>call-bind>es-define-property": true,
-        "string.prototype.matchall>call-bind>es-errors": true,
+        "string.prototype.matchall>es-abstract>es-errors": true,
         "string.prototype.matchall>es-abstract>es-object-atoms": true,
         "browserify>has>function-bind": true,
         "string.prototype.matchall>get-intrinsic>get-proto": true,
@@ -4272,7 +4256,7 @@
     },
     "string.prototype.matchall>internal-slot": {
       "packages": {
-        "string.prototype.matchall>call-bind>es-errors": true,
+        "string.prototype.matchall>es-abstract>es-errors": true,
         "depcheck>is-core-module>hasown": true,
         "string.prototype.matchall>side-channel": true
       }
@@ -4398,10 +4382,10 @@
         "define": true
       }
     },
-    "@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify": {
+    "@metamask-previews/seedless-onboarding-controller>@metamask/auth-network-utils>json-stable-stringify": {
       "packages": {
-        "@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify>call-bind": true,
-        "@metamask/toprf-secure-backup>@metamask/auth-network-utils>json-stable-stringify>call-bound": true,
+        "string.prototype.matchall>call-bind": true,
+        "string.prototype.matchall>side-channel>side-channel-map>call-bound": true,
         "@lavamoat/lavapack>json-stable-stringify>isarray": true,
         "@lavamoat/lavapack>json-stable-stringify>jsonify": true,
         "@lavamoat/lavapack>json-stable-stringify>object-keys": true
@@ -5398,7 +5382,7 @@
       "packages": {
         "string.prototype.matchall>call-bind": true,
         "string.prototype.matchall>define-properties": true,
-        "string.prototype.matchall>call-bind>es-errors": true,
+        "string.prototype.matchall>es-abstract>es-errors": true,
         "string.prototype.matchall>regexp.prototype.flags>set-function-name": true
       }
     },
@@ -5506,7 +5490,7 @@
     "string.prototype.matchall>call-bind>set-function-length": {
       "packages": {
         "string.prototype.matchall>define-properties>define-data-property": true,
-        "string.prototype.matchall>call-bind>es-errors": true,
+        "string.prototype.matchall>es-abstract>es-errors": true,
         "string.prototype.matchall>get-intrinsic": true,
         "string.prototype.matchall>es-abstract>gopd": true,
         "string.prototype.matchall>es-abstract>has-property-descriptors": true
@@ -5515,7 +5499,7 @@
     "string.prototype.matchall>regexp.prototype.flags>set-function-name": {
       "packages": {
         "string.prototype.matchall>define-properties>define-data-property": true,
-        "string.prototype.matchall>call-bind>es-errors": true,
+        "string.prototype.matchall>es-abstract>es-errors": true,
         "string.prototype.matchall>es-abstract>function.prototype.name>functions-have-names": true,
         "string.prototype.matchall>es-abstract>has-property-descriptors": true
       }
@@ -5536,14 +5520,14 @@
     },
     "string.prototype.matchall>side-channel>side-channel-list": {
       "packages": {
-        "string.prototype.matchall>call-bind>es-errors": true,
+        "string.prototype.matchall>es-abstract>es-errors": true,
         "string.prototype.matchall>es-abstract>object-inspect": true
       }
     },
     "string.prototype.matchall>side-channel>side-channel-map": {
       "packages": {
         "string.prototype.matchall>side-channel>side-channel-map>call-bound": true,
-        "string.prototype.matchall>call-bind>es-errors": true,
+        "string.prototype.matchall>es-abstract>es-errors": true,
         "string.prototype.matchall>get-intrinsic": true,
         "string.prototype.matchall>es-abstract>object-inspect": true
       }
@@ -5551,7 +5535,7 @@
     "string.prototype.matchall>side-channel>side-channel-weakmap": {
       "packages": {
         "string.prototype.matchall>side-channel>side-channel-map>call-bound": true,
-        "string.prototype.matchall>call-bind>es-errors": true,
+        "string.prototype.matchall>es-abstract>es-errors": true,
         "string.prototype.matchall>get-intrinsic": true,
         "string.prototype.matchall>es-abstract>object-inspect": true,
         "string.prototype.matchall>side-channel>side-channel-map": true
@@ -5559,7 +5543,7 @@
     },
     "string.prototype.matchall>side-channel": {
       "packages": {
-        "string.prototype.matchall>call-bind>es-errors": true,
+        "string.prototype.matchall>es-abstract>es-errors": true,
         "string.prototype.matchall>es-abstract>object-inspect": true,
         "string.prototype.matchall>side-channel>side-channel-list": true,
         "string.prototype.matchall>side-channel>side-channel-map": true,

@@ -1,5 +1,8 @@
-import { KeyringControllerState, KeyringMetadata } from "@metamask/keyring-controller";
-import { SeedlessOnboardingControllerState } from "@metamask/seedless-onboarding-controller";
+import {
+  KeyringControllerState,
+  KeyringMetadata,
+} from '@metamask/keyring-controller';
+import { SeedlessOnboardingControllerState } from '@metamask/seedless-onboarding-controller';
 
 export type BackupState = {
   metamask: KeyringControllerState & SeedlessOnboardingControllerState;
@@ -26,7 +29,7 @@ export function getBackupState(state: BackupState) {
     return {
       id: keyring.id,
       name: keyring.name,
-      hasBackup: !!hasBackup,
-    }
+      hasBackup: Boolean(hasBackup),
+    };
   });
 }
