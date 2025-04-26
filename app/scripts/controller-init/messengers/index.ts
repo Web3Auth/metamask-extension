@@ -30,7 +30,7 @@ import {
   getAuthenticationControllerMessenger,
   getUserStorageControllerMessenger,
 } from './identity';
-import { getSeedlessOnboardingControllerMessenger } from './onboarding/seedless-onboarding-controller-messenger';
+import { getSeedlessOnboardingControllerMessenger } from './seedless-onboarding/seedless-onboarding-controller-messenger';
 import {
   getAssetsContractControllerMessenger,
   getNftControllerMessenger,

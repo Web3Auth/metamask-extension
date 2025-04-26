@@ -38,6 +38,7 @@ import {
 } from '@metamask/chain-agnostic-permission';
 import { PermissionDoesNotExistError } from '@metamask/permission-controller';
 import { KeyringInternalSnapClient } from '@metamask/keyring-internal-snap-client';
+import { AuthConnection } from '@metamask/seedless-onboarding-controller';
 import { createTestProviderTools } from '../../test/stub/provider';
 import {
   HardwareDeviceNames,
@@ -434,6 +435,11 @@ describe('MetaMaskController', () => {
         metamaskController.keyringController,
         'createNewVaultAndRestore',
       );
+
+      jest.spyOn(
+        metamaskController.seedlessOnboardingController,
+        'authenticate',
+      );
     });
 
     describe('should reset states on first time profile load', () => {
@@ -674,6 +680,41 @@ describe('MetaMaskController', () => {
       });
     });
 
+    describe('#startOAuthLogin', () => {
+      it('should start the OAuth login flow', async () => {
+        const startOAuthLoginSpy = jest
+          .spyOn(metamaskController.oauthController, 'startOAuthLogin')
+          .mockResolvedValueOnce({
+            idTokens: ['mocked-id-token'],
+            authConnection: AuthConnection.Google,
+            authConnectionId: 'mocked-auth-connection-id',
+            groupedAuthConnectionId: 'mocked-grouped-auth-connection-id',
+            userId: 'mocked-user-id',
+            socialLoginEmail: 'user@gmail.com',
+          });
+        const authenticateSpy = jest
+          .spyOn(
+            metamaskController.seedlessOnboardingController,
+            'authenticate',
+          )
+          .mockResolvedValueOnce({
+            isNewUser: true,
+          });
+
+        await metamaskController.startOAuthLogin(AuthConnection.Google);
+
+        expect(startOAuthLoginSpy).toHaveBeenCalledWith(AuthConnection.Google);
+        expect(authenticateSpy).toHaveBeenCalledWith({
+          idTokens: ['mocked-id-token'],
+          authConnection: AuthConnection.Google,
+          authConnectionId: 'mocked-auth-connection-id',
+          groupedAuthConnectionId: 'mocked-grouped-auth-connection-id',
+          userId: 'mocked-user-id',
+          socialLoginEmail: 'user@gmail.com',
+        });
+      });
+    });
+
     describe('#createNewVaultAndKeychain', () => {
       it('can only create new vault on keyringController once', async () => {
         const password = 'a-fake-password';
@@ -686,6 +727,62 @@ describe('MetaMaskController', () => {
         );
 
         expect(vault1).toStrictEqual(vault2);
+      });
+    });
+
+    describe('#createSeedPhraseBackup', () => {
+      it('should create a seed phrase backup', async () => {
+        const password = 'a-fake-password';
+        const mockSeedPhrase =
+          'mock seed phrase one two three four five six seven eight nine ten';
+        const mockEncodedSeedPhrase = Array.from(
+          Buffer.from(mockSeedPhrase, 'utf8').values(),
+        );
+
+        const createToprfKeyAndBackupSeedPhraseSpy = jest
+          .spyOn(
+            metamaskController.seedlessOnboardingController,
+            'createToprfKeyAndBackupSeedPhrase',
+          )
+          .mockResolvedValueOnce();
+
+        const keyringsMetadata =
+          await metamaskController.createNewVaultAndKeychain(password);
+
+        await metamaskController.createSeedPhraseBackup(
+          password,
+          mockEncodedSeedPhrase,
+          keyringsMetadata[0].id,
+        );
+
+        expect(createToprfKeyAndBackupSeedPhraseSpy).toHaveBeenCalled();
+      });
+    });
+
+    describe('#fetchAllSeedPhrases', () => {
+      it('should fetch seedphrase backup correctly', async () => {
+        const password = 'a-fake-password';
+        const mockSeedPhrase =
+          'naive amused curtain never chef exotic ecology tomato field hamster then harvest';
+
+        const fetchSrpBackupSpy = jest
+          .spyOn(
+            metamaskController.seedlessOnboardingController,
+            'fetchAllSeedPhrases',
+          )
+          .mockResolvedValueOnce([
+            new Uint8Array([
+              149, 4, 65, 0, 177, 1, 168, 4, 58, 1, 128, 2, 48, 2, 32, 7, 175,
+              2, 69, 3, 1, 7, 75, 3,
+            ]),
+          ]);
+
+        const [srpBackup] = await metamaskController.fetchAllSeedPhrases(
+          password,
+        );
+
+        expect(fetchSrpBackupSpy).toHaveBeenCalledWith(password);
+        expect(srpBackup.toString('utf8')).toStrictEqual(mockSeedPhrase);
       });
     });
 

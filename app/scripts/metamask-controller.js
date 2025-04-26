@@ -402,7 +402,7 @@ import {
 } from './controller-init/snaps';
 import { AuthenticationControllerInit } from './controller-init/identity/authentication-controller-init';
 import { UserStorageControllerInit } from './controller-init/identity/user-storage-controller-init';
-import { SeedlessOnboardingControllerInit } from './controller-init/onboarding/seedless-onboarding-controller-init';
+import { SeedlessOnboardingControllerInit } from './controller-init/seedless-onboarding/seedless-onboarding-controller-init';
 import {
   getCallsStatus,
   getCapabilities,

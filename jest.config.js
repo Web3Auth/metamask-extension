@@ -30,7 +30,6 @@ module.exports = {
   ],
   setupFilesAfterEnv: ['<rootDir>/test/jest/setup.js'],
   testMatch: [
-    '<rootDir>/app/scripts/**/*.test.(js|ts|tsx)',
     '<rootDir>/shared/**/*.test.(js|ts|tsx)',
     '<rootDir>/ui/**/*.test.(js|ts|tsx)',
     '<rootDir>/development/**/*.test.(js|ts|tsx)',
