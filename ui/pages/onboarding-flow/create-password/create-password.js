@@ -52,13 +52,6 @@ export default function CreatePassword({
   createNewAccount,
   importWithRecoveryPhrase,
   secretRecoveryPhrase,
-}: {
-  createNewAccount: (password: string) => Promise<void>;
-  importWithRecoveryPhrase: (
-    password: string,
-    secretRecoveryPhrase: string,
-  ) => Promise<void>;
-  secretRecoveryPhrase: string;
 }) {
   const t = useI18nContext();
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -124,7 +117,7 @@ export default function CreatePassword({
     return !passwordError && !confirmPasswordError;
   }, [password, confirmPassword, passwordError, confirmPasswordError]);
 
-  const getPasswordStrengthLabel = (isTooShort: boolean, score: number) => {
+  const getPasswordStrengthLabel = (isTooShort, score) => {
     if (isTooShort) {
       return {
         className: 'create-password__weak',
@@ -157,7 +150,7 @@ export default function CreatePassword({
     };
   };
 
-  const handlePasswordChange = (passwordInput: string) => {
+  const handlePasswordChange = (passwordInput) => {
     const isTooShort =
       passwordInput.length > 0 && passwordInput.length < PASSWORD_MIN_LENGTH;
     const { score } = zxcvbn(passwordInput);
@@ -182,7 +175,7 @@ export default function CreatePassword({
     setConfirmPasswordError(confirmError);
   };
 
-  const handleConfirmPasswordChange = (confirmPasswordInput: string) => {
+  const handleConfirmPasswordChange = (confirmPasswordInput) => {
     const error =
       password === confirmPasswordInput ? '' : t('passwordsDontMatch');
 
@@ -190,7 +183,7 @@ export default function CreatePassword({
     setConfirmPasswordError(error);
   };
 
-  const handleCreate = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleCreate = async (event) => {
     event?.preventDefault();
 
     if (!isValid) {
@@ -226,7 +219,7 @@ export default function CreatePassword({
           ///: END:ONLY_INCLUDE_IF
         }
       } catch (error) {
-        setPasswordError((error as Error).message);
+        setPasswordError(error.message);
       }
     }
   };
@@ -314,7 +307,7 @@ export default function CreatePassword({
               <ButtonIcon
                 iconName={showPassword ? IconName.EyeSlash : IconName.Eye}
                 data-testid="show-password"
-                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                onClick={(e) => {
                   e.preventDefault();
                   setShowPassword(!showPassword);
                 }}
@@ -344,8 +337,8 @@ export default function CreatePassword({
                 iconName={
                   showConfirmPassword ? IconName.EyeSlash : IconName.Eye
                 }
-                data-testid="show-password"
-                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                data-testid="show-confirm-password"
+                onClick={(e) => {
                   e.preventDefault();
                   setShowConfirmPassword(!showConfirmPassword);
                 }}
@@ -374,14 +367,14 @@ export default function CreatePassword({
                 <Text variant={TextVariant.bodyMd} marginLeft={2}>
                   {
                     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-                    t('passwordTermsWarning', [createPasswordLink])
+                    t('passwordTermsWarning')
                     ///: END:ONLY_INCLUDE_IF
                   }
+                  {createPasswordLink}
                 </Text>
               }
             />
           </Box>
-
           {
             ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
             <Button

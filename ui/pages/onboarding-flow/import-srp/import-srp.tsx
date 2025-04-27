@@ -51,7 +51,7 @@ export default function ImportSRP({
 
   useEffect(() => {
     if (currentKeyring) {
-      history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
+      history.replace(ONBOARDING_CREATE_PASSWORD_ROUTE);
     }
   }, [currentKeyring, history]);
   const trackEvent = useContext(MetaMetricsContext);
@@ -79,7 +79,7 @@ export default function ImportSRP({
         hd_entropy_index: hdEntropyIndex,
       },
     });
-    history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
+    history.replace(ONBOARDING_CREATE_PASSWORD_ROUTE);
   };
 
   useEffect(() => {

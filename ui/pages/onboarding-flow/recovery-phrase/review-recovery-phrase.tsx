@@ -130,7 +130,7 @@ export default function RecoveryPhrase({
           width={BlockSize.Full}
           variant={ButtonVariant.Primary}
           size={ButtonSize.Lg}
-          data-testid="recovery-phrase-reveal"
+          data-testid="recovery-phrase-continue"
           className="recovery-phrase__footer--button"
           disabled={!phraseRevealed}
           onClick={() => {

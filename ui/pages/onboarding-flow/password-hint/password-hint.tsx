@@ -31,7 +31,9 @@ import { setPasswordHint } from '../../../store/actions';
 import { setShowPasswordHintSavedToast } from '../../../components/app/toast-master/utils';
 import { getPasswordHint } from '../../../selectors';
 
-export default function PasswordHint() {
+export default function PasswordHint({ validatePasswordHint }: {
+  validatePasswordHint: (hint: string) => void;
+}) {
   const t = useI18nContext();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -41,13 +43,15 @@ export default function PasswordHint() {
   const currentPassword = null;
 
   const handleSubmitHint = () => {
-    if (currentPassword === hint) {
+    try {
+      validatePasswordHint(hint);
+
+      dispatch(setPasswordHint(hint));
+      dispatch(setShowPasswordHintSavedToast(true));
+      history.push(ONBOARDING_COMPLETION_ROUTE);
+    } catch (error) {
       setIsSamePasswordError(true);
-      return;
     }
-    dispatch(setPasswordHint(hint));
-    dispatch(setShowPasswordHintSavedToast(true));
-    history.push(ONBOARDING_COMPLETION_ROUTE);
   };
 
   return (
@@ -99,6 +103,7 @@ export default function PasswordHint() {
             {t('passwordHintLeaveHint')}
           </Text>
           <FormTextField
+            data-testid="password-hint-text-field"
             value={hint}
             placeholder="e.g. mom’s home"
             width={BlockSize.Full}

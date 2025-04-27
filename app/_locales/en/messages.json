@@ -3879,7 +3879,7 @@
     "description": "$1 is the type of login used Google, Apple, etc."
   },
   "onboardingSrpCreate": {
-    "message": "Continue with Secret Recovery Phrase "
+    "message": "Continue with Secret Recovery Phrase"
   },
   "onboardingSrpImport": {
     "message": "Import using Secret Recovery Phrase"
@@ -4005,7 +4005,7 @@
     "message": "A strong password can improve the security of your wallet should your device be stolen or compromised."
   },
   "passwordTermsWarning": {
-    "message": "MetaMask can’t recover this password. $1"
+    "message": "MetaMask can’t recover this password."
   },
   "passwordsDontMatch": {
     "message": "Passwords don't match"

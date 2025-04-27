@@ -166,7 +166,7 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
           size={ButtonSize.Lg}
           className="recovery-phrase__footer__confirm--button"
           onClick={() => tryContinue()}
-          disabled={!answerSrp}
+          disabled={answerSrp.trim() === ''}
         >
           {t('continue')}
         </Button>

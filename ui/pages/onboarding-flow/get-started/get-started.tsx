@@ -141,6 +141,7 @@ export default function GetStarted() {
             as="h2"
             textAlign={TextAlign.Center}
             fontWeight={FontWeight.Bold}
+            data-testid="onboarding-welcome"
           >
             {t('welcomeToMetaMask')}!
           </Text>
@@ -168,7 +169,7 @@ export default function GetStarted() {
           </li>
           <li>
             <Button
-              data-testid="onboarding-create-wallet"
+              data-testid="onboarding-import-wallet"
               variant={ButtonVariant.Secondary}
               width={BlockSize.Full}
               size={ButtonSize.Lg}

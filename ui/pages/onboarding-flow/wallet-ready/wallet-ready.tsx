@@ -75,6 +75,18 @@ export default function WalletReady() {
 
     history.push(ONBOARDING_PIN_EXTENSION_ROUTE);
   };
+
+  const renderTitle = () => {
+    if (
+      firstTimeFlowType === FirstTimeFlowType.seedless ||
+      seedPhraseBackedUp
+    ) {
+      return t('yourWalletIsReady');
+    }
+
+    return t('yourWalletIsReadyRemind');
+  };
+
   return (
     <Box className="wallet-ready" data-testid="wallet-ready">
       <div className="wallet-ready__content">
@@ -93,9 +105,7 @@ export default function WalletReady() {
             }}
             marginBottom={4}
           >
-            {firstTimeFlowType === FirstTimeFlowType.seedless
-              ? t('yourWalletIsReady')
-              : t('yourWalletIsReadyRemind')}
+            {renderTitle()}
           </Text>
           <Box
             width={BlockSize.Full}
@@ -147,6 +157,7 @@ export default function WalletReady() {
         >
           {currentKeyring && (
             <ButtonBase
+              data-testid="password-hint-create"
               borderRadius={BorderRadius.LG}
               width={BlockSize.Full}
               onClick={() => history.push(ONBOARDING_PASSWORD_HINT)}
@@ -175,6 +186,7 @@ export default function WalletReady() {
             </ButtonBase>
           )}
           <ButtonBase
+            data-testid="manage-default-settings"
             borderRadius={BorderRadius.LG}
             width={BlockSize.Full}
             onClick={() => history.push(ONBOARDING_PRIVACY_SETTINGS_ROUTE)}

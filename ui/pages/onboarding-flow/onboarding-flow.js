@@ -48,7 +48,6 @@ import ExperimentalArea from '../../components/app/flask/experimental-area';
 import { submitRequestToBackgroundAndCatch } from '../../components/app/toast-master/utils';
 import { getHDEntropyIndex } from '../../selectors/selectors';
 import OnboardingFlowSwitch from './onboarding-flow-switch/onboarding-flow-switch';
-import CreatePassword from './create-password/create-password';
 import ReviewRecoveryPhrase from './recovery-phrase/review-recovery-phrase';
 import SecureYourWallet from './secure-your-wallet/secure-your-wallet';
 import ConfirmRecoveryPhrase from './recovery-phrase/confirm-recovery-phrase';
@@ -62,6 +61,7 @@ import GetStarted from './get-started/get-started';
 import PasswordHint from './password-hint/password-hint';
 import AccountExist from './account-exist/account-exist';
 import AccountNotFound from './account-not-found/account-not-found';
+import CreatePassword from './create-password/create-password';
 
 const TWITTER_URL = 'https://twitter.com/MetaMask';
 

@@ -200,6 +200,7 @@ export default function SrpInputImport({ onChange }) {
         ) : (
           <div className="srp-input-import__srp-note">
             <Textarea
+              data-testid="srp-input-import__srp-note"
               borderColor={BorderColor.transparent}
               backgroundColor={BackgroundColor.transparent}
               width={BlockSize.Full}

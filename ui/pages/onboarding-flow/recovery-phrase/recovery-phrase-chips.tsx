@@ -27,7 +27,7 @@ import { QuizWords } from './types';
 
 export default function RecoveryPhraseChips({
   secretRecoveryPhrase,
-  phraseRevealed,
+  phraseRevealed = true,
   revealPhrase,
   confirmPhase,
   quizWords = [],
@@ -41,7 +41,6 @@ export default function RecoveryPhraseChips({
   setInputValue?: (quizAnswers: QuizWords) => void;
 }) {
   const t = useI18nContext();
-  const hideSeedPhrase = phraseRevealed === false;
   const phrasesToDisplay = secretRecoveryPhrase;
   const indicesToCheck = quizWords.map((word) => word.index);
   const [quizAnswers, setQuizAnswers] = useState(
@@ -114,7 +113,7 @@ export default function RecoveryPhraseChips({
         <div
           data-testid="recovery-phrase-chips"
           className={classnames('recovery-phrase__chips', {
-            'recovery-phrase__chips--hidden': hideSeedPhrase,
+            'recovery-phrase__chips--hidden': !phraseRevealed,
           })}
         >
           {phrasesToDisplay.map((word, index) => {
@@ -124,6 +123,7 @@ export default function RecoveryPhraseChips({
               : word;
             return (
               <TextField
+                data-testid={`recovery-phrase-chip-${index}`}
                 key={index}
                 value={wordToDisplay}
                 className={classnames({
@@ -155,7 +155,7 @@ export default function RecoveryPhraseChips({
           })}
         </div>
 
-        {hideSeedPhrase && (
+        {!phraseRevealed && (
           <div className="recovery-phrase__secret-blocker-container">
             <div className="recovery-phrase__secret-blocker" />
             <Box
@@ -163,6 +163,7 @@ export default function RecoveryPhraseChips({
               onClick={() => {
                 revealPhrase && revealPhrase();
               }}
+              data-testid="recovery-phrase-reveal"
             >
               <Icon
                 name={IconName.EyeSlash}
@@ -190,6 +191,7 @@ export default function RecoveryPhraseChips({
             const isAnswered = answeredWords.includes(value.word);
             return isAnswered ? (
               <ButtonBase
+                data-testid={`recovery-phrase-quiz-answered-${value.index}`}
                 key={value.index}
                 color={TextColor.textAlternative}
                 borderRadius={BorderRadius.LG}
@@ -202,6 +204,7 @@ export default function RecoveryPhraseChips({
               </ButtonBase>
             ) : (
               <Button
+                data-testid={`recovery-phrase-quiz-unanswered-${value.index}`}
                 key={value.index}
                 variant={ButtonVariant.Secondary}
                 borderRadius={BorderRadius.LG}

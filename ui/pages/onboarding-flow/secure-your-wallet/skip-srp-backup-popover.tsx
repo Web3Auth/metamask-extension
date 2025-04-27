@@ -47,6 +47,20 @@ export default function SkipSRPBackup({
   const hdEntropyIndex = useSelector(getHDEntropyIndex);
   const trackEvent = useContext(MetaMetricsContext);
   const history = useHistory();
+
+  async function onSkipSrpBackup() {
+    await dispatch(setSeedPhraseBackedUp(false));
+    trackEvent({
+      category: MetaMetricsEventCategory.Onboarding,
+      event:
+        MetaMetricsEventName.OnboardingWalletSecuritySkipConfirmed,
+      properties: {
+        hd_entropy_index: hdEntropyIndex,
+      },
+    });
+    history.push(ONBOARDING_METAMETRICS);
+  }
+
   return (
     <Modal
       isOpen
@@ -109,20 +123,10 @@ export default function SkipSRPBackup({
               {t('skipAccountSecuritySecureNow')}
             </Button>
             <Button
+              data-testid="skip-srp-backup"
               size={ButtonSize.Lg}
               disabled={!checked}
-              onClick={async () => {
-                await dispatch(setSeedPhraseBackedUp(false));
-                trackEvent({
-                  category: MetaMetricsEventCategory.Onboarding,
-                  event:
-                    MetaMetricsEventName.OnboardingWalletSecuritySkipConfirmed,
-                  properties: {
-                    hd_entropy_index: hdEntropyIndex,
-                  },
-                });
-                history.push(ONBOARDING_METAMETRICS);
-              }}
+              onClick={onSkipSrpBackup}
               block
               danger
             >

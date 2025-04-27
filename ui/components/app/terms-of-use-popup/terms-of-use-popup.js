@@ -1231,6 +1231,7 @@ export default function TermsOfUsePopup({ isOpen, onClose, onAccept }) {
             }
           />
           <Button
+            data-testid="terms-of-use-agree-button"
             variant={ButtonVariant.Primary}
             width={BlockSize.Full}
             size={ButtonSize.Lg}
