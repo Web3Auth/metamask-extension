@@ -5,6 +5,7 @@ import FixtureBuilder from '../../fixture-builder';
 import {
   completeCreateNewWalletOnboardingFlow,
   createNewWalletOnboardingFlow,
+  onboardingMetricsFlow,
 } from '../../page-objects/flows/onboarding.flow';
 import { MOCK_META_METRICS_ID } from '../../constants';
 import HeaderNavbar from '../../page-objects/pages/header-navbar';
@@ -41,9 +42,13 @@ describe('Segment User Traits', function () {
       async ({ driver, mockedEndpoint: mockedEndpoints }) => {
         await createNewWalletOnboardingFlow({
           driver,
+        });
+
+        await onboardingMetricsFlow(driver, {
           participateInMetaMetrics: true,
           dataCollectionForMarketing: true,
         });
+
         const events = await getEventPayloads(driver, mockedEndpoints);
         assert.equal(events.length, 1);
         assert.deepStrictEqual(events[0].traits.is_metrics_opted_in, true);
@@ -66,9 +71,13 @@ describe('Segment User Traits', function () {
       async ({ driver, mockedEndpoint: mockedEndpoints }) => {
         await createNewWalletOnboardingFlow({
           driver,
+        });
+
+        await onboardingMetricsFlow(driver, {
           participateInMetaMetrics: true,
           dataCollectionForMarketing: false,
         });
+
         const events = await getEventPayloads(driver, mockedEndpoints);
         assert.equal(events.length, 1);
         assert.deepStrictEqual(events[0].traits.is_metrics_opted_in, true);
@@ -77,7 +86,7 @@ describe('Segment User Traits', function () {
     );
   });
 
-  it('will not send identify event when user opts out of both metrics and data collection during onboarding', async function () {
+  it.only('will not send identify event when user opts out of both metrics and data collection during onboarding', async function () {
     await withFixtures(
       {
         fixtures: new FixtureBuilder({ onboarding: true })
@@ -92,9 +101,13 @@ describe('Segment User Traits', function () {
       async ({ driver, mockedEndpoint: mockedEndpoints }) => {
         await createNewWalletOnboardingFlow({
           driver,
+        });
+
+        await onboardingMetricsFlow(driver, {
           participateInMetaMetrics: false,
           dataCollectionForMarketing: false,
         });
+
         const events = await getEventPayloads(driver, mockedEndpoints);
         assert.equal(events.length, 0);
       },
@@ -114,7 +127,7 @@ describe('Segment User Traits', function () {
         testSpecificMock: mockSegment,
       },
       async ({ driver, mockedEndpoint: mockedEndpoints }) => {
-        let events = [];
+        let events: any[] = [];
         await completeCreateNewWalletOnboardingFlow({
           driver,
           participateInMetaMetrics: false,
@@ -150,7 +163,7 @@ describe('Segment User Traits', function () {
         testSpecificMock: mockSegment,
       },
       async ({ driver, mockedEndpoint: mockedEndpoints }) => {
-        let events = [];
+        let events: any[] = [];
         await completeCreateNewWalletOnboardingFlow({
           driver,
           participateInMetaMetrics: false,

@@ -38,6 +38,8 @@ describe('MetaMask onboarding', function () {
       async ({ driver, mockedEndpoint: mockedEndpoints }) => {
         await createNewWalletOnboardingFlow({ driver });
 
+        await onboardingMetricsFlow(driver);
+
         // Check no requests are made before completing creat new wallet onboarding
         // Intended delay to ensure we cover at least 1 polling loop of time for the network request
         await driver.delay(regularDelayMs);
