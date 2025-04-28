@@ -28,16 +28,24 @@ type DraftSrp = {
   word: string;
   id: string;
   active: boolean;
-}
+};
 
-export default function SrpInputImport({ onChange }: { onChange: (srp: string) => void }) {
+type ListOfTextFieldRefs = {
+  [wordId: string]: HTMLInputElement;
+};
+
+type SrpInputImportProps = {
+  onChange: (srp: string) => void;
+};
+
+export default function SrpInputImport({ onChange }: SrpInputImportProps) {
   const t = useI18nContext();
   const [draftSrp, setDraftSrp] = useState<DraftSrp[]>([]);
   const [firstWord, setFirstWord] = useState('');
   const [showAll, setShowAll] = useState(false);
   const [missSpelledWords, setMissSpelledWords] = useState<string[]>([]);
 
-  const srpRefs = useRef([]);
+  const srpRefs = useRef<ListOfTextFieldRefs>({});
 
   const initializeSrp = () => {
     setDraftSrp([
@@ -116,6 +124,24 @@ export default function SrpInputImport({ onChange }: { onChange: (srp: string) =
     }
   };
 
+  const handleOnKeyDown = (ev: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (ev.key === 'Enter' || ev.key === ' ') {
+      ev.preventDefault();
+      initializeSrp();
+    }
+  };
+
+  const handleOnPaste = (
+    clipBoardEvent: React.ClipboardEvent<HTMLTextAreaElement>,
+  ) => {
+    clipBoardEvent.preventDefault();
+    const newSrp = clipBoardEvent.clipboardData.getData('text');
+    if (newSrp.trim().match(/\s/u)) {
+      clipBoardEvent.preventDefault();
+      onSrpPaste(newSrp);
+    }
+  };
+
   const setWordInactive = (wordId: string) => {
     const newDraftSrp = [...draftSrp];
     const targetIndex = newDraftSrp.findIndex((word) => word.id === wordId);
@@ -164,9 +190,15 @@ export default function SrpInputImport({ onChange }: { onChange: (srp: string) =
             <div className="srp-input-import__words-list">
               {draftSrp.map((word, index) => (
                 <TextField
+                  inputProps={{
+                    ref: (el) => {
+                      if (el) {
+                        srpRefs.current[word.id] = el;
+                      }
+                    },
+                  }}
                   testId={`import-srp__srp-word-${index}`}
                   key={word.id}
-                  ref={(el) => (srpRefs.current[word.id] = el)}
                   error={missSpelledWords.includes(word.word)}
                   value={word.word}
                   type={
@@ -184,8 +216,10 @@ export default function SrpInputImport({ onChange }: { onChange: (srp: string) =
                       {index + 1}
                     </Text>
                   }
-                  onChange={(e) => handleChange(word.id, e.target.value)}
-                  onKeyDown={(e) => {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    handleChange(word.id, e.target.value)
+                  }
+                  onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
                       nextWord(word.id);
@@ -217,20 +251,8 @@ export default function SrpInputImport({ onChange }: { onChange: (srp: string) =
               resize={TextareaResize.None}
               value={firstWord}
               onChange={(e) => setFirstWord(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  initializeSrp();
-                }
-              }}
-              onPaste={(e) => {
-                e.preventDefault();
-                const newSrp = e.clipboardData.getData('text');
-                if (newSrp.trim().match(/\s/u)) {
-                  e.preventDefault();
-                  onSrpPaste(newSrp);
-                }
-              }}
+              onKeyDown={handleOnKeyDown}
+              onPaste={handleOnPaste}
             />
           </div>
         )}
