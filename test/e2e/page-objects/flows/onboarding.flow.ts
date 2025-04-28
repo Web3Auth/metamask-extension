@@ -166,7 +166,7 @@ export const importSRPOnboardingFlow = async ({
 
   const onboardingPasswordPage = new OnboardingPasswordPage(driver);
   await onboardingPasswordPage.check_pageIsLoaded();
-  await onboardingPasswordPage.createImportedWalletPassword(password);
+  await onboardingPasswordPage.createWalletPassword(password);
 };
 
 /**
@@ -196,9 +196,7 @@ export const completeCreateNewWalletOnboardingFlow = async ({
   await createNewWalletOnboardingFlow({
     driver,
     password,
-    participateInMetaMetrics,
     needNavigateToNewPage,
-    dataCollectionForMarketing,
   });
 
   await onboardingMetricsFlow(driver, {
