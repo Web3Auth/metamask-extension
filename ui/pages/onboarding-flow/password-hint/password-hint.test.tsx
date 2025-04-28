@@ -2,9 +2,9 @@ import React from 'react';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { fireEvent, renderWithProvider } from '../../../../test/jest';
-import PasswordHint from './password-hint';
 import { setPasswordHint } from '../../../store/actions';
 import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
+import PasswordHint from './password-hint';
 
 jest.mock('../../../store/actions.ts', () => ({
   setPasswordHint: jest.fn().mockReturnValue(
@@ -44,12 +44,19 @@ describe('Password Hint', () => {
   });
 
   it('should render the password hint component', () => {
-    const { getByText } = renderWithProvider(<PasswordHint validatePasswordHint={() => {}} />, mockStore);
+    const { getByText } = renderWithProvider(
+      // eslint-disable-next-line no-empty-function
+      <PasswordHint validatePasswordHint={() => {}} />,
+      mockStore,
+    );
     expect(getByText('Password hint')).toBeInTheDocument();
   });
 
   it('should show error when password hint is the same as the password', () => {
-    const { getByTestId } = renderWithProvider(<PasswordHint validatePasswordHint={validatePasswordHint} />, mockStore);
+    const { getByTestId } = renderWithProvider(
+      <PasswordHint validatePasswordHint={validatePasswordHint} />,
+      mockStore,
+    );
     const passwordHintTextField = getByTestId('password-hint-text-field');
 
     const passwordHintInput = passwordHintTextField
@@ -57,7 +64,10 @@ describe('Password Hint', () => {
       .item(0);
     expect(passwordHintInput).toBeInTheDocument();
 
-    fireEvent.change(passwordHintInput!, { target: { value: password } });
+    if (!passwordHintInput) {
+      throw new Error('Password hint input not found');
+    }
+    fireEvent.change(passwordHintInput, { target: { value: password } });
 
     const passwordHintSaveButton = getByTestId('password-hint-save');
     fireEvent.click(passwordHintSaveButton);
@@ -65,11 +75,16 @@ describe('Password Hint', () => {
     expect(validatePasswordHint).toHaveBeenCalledWith(password);
     const passwordHintErrorText = getByTestId('help-text');
     expect(passwordHintErrorText).toBeInTheDocument();
-    expect(passwordHintErrorText.textContent).toBe('You can’t use the password as a hint');
+    expect(passwordHintErrorText.textContent).toBe(
+      'You can’t use the password as a hint',
+    );
   });
 
   it('should save the password hint when there is no error', () => {
-    const { getByTestId } = renderWithProvider(<PasswordHint validatePasswordHint={validatePasswordHint} />, mockStore);
+    const { getByTestId } = renderWithProvider(
+      <PasswordHint validatePasswordHint={validatePasswordHint} />,
+      mockStore,
+    );
     const passwordHintTextField = getByTestId('password-hint-text-field');
 
     const passwordHintInput = passwordHintTextField
@@ -77,7 +92,12 @@ describe('Password Hint', () => {
       .item(0);
     expect(passwordHintInput).toBeInTheDocument();
 
-    fireEvent.change(passwordHintInput!, { target: { value: 'password-hint' } });
+    if (!passwordHintInput) {
+      throw new Error('Password hint input not found');
+    }
+    fireEvent.change(passwordHintInput, {
+      target: { value: 'password-hint' },
+    });
 
     const passwordHintSaveButton = getByTestId('password-hint-save');
     fireEvent.click(passwordHintSaveButton);

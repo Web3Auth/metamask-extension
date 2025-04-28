@@ -1,12 +1,15 @@
 import { Browser } from 'selenium-webdriver';
 import { strict as assert } from 'assert';
 import { Mockttp } from 'mockttp';
-import { getEventPayloads, withFixtures } from '../../helpers';
+import { getEventPayloads, WALLET_PASSWORD, withFixtures } from '../../helpers';
 import FixtureBuilder from '../../fixture-builder';
 import OnboardingMetricsPage from '../../page-objects/pages/onboarding/onboarding-metrics-page';
 import StartOnboardingPage from '../../page-objects/pages/onboarding/start-onboarding-page';
 import { MOCK_META_METRICS_ID } from '../../constants';
 import OnboardingGetStartedPage from '../../page-objects/pages/onboarding/onboarding-get-started-page';
+import SecureWalletPage from '../../page-objects/pages/onboarding/secure-wallet-page';
+import OnboardingPasswordPage from '../../page-objects/pages/onboarding/onboarding-password-page';
+import { onboardingMetricsFlow } from '../../page-objects/flows/onboarding.flow';
 
 /**
  * Mocks the segment API multiple times for specific payloads that we expect to
@@ -34,8 +37,7 @@ async function mockSegment(mockServer: Mockttp) {
 }
 
 describe('App Installed Events', function () {
-  // TODO: Confirm if necessary because we are doing metametrics at the end of onboarding
-  it.skip('are sent immediately when user installs app and chooses to opt in metrics', async function () {
+  it('are sent immediately when user installs app and chooses to opt in metrics', async function () {
     await withFixtures(
       {
         fixtures: new FixtureBuilder({ onboarding: true })
@@ -59,6 +61,19 @@ describe('App Installed Events', function () {
         await onboardingGetStartedPage.check_pageIsLoaded();
         await onboardingGetStartedPage.createWalletWithSrp();
 
+        const onboardingPasswordPage = new OnboardingPasswordPage(driver);
+        await onboardingPasswordPage.check_pageIsLoaded();
+        await onboardingPasswordPage.createWalletPassword(WALLET_PASSWORD);
+
+        const secureWalletPage = new SecureWalletPage(driver);
+        await secureWalletPage.check_pageIsLoaded();
+        await secureWalletPage.revealAndConfirmSRP();
+
+        await onboardingMetricsFlow(driver, {
+          participateInMetaMetrics: true,
+          dataCollectionForMarketing: true,
+        });
+
         const events = await getEventPayloads(driver, mockedEndpoints);
         console.log(events);
         assert.equal(events.length, 1);
@@ -72,8 +87,7 @@ describe('App Installed Events', function () {
     );
   });
 
-  // TODO: Confirm if necessary because we are doing metametrics at the end of onboarding
-  it.skip('are not sent when user installs app and chooses to opt out metrics', async function () {
+  it('are not sent when user installs app and chooses to opt out metrics', async function () {
     await withFixtures(
       {
         fixtures: new FixtureBuilder({ onboarding: true })
@@ -95,6 +109,16 @@ describe('App Installed Events', function () {
         const onboardingGetStartedPage = new OnboardingGetStartedPage(driver);
         await onboardingGetStartedPage.check_pageIsLoaded();
         await onboardingGetStartedPage.createWalletWithSrp();
+
+        const onboardingPasswordPage = new OnboardingPasswordPage(driver);
+        await onboardingPasswordPage.check_pageIsLoaded();
+        await onboardingPasswordPage.createWalletPassword(WALLET_PASSWORD);
+
+        const secureWalletPage = new SecureWalletPage(driver);
+        await secureWalletPage.check_pageIsLoaded();
+        await secureWalletPage.revealAndConfirmSRP();
+
+        await onboardingMetricsFlow(driver);
 
         const mockedRequests = await getEventPayloads(
           driver,

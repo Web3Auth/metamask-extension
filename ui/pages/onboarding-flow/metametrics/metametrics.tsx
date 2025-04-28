@@ -22,7 +22,6 @@ import {
 import {
   getDataCollectionForMarketing,
   getFirstTimeFlowType,
-  getFirstTimeFlowTypeRouteAfterMetaMetricsOptIn,
 } from '../../../selectors';
 
 import {
@@ -31,7 +30,10 @@ import {
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
 import { PLATFORM_FIREFOX } from '../../../../shared/constants/app';
-import { ONBOARDING_WELCOME_ROUTE } from '../../../helpers/constants/routes';
+import {
+  ONBOARDING_WELCOME_ROUTE,
+  ONBOARDING_COMPLETION_ROUTE,
+} from '../../../helpers/constants/routes';
 
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
@@ -47,7 +49,6 @@ import {
 } from '../../../components/component-library';
 
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
-import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
 
 const isFirefox = getPlatform() === PLATFORM_FIREFOX;
 
