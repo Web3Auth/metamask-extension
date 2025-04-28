@@ -31,7 +31,9 @@ import { setPasswordHint } from '../../../store/actions';
 import { setShowPasswordHintSavedToast } from '../../../components/app/toast-master/utils';
 import { getPasswordHint } from '../../../selectors';
 
-export default function PasswordHint({ validatePasswordHint }: {
+export default function PasswordHint({
+  validatePasswordHint,
+}: {
   validatePasswordHint: (hint: string) => void;
 }) {
   const t = useI18nContext();
@@ -39,8 +41,6 @@ export default function PasswordHint({ validatePasswordHint }: {
   const history = useHistory();
   const [isSamePasswordError, setIsSamePasswordError] = useState(false);
   const [hint, setHint] = useState(useSelector(getPasswordHint));
-  // TODO: how to compare hint with current password?
-  const currentPassword = null;
 
   const handleSubmitHint = () => {
     try {

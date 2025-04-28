@@ -16,6 +16,7 @@
     // SRP_OVERRIDE: remove padding from textarea add weight to style
     .mm-textarea {
       padding: 0;
+
       &:focus {
         outline: none;
       }
@@ -24,6 +25,7 @@
 
   &__initial-input {
     padding: 0 0;
+
     &:focus {
       outline: none;
     }
@@ -43,6 +45,7 @@
       padding-left: 8px;
       border-radius: 8px;
     }
+
     .mm-text-field:not(.mm-text-field--error) {
       border-color: var(--color-border-muted);
     }

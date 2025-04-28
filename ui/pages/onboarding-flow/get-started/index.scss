@@ -28,9 +28,11 @@
     background-color: var(--color-background-transparent);
     border: 1px solid var(--color-border-muted);
     padding: 0 16px;
+
     &:hover {
       background-color: var(--color-background-hover);
     }
+
     &:active {
       background-color: var(--color-background-pressed);
     }
@@ -46,6 +48,7 @@
   &__or {
     text-align: center;
     position: relative;
+
     &::before {
       content: "";
       position: absolute;

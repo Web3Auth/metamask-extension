@@ -4,8 +4,8 @@ import thunk from 'redux-thunk';
 import { fireEvent, renderWithProvider } from '../../../../test/jest';
 import initializedMockState from '../../../../test/data/mock-state.json';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
-import CreationSuccessful from './account-exist';
 import { UNLOCK_ROUTE } from '../../../helpers/constants/routes';
+import CreationSuccessful from './account-exist';
 
 const mockHistoryPush = jest.fn();
 

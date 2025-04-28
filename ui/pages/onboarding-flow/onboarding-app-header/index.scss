@@ -11,7 +11,7 @@
   flex: 0 0 auto;
 
   &--welcome {
-    background-color: #EAC2FF;
+    background-color: #eac2ff;
   }
 
   @include design-system.screen-sm-max {
@@ -42,6 +42,7 @@
 
   &__dropdown {
     cursor: pointer;
+
     .dropdown__select {
       cursor: pointer;
     }
@@ -52,6 +53,7 @@
     .dropdown__select {
       border: 0;
     }
+
     .dropdown__icon-caret-down {
       color: var(--color-text-default);
     }

@@ -3,7 +3,6 @@ import configureMockStore from 'redux-mock-store';
 import { fireEvent, renderWithProvider } from '../../../../test/jest';
 import Welcome from './welcome';
 
-
 const mockHistoryPush = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -33,7 +32,10 @@ describe('Welcome Page', () => {
   });
 
   it('should show the terms of use popup when the user clicks the "Get started" button', () => {
-    const { getByText, getByTestId } = renderWithProvider(<Welcome />, mockStore);
+    const { getByText, getByTestId } = renderWithProvider(
+      <Welcome />,
+      mockStore,
+    );
 
     const getStartedButton = getByText('Get started');
     fireEvent.click(getStartedButton);
