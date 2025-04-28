@@ -106,7 +106,6 @@ export type Preferences = {
   };
   tokenNetworkFilter: Record<string, boolean>;
   shouldShowAggregatedBalancePopover: boolean;
-  passwordHint: string;
   dismissSmartAccountSuggestionEnabled: boolean;
   passwordHint: string;
 };

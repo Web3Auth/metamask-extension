@@ -1679,15 +1679,6 @@
   "defiTabErrorTitle": {
     "message": "Oops! Something went wrong."
   },
-  "defi": {
-    "message": "DeFi"
-  },
-  "defiTabErrorContent": {
-    "message": "Your funds are safe, try to visit this page again later."
-  },
-  "defiTabErrorTitle": {
-    "message": "Oops! Something went wrong."
-  },
   "delete": {
     "message": "Delete"
   },

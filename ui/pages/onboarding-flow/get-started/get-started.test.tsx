@@ -11,10 +11,7 @@ import {
   ONBOARDING_IMPORT_WITH_SRP_ROUTE,
 } from '../../../helpers/constants/routes';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
-<<<<<<<< HEAD:ui/pages/onboarding-flow/get-started/get-started.test.js
-========
 import { setFirstTimeFlowType } from '../../../store/actions';
->>>>>>>> origin/feat/main-seedless-onboarding-ui:ui/pages/onboarding-flow/get-started/get-started.test.tsx
 import GetStarted from './get-started';
 
 const mockHistoryReplace = jest.fn();
@@ -86,15 +83,14 @@ describe('Onboarding Welcome Component', () => {
       expect(onboardingWelcome).toBeInTheDocument();
     });
 
-<<<<<<<< HEAD:ui/pages/onboarding-flow/get-started/get-started.test.js
     it('should set first time flow to create and route to metametrics', () => {
       renderWithProvider(<GetStarted />, mockStore);
       const termsCheckbox = screen.getByTestId('onboarding-terms-checkbox');
       fireEvent.click(termsCheckbox);
-========
+    });
+
     it('should create new wallet modal', async () => {
       const { getByText } = renderWithProvider(<GetStarted />, mockStore);
->>>>>>>> origin/feat/main-seedless-onboarding-ui:ui/pages/onboarding-flow/get-started/get-started.test.tsx
       const createWallet = screen.getByTestId('onboarding-create-wallet');
       fireEvent.click(createWallet);
 
@@ -113,16 +109,8 @@ describe('Onboarding Welcome Component', () => {
       });
     });
 
-<<<<<<<< HEAD:ui/pages/onboarding-flow/get-started/get-started.test.js
-    it('should set first time flow to import and route to metametrics', async () => {
-      renderWithProvider(<GetStarted />, mockStore);
-      const termsCheckbox = screen.getByTestId('onboarding-terms-checkbox');
-      fireEvent.click(termsCheckbox);
-
-========
     it('should open login to existing wallet modal', async () => {
       const { getByText } = renderWithProvider(<GetStarted />, mockStore);
->>>>>>>> origin/feat/main-seedless-onboarding-ui:ui/pages/onboarding-flow/get-started/get-started.test.tsx
       const createWallet = screen.getByTestId('onboarding-import-wallet');
       fireEvent.click(createWallet);
 

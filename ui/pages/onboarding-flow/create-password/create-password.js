@@ -13,11 +13,10 @@ import {
   IconColor,
 } from '../../../helpers/constants/design-system';
 import {
-  ONBOARDING_COMPLETION_ROUTE,
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+  ONBOARDING_COMPLETION_ROUTE,
   ONBOARDING_METAMETRICS,
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
-  ONBOARDING_COMPLETION_ROUTE,
   ///: END:ONLY_INCLUDE_IF
 } from '../../../helpers/constants/routes';
 import { PASSWORD_MIN_LENGTH } from '../../../helpers/constants/common';
