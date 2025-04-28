@@ -80,17 +80,13 @@ describe('Onboarding Create Password', () => {
         mockStore,
       );
 
-      const createPasswordTextField = queryByTestId('create-password-new');
+      const createPasswordInput = queryByTestId('create-password-new-input');
       const event = {
         target: {
           value: '1234567',
         },
       };
-      const createPasswordInput = createPasswordTextField
-        .getElementsByTagName('input')
-        .item(0);
-      expect(createPasswordInput).toBeInTheDocument();
-      expect(createPasswordInput.nodeName).toBe('INPUT');
+
       fireEvent.change(createPasswordInput, event);
       expect(createPasswordInput).toHaveAttribute('type', 'password');
 
@@ -107,16 +103,12 @@ describe('Onboarding Create Password', () => {
         mockStore,
       );
 
-      const createPasswordTextField = queryByTestId('create-password-new');
+      const createPasswordInput = queryByTestId('create-password-new-input');
       const event = {
         target: {
           value: '1234567',
         },
       };
-
-      const createPasswordInput = createPasswordTextField
-        .getElementsByTagName('input')
-        .item(0);
 
       fireEvent.change(createPasswordInput, event);
 
@@ -140,15 +132,12 @@ describe('Onboarding Create Password', () => {
 
       const createNewWalletButton = queryByTestId('create-password-submit');
 
-      const createPasswordTextField = queryByTestId('create-password-new');
+      const createPasswordInput = queryByTestId('create-password-new-input');
       const event = {
         target: {
           value: '12345678',
         },
       };
-      const createPasswordInput = createPasswordTextField
-        .getElementsByTagName('input')
-        .item(0);
 
       fireEvent.change(createPasswordInput, event);
 
@@ -171,16 +160,12 @@ describe('Onboarding Create Password', () => {
 
       const createNewWalletButton = queryByTestId('create-password-submit');
 
-      const createPasswordTextField = queryByTestId('create-password-new');
+      const createPasswordInput = queryByTestId('create-password-new-input');
       const event = {
         target: {
           value: 'ZsE(!6679',
         },
       };
-
-      const createPasswordInput = createPasswordTextField
-        .getElementsByTagName('input')
-        .item(0);
 
       fireEvent.change(createPasswordInput, event);
 
@@ -201,16 +186,12 @@ describe('Onboarding Create Password', () => {
         mockStore,
       );
 
-      const createPasswordTextField = queryByTestId('create-password-new');
+      const createPasswordInput = queryByTestId('create-password-new-input');
       const event = {
         target: {
           value: 'E}URkDoV|/*,pxI',
         },
       };
-
-      const createPasswordInput = createPasswordTextField
-        .getElementsByTagName('input')
-        .item(0);
 
       fireEvent.change(createPasswordInput, event);
 
@@ -233,8 +214,10 @@ describe('Onboarding Create Password', () => {
         mockStore,
       );
 
-      const createPasswordTextField = queryByTestId('create-password-new');
-      const confirmPasswordTextField = queryByTestId('create-password-confirm');
+      const createPasswordInput = queryByTestId('create-password-new-input');
+      const confirmPasswordInput = queryByTestId(
+        'create-password-confirm-input',
+      );
 
       const createPasswordEvent = {
         target: {
@@ -246,13 +229,6 @@ describe('Onboarding Create Password', () => {
           value: '12345678',
         },
       };
-
-      const createPasswordInput = createPasswordTextField
-        .getElementsByTagName('input')
-        .item(0);
-      const confirmPasswordInput = confirmPasswordTextField
-        .getElementsByTagName('input')
-        .item(0);
 
       fireEvent.change(createPasswordInput, createPasswordEvent);
       fireEvent.change(confirmPasswordInput, confirmPasswordEvent);
@@ -277,8 +253,10 @@ describe('Onboarding Create Password', () => {
         mockStore,
       );
 
-      const createPasswordTextField = queryByTestId('create-password-new');
-      const confirmPasswordTextField = queryByTestId('create-password-confirm');
+      const createPasswordInput = queryByTestId('create-password-new-input');
+      const confirmPasswordInput = queryByTestId(
+        'create-password-confirm-input',
+      );
 
       const createPasswordEvent = {
         target: {
@@ -290,13 +268,6 @@ describe('Onboarding Create Password', () => {
           value: '12345678',
         },
       };
-
-      const createPasswordInput = createPasswordTextField
-        .getElementsByTagName('input')
-        .item(0);
-      const confirmPasswordInput = confirmPasswordTextField
-        .getElementsByTagName('input')
-        .item(0);
 
       fireEvent.change(createPasswordInput, createPasswordEvent);
       fireEvent.change(confirmPasswordInput, confirmPasswordEvent);
@@ -323,8 +294,10 @@ describe('Onboarding Create Password', () => {
         mockStore,
       );
 
-      const createPasswordTextField = queryByTestId('create-password-new');
-      const confirmPasswordTextField = queryByTestId('create-password-confirm');
+      const createPasswordInput = queryByTestId('create-password-new-input');
+      const confirmPasswordInput = queryByTestId(
+        'create-password-confirm-input',
+      );
 
       const password = '12345678';
 
@@ -339,14 +312,7 @@ describe('Onboarding Create Password', () => {
         },
       };
 
-      const createPasswordInput = createPasswordTextField
-        .getElementsByTagName('input')
-        .item(0);
       fireEvent.change(createPasswordInput, createPasswordEvent);
-
-      const confirmPasswordInput = confirmPasswordTextField
-        .getElementsByTagName('input')
-        .item(0);
       fireEvent.change(confirmPasswordInput, confirmPasswordEvent);
 
       const terms = queryByTestId('create-password-terms');
@@ -390,8 +356,10 @@ describe('Onboarding Create Password', () => {
         mockStore,
       );
 
-      const createPasswordTextField = queryByTestId('create-password-new');
-      const confirmPasswordTextField = queryByTestId('create-password-confirm');
+      const createPasswordInput = queryByTestId('create-password-new-input');
+      const confirmPasswordInput = queryByTestId(
+        'create-password-confirm-input',
+      );
 
       const password = '12345678';
 
@@ -405,13 +373,6 @@ describe('Onboarding Create Password', () => {
           value: password,
         },
       };
-
-      const createPasswordInput = createPasswordTextField
-        .getElementsByTagName('input')
-        .item(0);
-      const confirmPasswordInput = confirmPasswordTextField
-        .getElementsByTagName('input')
-        .item(0);
 
       fireEvent.change(createPasswordInput, createPasswordEvent);
       fireEvent.change(confirmPasswordInput, confirmPasswordEvent);

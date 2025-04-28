@@ -72,7 +72,11 @@ describe('Import SRP', () => {
     const srpNote = queryByTestId('srp-input-import__srp-note');
     expect(srpNote).toBeInTheDocument();
 
-    await userEvent.type(srpNote, TEST_SEED);
+    srpNote.focus();
+
+    await userEvent.paste(TEST_SEED);
+    console.log('srpNote.value', srpNote.value);
+    // fireEvent.change(srpNote, { target: { value: TEST_SEED } });
 
     const confirmSrpButton = queryByTestId('import-srp-confirm');
 
