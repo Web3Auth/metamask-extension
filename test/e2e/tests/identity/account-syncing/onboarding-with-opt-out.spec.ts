@@ -17,6 +17,7 @@ import OnboardingPrivacySettingsPage from '../../../page-objects/pages/onboardin
 import {
   createNewWalletOnboardingFlow,
   importSRPOnboardingFlow,
+  onboardingMetricsFlow,
 } from '../../../page-objects/flows/onboarding.flow';
 import PrivacySettings from '../../../page-objects/pages/settings/privacy-settings';
 import SettingsPage from '../../../page-objects/pages/settings/settings-page';
@@ -78,6 +79,9 @@ describe('Account syncing - Opt-out Profile Sync', function () {
             seedPhrase: IDENTITY_TEAM_SEED_PHRASE,
             password: IDENTITY_TEAM_PASSWORD,
           });
+
+          await onboardingMetricsFlow(driver);
+
           const onboardingCompletePage = new OnboardingCompletePage(driver);
           await onboardingCompletePage.check_pageIsLoaded();
           await onboardingCompletePage.navigateToDefaultPrivacySettings();
@@ -136,6 +140,9 @@ describe('Account syncing - Opt-out Profile Sync', function () {
             driver,
             password: IDENTITY_TEAM_PASSWORD,
           });
+
+          await onboardingMetricsFlow(driver);
+
           const onboardingCompletePage = new OnboardingCompletePage(driver);
           await onboardingCompletePage.check_pageIsLoaded();
           await onboardingCompletePage.navigateToDefaultPrivacySettings();

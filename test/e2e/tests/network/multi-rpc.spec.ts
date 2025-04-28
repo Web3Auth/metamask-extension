@@ -21,6 +21,7 @@ import {
 import {
   completeImportSRPOnboardingFlow,
   importSRPOnboardingFlow,
+  onboardingMetricsFlow,
 } from '../../page-objects/flows/onboarding.flow';
 
 describe('MultiRpc:', function (this: Suite) {
@@ -345,6 +346,9 @@ describe('MultiRpc:', function (this: Suite) {
 
       async ({ driver }: { driver: Driver }) => {
         await importSRPOnboardingFlow({ driver });
+
+        await onboardingMetricsFlow(driver);
+
         const onboardingCompletePage = new OnboardingCompletePage(driver);
         await onboardingCompletePage.check_pageIsLoaded();
         await onboardingCompletePage.navigateToDefaultPrivacySettings();

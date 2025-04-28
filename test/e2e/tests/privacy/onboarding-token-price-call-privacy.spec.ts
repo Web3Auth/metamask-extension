@@ -7,6 +7,7 @@ import OnboardingCompletePage from '../../page-objects/pages/onboarding/onboardi
 import {
   importSRPOnboardingFlow,
   createNewWalletOnboardingFlow,
+  onboardingMetricsFlow,
 } from '../../page-objects/flows/onboarding.flow';
 
 // Mock function implementation for Token Price requests
@@ -91,6 +92,8 @@ describe('MetaMask onboarding', function () {
       },
       async ({ driver, mockedEndpoint: mockedEndpoints }) => {
         await importSRPOnboardingFlow({ driver });
+
+        await onboardingMetricsFlow(driver);
 
         // Check no requests before completing onboarding
         // Intended delay to ensure we cover at least 1 polling loop of time for the network request

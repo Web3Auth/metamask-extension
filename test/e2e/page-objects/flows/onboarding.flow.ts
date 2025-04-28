@@ -24,15 +24,11 @@ import OnboardingGetStartedPage from '../pages/onboarding/onboarding-get-started
 export const createNewWalletOnboardingFlow = async ({
   driver,
   password = WALLET_PASSWORD,
-  participateInMetaMetrics = false,
   needNavigateToNewPage = true,
-  dataCollectionForMarketing = false,
 }: {
   driver: Driver;
   password?: string;
-  participateInMetaMetrics?: boolean;
   needNavigateToNewPage?: boolean;
-  dataCollectionForMarketing?: boolean;
 }): Promise<void> => {
   console.log('Starting the creation of a new wallet onboarding flow');
   if (needNavigateToNewPage) {

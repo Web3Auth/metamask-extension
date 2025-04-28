@@ -36,6 +36,7 @@ import {
 import {
   getCurrentKeyring,
   getFirstTimeFlowType,
+  getHDEntropyIndex,
   getPasswordHint,
 } from '../../../selectors';
 import {
@@ -51,6 +52,7 @@ export default function WalletReady() {
   const history = useHistory();
   const t = useI18nContext();
   const trackEvent = useContext(MetaMetricsContext);
+  const hdEntropyIndex = useSelector(getHDEntropyIndex);
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const currentKeyring = useSelector(getCurrentKeyring);
   const seedPhraseBackedUp = useSelector(getSeedPhraseBackedUp);
@@ -70,6 +72,7 @@ export default function WalletReady() {
       properties: {
         method: firstTimeFlowType,
         is_profile_syncing_enabled: isProfileSyncingEnabled,
+        hd_entropy_index: hdEntropyIndex,
       },
     });
 
