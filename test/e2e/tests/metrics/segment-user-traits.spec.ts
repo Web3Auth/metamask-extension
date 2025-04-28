@@ -42,9 +42,6 @@ describe('Segment User Traits', function () {
       async ({ driver, mockedEndpoint: mockedEndpoints }) => {
         await createNewWalletOnboardingFlow({
           driver,
-        });
-
-        await onboardingMetricsFlow(driver, {
           participateInMetaMetrics: true,
           dataCollectionForMarketing: true,
         });
@@ -71,9 +68,6 @@ describe('Segment User Traits', function () {
       async ({ driver, mockedEndpoint: mockedEndpoints }) => {
         await createNewWalletOnboardingFlow({
           driver,
-        });
-
-        await onboardingMetricsFlow(driver, {
           participateInMetaMetrics: true,
           dataCollectionForMarketing: false,
         });
@@ -86,7 +80,7 @@ describe('Segment User Traits', function () {
     );
   });
 
-  it.only('will not send identify event when user opts out of both metrics and data collection during onboarding', async function () {
+  it('will not send identify event when user opts out of both metrics and data collection during onboarding', async function () {
     await withFixtures(
       {
         fixtures: new FixtureBuilder({ onboarding: true })
@@ -101,9 +95,6 @@ describe('Segment User Traits', function () {
       async ({ driver, mockedEndpoint: mockedEndpoints }) => {
         await createNewWalletOnboardingFlow({
           driver,
-        });
-
-        await onboardingMetricsFlow(driver, {
           participateInMetaMetrics: false,
           dataCollectionForMarketing: false,
         });

@@ -31,6 +31,12 @@ describe('Incremental Security', function (this: Suite) {
         );
         await driver.navigate();
 
+        // skip collect metametrics
+        if (process.env.SELENIUM_BROWSER === Browser.FIREFOX) {
+          const onboardingMetricsPage = new OnboardingMetricsPage(driver);
+          await onboardingMetricsPage.clickNoThanksButton();
+        }
+
         // agree to terms of use and start onboarding
         const startOnboardingPage = new StartOnboardingPage(driver);
         await startOnboardingPage.check_pageIsLoaded();
@@ -50,7 +56,11 @@ describe('Incremental Security', function (this: Suite) {
         await secureWalletPage.check_pageIsLoaded();
         await secureWalletPage.skipSRPBackup();
 
-        await onboardingMetricsFlow(driver);
+        // skip collect metametrics
+        if (process.env.SELENIUM_BROWSER !== Browser.FIREFOX) {
+          const onboardingMetricsPage = new OnboardingMetricsPage(driver);
+          await onboardingMetricsPage.clickNoThanksButton();
+        }
 
         // complete onboarding and pin extension
         const onboardingCompletePage = new OnboardingCompletePage(driver);

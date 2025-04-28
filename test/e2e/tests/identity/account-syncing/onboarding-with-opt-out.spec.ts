@@ -80,8 +80,6 @@ describe('Account syncing - Opt-out Profile Sync', function () {
             password: IDENTITY_TEAM_PASSWORD,
           });
 
-          await onboardingMetricsFlow(driver);
-
           const onboardingCompletePage = new OnboardingCompletePage(driver);
           await onboardingCompletePage.check_pageIsLoaded();
           await onboardingCompletePage.navigateToDefaultPrivacySettings();
@@ -140,8 +138,6 @@ describe('Account syncing - Opt-out Profile Sync', function () {
             driver,
             password: IDENTITY_TEAM_PASSWORD,
           });
-
-          await onboardingMetricsFlow(driver);
 
           const onboardingCompletePage = new OnboardingCompletePage(driver);
           await onboardingCompletePage.check_pageIsLoaded();

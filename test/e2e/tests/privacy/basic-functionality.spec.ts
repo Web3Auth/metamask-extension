@@ -116,8 +116,6 @@ describe('MetaMask onboarding', function () {
       async ({ driver, mockedEndpoint: mockedEndpoints }) => {
         await importSRPOnboardingFlow({ driver });
 
-        await onboardingMetricsFlow(driver);
-
         const onboardingCompletePage = new OnboardingCompletePage(driver);
         await onboardingCompletePage.check_pageIsLoaded();
         await onboardingCompletePage.check_remindMeLaterButtonIsDisplayed();
