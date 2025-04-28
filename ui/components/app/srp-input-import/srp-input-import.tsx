@@ -9,6 +9,7 @@ import {
   ButtonVariant,
   Text,
   TextField,
+  TextFieldType,
 } from '../../component-library';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
@@ -23,12 +24,18 @@ import { parseSecretRecoveryPhrase } from './parse-secret-recovery-phrase';
 const SRP_LENGTHS = [12, 15, 18, 21, 24];
 const MAX_SRP_LENGTH = 24;
 
-export default function SrpInputImport({ onChange }) {
+type DraftSrp = {
+  word: string;
+  id: string;
+  active: boolean;
+}
+
+export default function SrpInputImport({ onChange }: { onChange: (srp: string) => void }) {
   const t = useI18nContext();
-  const [draftSrp, setDraftSrp] = useState([]);
+  const [draftSrp, setDraftSrp] = useState<DraftSrp[]>([]);
   const [firstWord, setFirstWord] = useState('');
   const [showAll, setShowAll] = useState(false);
-  const [missSpelledWords, setMissSpelledWords] = useState([]);
+  const [missSpelledWords, setMissSpelledWords] = useState<string[]>([]);
 
   const srpRefs = useRef([]);
 
@@ -40,10 +47,10 @@ export default function SrpInputImport({ onChange }) {
     setFirstWord('');
   };
 
-  const onSrpPaste = (rawSrp) => {
+  const onSrpPaste = (rawSrp: string) => {
     const parsedSrp = parseSecretRecoveryPhrase(rawSrp);
     const splittedSrp = parsedSrp.split(' ');
-    const newDraftSrp = splittedSrp.map((word) => ({
+    const newDraftSrp = splittedSrp.map((word: string) => ({
       word,
       id: uuidv4(),
       active: false,
@@ -54,7 +61,7 @@ export default function SrpInputImport({ onChange }) {
     setDraftSrp(newDraftSrp);
   };
 
-  const setWordActive = (srp, wordId) => {
+  const setWordActive = (srp: DraftSrp[], wordId: string) => {
     const newDraftSrp = [...srp];
     newDraftSrp.forEach((word) => {
       word.active = word.id === wordId;
@@ -62,14 +69,14 @@ export default function SrpInputImport({ onChange }) {
     return newDraftSrp;
   };
 
-  const handleChange = (id, value) => {
+  const handleChange = (id: string, value: string) => {
     const newDraftSrp = [...draftSrp];
     const targetIndex = newDraftSrp.findIndex((word) => word.id === id);
     newDraftSrp[targetIndex] = { ...newDraftSrp[targetIndex], word: value };
     setDraftSrp(setWordActive(newDraftSrp, id));
   };
 
-  const nextWord = (currentWordId) => {
+  const nextWord = (currentWordId: string) => {
     const currentWordIndex = draftSrp.findIndex(
       (word) => word.id === currentWordId,
     );
@@ -96,7 +103,7 @@ export default function SrpInputImport({ onChange }) {
     setDraftSrp(setWordActive(draftSrp, draftSrp[currentWordIndex + 1].id));
   };
 
-  const deleteWord = (wordId) => {
+  const deleteWord = (wordId: string) => {
     const currentWordIndex = draftSrp.findIndex((word) => word.id === wordId);
     const previousWordId = draftSrp[currentWordIndex - 1]?.id;
     const newDraftSrp = [...draftSrp];
@@ -109,14 +116,14 @@ export default function SrpInputImport({ onChange }) {
     }
   };
 
-  const setWordInactive = (wordId) => {
+  const setWordInactive = (wordId: string) => {
     const newDraftSrp = [...draftSrp];
     const targetIndex = newDraftSrp.findIndex((word) => word.id === wordId);
     newDraftSrp[targetIndex] = { ...newDraftSrp[targetIndex], active: false };
     setDraftSrp(newDraftSrp);
   };
 
-  const onWordFocus = (wordId) => {
+  const onWordFocus = (wordId: string) => {
     srpRefs.current[wordId].type = 'text';
     const newDraftSrp = [...draftSrp];
     newDraftSrp.forEach((word) => {
@@ -166,8 +173,8 @@ export default function SrpInputImport({ onChange }) {
                     word.active ||
                     showAll ||
                     missSpelledWords.includes(word.word)
-                      ? 'text'
-                      : 'password'
+                      ? TextFieldType.Text
+                      : TextFieldType.Password
                   }
                   startAccessory={
                     <Text
