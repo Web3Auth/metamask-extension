@@ -83,12 +83,6 @@ describe('Onboarding Welcome Component', () => {
       expect(onboardingWelcome).toBeInTheDocument();
     });
 
-    it('should set first time flow to create and route to metametrics', () => {
-      renderWithProvider(<GetStarted />, mockStore);
-      const termsCheckbox = screen.getByTestId('onboarding-terms-checkbox');
-      fireEvent.click(termsCheckbox);
-    });
-
     it('should create new wallet modal', async () => {
       const { getByText } = renderWithProvider(<GetStarted />, mockStore);
       const createWallet = screen.getByTestId('onboarding-create-wallet');

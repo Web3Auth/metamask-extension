@@ -103,7 +103,9 @@ export default function PasswordHint({
             {t('passwordHintLeaveHint')}
           </Text>
           <FormTextField
-            data-testid="password-hint-text-field"
+            inputProps={{
+              'data-testid': 'password-hint-text-field',
+            }}
             value={hint}
             placeholder="e.g. mom’s home"
             width={BlockSize.Full}

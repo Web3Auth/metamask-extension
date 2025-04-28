@@ -280,7 +280,6 @@ export default function CreatePassword({
           <FormTextField
             label={t('newPassword')}
             id="create-password-new"
-            data-testid="create-password-new"
             autoFocus
             placeholder={t('newPasswordPlaceholder')}
             labelProps={{ marginBottom: 1, children: t('newPassword') }}
@@ -385,11 +384,7 @@ export default function CreatePassword({
           {
             ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
             <Button
-              data-testid={
-                firstTimeFlowType === FirstTimeFlowType.import
-                  ? 'create-password-import'
-                  : 'create-password-submit'
-              }
+              data-testid="create-password-submit"
               variant={ButtonVariant.Primary}
               width={BlockSize.Full}
               size={ButtonSize.Lg}

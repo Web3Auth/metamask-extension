@@ -3571,7 +3571,7 @@ export function resetOnboardingAction() {
  */
 export function startOAuthLogin(
   provider: AuthConnection,
-): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+): ThunkAction<Promise<boolean>, MetaMaskReduxState, unknown, AnyAction> {
   return async (dispatch: MetaMaskReduxDispatch) => {
     dispatch(showLoadingIndication());
 

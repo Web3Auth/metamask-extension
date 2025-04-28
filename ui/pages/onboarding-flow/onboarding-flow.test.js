@@ -247,14 +247,10 @@ describe('Onboarding Flow', () => {
 
       const password = 'a-new-password';
       const checkTerms = queryByTestId('create-password-terms');
-      const createPasswordTextField = queryByTestId('create-password-new');
-      const createPasswordInput = createPasswordTextField
-        .getElementsByTagName('input')
-        .item(0);
-      const confirmPassword = queryByTestId('create-password-confirm');
-      const confirmPasswordInput = confirmPassword
-        .getElementsByTagName('input')
-        .item(0);
+      const createPasswordInput = queryByTestId('create-password-new-input');
+      const confirmPasswordInput = queryByTestId(
+        'create-password-confirm-input',
+      );
       const createPasswordWallet = queryByTestId('create-password-submit');
 
       fireEvent.click(checkTerms);

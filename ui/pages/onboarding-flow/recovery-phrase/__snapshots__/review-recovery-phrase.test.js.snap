@@ -70,11 +70,12 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
         >
           <div
             class="recovery-phrase__chips recovery-phrase__chips--hidden"
+            data-quiz-words="[]"
+            data-recovery-phrase="debris:dizzy:just:program:just:float:decrease:vacant:alarm:reduce:speak:stadium"
             data-testid="recovery-phrase-chips"
           >
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-0"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -85,6 +86,7 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-0"
                 focused="false"
                 readonly=""
                 type="text"
@@ -93,7 +95,6 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-1"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -104,6 +105,7 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-1"
                 focused="false"
                 readonly=""
                 type="text"
@@ -112,7 +114,6 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-2"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -123,6 +124,7 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-2"
                 focused="false"
                 readonly=""
                 type="text"
@@ -131,7 +133,6 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-3"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -142,6 +143,7 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-3"
                 focused="false"
                 readonly=""
                 type="text"
@@ -150,7 +152,6 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-4"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -161,6 +162,7 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-4"
                 focused="false"
                 readonly=""
                 type="text"
@@ -169,7 +171,6 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-5"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -180,6 +181,7 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-5"
                 focused="false"
                 readonly=""
                 type="text"
@@ -188,7 +190,6 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-6"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -199,6 +200,7 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-6"
                 focused="false"
                 readonly=""
                 type="text"
@@ -207,7 +209,6 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-7"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -218,6 +219,7 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-7"
                 focused="false"
                 readonly=""
                 type="text"
@@ -226,7 +228,6 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-8"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -237,6 +238,7 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-8"
                 focused="false"
                 readonly=""
                 type="text"
@@ -245,7 +247,6 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-9"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -256,6 +257,7 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-9"
                 focused="false"
                 readonly=""
                 type="text"
@@ -264,7 +266,6 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-10"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -275,6 +276,7 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-10"
                 focused="false"
                 readonly=""
                 type="text"
@@ -283,7 +285,6 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-11"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -294,6 +295,7 @@ exports[`Review Recovery Phrase Component should match snapshot 1`] = `
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-11"
                 focused="false"
                 readonly=""
                 type="text"
@@ -416,11 +418,12 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
         >
           <div
             class="recovery-phrase__chips"
+            data-quiz-words="[]"
+            data-recovery-phrase="debris:dizzy:just:program:just:float:decrease:vacant:alarm:reduce:speak:stadium"
             data-testid="recovery-phrase-chips"
           >
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-0"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -431,6 +434,7 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-0"
                 focused="false"
                 readonly=""
                 type="text"
@@ -439,7 +443,6 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-1"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -450,6 +453,7 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-1"
                 focused="false"
                 readonly=""
                 type="text"
@@ -458,7 +462,6 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-2"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -469,6 +472,7 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-2"
                 focused="false"
                 readonly=""
                 type="text"
@@ -477,7 +481,6 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-3"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -488,6 +491,7 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-3"
                 focused="false"
                 readonly=""
                 type="text"
@@ -496,7 +500,6 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-4"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -507,6 +510,7 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-4"
                 focused="false"
                 readonly=""
                 type="text"
@@ -515,7 +519,6 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-5"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -526,6 +529,7 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-5"
                 focused="false"
                 readonly=""
                 type="text"
@@ -534,7 +538,6 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-6"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -545,6 +548,7 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-6"
                 focused="false"
                 readonly=""
                 type="text"
@@ -553,7 +557,6 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-7"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -564,6 +567,7 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-7"
                 focused="false"
                 readonly=""
                 type="text"
@@ -572,7 +576,6 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-8"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -583,6 +586,7 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-8"
                 focused="false"
                 readonly=""
                 type="text"
@@ -591,7 +595,6 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-9"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -602,6 +605,7 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-9"
                 focused="false"
                 readonly=""
                 type="text"
@@ -610,7 +614,6 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-10"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -621,6 +624,7 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-10"
                 focused="false"
                 readonly=""
                 type="text"
@@ -629,7 +633,6 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
             </div>
             <div
               class="mm-box mm-text-field mm-text-field--size-md mm-text-field--truncate mm-box--padding-right-0 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--align-items-center mm-box--background-color-background-default mm-box--rounded-sm mm-box--border-width-1 box--border-style-solid"
-              data-testid="recovery-phrase-chip-11"
             >
               <p
                 class="mm-box mm-text recovery-phrase__word-index mm-text--body-md mm-box--color-text-alternative"
@@ -640,6 +643,7 @@ exports[`Review Recovery Phrase Component should match snapshot after reveal rec
               <input
                 autocomplete="off"
                 class="mm-box mm-text mm-input mm-input--disable-state-styles mm-text-field__input mm-text--body-md mm-box--margin-0 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-2 mm-box--color-text-default mm-box--background-color-transparent mm-box--border-style-none"
+                data-testid="recovery-phrase-chip-11"
                 focused="false"
                 readonly=""
                 type="text"

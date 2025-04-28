@@ -57,16 +57,7 @@ describe('Password Hint', () => {
       <PasswordHint validatePasswordHint={validatePasswordHint} />,
       mockStore,
     );
-    const passwordHintTextField = getByTestId('password-hint-text-field');
-
-    const passwordHintInput = passwordHintTextField
-      .getElementsByTagName('input')
-      .item(0);
-    expect(passwordHintInput).toBeInTheDocument();
-
-    if (!passwordHintInput) {
-      throw new Error('Password hint input not found');
-    }
+    const passwordHintInput = getByTestId('password-hint-text-field');
     fireEvent.change(passwordHintInput, { target: { value: password } });
 
     const passwordHintSaveButton = getByTestId('password-hint-save');
@@ -85,16 +76,7 @@ describe('Password Hint', () => {
       <PasswordHint validatePasswordHint={validatePasswordHint} />,
       mockStore,
     );
-    const passwordHintTextField = getByTestId('password-hint-text-field');
-
-    const passwordHintInput = passwordHintTextField
-      .getElementsByTagName('input')
-      .item(0);
-    expect(passwordHintInput).toBeInTheDocument();
-
-    if (!passwordHintInput) {
-      throw new Error('Password hint input not found');
-    }
+    const passwordHintInput = getByTestId('password-hint-text-field');
     fireEvent.change(passwordHintInput, {
       target: { value: 'password-hint' },
     });
