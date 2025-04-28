@@ -294,10 +294,7 @@
         "conversionRate": 0
       }
     },
-    "cryptocurrencies": [
-      "btc",
-      "sol"
-    ],
+    "cryptocurrencies": ["btc", "sol"],
     "snaps": "object",
     "jobs": "object",
     "events": "object",
