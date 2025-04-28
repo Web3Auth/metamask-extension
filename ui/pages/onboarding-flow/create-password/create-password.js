@@ -13,6 +13,7 @@ import {
   IconColor,
 } from '../../../helpers/constants/design-system';
 import {
+  ONBOARDING_COMPLETION_ROUTE,
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
   ONBOARDING_METAMETRICS,
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
@@ -25,6 +26,7 @@ import {
   getFirstTimeFlowType,
   getCurrentKeyring,
   getMetaMetricsId,
+  getParticipateInMetaMetrics,
 } from '../../../selectors';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
@@ -42,6 +44,7 @@ import {
   FormTextField,
   FormTextFieldSize,
   IconName,
+  InputType,
   Text,
 } from '../../../components/component-library';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
@@ -68,9 +71,7 @@ export default function CreatePassword({
   const trackEvent = useContext(MetaMetricsContext);
   const currentKeyring = useSelector(getCurrentKeyring);
 
-  const participateInMetaMetrics = useSelector((state) =>
-    Boolean(state.metamask.participateInMetaMetrics),
-  );
+  const participateInMetaMetrics = useSelector(getParticipateInMetaMetrics);
   const metametricsId = useSelector(getMetaMetricsId);
   const base64MetametricsId = Buffer.from(metametricsId ?? '').toString(
     'base64',
@@ -155,7 +156,7 @@ export default function CreatePassword({
 
   const handlePasswordChange = (passwordInput) => {
     const isTooShort =
-      passwordInput.length && passwordInput.length < PASSWORD_MIN_LENGTH;
+      passwordInput.length > 0 && passwordInput.length < PASSWORD_MIN_LENGTH;
     const { score } = zxcvbn(passwordInput);
     const passwordStrengthLabel = getPasswordStrengthLabel(isTooShort, score);
     const passwordStrengthComponent = t('passwordStrength', [
@@ -256,6 +257,7 @@ export default function CreatePassword({
               size={ButtonIconSize.Md}
               data-testid="create-password-back-button"
               onClick={() => history.goBack()}
+              ariaLabel="back"
             />
           </Box>
           <Box
@@ -272,19 +274,23 @@ export default function CreatePassword({
                 firstTimeFlowType === FirstTimeFlowType.import ? 2 : 3,
               ])}
             </Text>
-            <Text variant={TextVariant.headingLg}>{t('createPassword')}</Text>
+            <Text variant={TextVariant.headingLg} as="h2">
+              {t('createPassword')}
+            </Text>
           </Box>
           <FormTextField
-            passwordStrength={passwordStrength}
-            passwordStrengthText={passwordStrengthText}
-            dataTestId="create-password-new"
+            label={t('newPassword')}
+            id="create-password-new"
+            data-testid="create-password-new"
             autoFocus
             placeholder={t('newPasswordPlaceholder')}
-            label={t('newPassword')}
-            labelProps={{ marginBottom: 1 }}
+            labelProps={{ marginBottom: 1, children: t('newPassword') }}
             size={FormTextFieldSize.Lg}
             value={password}
-            type={showPassword ? 'text' : 'password'}
+            inputProps={{
+              'data-testid': 'create-password-new-input',
+              type: showPassword ? InputType.Text : InputType.Password,
+            }}
             onChange={(e) => {
               handlePasswordChange(e.target.value);
             }}
@@ -312,20 +318,25 @@ export default function CreatePassword({
                   e.preventDefault();
                   setShowPassword(!showPassword);
                 }}
+                ariaLabel={showPassword ? 'hide password' : 'show password'}
               />
             }
           />
           <FormTextField
-            dataTestId="create-password-confirm"
+            label={t('confirmPassword')}
+            id="create-password-confirm"
+            data-testid="create-password-confirm"
             marginTop={4}
             placeholder={t('confirmPasswordPlaceholder')}
-            label={t('confirmPassword')}
-            labelProps={{ marginBottom: 1 }}
+            labelProps={{ marginBottom: 1, children: t('confirmPassword') }}
             size={FormTextFieldSize.Lg}
             error={Boolean(confirmPasswordError)}
             helpText={confirmPasswordError}
             value={confirmPassword}
-            type={showConfirmPassword ? 'text' : 'password'}
+            inputProps={{
+              'data-testid': 'create-password-confirm-input',
+              type: showConfirmPassword ? InputType.Text : InputType.Password,
+            }}
             onChange={(e) => {
               handleConfirmPasswordChange(e.target.value);
             }}
@@ -334,11 +345,14 @@ export default function CreatePassword({
                 iconName={
                   showConfirmPassword ? IconName.EyeSlash : IconName.Eye
                 }
-                data-testid="show-password"
+                data-testid="show-confirm-password"
                 onClick={(e) => {
                   e.preventDefault();
                   setShowConfirmPassword(!showConfirmPassword);
                 }}
+                ariaLabel={
+                  showConfirmPassword ? 'hide password' : 'show password'
+                }
               />
             }
           />
@@ -361,21 +375,25 @@ export default function CreatePassword({
                 <Text variant={TextVariant.bodyMd} marginLeft={2}>
                   {
                     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-                    t('passwordTermsWarning', [createPasswordLink])
+                    t('passwordTermsWarning')
                     ///: END:ONLY_INCLUDE_IF
                   }
+                  {createPasswordLink}
                 </Text>
               }
             />
           </Box>
-
           {
             ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
             <Button
-              data-testid="create-password-submit"
+              data-testid={
+                firstTimeFlowType === FirstTimeFlowType.import
+                  ? 'create-password-import'
+                  : 'create-password-submit'
+              }
               variant={ButtonVariant.Primary}
               width={BlockSize.Full}
-              size={ButtonSize.Large}
+              size={ButtonSize.Lg}
               className="create-password__form--submit-button"
               disabled={!isValid || !termsChecked}
             >

@@ -5,15 +5,13 @@ import thunk from 'redux-thunk';
 import initializedMockState from '../../../../test/data/mock-state.json';
 import { renderWithProvider } from '../../../../test/lib/render-helpers';
 import {
-  setFirstTimeFlowType,
-  setTermsOfUseLastAgreed,
-} from '../../../store/actions';
-import {
-  ONBOARDING_METAMETRICS,
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
   ONBOARDING_COMPLETION_ROUTE,
+  ONBOARDING_CREATE_PASSWORD_ROUTE,
+  ONBOARDING_IMPORT_WITH_SRP_ROUTE,
 } from '../../../helpers/constants/routes';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
+import { setFirstTimeFlowType } from '../../../store/actions';
 import GetStarted from './get-started';
 
 const mockHistoryReplace = jest.fn();
@@ -21,16 +19,6 @@ const mockHistoryPush = jest.fn();
 
 jest.mock('../../../store/actions.ts', () => ({
   setFirstTimeFlowType: jest.fn().mockReturnValue(
-    jest.fn((type) => {
-      return type;
-    }),
-  ),
-  setTermsOfUseLastAgreed: jest.fn().mockReturnValue(
-    jest.fn((type) => {
-      return type;
-    }),
-  ),
-  setParticipateInMetaMetrics: jest.fn().mockReturnValue(
     jest.fn((type) => {
       return type;
     }),
@@ -95,31 +83,45 @@ describe('Onboarding Welcome Component', () => {
       expect(onboardingWelcome).toBeInTheDocument();
     });
 
-    it('should set first time flow to create and route to metametrics', () => {
-      renderWithProvider(<GetStarted />, mockStore);
-      const termsCheckbox = screen.getByTestId('onboarding-terms-checkbox');
-      fireEvent.click(termsCheckbox);
+    it('should create new wallet modal', async () => {
+      const { getByText } = renderWithProvider(<GetStarted />, mockStore);
+
       const createWallet = screen.getByTestId('onboarding-create-wallet');
       fireEvent.click(createWallet);
 
-      expect(setTermsOfUseLastAgreed).toHaveBeenCalled();
-      expect(setFirstTimeFlowType).toHaveBeenCalledWith(
-        FirstTimeFlowType.create,
-      );
+      const createSrpButton = getByText('Continue with Secret Recovery Phrase');
+      expect(createSrpButton).toBeInTheDocument();
+
+      fireEvent.click(createSrpButton);
+
+      await waitFor(() => {
+        expect(setFirstTimeFlowType).toHaveBeenCalledWith(
+          FirstTimeFlowType.create,
+        );
+        expect(mockHistoryPush).toHaveBeenCalledWith(
+          ONBOARDING_CREATE_PASSWORD_ROUTE,
+        );
+      });
     });
 
-    it('should set first time flow to import and route to metametrics', async () => {
-      renderWithProvider(<GetStarted />, mockStore);
-      const termsCheckbox = screen.getByTestId('onboarding-terms-checkbox');
-      fireEvent.click(termsCheckbox);
+    it('should open login to existing wallet modal', async () => {
+      const { getByText } = renderWithProvider(<GetStarted />, mockStore);
 
       const createWallet = screen.getByTestId('onboarding-import-wallet');
       fireEvent.click(createWallet);
 
+      const importSrpButton = getByText('Import using Secret Recovery Phrase');
+      expect(importSrpButton).toBeInTheDocument();
+
+      fireEvent.click(importSrpButton);
+
       await waitFor(() => {
-        expect(setTermsOfUseLastAgreed).toHaveBeenCalled();
-        expect(setFirstTimeFlowType).toHaveBeenCalledWith('import');
-        expect(mockHistoryPush).toHaveBeenCalledWith(ONBOARDING_METAMETRICS);
+        expect(setFirstTimeFlowType).toHaveBeenCalledWith(
+          FirstTimeFlowType.import,
+        );
+        expect(mockHistoryPush).toHaveBeenCalledWith(
+          ONBOARDING_IMPORT_WITH_SRP_ROUTE,
+        );
       });
     });
   });

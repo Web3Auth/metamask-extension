@@ -1,3 +1,4 @@
+import { Browser } from 'selenium-webdriver';
 import {
   convertToHexValue,
   TEST_SEED_PHRASE,
@@ -22,8 +23,10 @@ import {
   completeImportSRPOnboardingFlow,
   importSRPOnboardingFlow,
   incompleteCreateNewWalletOnboardingFlow,
+  onboardingMetricsFlow,
 } from '../../page-objects/flows/onboarding.flow';
 import { switchToNetworkFlow } from '../../page-objects/flows/network.flow';
+import OnboardingGetStartedPage from '../../page-objects/pages/onboarding/onboarding-get-started-page';
 
 describe('MetaMask onboarding', function () {
   const ganacheOptions2 = {
@@ -56,9 +59,11 @@ describe('MetaMask onboarding', function () {
         await secureWalletPage.check_pageIsLoaded();
         await secureWalletPage.revealAndConfirmSRP();
 
+        await onboardingMetricsFlow(driver);
+
         const onboardingCompletePage = new OnboardingCompletePage(driver);
         await onboardingCompletePage.check_pageIsLoaded();
-        await onboardingCompletePage.check_congratulationsMessageIsDisplayed();
+        await onboardingCompletePage.check_walletReadyMessageIsDisplayed();
         await onboardingCompletePage.completeOnboarding();
 
         const homePage = new HomePage(driver);
@@ -110,46 +115,24 @@ describe('MetaMask onboarding', function () {
         const wrongSeedPhrase =
           'test test test test test test test test test test test test';
         await driver.navigate();
+
         const startOnboardingPage = new StartOnboardingPage(driver);
         await startOnboardingPage.check_pageIsLoaded();
-        await startOnboardingPage.checkTermsCheckbox();
-        await startOnboardingPage.clickImportWalletButton();
+        await startOnboardingPage.agreeToTermsOfUse();
 
-        const onboardingMetricsPage = new OnboardingMetricsPage(driver);
-        await onboardingMetricsPage.check_pageIsLoaded();
-        await onboardingMetricsPage.clickNoThanksButton();
+        const onboardingGetStartedPage = new OnboardingGetStartedPage(driver);
+        await onboardingGetStartedPage.check_pageIsLoaded();
+        await onboardingGetStartedPage.importWallet();
 
         const onboardingSrpPage = new OnboardingSrpPage(driver);
         await onboardingSrpPage.check_pageIsLoaded();
+
         await onboardingSrpPage.fillSrp(wrongSeedPhrase);
+        await onboardingSrpPage.clickConfirmButtonWithSrpError();
 
         // check the wrong SRP warning message is displayed
-        await onboardingSrpPage.check_wrongSrpWarningMessage();
+        await onboardingSrpPage.check_srpError();
         await onboardingSrpPage.check_confirmSrpButtonIsDisabled();
-      },
-    );
-  });
-
-  it('Verifies the functionality of selecting different Secret Recovery Phrase word counts', async function () {
-    await withFixtures(
-      {
-        fixtures: new FixtureBuilder({ onboarding: true }).build(),
-        title: this.test?.fullTitle(),
-      },
-      async ({ driver }: { driver: Driver }) => {
-        await driver.navigate();
-        const startOnboardingPage = new StartOnboardingPage(driver);
-        await startOnboardingPage.check_pageIsLoaded();
-        await startOnboardingPage.checkTermsCheckbox();
-        await startOnboardingPage.clickImportWalletButton();
-
-        const onboardingMetricsPage = new OnboardingMetricsPage(driver);
-        await onboardingMetricsPage.check_pageIsLoaded();
-        await onboardingMetricsPage.clickNoThanksButton();
-
-        const onboardingSrpPage = new OnboardingSrpPage(driver);
-        await onboardingSrpPage.check_pageIsLoaded();
-        await onboardingSrpPage.check_srpDropdownIterations();
       },
     );
   });
@@ -163,14 +146,14 @@ describe('MetaMask onboarding', function () {
       async ({ driver }: { driver: Driver }) => {
         const wrongTestPassword = 'test test test test';
         await driver.navigate();
+
         const startOnboardingPage = new StartOnboardingPage(driver);
         await startOnboardingPage.check_pageIsLoaded();
-        await startOnboardingPage.checkTermsCheckbox();
-        await startOnboardingPage.clickCreateWalletButton();
+        await startOnboardingPage.agreeToTermsOfUse();
 
-        const onboardingMetricsPage = new OnboardingMetricsPage(driver);
-        await onboardingMetricsPage.check_pageIsLoaded();
-        await onboardingMetricsPage.clickNoThanksButton();
+        const onboardingGetStartedPage = new OnboardingGetStartedPage(driver);
+        await onboardingGetStartedPage.check_pageIsLoaded();
+        await onboardingGetStartedPage.createWalletWithSrp();
 
         const onboardingPasswordPage = new OnboardingPasswordPage(driver);
         await onboardingPasswordPage.check_pageIsLoaded();
@@ -216,9 +199,11 @@ describe('MetaMask onboarding', function () {
           seedPhrase: TEST_SEED_PHRASE,
         });
 
+        await onboardingMetricsFlow(driver);
+
         const onboardingCompletePage = new OnboardingCompletePage(driver);
         await onboardingCompletePage.check_pageIsLoaded();
-        await onboardingCompletePage.check_walletReadyMessageIsDisplayed();
+        await onboardingCompletePage.check_remindMeLaterButtonIsDisplayed();
         await onboardingCompletePage.navigateToDefaultPrivacySettings();
 
         const onboardingPrivacySettingsPage = new OnboardingPrivacySettingsPage(
@@ -259,9 +244,11 @@ describe('MetaMask onboarding', function () {
       async ({ driver }) => {
         await importSRPOnboardingFlow({ driver });
 
+        await onboardingMetricsFlow(driver);
+
         const onboardingCompletePage = new OnboardingCompletePage(driver);
         await onboardingCompletePage.check_pageIsLoaded();
-        await onboardingCompletePage.check_walletReadyMessageIsDisplayed();
+        await onboardingCompletePage.check_remindMeLaterButtonIsDisplayed();
         await onboardingCompletePage.navigateToDefaultPrivacySettings();
 
         const onboardingPrivacySettingsPage = new OnboardingPrivacySettingsPage(
@@ -310,9 +297,10 @@ describe('MetaMask onboarding', function () {
         await onboardingMetricsPage.check_pageIsLoaded();
         await onboardingMetricsPage.clickNoThanksButton();
 
-        // Next screen should be Secure your wallet screen
-        const secureWalletPage = new SecureWalletPage(driver);
-        await secureWalletPage.check_pageIsLoaded();
+        // Next screen should be Onboarding Complete but the remind me later message is displayed
+        const onboardingCompletePage = new OnboardingCompletePage(driver);
+        await onboardingCompletePage.check_pageIsLoaded();
+        await onboardingCompletePage.check_remindMeLaterButtonIsDisplayed();
       },
     );
   });

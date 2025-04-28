@@ -99,6 +99,10 @@ export default class UnlockPage extends Component {
      */
     isUnlocked: PropTypes.bool,
     /**
+     * onClick handler for "Forgot password?" button
+     */
+    onRestore: PropTypes.func,
+    /**
      * onSubmit handler when form is submitted
      */
     onSubmit: PropTypes.func,
@@ -223,7 +227,8 @@ export default class UnlockPage extends Component {
     this.submitting = false;
   };
 
-  handleInputChange({ target }) {
+  handleInputChange(event) {
+    const { target } = event;
     this.setState({ password: target.value, error: null });
     // tell mascot to look at page action
     if (target.getBoundingClientRect) {
@@ -289,10 +294,6 @@ export default class UnlockPage extends Component {
     );
   };
 
-  onRestore = () => {
-    this.setState({ showResetPasswordModal: true });
-  };
-
   render() {
     const {
       password,
@@ -303,7 +304,7 @@ export default class UnlockPage extends Component {
       isLocked,
     } = this.state;
     const { t } = this.context;
-    const { passwordHint } = this.props;
+    const { passwordHint, onRestore } = this.props;
 
     const needHelpText = t('needHelpLinkText');
 
@@ -408,7 +409,11 @@ export default class UnlockPage extends Component {
               >
                 {this.context.t('unlock')}
               </Button>
-              <ButtonLink key="import-account" onClick={() => this.onRestore()}>
+              <ButtonLink
+                data-testid="unlock-forgot-password-button"
+                key="import-account"
+                onClick={() => onRestore()}
+              >
                 {t('forgotPassword')}
               </ButtonLink>
             </Box>

@@ -124,6 +124,7 @@ type AppState = {
   isMultiRpcOnboarding: boolean;
   errorInSettings: string | null;
   showNewSrpAddedToast: boolean;
+  passwordHint: string;
   showPasswordHintSavedToast: boolean;
 };
 
@@ -222,6 +223,7 @@ const initialState: AppState = {
   isMultiRpcOnboarding: false,
   errorInSettings: null,
   showNewSrpAddedToast: false,
+  passwordHint: '',
   showPasswordHintSavedToast: false,
 };
 
@@ -750,13 +752,11 @@ export default function reduceApp(
         ...appState,
         showNewSrpAddedToast: action.payload,
       };
-
     case actionConstants.SET_SHOW_PASSWORD_HINT_SAVED_TOAST:
       return {
         ...appState,
         showPasswordHintSavedToast: action.payload,
       };
-
     default:
       return appState;
   }

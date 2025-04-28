@@ -13,6 +13,7 @@ import { TransactionUpdateController } from '@metamask-institutional/transaction
 import { AccountsController } from '@metamask/accounts-controller';
 import {
   AssetsContractController,
+  DeFiPositionsController,
   MultichainAssetsController,
   MultichainAssetsRatesController,
   MultichainBalancesController,
@@ -39,6 +40,7 @@ import { Controller as UserStorageController } from '@metamask/profile-sync-cont
 import { Controller as NotificationServicesController } from '@metamask/notification-services-controller/notification-services';
 import { Controller as NotificationServicesPushController } from '@metamask/notification-services-controller/push-services';
 import { SeedlessOnboardingController } from '@metamask/seedless-onboarding-controller';
+
 import OnboardingController from '../controllers/onboarding';
 import { PreferencesController } from '../controllers/preferences-controller';
 import SwapsController from '../controllers/swaps';
@@ -50,6 +52,7 @@ import { InstitutionalSnapController } from '../controllers/institutional-snap/I
 export type Controller =
   | AuthenticationController
   | CronjobController
+  | DeFiPositionsController
   | ExecutionService
   | GasFeeController
   | JsonSnapsRegistry
@@ -95,6 +98,7 @@ export type Controller =
 export type ControllerFlatState = AccountsController['state'] &
   AuthenticationController['state'] &
   CronjobController['state'] &
+  DeFiPositionsController['state'] &
   GasFeeController['state'] &
   JsonSnapsRegistry['state'] &
   KeyringController['state'] &

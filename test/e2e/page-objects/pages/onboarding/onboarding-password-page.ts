@@ -5,8 +5,13 @@ import { WALLET_PASSWORD } from '../../../helpers';
 class OnboardingPasswordPage {
   private driver: Driver;
 
+  private readonly newPasswordInput =
+    '[data-testid="create-password-new-input"]';
+
   private readonly confirmPasswordInput =
-    '[data-testid="create-password-confirm"]';
+    '[data-testid="create-password-confirm-input"]';
+
+  private readonly passwordTerms = '[data-testid="create-password-terms"]';
 
   private readonly createPasswordMessage = {
     text: 'Create password',
@@ -14,19 +19,15 @@ class OnboardingPasswordPage {
   };
 
   private readonly createWalletButton =
-    '[data-testid="create-password-wallet"]';
+    '[data-testid="create-password-submit"]';
 
   private readonly importWalletButton =
     '[data-testid="create-password-import"]';
 
   private readonly incorrectPasswordWarningMessage = {
     text: "Passwords don't match",
-    tag: 'h6',
+    testId: 'help-text',
   };
-
-  private readonly newPasswordInput = '[data-testid="create-password-new"]';
-
-  private readonly passwordTerms = '[data-testid="create-password-terms"]';
 
   constructor(driver: Driver) {
     this.driver = driver;
