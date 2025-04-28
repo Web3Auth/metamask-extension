@@ -82,7 +82,6 @@ describe('App Installed Events', function () {
         }
 
         const events = await getEventPayloads(driver, mockedEndpoints);
-        console.log(events);
         assert.equal(events.length, 1);
         assert.deepStrictEqual(events[0].properties, {
           category: 'App',
