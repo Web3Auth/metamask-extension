@@ -96,7 +96,7 @@ export default function SecureYourWallet() {
           <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
             {t('stepOf', [2, 3])}
           </Text>
-          <Text variant={TextVariant.headingLg}>
+          <Text variant={TextVariant.headingLg} as="h2">
             {t('seedPhraseIntroTitle')}
           </Text>
         </Box>

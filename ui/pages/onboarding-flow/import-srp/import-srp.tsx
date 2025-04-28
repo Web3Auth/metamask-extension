@@ -128,6 +128,7 @@ export default function ImportSRP({
             {srpError && (
               <Box marginTop={2}>
                 <Text
+                  data-testid="import-srp-error"
                   variant={TextVariant.bodySm}
                   color={TextColor.errorDefault}
                 >
@@ -146,7 +147,7 @@ export default function ImportSRP({
           type="primary"
           data-testid="import-srp-confirm"
           onClick={onContinue}
-          disabled={!secretRecoveryPhrase.trim()}
+          disabled={!secretRecoveryPhrase.trim() || Boolean(srpError)}
         >
           {t('continue')}
         </Button>

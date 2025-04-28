@@ -96,6 +96,10 @@ export default class UnlockPage extends Component {
      */
     isUnlocked: PropTypes.bool,
     /**
+     * onClick handler for "Forgot password?" button
+     */
+    onRestore: PropTypes.func,
+    /**
      * onSubmit handler when form is submitted
      */
     onSubmit: PropTypes.func,
@@ -249,10 +253,6 @@ export default class UnlockPage extends Component {
     );
   };
 
-  onRestore = () => {
-    this.setState({ showResetPasswordModal: true });
-  };
-
   render() {
     const {
       password,
@@ -263,7 +263,7 @@ export default class UnlockPage extends Component {
       isLocked,
     } = this.state;
     const { t } = this.context;
-    const { passwordHint } = this.props;
+    const { passwordHint, onRestore } = this.props;
 
     const needHelpText = t('needHelpLinkText');
 
@@ -313,7 +313,6 @@ export default class UnlockPage extends Component {
               </Text>
               <FormTextField
                 id="password"
-                data-testid="unlock-password"
                 label={
                   <Box
                     display={Display.Flex}
@@ -337,6 +336,7 @@ export default class UnlockPage extends Component {
                   </Box>
                 }
                 inputProps={{
+                  'data-testid': 'unlock-password',
                   type: InputType.Password,
                 }}
                 onChange={(event) => this.handleInputChange(event)}
@@ -370,8 +370,9 @@ export default class UnlockPage extends Component {
                   {this.context.t('unlock')}
                 </Button>
                 <ButtonLink
+                  data-testid="unlock-forgot-password-button"
                   key="import-account"
-                  onClick={() => this.onRestore()}
+                  onClick={() => onRestore()}
                 >
                   {t('forgotPassword')}
                 </ButtonLink>

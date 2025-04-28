@@ -1200,7 +1200,7 @@ export default function TermsOfUsePopup({ isOpen, onClose, onAccept }) {
                 iconProps={{ size: IconSize.Md }}
                 onClick={handleScrollDownClick}
                 className="terms-of-use-popup__scroll-button"
-                data-testid="terms-of-use-popup__scroll-button"
+                data-testid="terms-of-use-scroll-button"
               />
             </div>
           )}

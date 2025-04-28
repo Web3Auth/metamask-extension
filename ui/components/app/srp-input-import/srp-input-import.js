@@ -157,6 +157,7 @@ export default function SrpInputImport({ onChange }) {
             <div className="srp-input-import__words-list">
               {draftSrp.map((word, index) => (
                 <TextField
+                  testId={`import-srp__srp-word-${index}`}
                   key={word.id}
                   ref={(el) => (srpRefs.current[word.id] = el)}
                   error={missSpelledWords.includes(word.word)}

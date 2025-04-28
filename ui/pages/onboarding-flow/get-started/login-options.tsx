@@ -123,7 +123,11 @@ export default function LoginOptions({
             </li>
             <li>
               <Button
-                data-testid="onboarding-create-wallet"
+                data-testid={
+                  loginOption === 'existing'
+                    ? 'onboarding-import-with-srp-button'
+                    : 'onboarding-create-with-srp-button'
+                }
                 variant={ButtonVariant.Secondary}
                 width={BlockSize.Full}
                 size={ButtonSize.Lg}

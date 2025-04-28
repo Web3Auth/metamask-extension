@@ -52,8 +52,7 @@ export default function SkipSRPBackup({
     await dispatch(setSeedPhraseBackedUp(false));
     trackEvent({
       category: MetaMetricsEventCategory.Onboarding,
-      event:
-        MetaMetricsEventName.OnboardingWalletSecuritySkipConfirmed,
+      event: MetaMetricsEventName.OnboardingWalletSecuritySkipConfirmed,
       properties: {
         hd_entropy_index: hdEntropyIndex,
       },
@@ -82,6 +81,7 @@ export default function SkipSRPBackup({
               variant={TextVariant.headingMd}
               textAlign={TextAlign.Center}
               marginTop={4}
+              as="h3"
             >
               {t('skipAccountSecurity')}
             </Text>

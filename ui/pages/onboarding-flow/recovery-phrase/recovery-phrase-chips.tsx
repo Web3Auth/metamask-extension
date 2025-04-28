@@ -112,6 +112,8 @@ export default function RecoveryPhraseChips({
       >
         <div
           data-testid="recovery-phrase-chips"
+          data-recovery-phrase={secretRecoveryPhrase.join(':')}
+          data-quiz-words={JSON.stringify(quizWords)}
           className={classnames('recovery-phrase__chips', {
             'recovery-phrase__chips--hidden': !phraseRevealed,
           })}
@@ -123,7 +125,11 @@ export default function RecoveryPhraseChips({
               : word;
             return (
               <TextField
-                data-testid={`recovery-phrase-chip-${index}`}
+                testId={
+                  confirmPhase && isQuizWord
+                    ? `recovery-phrase-input-${index}`
+                    : `recovery-phrase-chip-${index}`
+                }
                 key={index}
                 value={wordToDisplay}
                 className={classnames({

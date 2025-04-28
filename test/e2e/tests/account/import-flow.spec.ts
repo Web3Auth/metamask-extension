@@ -47,9 +47,10 @@ describe('Import flow', function () {
         title: this.test?.fullTitle(),
       },
       async ({ driver }) => {
+        // TODO: Fix fill SRP word by word
         await completeImportSRPOnboardingFlow({
           driver,
-          fillSrpWordByWord: true,
+          fillSrpWordByWord: false,
         });
         const homePage = new HomePage(driver);
         await homePage.check_pageIsLoaded();

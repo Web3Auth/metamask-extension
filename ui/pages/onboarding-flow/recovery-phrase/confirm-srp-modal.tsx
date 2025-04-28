@@ -63,6 +63,7 @@ export default function ConfirmSrpModal({
               variant={TextVariant.headingMd}
               textAlign={TextAlign.Center}
               marginTop={4}
+              as="h2"
             >
               {isError
                 ? t('confirmSrpErrorTitle')
@@ -78,6 +79,7 @@ export default function ConfirmSrpModal({
           </Text>
           <Box marginTop={6}>
             <Button
+              data-testid="confirm-srp-modal-button"
               variant={ButtonVariant.Primary}
               size={ButtonSize.Lg}
               onClick={handleContinue}

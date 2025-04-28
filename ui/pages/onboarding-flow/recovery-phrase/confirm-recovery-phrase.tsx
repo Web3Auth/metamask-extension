@@ -38,6 +38,10 @@ const generateQuizWords = (secretRecoveryPhrase: string[]) => {
   const randomIndices = new Set<number>();
   const srpLength = secretRecoveryPhrase.length;
 
+  if (srpLength === 0) {
+    return [];
+  }
+
   while (randomIndices.size < QUIZ_WORDS_COUNT) {
     const randomIndex = Math.floor(Math.random() * srpLength);
     randomIndices.add(randomIndex);
@@ -59,7 +63,9 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
   const dispatch = useDispatch();
   const trackEvent = useContext(MetaMetricsContext);
   const hdEntropyIndex = useSelector(getHDEntropyIndex);
-  const splitSecretRecoveryPhrase = secretRecoveryPhrase.split(' ');
+  const splitSecretRecoveryPhrase = secretRecoveryPhrase
+    ? secretRecoveryPhrase.split(' ')
+    : [];
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [matching, setMatching] = useState(false);
@@ -142,7 +148,7 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
           <Text variant={TextVariant.bodyMd} color={TextColor.textAlternative}>
             {t('stepOf', [3, 3])}
           </Text>
-          <Text variant={TextVariant.headingLg}>
+          <Text variant={TextVariant.headingLg} as="h2">
             {t('confirmRecoveryPhraseTitle')}
           </Text>
         </Box>
@@ -151,12 +157,14 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
             {t('confirmRecoveryPhraseDetails')}
           </Text>
         </Box>
-        <RecoveryPhraseChips
-          secretRecoveryPhrase={splitSecretRecoveryPhrase}
-          quizWords={quizWords}
-          confirmPhase
-          setInputValue={handleQuizInput}
-        />
+        {splitSecretRecoveryPhrase.length > 0 && (
+          <RecoveryPhraseChips
+            secretRecoveryPhrase={splitSecretRecoveryPhrase}
+            quizWords={quizWords}
+            confirmPhase
+            setInputValue={handleQuizInput}
+          />
+        )}
       </div>
       <Box width={BlockSize.Full}>
         <Button

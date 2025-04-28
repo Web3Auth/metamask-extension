@@ -9,6 +9,7 @@ import OnboardingCompletePage from '../pages/onboarding/onboarding-complete-page
 import OnboardingPrivacySettingsPage from '../pages/onboarding/onboarding-privacy-settings-page';
 import { WALLET_PASSWORD } from '../../helpers';
 import { E2E_SRP } from '../../default-fixture';
+import OnboardingGetStartedPage from '../pages/onboarding/onboarding-get-started-page';
 
 /**
  * Create new wallet onboarding flow
@@ -38,24 +39,13 @@ export const createNewWalletOnboardingFlow = async ({
     await driver.navigate();
   }
 
-  if (process.env.SELENIUM_BROWSER === Browser.FIREFOX) {
-    await onboardingMetricsFlow(driver, {
-      participateInMetaMetrics,
-      dataCollectionForMarketing,
-    });
-  }
-
   const startOnboardingPage = new StartOnboardingPage(driver);
   await startOnboardingPage.check_pageIsLoaded();
-  await startOnboardingPage.checkTermsCheckbox();
-  await startOnboardingPage.clickCreateWalletButton();
+  await startOnboardingPage.agreeToTermsOfUse();
 
-  if (process.env.SELENIUM_BROWSER !== Browser.FIREFOX) {
-    await onboardingMetricsFlow(driver, {
-      participateInMetaMetrics,
-      dataCollectionForMarketing,
-    });
-  }
+  const onboardingGetStartedPage = new OnboardingGetStartedPage(driver);
+  await onboardingGetStartedPage.check_pageIsLoaded();
+  await onboardingGetStartedPage.createWalletWithSrp();
 
   const onboardingPasswordPage = new OnboardingPasswordPage(driver);
   await onboardingPasswordPage.check_pageIsLoaded();
@@ -94,24 +84,13 @@ export const incompleteCreateNewWalletOnboardingFlow = async ({
     await driver.navigate();
   }
 
-  if (process.env.SELENIUM_BROWSER === Browser.FIREFOX) {
-    await onboardingMetricsFlow(driver, {
-      participateInMetaMetrics,
-      dataCollectionForMarketing,
-    });
-  }
-
   const startOnboardingPage = new StartOnboardingPage(driver);
   await startOnboardingPage.check_pageIsLoaded();
-  await startOnboardingPage.checkTermsCheckbox();
-  await startOnboardingPage.clickCreateWalletButton();
+  await startOnboardingPage.agreeToTermsOfUse();
 
-  if (process.env.SELENIUM_BROWSER !== Browser.FIREFOX) {
-    await onboardingMetricsFlow(driver, {
-      participateInMetaMetrics,
-      dataCollectionForMarketing,
-    });
-  }
+  const onboardingGetStartedPage = new OnboardingGetStartedPage(driver);
+  await onboardingGetStartedPage.check_pageIsLoaded();
+  await onboardingGetStartedPage.createWalletWithSrp();
 
   const onboardingPasswordPage = new OnboardingPasswordPage(driver);
   await onboardingPasswordPage.check_pageIsLoaded();
@@ -163,37 +142,22 @@ export const importSRPOnboardingFlow = async ({
   seedPhrase = E2E_SRP,
   password = WALLET_PASSWORD,
   fillSrpWordByWord = false,
-  participateInMetaMetrics = false,
-  dataCollectionForMarketing = false,
 }: {
   driver: Driver;
   seedPhrase?: string;
   password?: string;
   fillSrpWordByWord?: boolean;
-  participateInMetaMetrics?: boolean;
-  dataCollectionForMarketing?: boolean;
 }): Promise<void> => {
   console.log('Starting the import of SRP onboarding flow');
   await driver.navigate();
 
-  if (process.env.SELENIUM_BROWSER === Browser.FIREFOX) {
-    await onboardingMetricsFlow(driver, {
-      participateInMetaMetrics,
-      dataCollectionForMarketing,
-    });
-  }
-
   const startOnboardingPage = new StartOnboardingPage(driver);
   await startOnboardingPage.check_pageIsLoaded();
-  await startOnboardingPage.checkTermsCheckbox();
-  await startOnboardingPage.clickImportWalletButton();
+  await startOnboardingPage.agreeToTermsOfUse();
 
-  if (process.env.SELENIUM_BROWSER !== Browser.FIREFOX) {
-    await onboardingMetricsFlow(driver, {
-      participateInMetaMetrics,
-      dataCollectionForMarketing,
-    });
-  }
+  const onboardingGetStartedPage = new OnboardingGetStartedPage(driver);
+  await onboardingGetStartedPage.check_pageIsLoaded();
+  await onboardingGetStartedPage.importWallet();
 
   const onboardingSrpPage = new OnboardingSrpPage(driver);
   await onboardingSrpPage.check_pageIsLoaded();
@@ -240,9 +204,15 @@ export const completeCreateNewWalletOnboardingFlow = async ({
     needNavigateToNewPage,
     dataCollectionForMarketing,
   });
+
+  await onboardingMetricsFlow(driver, {
+    participateInMetaMetrics,
+    dataCollectionForMarketing,
+  });
+
   const onboardingCompletePage = new OnboardingCompletePage(driver);
   await onboardingCompletePage.check_pageIsLoaded();
-  await onboardingCompletePage.check_congratulationsMessageIsDisplayed();
+  await onboardingCompletePage.check_walletReadyMessageIsDisplayed();
   await onboardingCompletePage.completeOnboarding();
 };
 
@@ -279,13 +249,16 @@ export const completeImportSRPOnboardingFlow = async ({
     seedPhrase,
     password,
     fillSrpWordByWord,
+  });
+
+  await onboardingMetricsFlow(driver, {
     participateInMetaMetrics,
     dataCollectionForMarketing,
   });
 
   const onboardingCompletePage = new OnboardingCompletePage(driver);
   await onboardingCompletePage.check_pageIsLoaded();
-  await onboardingCompletePage.check_walletReadyMessageIsDisplayed();
+  await onboardingCompletePage.check_remindMeLaterButtonIsDisplayed();
   await onboardingCompletePage.completeOnboarding();
 };
 

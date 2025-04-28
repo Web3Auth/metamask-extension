@@ -54,7 +54,9 @@ export default function Welcome() {
     <div className="welcome">
       <div className="welcome__wrapper">
         <div className="welcome__title">
-          <Text className="welcome__title-text">{t('welcomeTitle')}</Text>
+          <Text className="welcome__title-text" as="h2">
+            {t('welcomeTitle')}
+          </Text>
         </div>
         <div className="welcome__mascot">{renderMascot()}</div>
         <Box
@@ -64,6 +66,7 @@ export default function Welcome() {
           alignItems={AlignItems.center}
         >
           <ButtonBase
+            data-testid="onboarding-get-started-button"
             className="welcome__button"
             width={BlockSize.Full}
             size={ButtonBaseSize.Lg}

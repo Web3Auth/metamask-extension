@@ -270,7 +270,9 @@ export default function CreatePassword({
                 firstTimeFlowType === FirstTimeFlowType.import ? 2 : 3,
               ])}
             </Text>
-            <Text variant={TextVariant.headingLg}>{t('createPassword')}</Text>
+            <Text variant={TextVariant.headingLg} as="h2">
+              {t('createPassword')}
+            </Text>
           </Box>
           <FormTextField
             label={t('newPassword')}
@@ -282,6 +284,7 @@ export default function CreatePassword({
             size={FormTextFieldSize.Lg}
             value={password}
             inputProps={{
+              'data-testid': 'create-password-new-input',
               type: showPassword ? InputType.Text : InputType.Password,
             }}
             onChange={(e) => {
@@ -327,6 +330,7 @@ export default function CreatePassword({
             helpText={confirmPasswordError}
             value={confirmPassword}
             inputProps={{
+              'data-testid': 'create-password-confirm-input',
               type: showConfirmPassword ? InputType.Text : InputType.Password,
             }}
             onChange={(e) => {
@@ -378,7 +382,11 @@ export default function CreatePassword({
           {
             ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
             <Button
-              data-testid="create-password-submit"
+              data-testid={
+                firstTimeFlowType === FirstTimeFlowType.import
+                  ? 'create-password-import'
+                  : 'create-password-submit'
+              }
               variant={ButtonVariant.Primary}
               width={BlockSize.Full}
               size={ButtonSize.Lg}
