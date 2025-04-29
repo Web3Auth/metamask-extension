@@ -26,6 +26,7 @@ import Spinner from '../../../../components/ui/spinner';
 import { useI18nContext } from '../../../../hooks/useI18nContext';
 import { PASSWORD_MIN_LENGTH } from '../../../../helpers/constants/common';
 import { changePassword, verifyPassword } from '../../../../store/actions';
+import ChangePasswordWarning from './change-password-warning';
 
 const ChangePasswordSteps = {
   CurrentPassword: 1,
@@ -38,7 +39,7 @@ const ChangePassword = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [eventEmitter] = useState(new EventEmitter());
-  const [step, setStep] = useState(ChangePasswordSteps.CurrentPassword);
+  const [step, setStep] = useState(ChangePasswordSteps.ChangePassword);
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [isIncorrectPasswordError, setIsIncorrectPasswordError] =
@@ -52,6 +53,8 @@ const ChangePassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showChangePasswordWarning, setShowChangePasswordWarning] =
+    useState(false);
 
   const getPasswordStrengthLabel = (isTooShort, score) => {
     if (isTooShort) {
@@ -220,7 +223,7 @@ const ChangePassword = () => {
           className="change-password__form"
           onSubmit={(e) => {
             e.preventDefault();
-            handleSubmitNewPassword();
+            setShowChangePasswordWarning(true);
           }}
         >
           <Box className="change-password__form-container">
@@ -318,6 +321,15 @@ const ChangePassword = () => {
             {t('createPasswordCreatingNote')}
           </Text>
         </Box>
+      )}
+      {showChangePasswordWarning && (
+        <ChangePasswordWarning
+          onConfirm={() => {
+            handleSubmitNewPassword();
+            setShowChangePasswordWarning(false);
+          }}
+          onCancel={() => setShowChangePasswordWarning(false)}
+        />
       )}
     </div>
   );
