@@ -119,6 +119,8 @@ export default class UnlockPage extends Component {
     showResetPasswordModal: false,
     showEraseWalletModal: false,
     isLocked: false,
+    // TODO: Get from backend
+    isPasswordChangedRecently: false,
   };
 
   submitting = false;
@@ -288,7 +290,7 @@ export default class UnlockPage extends Component {
     const { passwordHint } = this.props;
     const { t } = this.context;
 
-    if (!error && !showHint) {
+    if (!error && !showHint && !this.state.isPasswordChangedRecently) {
       return null;
     }
 
@@ -298,6 +300,14 @@ export default class UnlockPage extends Component {
         display={Display.Flex}
         flexDirection={FlexDirection.Column}
       >
+        {this.state.isPasswordChangedRecently && (
+          <HelpText
+            textAlign={TextAlign.Left}
+            severity={HelpTextSeverity.Danger}
+          >
+            {t('passwordChangedRecentlyError')}
+          </HelpText>
+        )}
         {error && (
           <HelpText
             textAlign={TextAlign.Left}
@@ -327,6 +337,7 @@ export default class UnlockPage extends Component {
       showResetPasswordModal,
       showEraseWalletModal,
       isLocked,
+      isPasswordChangedRecently,
     } = this.state;
     const { t } = this.context;
     const { passwordHint } = this.props;
@@ -403,7 +414,7 @@ export default class UnlockPage extends Component {
                 type="password"
                 value={password}
                 onChange={(event) => this.handleInputChange(event)}
-                error={error}
+                error={error || isPasswordChangedRecently}
                 helpText={this.renderHelpText()}
                 autoComplete="current-password"
                 autoFocus

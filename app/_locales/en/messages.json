@@ -3980,6 +3980,15 @@
   "password": {
     "message": "Password"
   },
+  "passwordChangedRecently": {
+    "message": "Password changed recently"
+  },
+  "passwordChangedRecentlyDescription": {
+    "message": "Your password has been changed recently. You would need to type in your new password to continue being logged in."
+  },
+  "passwordChangedRecentlyError": {
+    "message": "Your password was changed recently."
+  },
   "passwordHintCreate": {
     "message": "Create a password hint"
   },
