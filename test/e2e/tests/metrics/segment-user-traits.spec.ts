@@ -5,6 +5,7 @@ import FixtureBuilder from '../../fixture-builder';
 import {
   completeCreateNewWalletOnboardingFlow,
   createNewWalletOnboardingFlow,
+  onboardingMetricsFlow,
 } from '../../page-objects/flows/onboarding.flow';
 import { MOCK_META_METRICS_ID } from '../../constants';
 import HeaderNavbar from '../../page-objects/pages/header-navbar';
@@ -44,6 +45,7 @@ describe('Segment User Traits', function () {
           participateInMetaMetrics: true,
           dataCollectionForMarketing: true,
         });
+
         const events = await getEventPayloads(driver, mockedEndpoints);
         assert.equal(events.length, 1);
         assert.deepStrictEqual(events[0].traits.is_metrics_opted_in, true);
@@ -69,6 +71,7 @@ describe('Segment User Traits', function () {
           participateInMetaMetrics: true,
           dataCollectionForMarketing: false,
         });
+
         const events = await getEventPayloads(driver, mockedEndpoints);
         assert.equal(events.length, 1);
         assert.deepStrictEqual(events[0].traits.is_metrics_opted_in, true);
@@ -95,6 +98,7 @@ describe('Segment User Traits', function () {
           participateInMetaMetrics: false,
           dataCollectionForMarketing: false,
         });
+
         const events = await getEventPayloads(driver, mockedEndpoints);
         assert.equal(events.length, 0);
       },
@@ -114,7 +118,7 @@ describe('Segment User Traits', function () {
         testSpecificMock: mockSegment,
       },
       async ({ driver, mockedEndpoint: mockedEndpoints }) => {
-        let events = [];
+        let events: any[] = [];
         await completeCreateNewWalletOnboardingFlow({
           driver,
           participateInMetaMetrics: false,
@@ -150,7 +154,7 @@ describe('Segment User Traits', function () {
         testSpecificMock: mockSegment,
       },
       async ({ driver, mockedEndpoint: mockedEndpoints }) => {
-        let events = [];
+        let events: any[] = [];
         await completeCreateNewWalletOnboardingFlow({
           driver,
           participateInMetaMetrics: false,

@@ -59,7 +59,9 @@ describe('MetaMask onboarding', function () {
         await secureWalletPage.check_pageIsLoaded();
         await secureWalletPage.revealAndConfirmSRP();
 
-        await onboardingMetricsFlow(driver);
+        if (process.env.SELENIUM_BROWSER !== Browser.FIREFOX) {
+          await onboardingMetricsFlow(driver);
+        }
 
         const onboardingCompletePage = new OnboardingCompletePage(driver);
         await onboardingCompletePage.check_pageIsLoaded();
@@ -199,8 +201,6 @@ describe('MetaMask onboarding', function () {
           seedPhrase: TEST_SEED_PHRASE,
         });
 
-        await onboardingMetricsFlow(driver);
-
         const onboardingCompletePage = new OnboardingCompletePage(driver);
         await onboardingCompletePage.check_pageIsLoaded();
         await onboardingCompletePage.check_remindMeLaterButtonIsDisplayed();
@@ -243,8 +243,6 @@ describe('MetaMask onboarding', function () {
       },
       async ({ driver }) => {
         await importSRPOnboardingFlow({ driver });
-
-        await onboardingMetricsFlow(driver);
 
         const onboardingCompletePage = new OnboardingCompletePage(driver);
         await onboardingCompletePage.check_pageIsLoaded();

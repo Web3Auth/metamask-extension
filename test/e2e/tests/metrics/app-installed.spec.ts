@@ -52,6 +52,12 @@ describe('App Installed Events', function () {
       async ({ driver, mockedEndpoint: mockedEndpoints }) => {
         await driver.navigate();
 
+        if (process.env.SELENIUM_BROWSER === Browser.FIREFOX) {
+          const onboardingMetricsPage = new OnboardingMetricsPage(driver);
+          await onboardingMetricsPage.check_pageIsLoaded();
+          await onboardingMetricsPage.clickIAgreeButton();
+        }
+
         // agree to terms of use and start onboarding
         const startOnboardingPage = new StartOnboardingPage(driver);
         await startOnboardingPage.check_pageIsLoaded();
@@ -69,13 +75,13 @@ describe('App Installed Events', function () {
         await secureWalletPage.check_pageIsLoaded();
         await secureWalletPage.revealAndConfirmSRP();
 
-        await onboardingMetricsFlow(driver, {
-          participateInMetaMetrics: true,
-          dataCollectionForMarketing: true,
-        });
+        if (process.env.SELENIUM_BROWSER !== Browser.FIREFOX) {
+          const onboardingMetricsPage = new OnboardingMetricsPage(driver);
+          await onboardingMetricsPage.check_pageIsLoaded();
+          await onboardingMetricsPage.clickIAgreeButton();
+        }
 
         const events = await getEventPayloads(driver, mockedEndpoints);
-        console.log(events);
         assert.equal(events.length, 1);
         assert.deepStrictEqual(events[0].properties, {
           category: 'App',
@@ -101,6 +107,12 @@ describe('App Installed Events', function () {
       async ({ driver, mockedEndpoint: mockedEndpoints }) => {
         await driver.navigate();
 
+        if (process.env.SELENIUM_BROWSER === Browser.FIREFOX) {
+          const onboardingMetricsPage = new OnboardingMetricsPage(driver);
+          await onboardingMetricsPage.check_pageIsLoaded();
+          await onboardingMetricsPage.clickNoThanksButton();
+        }
+
         // agree to terms of use and start onboarding
         const startOnboardingPage = new StartOnboardingPage(driver);
         await startOnboardingPage.check_pageIsLoaded();
@@ -118,7 +130,11 @@ describe('App Installed Events', function () {
         await secureWalletPage.check_pageIsLoaded();
         await secureWalletPage.revealAndConfirmSRP();
 
-        await onboardingMetricsFlow(driver);
+        if (process.env.SELENIUM_BROWSER !== Browser.FIREFOX) {
+          const onboardingMetricsPage = new OnboardingMetricsPage(driver);
+          await onboardingMetricsPage.check_pageIsLoaded();
+          await onboardingMetricsPage.clickNoThanksButton();
+        }
 
         const mockedRequests = await getEventPayloads(
           driver,

@@ -47,6 +47,11 @@ import {
   Text,
 } from '../../../components/component-library';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
+///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+import { PLATFORM_FIREFOX } from '../../../../shared/constants/app';
+// eslint-disable-next-line import/no-restricted-paths
+import { getPlatform } from '../../../../app/scripts/lib/util';
+///: END:ONLY_INCLUDE_IF
 
 export default function CreatePassword({
   createNewAccount,
@@ -202,7 +207,9 @@ export default function CreatePassword({
     ) {
       await importWithRecoveryPhrase(password, secretRecoveryPhrase);
       ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-      history.push(ONBOARDING_METAMETRICS);
+      getPlatform() === PLATFORM_FIREFOX
+        ? history.push(ONBOARDING_COMPLETION_ROUTE)
+        : history.push(ONBOARDING_METAMETRICS);
       ///: END:ONLY_INCLUDE_IF
     } else {
       // Otherwise we are in create new wallet flow
