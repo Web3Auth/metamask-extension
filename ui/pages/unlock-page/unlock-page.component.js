@@ -300,21 +300,22 @@ export default class UnlockPage extends Component {
         display={Display.Flex}
         flexDirection={FlexDirection.Column}
       >
-        {this.state.isPasswordChangedRecently && (
-          <HelpText
-            textAlign={TextAlign.Left}
-            severity={HelpTextSeverity.Danger}
-          >
-            {t('passwordChangedRecentlyError')}
-          </HelpText>
-        )}
-        {error && (
+        {error ? (
           <HelpText
             textAlign={TextAlign.Left}
             severity={HelpTextSeverity.Danger}
           >
             {error}
           </HelpText>
+        ) : (
+          this.state.isPasswordChangedRecently && (
+            <HelpText
+              textAlign={TextAlign.Left}
+              severity={HelpTextSeverity.Danger}
+            >
+              {t('passwordChangedRecentlyError')}
+            </HelpText>
+          )
         )}
         {showHint && (
           <HelpText textAlign={TextAlign.Left} color={TextColor.textMuted}>
