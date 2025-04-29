@@ -42,16 +42,16 @@ describe('Unlock Page', () => {
       onSubmit: jest.fn(),
     };
 
-    const { queryByTestId } = renderWithProvider(
+    const { getByTestId } = renderWithProvider(
       <UnlockPage {...props} />,
       mockStore,
     );
 
-    const passwordField = queryByTestId('unlock-password');
-    const loginButton = queryByTestId('unlock-submit');
+    const passwordField = getByTestId('unlock-password');
+    const loginButton = getByTestId('unlock-submit');
 
     fireEvent.change(passwordField, { target: { value: 'a-password' } });
-    expect(passwordField).toHaveAttribute('value', 'a-password');
+    expect(passwordField.value).toBe('a-password');
 
     fireEvent.click(loginButton);
 
@@ -59,7 +59,14 @@ describe('Unlock Page', () => {
   });
 
   it('clicks imports seed button', () => {
-    const { getByText } = renderWithProvider(<UnlockPage />, mockStore);
+    const props = {
+      onRestore: mockMarkPasswordForgotten,
+    };
+
+    const { getByText } = renderWithProvider(
+      <UnlockPage {...props} />,
+      mockStore,
+    );
 
     fireEvent.click(getByText('Forgot password?'));
 
