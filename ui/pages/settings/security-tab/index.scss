@@ -57,3 +57,14 @@
     height: 100%;
   }
 }
+
+.srp-reveal-list {
+  &__divider {
+    height: 1px;
+    background-color: var(--color-border-muted);
+  }
+
+  &__social-login-card {
+    cursor: pointer;
+  }
+}

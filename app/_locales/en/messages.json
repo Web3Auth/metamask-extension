@@ -4933,6 +4933,22 @@
   "securitySrpProtect": {
     "message": "Protect your wallet"
   },
+  "securitySocialLoginDisabled": {
+    "message": "Log in with Apple/Google"
+  },
+  "securitySocialLoginDisabledDescription": {
+    "message": "Access your wallet anytime with your Apple/Google login and password."
+  },
+  "securitySocialLoginEnabled": {
+    "message": "Email recovery enabled"
+  },
+  "securitySocialLoginEnabledDescription": {
+    "message": "Access your wallet anytime with your $1 login and password.",
+    "description": "The $1 is the text 'Apple/Google'"
+  },
+  "securitySocialLoginSetup": {
+    "message": "Set up"
+  },
   "seeAllPermissions": {
     "message": "See all permissions",
     "description": "Used for revealing more content (e.g. permission list, etc.)"
@@ -5721,6 +5737,9 @@
   "srpListName": {
     "message": "Secret Recovery Phrase $1",
     "description": "$1 is the order of the Secret Recovery Phrase"
+  },
+  "srpListBackup": {
+    "message": "Back up"
   },
   "srpListNumberOfAccounts": {
     "message": "$1 accounts",
