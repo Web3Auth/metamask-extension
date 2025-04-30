@@ -118,6 +118,10 @@ describe('MetaMask onboarding', function () {
           'test test test test test test test test test test test test';
         await driver.navigate();
 
+        if (process.env.SELENIUM_BROWSER === Browser.FIREFOX) {
+          await onboardingMetricsFlow(driver);
+        }
+
         const startOnboardingPage = new StartOnboardingPage(driver);
         await startOnboardingPage.check_pageIsLoaded();
         await startOnboardingPage.agreeToTermsOfUse();
@@ -148,6 +152,10 @@ describe('MetaMask onboarding', function () {
       async ({ driver }: { driver: Driver }) => {
         const wrongTestPassword = 'test test test test';
         await driver.navigate();
+
+        if (process.env.SELENIUM_BROWSER === Browser.FIREFOX) {
+          await onboardingMetricsFlow(driver);
+        }
 
         const startOnboardingPage = new StartOnboardingPage(driver);
         await startOnboardingPage.check_pageIsLoaded();

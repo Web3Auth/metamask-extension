@@ -32,7 +32,13 @@ import {
 } from '../../../../shared/constants/metametrics';
 import { getHDEntropyIndex } from '../../../selectors/selectors';
 import { setSeedPhraseBackedUp } from '../../../store/actions';
-import { ONBOARDING_METAMETRICS } from '../../../helpers/constants/routes';
+import {
+  ONBOARDING_COMPLETION_ROUTE,
+  ONBOARDING_METAMETRICS,
+} from '../../../helpers/constants/routes';
+// eslint-disable-next-line import/no-restricted-paths
+import { getPlatform } from '../../../../app/scripts/lib/util';
+import { PLATFORM_FIREFOX } from '../../../../shared/constants/app';
 
 export default function SkipSRPBackup({
   onClose,
@@ -57,7 +63,12 @@ export default function SkipSRPBackup({
         hd_entropy_index: hdEntropyIndex,
       },
     });
-    history.push(ONBOARDING_METAMETRICS);
+
+    if (getPlatform() === PLATFORM_FIREFOX) {
+      history.push(ONBOARDING_COMPLETION_ROUTE);
+    } else {
+      history.push(ONBOARDING_METAMETRICS);
+    }
   }
 
   return (
