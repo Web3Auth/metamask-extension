@@ -181,7 +181,7 @@ export default class SecurityTab extends PureComponent {
     return (
       <>
         <div
-          ref={this.settingsRefs[22]}
+          ref={this.settingsRefs[1]}
           className="settings-page__security-tab-sub-header"
         >
           {t('securitySrpTitle')}
@@ -265,7 +265,7 @@ export default class SecurityTab extends PureComponent {
     return (
       <>
         <div
-          ref={this.settingsRefs[23]}
+          ref={this.settingsRefs[2]}
           className="settings-page__security-tab-sub-header"
         >
           {t('securityChangePasswordTitle')}
