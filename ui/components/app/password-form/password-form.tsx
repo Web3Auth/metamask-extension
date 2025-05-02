@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import zxcvbn from 'zxcvbn';
 import {
   Box,
   ButtonIcon,
@@ -10,7 +11,6 @@ import {
   Text,
 } from '../../component-library';
 import { useI18nContext } from '../../../hooks/useI18nContext';
-import zxcvbn from 'zxcvbn';
 import { PASSWORD_MIN_LENGTH } from '../../../helpers/constants/common';
 import { TextVariant } from '../../../helpers/constants/design-system';
 
