@@ -9,9 +9,8 @@ import {
   Button,
   ButtonSize,
   ButtonVariant,
-  HelpText,
-  HelpTextSeverity,
   InputType,
+  FormTextFieldSize,
 } from '../../components/component-library';
 import {
   TextVariant,
@@ -237,17 +236,18 @@ export default class UnlockPage extends Component {
         flexDirection={FlexDirection.Column}
       >
         {error && (
-          <HelpText
+          <Text
+            variant={TextVariant.bodySm}
             textAlign={TextAlign.Left}
-            severity={HelpTextSeverity.Danger}
+            color={TextColor.errorDefault}
           >
             {error}
-          </HelpText>
+          </Text>
         )}
         {showHint && (
-          <HelpText textAlign={TextAlign.Left} color={TextColor.textMuted}>
+          <Text textAlign={TextAlign.Left} color={TextColor.textMuted}>
             {t('unlockPageHint', [passwordHint])}
-          </HelpText>
+          </Text>
         )}
       </Box>
     );
@@ -307,6 +307,7 @@ export default class UnlockPage extends Component {
                 as="h1"
                 variant={TextVariant.headingLg}
                 marginTop={1}
+                marginBottom={2}
                 color={TextColor.textDefault}
               >
                 {t('welcomeBack')}
@@ -335,6 +336,8 @@ export default class UnlockPage extends Component {
                     )}
                   </Box>
                 }
+                placeholder={t('enterPassword')}
+                size={FormTextFieldSize.Lg}
                 inputProps={{
                   'data-testid': 'unlock-password',
                   type: InputType.Password,
