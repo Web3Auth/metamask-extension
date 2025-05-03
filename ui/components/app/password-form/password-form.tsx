@@ -69,17 +69,21 @@ export default function PasswordForm({ onChange }: PasswordFormProps) {
     const isTooShort = passwordInput.length < PASSWORD_MIN_LENGTH;
     const { score } = zxcvbn(passwordInput);
     const passwordStrengthLabel = getPasswordStrengthLabel(isTooShort, score);
-    const passwordStrengthComponent = isTooShort
-      ? passwordStrengthLabel.text
-      : t('passwordStrength', [
-          <span
-            key={score}
-            data-testid={passwordStrengthLabel.dataTestId}
-            className={passwordStrengthLabel.className}
-          >
-            {passwordStrengthLabel.text}
-          </span>,
-        ]);
+    const passwordStrengthComponent = isTooShort ? (
+      <span key={score} data-testid={passwordStrengthLabel.dataTestId}>
+        {passwordStrengthLabel.text}
+      </span>
+    ) : (
+      t('passwordStrength', [
+        <span
+          key={score}
+          data-testid={passwordStrengthLabel.dataTestId}
+          className={passwordStrengthLabel.className}
+        >
+          {passwordStrengthLabel.text}
+        </span>,
+      ])
+    );
 
     const confirmError =
       !confirmPassword || passwordInput === confirmPassword
