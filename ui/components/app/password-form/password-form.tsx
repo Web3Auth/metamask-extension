@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import zxcvbn from 'zxcvbn';
 import {
@@ -28,91 +28,79 @@ export default function PasswordForm({ onChange }: PasswordFormProps) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
-  const [passwordStrength, setPasswordStrength] = useState('');
+  const [passwordStrength, setPasswordStrength] = useState(
+    t('passwordNotLongEnough'),
+  );
 
-  const getPasswordStrengthLabel = useCallback(
-    (isTooShort: boolean, score: number) => {
-      if (isTooShort) {
-        return {
-          className: 'create-password__weak',
-          dataTestId: 'short-password-error',
-          text: t('passwordNotLongEnough'),
-          description: '',
-        };
-      }
-      if (score >= 4) {
-        return {
-          className: 'create-password__strong',
-          dataTestId: 'strong-password',
-          text: t('strong'),
-          description: '',
-        };
-      }
-      if (score === 3) {
-        return {
-          className: 'create-password__average',
-          dataTestId: 'average-password',
-          text: t('average'),
-          description: t('passwordStrengthDescription'),
-        };
-      }
+  const getPasswordStrengthLabel = (isTooShort: boolean, score: number) => {
+    if (isTooShort) {
       return {
         className: 'create-password__weak',
-        dataTestId: 'weak-password',
-        text: t('weak'),
+        dataTestId: 'short-password-error',
+        text: t('passwordNotLongEnough'),
+        description: '',
+      };
+    }
+    if (score >= 4) {
+      return {
+        className: 'create-password__strong',
+        dataTestId: 'strong-password',
+        text: t('strong'),
+        description: '',
+      };
+    }
+    if (score === 3) {
+      return {
+        className: 'create-password__average',
+        dataTestId: 'average-password',
+        text: t('average'),
         description: t('passwordStrengthDescription'),
       };
-    },
-    [t],
-  );
+    }
+    return {
+      className: 'create-password__weak',
+      dataTestId: 'weak-password',
+      text: t('weak'),
+      description: t('passwordStrengthDescription'),
+    };
+  };
 
-  const handlePasswordChange = useCallback(
-    (passwordInput: string) => {
-      const isTooShort = passwordInput.length < PASSWORD_MIN_LENGTH;
-      const { score } = zxcvbn(passwordInput);
-      const passwordStrengthLabel = getPasswordStrengthLabel(isTooShort, score);
-      const passwordStrengthComponent = isTooShort
-        ? passwordStrengthLabel.text
-        : t('passwordStrength', [
-            <span
-              key={score}
-              data-testid={passwordStrengthLabel.dataTestId}
-              className={passwordStrengthLabel.className}
-            >
-              {passwordStrengthLabel.text}
-            </span>,
-          ]);
+  const handlePasswordChange = (passwordInput: string) => {
+    const isTooShort = passwordInput.length < PASSWORD_MIN_LENGTH;
+    const { score } = zxcvbn(passwordInput);
+    const passwordStrengthLabel = getPasswordStrengthLabel(isTooShort, score);
+    const passwordStrengthComponent = isTooShort
+      ? passwordStrengthLabel.text
+      : t('passwordStrength', [
+          <span
+            key={score}
+            data-testid={passwordStrengthLabel.dataTestId}
+            className={passwordStrengthLabel.className}
+          >
+            {passwordStrengthLabel.text}
+          </span>,
+        ]);
 
-      const confirmError =
-        !confirmPassword || passwordInput === confirmPassword
-          ? ''
-          : t('passwordsDontMatch');
+    const confirmError =
+      !confirmPassword || passwordInput === confirmPassword
+        ? ''
+        : t('passwordsDontMatch');
 
-      setPassword(passwordInput);
-      setPasswordStrength(passwordStrengthComponent);
-      setConfirmPasswordError(confirmError);
-    },
-    [confirmPassword, getPasswordStrengthLabel, t],
-  );
+    setPassword(passwordInput);
+    setPasswordStrength(passwordStrengthComponent);
+    setConfirmPasswordError(confirmError);
+  };
 
-  const handleConfirmPasswordChange = useCallback(
-    (confirmPasswordInput: string) => {
-      const error =
-        password === confirmPasswordInput ||
-        confirmPasswordInput.length < PASSWORD_MIN_LENGTH
-          ? ''
-          : t('passwordsDontMatch');
+  const handleConfirmPasswordChange = (confirmPasswordInput: string) => {
+    const error =
+      password === confirmPasswordInput ||
+      confirmPasswordInput.length < PASSWORD_MIN_LENGTH
+        ? ''
+        : t('passwordsDontMatch');
 
-      setConfirmPassword(confirmPasswordInput);
-      setConfirmPasswordError(error);
-    },
-    [password, t],
-  );
-
-  useEffect(() => {
-    console.log('initializing');
-    handlePasswordChange('');
-  }, [handlePasswordChange]);
+    setConfirmPassword(confirmPasswordInput);
+    setConfirmPasswordError(error);
+  };
 
   useEffect(() => {
     if (
@@ -140,7 +128,7 @@ export default function PasswordForm({ onChange }: PasswordFormProps) {
           'data-testid': 'create-password-new-input',
           type: showPassword ? InputType.Text : InputType.Password,
         }}
-        onChange={(e) => {
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           handlePasswordChange(e.target.value);
         }}
         helpText={
@@ -178,7 +166,7 @@ export default function PasswordForm({ onChange }: PasswordFormProps) {
           'data-testid': 'create-password-confirm-input',
           type: showConfirmPassword ? InputType.Text : InputType.Password,
         }}
-        onChange={(e) => {
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           handleConfirmPasswordChange(e.target.value);
         }}
         endAccessory={
