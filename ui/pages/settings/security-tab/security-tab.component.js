@@ -188,20 +188,20 @@ export default class SecurityTab extends PureComponent {
         </div>
         <div className="settings-page__content-padded">
           <div className="settings-page__content-description">
-            {t('securitySrpDescription')}
+            {socialLoginEnabled
+              ? t('securitySrpSocialLoginDescription')
+              : t('securitySrpDescription')}
           </div>
-          <BannerAlert
-            title={t('securitySrpLoginWithAppleOrGoogle')}
-            description={socialLoginEmail}
-            paddingTop={2}
-            paddingBottom={2}
-            marginTop={4}
-            severity={
-              socialLoginEnabled
-                ? BannerAlertSeverity.Success
-                : BannerAlertSeverity.Danger
-            }
-          />
+          {socialLoginEnabled && (
+            <BannerAlert
+              title={t('securitySrpLoginWithAppleOrGoogle')}
+              description={socialLoginEmail}
+              paddingTop={2}
+              paddingBottom={2}
+              marginTop={4}
+              severity={BannerAlertSeverity.Success}
+            />
+          )}
           {/* TODO: get severity from controller */}
           <BannerAlert
             title={t('securitySrpBackupSrp')}
