@@ -110,7 +110,7 @@ export default class UnlockPage extends Component {
     /**
      * Password hint
      */
-    passwordHint: PropTypes.string,
+    passwordHint: PropTypes.string.optional,
   };
 
   state = {

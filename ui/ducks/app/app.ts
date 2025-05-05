@@ -124,7 +124,7 @@ type AppState = {
   isMultiRpcOnboarding: boolean;
   errorInSettings: string | null;
   showNewSrpAddedToast: boolean;
-  passwordHint: string;
+  passwordHint?: string;
   showPasswordHintSavedToast: boolean;
 };
 

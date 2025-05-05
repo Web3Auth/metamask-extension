@@ -107,7 +107,7 @@ export type Preferences = {
   tokenNetworkFilter: Record<string, boolean>;
   shouldShowAggregatedBalancePopover: boolean;
   dismissSmartAccountSuggestionEnabled: boolean;
-  passwordHint: string;
+  passwordHint?: string;
 };
 
 // Omitting properties that already exist in the PreferencesState, as part of the preferences property.
