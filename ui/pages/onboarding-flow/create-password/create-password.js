@@ -1,7 +1,6 @@
-import React, { useState, useMemo, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
-import zxcvbn from 'zxcvbn';
 import { useSelector } from 'react-redux';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
@@ -19,7 +18,6 @@ import {
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
   ///: END:ONLY_INCLUDE_IF
 } from '../../../helpers/constants/routes';
-import { PASSWORD_MIN_LENGTH } from '../../../helpers/constants/common';
 import ZENDESK_URLS from '../../../helpers/constants/zendesk-url';
 import {
   getFirstTimeFlowType,
@@ -40,10 +38,7 @@ import {
   ButtonSize,
   ButtonVariant,
   Checkbox,
-  FormTextField,
-  FormTextFieldSize,
   IconName,
-  InputType,
   Text,
 } from '../../../components/component-library';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
@@ -51,6 +46,7 @@ import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { PLATFORM_FIREFOX } from '../../../../shared/constants/app';
 // eslint-disable-next-line import/no-restricted-paths
 import { getPlatform } from '../../../../app/scripts/lib/util';
+import PasswordForm from '../../../components/app/password-form/password-form';
 ///: END:ONLY_INCLUDE_IF
 
 export default function CreatePassword({
@@ -59,15 +55,8 @@ export default function CreatePassword({
   secretRecoveryPhrase,
 }) {
   const t = useI18nContext();
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [password, setPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [passwordStrength, setPasswordStrength] = useState('');
-  const [passwordStrengthText, setPasswordStrengthText] = useState('');
-  const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [termsChecked, setTermsChecked] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [newAccountCreationInProgress, setNewAccountCreationInProgress] =
     useState(false);
   const history = useHistory();
@@ -110,88 +99,10 @@ export default function CreatePassword({
     newAccountCreationInProgress,
   ]);
 
-  const isValid = useMemo(() => {
-    if (!password || !confirmPassword || password !== confirmPassword) {
-      return false;
-    }
-
-    if (password.length < PASSWORD_MIN_LENGTH) {
-      return false;
-    }
-
-    return !passwordError && !confirmPasswordError;
-  }, [password, confirmPassword, passwordError, confirmPasswordError]);
-
-  const getPasswordStrengthLabel = (isTooShort, score) => {
-    if (isTooShort) {
-      return {
-        className: 'create-password__weak',
-        dataTestId: 'short-password-error',
-        text: t('passwordNotLongEnough'),
-        description: '',
-      };
-    }
-    if (score >= 4) {
-      return {
-        className: 'create-password__strong',
-        dataTestId: 'strong-password',
-        text: t('strong'),
-        description: '',
-      };
-    }
-    if (score === 3) {
-      return {
-        className: 'create-password__average',
-        dataTestId: 'average-password',
-        text: t('average'),
-        description: t('passwordStrengthDescription'),
-      };
-    }
-    return {
-      className: 'create-password__weak',
-      dataTestId: 'weak-password',
-      text: t('weak'),
-      description: t('passwordStrengthDescription'),
-    };
-  };
-
-  const handlePasswordChange = (passwordInput) => {
-    const isTooShort =
-      passwordInput.length > 0 && passwordInput.length < PASSWORD_MIN_LENGTH;
-    const { score } = zxcvbn(passwordInput);
-    const passwordStrengthLabel = getPasswordStrengthLabel(isTooShort, score);
-    const passwordStrengthComponent = t('passwordStrength', [
-      <span
-        key={score}
-        data-testid={passwordStrengthLabel.dataTestId}
-        className={passwordStrengthLabel.className}
-      >
-        {passwordStrengthLabel.text}
-      </span>,
-    ]);
-    const confirmError =
-      !confirmPassword || passwordInput === confirmPassword
-        ? ''
-        : t('passwordsDontMatch');
-
-    setPassword(passwordInput);
-    setPasswordStrength(passwordStrengthComponent);
-    setPasswordStrengthText(passwordStrengthLabel.description);
-    setConfirmPasswordError(confirmError);
-  };
-
-  const handleConfirmPasswordChange = (confirmPasswordInput) => {
-    const error =
-      password === confirmPasswordInput ? '' : t('passwordsDontMatch');
-
-    setConfirmPassword(confirmPasswordInput);
-    setConfirmPasswordError(error);
-  };
-
   const handleCreate = async (event) => {
     event?.preventDefault();
 
-    if (!isValid) {
+    if (!password) {
       return;
     }
 
@@ -226,7 +137,7 @@ export default function CreatePassword({
           ///: END:ONLY_INCLUDE_IF
         }
       } catch (error) {
-        setPasswordError(error.message);
+        console.error(error);
       }
     }
   };
@@ -281,82 +192,7 @@ export default function CreatePassword({
               {t('createPassword')}
             </Text>
           </Box>
-          <FormTextField
-            label={t('newPassword')}
-            id="create-password-new"
-            autoFocus
-            placeholder={t('newPasswordPlaceholder')}
-            labelProps={{ marginBottom: 1, children: t('newPassword') }}
-            size={FormTextFieldSize.Lg}
-            value={password}
-            inputProps={{
-              'data-testid': 'create-password-new-input',
-              type: showPassword ? InputType.Text : InputType.Password,
-            }}
-            onChange={(e) => {
-              handlePasswordChange(e.target.value);
-            }}
-            helpText={
-              (passwordStrength || passwordStrengthText) && (
-                <Box>
-                  {passwordStrength && (
-                    <Text as="div" variant={TextVariant.inherit}>
-                      {passwordStrength}
-                    </Text>
-                  )}
-                  {passwordStrengthText && (
-                    <Text as="div" variant={TextVariant.inherit}>
-                      {passwordStrengthText}
-                    </Text>
-                  )}
-                </Box>
-              )
-            }
-            endAccessory={
-              <ButtonIcon
-                iconName={showPassword ? IconName.EyeSlash : IconName.Eye}
-                data-testid="show-password"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowPassword(!showPassword);
-                }}
-                ariaLabel={showPassword ? 'hide password' : 'show password'}
-              />
-            }
-          />
-          <FormTextField
-            label={t('confirmPassword')}
-            id="create-password-confirm"
-            marginTop={4}
-            placeholder={t('confirmPasswordPlaceholder')}
-            labelProps={{ marginBottom: 1, children: t('confirmPassword') }}
-            size={FormTextFieldSize.Lg}
-            error={Boolean(confirmPasswordError)}
-            helpText={confirmPasswordError}
-            value={confirmPassword}
-            inputProps={{
-              'data-testid': 'create-password-confirm-input',
-              type: showConfirmPassword ? InputType.Text : InputType.Password,
-            }}
-            onChange={(e) => {
-              handleConfirmPasswordChange(e.target.value);
-            }}
-            endAccessory={
-              <ButtonIcon
-                iconName={
-                  showConfirmPassword ? IconName.EyeSlash : IconName.Eye
-                }
-                data-testid="show-confirm-password"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowConfirmPassword(!showConfirmPassword);
-                }}
-                ariaLabel={
-                  showConfirmPassword ? 'hide password' : 'show password'
-                }
-              />
-            }
-          />
+          <PasswordForm onChange={(newPassword) => setPassword(newPassword)} />
         </div>
         <div className="create-password__footer">
           <Box
@@ -379,6 +215,7 @@ export default function CreatePassword({
                     t('passwordTermsWarning')
                     ///: END:ONLY_INCLUDE_IF
                   }
+                  &nbsp;
                   {createPasswordLink}
                 </Text>
               }
@@ -392,7 +229,7 @@ export default function CreatePassword({
               width={BlockSize.Full}
               size={ButtonSize.Lg}
               className="create-password__form--submit-button"
-              disabled={!isValid || !termsChecked}
+              disabled={!password || !termsChecked}
             >
               {t('confirm')}
             </Button>

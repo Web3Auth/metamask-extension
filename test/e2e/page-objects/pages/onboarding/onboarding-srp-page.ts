@@ -77,16 +77,16 @@ class OnboardingSrpPage {
       if (wordIndex === 0) {
         await this.driver.waitForSelector(this.srpWord0);
         const srpWord0Input = await this.driver.findElement(this.srpWord0);
-        await this.driver.pasteIntoField(this.srpWord0, word);
+        await this.driver.fill(this.srpWord0, word);
         await srpWord0Input.sendKeys(this.driver.Key.SPACE);
       } else {
-        await this.driver.wait(async () => {
-          const srpWordSelector = `[data-testid="import-srp__srp-word-${wordIndex}"]`;
-          await this.driver.waitForSelector(srpWordSelector);
-          const srpWordInput = await this.driver.findElement(srpWordSelector);
-          await this.driver.pasteIntoField(srpWordSelector, word);
+        const srpWordSelector = `[data-testid="import-srp__srp-word-${wordIndex}"]`;
+        await this.driver.waitForSelector(srpWordSelector);
+        const srpWordInput = await this.driver.findElement(srpWordSelector);
+        await srpWordInput.sendKeys(word);
+        if (wordIndex < words.length - 1) {
           await srpWordInput.sendKeys(this.driver.Key.SPACE);
-        }, this.driver.timeout);
+        }
       }
     }
   }

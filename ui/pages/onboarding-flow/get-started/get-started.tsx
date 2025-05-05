@@ -9,12 +9,7 @@ import {
   ButtonVariant,
   Text,
 } from '../../../components/component-library';
-import {
-  TextVariant,
-  TextAlign,
-  FontWeight,
-  BlockSize,
-} from '../../../helpers/constants/design-system';
+import { BlockSize } from '../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
@@ -104,7 +99,7 @@ export default function GetStarted() {
   const renderMascot = () => {
     if (isFlask()) {
       return (
-        <img src="./images/logo/metamask-fox.svg" width="240" height="240" />
+        <img src="./images/logo/metamask-fox.svg" width="173" height="173" />
       );
     }
     if (isBeta()) {
@@ -113,7 +108,12 @@ export default function GetStarted() {
       );
     }
     return (
-      <Mascot animationEventEmitter={eventEmitter} width="250" height="300" />
+      <Mascot
+        animationEventEmitter={eventEmitter}
+        followMouse={false}
+        width="268"
+        height="268"
+      />
     );
   };
 
@@ -135,17 +135,13 @@ export default function GetStarted() {
       <div className="get-started__content">
         <div className="get-started__mascot">{renderMascot()}</div>
 
-        <div className="get-started__title">
-          <Text
-            variant={TextVariant.displayMd}
-            as="h2"
-            textAlign={TextAlign.Center}
-            fontWeight={FontWeight.Bold}
-            data-testid="onboarding-welcome"
-          >
-            {t('welcomeToMetaMask')}!
-          </Text>
-        </div>
+        <Text
+          as="h2"
+          className="get-started__title"
+          data-testid="onboarding-welcome"
+        >
+          {t('welcomeToMetaMask')}!
+        </Text>
       </div>
 
       <div className="get-started__footer">
