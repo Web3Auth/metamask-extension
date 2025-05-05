@@ -7,7 +7,6 @@ import OnboardingCompletePage from '../../page-objects/pages/onboarding/onboardi
 import {
   importSRPOnboardingFlow,
   createNewWalletOnboardingFlow,
-  onboardingMetricsFlow,
 } from '../../page-objects/flows/onboarding.flow';
 
 // Mock function implementation for Token Price requests

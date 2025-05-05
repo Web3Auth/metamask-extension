@@ -11,7 +11,6 @@ import { switchToNetworkFlow } from '../../page-objects/flows/network.flow';
 import {
   completeImportSRPOnboardingFlow,
   importSRPOnboardingFlow,
-  onboardingMetricsFlow,
 } from '../../page-objects/flows/onboarding.flow';
 import { mockEmptyPrices } from '../tokens/utils/mocks';
 import { CHAIN_IDS } from '../../../../shared/constants/network';
