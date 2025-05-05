@@ -1223,6 +1223,7 @@ export default class SecurityTab extends PureComponent {
       petnamesEnabled,
       dataCollectionForMarketing,
       setDataCollectionForMarketing,
+      socialLoginEnabled,
     } = this.props;
     const { showDataCollectionDisclaimer } = this.state;
 
@@ -1236,7 +1237,7 @@ export default class SecurityTab extends PureComponent {
           {this.context.t('security')}
         </span>
         {this.renderSeedWords()}
-        {this.renderPassword()}
+        {socialLoginEnabled && this.renderPassword()}
         {this.renderSecurityAlertsToggle()}
         <span className="settings-page__security-tab-sub-header__bold">
           {this.context.t('privacy')}
