@@ -9,7 +9,6 @@ import { MOCK_META_METRICS_ID } from '../../constants';
 import OnboardingGetStartedPage from '../../page-objects/pages/onboarding/onboarding-get-started-page';
 import SecureWalletPage from '../../page-objects/pages/onboarding/secure-wallet-page';
 import OnboardingPasswordPage from '../../page-objects/pages/onboarding/onboarding-password-page';
-import { onboardingMetricsFlow } from '../../page-objects/flows/onboarding.flow';
 
 /**
  * Mocks the segment API multiple times for specific payloads that we expect to

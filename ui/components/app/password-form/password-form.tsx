@@ -131,6 +131,8 @@ export default function PasswordForm({ onChange }: PasswordFormProps) {
         inputProps={{
           'data-testid': 'create-password-new-input',
           type: showPassword ? InputType.Text : InputType.Password,
+          // https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/autocomplete#values
+          // autoComplete: 'new-password',
         }}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           handlePasswordChange(e.target.value);
@@ -169,6 +171,8 @@ export default function PasswordForm({ onChange }: PasswordFormProps) {
         inputProps={{
           'data-testid': 'create-password-confirm-input',
           type: showConfirmPassword ? InputType.Text : InputType.Password,
+          // https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/autocomplete#values
+          // autoComplete: 'confirm-password',
         }}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           handleConfirmPasswordChange(e.target.value);

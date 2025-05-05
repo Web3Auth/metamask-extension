@@ -30,6 +30,7 @@ import LoadingScreen from '../../../components/ui/loading-screen';
 import LoginOptions from './login-options';
 import { LOGIN_TYPE, LoginType } from './types';
 
+// TODO: remove welcome route and use welcome component in this route
 export default function GetStarted() {
   const t = useI18nContext();
   const dispatch = useDispatch();
@@ -119,6 +120,7 @@ export default function GetStarted() {
 
   const handleLogin = (loginType: LoginType) => {
     if (loginType === LOGIN_TYPE.SRP) {
+      // TODO: use enum for loginOption
       if (loginOption === 'new') {
         onCreateClick();
       } else {

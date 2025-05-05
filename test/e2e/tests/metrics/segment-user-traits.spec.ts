@@ -118,7 +118,7 @@ describe('Segment User Traits', function () {
         testSpecificMock: mockSegment,
       },
       async ({ driver, mockedEndpoint: mockedEndpoints }) => {
-        let events: any[] = [];
+        let events = [];
         await completeCreateNewWalletOnboardingFlow({
           driver,
           participateInMetaMetrics: false,
@@ -154,7 +154,7 @@ describe('Segment User Traits', function () {
         testSpecificMock: mockSegment,
       },
       async ({ driver, mockedEndpoint: mockedEndpoints }) => {
-        let events: any[] = [];
+        let events = [];
         await completeCreateNewWalletOnboardingFlow({
           driver,
           participateInMetaMetrics: false,

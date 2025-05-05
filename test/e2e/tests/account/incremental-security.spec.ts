@@ -11,7 +11,6 @@ import OnboardingPasswordPage from '../../page-objects/pages/onboarding/onboardi
 import SecureWalletPage from '../../page-objects/pages/onboarding/secure-wallet-page';
 import StartOnboardingPage from '../../page-objects/pages/onboarding/start-onboarding-page';
 import TestDappSendEthWithPrivateKey from '../../page-objects/pages/test-dapp-send-eth-with-private-key';
-import { onboardingMetricsFlow } from '../../../../test/e2e/page-objects/flows/onboarding.flow';
 import OnboardingGetStartedPage from '../../page-objects/pages/onboarding/onboarding-get-started-page';
 
 describe('Incremental Security', function (this: Suite) {
