@@ -67,62 +67,64 @@ export const RevealSrpList = () => {
 
   return (
     <Box className="srp-reveal-list">
-      <Box paddingTop={4} paddingLeft={4} paddingRight={4}>
-        <Card
-          className={
-            socialLoginEnabled ? '' : 'srp-reveal-list__social-login-card'
-          }
-          onClick={() => {
-            if (socialLoginEnabled) {
-              return;
+      {socialLoginEnabled && (
+        <Box paddingTop={4} paddingLeft={4} paddingRight={4}>
+          <Card
+            className={
+              socialLoginEnabled ? '' : 'srp-reveal-list__social-login-card'
             }
-            // TODO: Implement social login
-            console.log('login with social');
-          }}
-        >
-          <Box
-            display={Display.Flex}
-            flexDirection={FlexDirection.Row}
-            alignItems={AlignItems.center}
-            justifyContent={JustifyContent.spaceBetween}
+            onClick={() => {
+              if (socialLoginEnabled) {
+                return;
+              }
+              // TODO: Implement social login
+              console.log('login with social');
+            }}
           >
-            {socialLoginCardTitle()}
-            {!socialLoginEnabled && (
-              <Box
-                display={Display.Flex}
-                alignItems={AlignItems.center}
-                gap={2}
-              >
-                <Text
-                  fontWeight={FontWeight.Medium}
-                  color={TextColor.errorDefault}
-                >
-                  {t('securitySocialLoginSetup')}
-                </Text>
-                <Icon name={IconName.ArrowRight} size={IconSize.Sm} />
-              </Box>
-            )}
-          </Box>
-          <Box>
             <Box
-              width={BlockSize.Full}
-              className="srp-reveal-list__divider"
-              marginTop={2}
-              marginBottom={2}
-            />
-            <Text
-              variant={TextVariant.bodySm}
-              color={TextColor.textAlternative}
+              display={Display.Flex}
+              flexDirection={FlexDirection.Row}
+              alignItems={AlignItems.center}
+              justifyContent={JustifyContent.spaceBetween}
             >
-              {socialLoginEnabled
-                ? t('securitySocialLoginEnabledDescription', [
-                    capitalize(socialLoginType),
-                  ])
-                : t('securitySocialLoginDisabledDescription')}
-            </Text>
-          </Box>
-        </Card>
-      </Box>
+              {socialLoginCardTitle()}
+              {!socialLoginEnabled && (
+                <Box
+                  display={Display.Flex}
+                  alignItems={AlignItems.center}
+                  gap={2}
+                >
+                  <Text
+                    fontWeight={FontWeight.Medium}
+                    color={TextColor.errorDefault}
+                  >
+                    {t('securitySocialLoginSetup')}
+                  </Text>
+                  <Icon name={IconName.ArrowRight} size={IconSize.Sm} />
+                </Box>
+              )}
+            </Box>
+            <Box>
+              <Box
+                width={BlockSize.Full}
+                className="srp-reveal-list__divider"
+                marginTop={2}
+                marginBottom={2}
+              />
+              <Text
+                variant={TextVariant.bodySm}
+                color={TextColor.textAlternative}
+              >
+                {socialLoginEnabled
+                  ? t('securitySocialLoginEnabledDescription', [
+                      capitalize(socialLoginType),
+                    ])
+                  : t('securitySocialLoginDisabledDescription')}
+              </Text>
+            </Box>
+          </Card>
+        </Box>
+      )}
       <SrpList
         onActionComplete={(keyringId) => {
           // TODO: if srp is not backed up do the secure srp flow else reveal the srp flow

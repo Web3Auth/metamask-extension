@@ -110,6 +110,7 @@ export default class SecurityTab extends PureComponent {
     setSecurityAlertsEnabled: PropTypes.func,
     metaMetricsDataDeletionId: PropTypes.string,
     hdEntropyIndex: PropTypes.number,
+    hasMultipleHdKeyrings: PropTypes.bool,
     socialLoginEmail: PropTypes.string,
     socialLoginEnabled: PropTypes.bool,
     allSrpBackupsEnabled: PropTypes.bool,
@@ -173,6 +174,7 @@ export default class SecurityTab extends PureComponent {
     const { t } = this.context;
     const {
       history,
+      hasMultipleHdKeyrings,
       socialLoginEmail,
       socialLoginEnabled,
       allSrpBackupsEnabled,
@@ -211,7 +213,7 @@ export default class SecurityTab extends PureComponent {
             severity={
               allSrpBackupsEnabled
                 ? BannerAlertSeverity.Success
-                : BannerAlertSeverity.Danger
+                : BannerAlertSeverity.Warning
             }
           />
           <Button
@@ -240,12 +242,18 @@ export default class SecurityTab extends PureComponent {
                 },
               });
 
-              history.push({
-                pathname: REVEAL_SRP_LIST_ROUTE,
-              });
+              if (hasMultipleHdKeyrings || socialLoginEnabled) {
+                history.push({
+                  pathname: REVEAL_SRP_LIST_ROUTE,
+                });
+                return;
+              }
+              this.setState({ srpQuizModalVisible: true });
             }}
           >
-            {t('securitySrpProtect')}
+            {socialLoginEnabled
+              ? t('securitySrpProtect')
+              : t('revealSeedWords')}
           </Button>
           {this.state.srpQuizModalVisible && (
             <SRPQuiz
