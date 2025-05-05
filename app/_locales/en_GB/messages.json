@@ -2037,6 +2037,9 @@
   "enterOptionalPassword": {
     "message": "Enter optional password"
   },
+  "enterPassword": {
+    "message": "Enter password"
+  },
   "enterPasswordContinue": {
     "message": "Enter password to continue"
   },
@@ -3412,7 +3415,7 @@
     "message": "New password"
   },
   "newPasswordPlaceholder": {
-    "message": "Use at least 8 characters"
+    "message": "Enter a strong password"
   },
   "newPrivacyPolicyActionButton": {
     "message": "Read more"
@@ -4925,13 +4928,16 @@
     "message": "Secret Recovery Phrase"
   },
   "securitySrpDescription": {
-    "message": "Back up your Secret Recovery Phrase and link your wallet to an Apple or Google account. Be sure to store your Secret Recovery Phrase in a safe place that only you can access and won’t forget."
+    "message": "Back up your Secret Recovery Phrase. Be sure to store your Secret Recovery Phrase in a safe place that only you can access and won’t forget."
   },
   "securitySrpLoginWithAppleOrGoogle": {
     "message": "Log in with Apple or Google"
   },
   "securitySrpProtect": {
     "message": "Protect your wallet"
+  },
+  "securitySrpSocialLoginDescription": {
+    "message": "Back up your Secret Recovery Phrase and link your wallet to an Apple or Google account. Be sure to store your Secret Recovery Phrase in a safe place that only you can access and won’t forget."
   },
   "securitySocialLoginDisabled": {
     "message": "Log in with Apple/Google"

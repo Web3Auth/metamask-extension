@@ -2037,6 +2037,9 @@
   "enterOptionalPassword": {
     "message": "Enter optional password"
   },
+  "enterPassword": {
+    "message": "Enter password"
+  },
   "enterPasswordContinue": {
     "message": "Enter password to continue"
   },
@@ -3412,7 +3415,7 @@
     "message": "New password"
   },
   "newPasswordPlaceholder": {
-    "message": "Use at least 8 characters"
+    "message": "Enter a strong password"
   },
   "newPrivacyPolicyActionButton": {
     "message": "Read more"
