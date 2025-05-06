@@ -17,8 +17,10 @@ describe('Terms of use', function () {
         await unlockWallet(driver);
 
         // accept updated terms of use
-        const acceptTerms = '[data-testid="terms-of-use-accept-button"]';
-        await driver.clickElement('[data-testid="popover-scroll-button"]');
+        const acceptTerms = '[data-testid="terms-of-use-agree-button"]';
+        await driver.clickElementAndWaitToDisappear(
+          '[data-testid="terms-of-use-scroll-button"]',
+        );
         await driver.clickElement('[data-testid="terms-of-use-checkbox"]');
         await driver.clickElementAndWaitToDisappear(acceptTerms);
       },

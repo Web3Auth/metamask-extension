@@ -2,6 +2,7 @@ import EventEmitter from 'events';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import classnames from 'classnames';
 import Mascot from '../../../components/ui/mascot';
 import { isFlask, isBeta } from '../../../helpers/utils/build-types';
 import {
@@ -32,16 +33,16 @@ export default function Welcome() {
   const renderMascot = () => {
     if (isFlask()) {
       return (
-        <img src="./images/logo/metamask-fox.svg" width="300" height="300" />
+        <img src="./images/logo/metamask-fox.svg" width="290" height="278" />
       );
     }
     if (isBeta()) {
       return (
-        <img src="./images/logo/metamask-fox.svg" width="300" height="300" />
+        <img src="./images/logo/metamask-fox.svg" width="290" height="278" />
       );
     }
     return (
-      <Mascot animationEventEmitter={eventEmitter} width="332" height="332" />
+      <Mascot animationEventEmitter={eventEmitter} width="432" height="432" />
     );
   };
 
@@ -58,7 +59,13 @@ export default function Welcome() {
             {t('welcomeTitle')}
           </Text>
         </div>
-        <div className="welcome__mascot">{renderMascot()}</div>
+        <div
+          className={classnames('welcome__mascot', {
+            'welcome__mascot--image': isFlask() || isBeta(),
+          })}
+        >
+          {renderMascot()}
+        </div>
         <Box
           className="welcome__button-container"
           display={Display.Flex}

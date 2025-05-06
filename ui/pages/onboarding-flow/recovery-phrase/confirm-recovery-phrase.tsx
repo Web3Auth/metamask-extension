@@ -27,7 +27,13 @@ import {
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
 import { getHDEntropyIndex } from '../../../selectors/selectors';
-import { ONBOARDING_METAMETRICS } from '../../../helpers/constants/routes';
+import {
+  ONBOARDING_COMPLETION_ROUTE,
+  ONBOARDING_METAMETRICS,
+} from '../../../helpers/constants/routes';
+import { PLATFORM_FIREFOX } from '../../../../shared/constants/app';
+// eslint-disable-next-line import/no-restricted-paths
+import { getPlatform } from '../../../../app/scripts/lib/util';
 import ConfirmSrpModal from './confirm-srp-modal';
 import RecoveryPhraseChips from './recovery-phrase-chips';
 import { QuizWords } from './types';
@@ -107,7 +113,10 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
         hd_entropy_index: hdEntropyIndex,
       },
     });
-    history.push(ONBOARDING_METAMETRICS);
+
+    getPlatform() === PLATFORM_FIREFOX
+      ? history.push(ONBOARDING_COMPLETION_ROUTE)
+      : history.push(ONBOARDING_METAMETRICS);
   };
 
   return (

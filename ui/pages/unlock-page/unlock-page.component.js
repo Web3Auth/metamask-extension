@@ -10,8 +10,8 @@ import {
   Button,
   ButtonSize,
   ButtonVariant,
-  HelpText,
-  HelpTextSeverity,
+  InputType,
+  FormTextFieldSize,
 } from '../../components/component-library';
 import {
   TextVariant,
@@ -113,7 +113,7 @@ export default class UnlockPage extends Component {
     /**
      * Password hint
      */
-    passwordHint: PropTypes.string,
+    passwordHint: PropTypes.string.optional,
   };
 
   state = {
@@ -267,6 +267,8 @@ export default class UnlockPage extends Component {
     const { passwordHint } = this.props;
     const { t } = this.context;
 
+    console.log('this.state', this.state);
+
     if (!error && !showHint) {
       return null;
     }
@@ -278,17 +280,18 @@ export default class UnlockPage extends Component {
         flexDirection={FlexDirection.Column}
       >
         {error && (
-          <HelpText
+          <Text
+            variant={TextVariant.bodySm}
             textAlign={TextAlign.Left}
-            severity={HelpTextSeverity.Danger}
+            color={TextColor.errorDefault}
           >
             {error}
-          </HelpText>
+          </Text>
         )}
         {showHint && (
-          <HelpText textAlign={TextAlign.Left} color={TextColor.textMuted}>
+          <Text textAlign={TextAlign.Left} color={TextColor.textMuted}>
             {t('unlockPageHint', [passwordHint])}
-          </HelpText>
+          </Text>
         )}
       </Box>
     );
@@ -311,46 +314,50 @@ export default class UnlockPage extends Component {
     return (
       <div className="unlock-page__container">
         <div className="unlock-page" data-testid="unlock-page">
-          <div className="unlock-page__content">
-            {showResetPasswordModal && (
-              <ResetPasswordModal
-                onClose={() => this.setState({ showResetPasswordModal: false })}
-                onEraseWallet={() =>
-                  this.setState({
-                    showResetPasswordModal: false,
-                    showEraseWalletModal: true,
-                  })
-                }
-              />
-            )}
-            {showEraseWalletModal && (
-              <EraseWalletModal
-                onClose={() => this.setState({ showEraseWalletModal: false })}
-                onEraseWallet={() =>
-                  // TODO: erase wallet
-                  this.setState({ showEraseWalletModal: false })
-                }
-              />
-            )}
-            <div className="unlock-page__mascot-container">
-              {this.renderMascot()}
-              {isBeta() ? (
-                <div className="unlock-page__mascot-container__beta">
-                  {t('beta')}
-                </div>
-              ) : null}
-            </div>
-            <Text
-              data-testid="unlock-page-title"
-              as="h1"
-              variant={TextVariant.headingLg}
-              marginTop={1}
-              color={TextColor.textDefault}
-            >
-              {t('welcomeBack')}
-            </Text>
-            <form className="unlock-page__form" onSubmit={this.handleSubmit}>
+          <form className="unlock-page__form" onSubmit={this.handleSubmit}>
+            <div className="unlock-page__content">
+              {showResetPasswordModal && (
+                <ResetPasswordModal
+                  onClose={() =>
+                    this.setState({ showResetPasswordModal: false })
+                  }
+                  onEraseWallet={() =>
+                    this.setState({
+                      showResetPasswordModal: false,
+                      showEraseWalletModal: true,
+                    })
+                  }
+                />
+              )}
+              {showEraseWalletModal && (
+                <EraseWalletModal
+                  onClose={() => this.setState({ showEraseWalletModal: false })}
+                  onEraseWallet={() =>
+                    // TODO: erase wallet
+                    this.setState({ showEraseWalletModal: false })
+                  }
+                />
+              )}
+              <div className="unlock-page__mascot-container">
+                {this.renderMascot()}
+                {isBeta() ? (
+                  <div className="unlock-page__mascot-container__beta">
+                    {t('beta')}
+                  </div>
+                ) : null}
+              </div>
+              <Text
+                data-testid="unlock-page-title"
+                as="h1"
+                variant={TextVariant.headingLg}
+                marginTop={1}
+                marginBottom={2}
+                color={TextColor.textDefault}
+              >
+                {t('welcomeBack')}
+              </Text>
               <FormTextField
+                value={password}
                 id="password"
                 data-testid="unlock-password"
                 label={
@@ -375,8 +382,12 @@ export default class UnlockPage extends Component {
                     )}
                   </Box>
                 }
-                type="password"
-                value={password}
+                placeholder={t('enterPassword')}
+                size={FormTextFieldSize.Lg}
+                inputProps={{
+                  'data-testid': 'unlock-password',
+                  type: InputType.Password,
+                }}
                 onChange={(event) => this.handleInputChange(event)}
                 error={error}
                 helpText={this.renderHelpText()}
@@ -388,8 +399,8 @@ export default class UnlockPage extends Component {
                   borderRadius: BorderRadius.LG,
                 }}
               />
-            </form>
-          </div>
+            </div>
+          </form>
           <div className="unlock-page__footer">
             <Box
               className="unlock-page__buttons"

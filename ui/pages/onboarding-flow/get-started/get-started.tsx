@@ -10,12 +10,7 @@ import {
   ButtonVariant,
   Text,
 } from '../../../components/component-library';
-import {
-  TextVariant,
-  TextAlign,
-  FontWeight,
-  BlockSize,
-} from '../../../helpers/constants/design-system';
+import { BlockSize } from '../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
@@ -37,8 +32,9 @@ import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { isFlask, isBeta } from '../../../helpers/utils/build-types';
 import LoadingScreen from '../../../components/ui/loading-screen';
 import LoginOptions from './login-options';
-import { LoginType } from './types';
+import { LOGIN_TYPE, LoginType } from './types';
 
+// TODO: remove welcome route and use welcome component in this route
 export default function GetStarted() {
   const t = useI18nContext();
   const dispatch = useDispatch();
@@ -151,7 +147,7 @@ export default function GetStarted() {
   const renderMascot = () => {
     if (isFlask()) {
       return (
-        <img src="./images/logo/metamask-fox.svg" width="240" height="240" />
+        <img src="./images/logo/metamask-fox.svg" width="173" height="173" />
       );
     }
     if (isBeta()) {
@@ -160,12 +156,18 @@ export default function GetStarted() {
       );
     }
     return (
-      <Mascot animationEventEmitter={eventEmitter} width="250" height="300" />
+      <Mascot
+        animationEventEmitter={eventEmitter}
+        followMouse={false}
+        width="268"
+        height="268"
+      />
     );
   };
 
   const handleLogin = (loginType: LoginType) => {
-    if (loginType === 'srp') {
+    if (loginType === LOGIN_TYPE.SRP) {
+      // TODO: use enum for loginOption
       if (loginOption === 'new') {
         onCreateClick();
       } else {
@@ -181,17 +183,13 @@ export default function GetStarted() {
       <div className="get-started__content">
         <div className="get-started__mascot">{renderMascot()}</div>
 
-        <div className="get-started__title">
-          <Text
-            variant={TextVariant.displayMd}
-            as="h2"
-            textAlign={TextAlign.Center}
-            fontWeight={FontWeight.Bold}
-            data-testid="onboarding-welcome"
-          >
-            {t('welcomeToMetaMask')}!
-          </Text>
-        </div>
+        <Text
+          as="h2"
+          className="get-started__title"
+          data-testid="onboarding-welcome"
+        >
+          {t('welcomeToMetaMask')}!
+        </Text>
       </div>
 
       <div className="get-started__footer">

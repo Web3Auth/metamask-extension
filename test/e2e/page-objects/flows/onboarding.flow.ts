@@ -25,18 +25,25 @@ export const createNewWalletOnboardingFlow = async ({
   driver,
   password = WALLET_PASSWORD,
   participateInMetaMetrics = false,
-  needNavigateToNewPage = true,
   dataCollectionForMarketing = false,
+  needNavigateToNewPage = true,
 }: {
   driver: Driver;
   password?: string;
-  participateInMetaMetrics?: boolean;
   needNavigateToNewPage?: boolean;
+  participateInMetaMetrics?: boolean;
   dataCollectionForMarketing?: boolean;
 }): Promise<void> => {
   console.log('Starting the creation of a new wallet onboarding flow');
   if (needNavigateToNewPage) {
     await driver.navigate();
+  }
+
+  if (process.env.SELENIUM_BROWSER === Browser.FIREFOX) {
+    await onboardingMetricsFlow(driver, {
+      participateInMetaMetrics,
+      dataCollectionForMarketing,
+    });
   }
 
   const startOnboardingPage = new StartOnboardingPage(driver);
@@ -54,6 +61,13 @@ export const createNewWalletOnboardingFlow = async ({
   const secureWalletPage = new SecureWalletPage(driver);
   await secureWalletPage.check_pageIsLoaded();
   await secureWalletPage.revealAndConfirmSRP();
+
+  if (process.env.SELENIUM_BROWSER !== Browser.FIREFOX) {
+    await onboardingMetricsFlow(driver, {
+      participateInMetaMetrics,
+      dataCollectionForMarketing,
+    });
+  }
 };
 
 /**
@@ -82,6 +96,13 @@ export const incompleteCreateNewWalletOnboardingFlow = async ({
   console.log('Starting the creation of a new wallet onboarding flow');
   if (needNavigateToNewPage) {
     await driver.navigate();
+  }
+
+  if (process.env.SELENIUM_BROWSER === Browser.FIREFOX) {
+    await onboardingMetricsFlow(driver, {
+      participateInMetaMetrics,
+      dataCollectionForMarketing,
+    });
   }
 
   const startOnboardingPage = new StartOnboardingPage(driver);
@@ -142,14 +163,25 @@ export const importSRPOnboardingFlow = async ({
   seedPhrase = E2E_SRP,
   password = WALLET_PASSWORD,
   fillSrpWordByWord = false,
+  participateInMetaMetrics = false,
+  dataCollectionForMarketing = false,
 }: {
   driver: Driver;
   seedPhrase?: string;
   password?: string;
   fillSrpWordByWord?: boolean;
+  participateInMetaMetrics?: boolean;
+  dataCollectionForMarketing?: boolean;
 }): Promise<void> => {
   console.log('Starting the import of SRP onboarding flow');
   await driver.navigate();
+
+  if (process.env.SELENIUM_BROWSER === Browser.FIREFOX) {
+    await onboardingMetricsFlow(driver, {
+      participateInMetaMetrics,
+      dataCollectionForMarketing,
+    });
+  }
 
   const startOnboardingPage = new StartOnboardingPage(driver);
   await startOnboardingPage.check_pageIsLoaded();
@@ -170,7 +202,14 @@ export const importSRPOnboardingFlow = async ({
 
   const onboardingPasswordPage = new OnboardingPasswordPage(driver);
   await onboardingPasswordPage.check_pageIsLoaded();
-  await onboardingPasswordPage.createImportedWalletPassword(password);
+  await onboardingPasswordPage.createWalletPassword(password);
+
+  if (process.env.SELENIUM_BROWSER !== Browser.FIREFOX) {
+    await onboardingMetricsFlow(driver, {
+      participateInMetaMetrics,
+      dataCollectionForMarketing,
+    });
+  }
 };
 
 /**
@@ -200,12 +239,7 @@ export const completeCreateNewWalletOnboardingFlow = async ({
   await createNewWalletOnboardingFlow({
     driver,
     password,
-    participateInMetaMetrics,
     needNavigateToNewPage,
-    dataCollectionForMarketing,
-  });
-
-  await onboardingMetricsFlow(driver, {
     participateInMetaMetrics,
     dataCollectionForMarketing,
   });
@@ -249,9 +283,6 @@ export const completeImportSRPOnboardingFlow = async ({
     seedPhrase,
     password,
     fillSrpWordByWord,
-  });
-
-  await onboardingMetricsFlow(driver, {
     participateInMetaMetrics,
     dataCollectionForMarketing,
   });
@@ -290,6 +321,7 @@ export const completeCreateNewWalletOnboardingFlowWithCustomSettings = async ({
     password,
     needNavigateToNewPage,
   });
+
   const onboardingCompletePage = new OnboardingCompletePage(driver);
   await onboardingCompletePage.check_pageIsLoaded();
   await onboardingCompletePage.navigateToDefaultPrivacySettings();

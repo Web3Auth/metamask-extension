@@ -11,7 +11,6 @@ import OnboardingPasswordPage from '../../page-objects/pages/onboarding/onboardi
 import SecureWalletPage from '../../page-objects/pages/onboarding/secure-wallet-page';
 import StartOnboardingPage from '../../page-objects/pages/onboarding/start-onboarding-page';
 import TestDappSendEthWithPrivateKey from '../../page-objects/pages/test-dapp-send-eth-with-private-key';
-import { onboardingMetricsFlow } from '../../../../test/e2e/page-objects/flows/onboarding.flow';
 import OnboardingGetStartedPage from '../../page-objects/pages/onboarding/onboarding-get-started-page';
 
 describe('Incremental Security', function (this: Suite) {
@@ -30,6 +29,12 @@ describe('Incremental Security', function (this: Suite) {
           '0x100000000000000000000',
         );
         await driver.navigate();
+
+        // skip collect metametrics
+        if (process.env.SELENIUM_BROWSER === Browser.FIREFOX) {
+          const onboardingMetricsPage = new OnboardingMetricsPage(driver);
+          await onboardingMetricsPage.clickNoThanksButton();
+        }
 
         // agree to terms of use and start onboarding
         const startOnboardingPage = new StartOnboardingPage(driver);
@@ -50,7 +55,11 @@ describe('Incremental Security', function (this: Suite) {
         await secureWalletPage.check_pageIsLoaded();
         await secureWalletPage.skipSRPBackup();
 
-        await onboardingMetricsFlow(driver);
+        // skip collect metametrics
+        if (process.env.SELENIUM_BROWSER !== Browser.FIREFOX) {
+          const onboardingMetricsPage = new OnboardingMetricsPage(driver);
+          await onboardingMetricsPage.clickNoThanksButton();
+        }
 
         // complete onboarding and pin extension
         const onboardingCompletePage = new OnboardingCompletePage(driver);

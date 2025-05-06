@@ -136,9 +136,7 @@ describe('Onboarding Flow', () => {
     expect(recoveryPhrase).toBeInTheDocument();
   });
 
-  // TODO: fix this test
-  // eslint-disable-next-line jest/no-disabled-tests
-  it.skip('should render confirm recovery phrase', () => {
+  it('should render confirm recovery phrase', () => {
     const { getByText } = renderWithProvider(
       <OnboardingFlow />,
       store,

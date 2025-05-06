@@ -161,7 +161,7 @@ export default function SrpInputImport({ onChange }: SrpInputImportProps) {
   useEffect(() => {
     const activeWord = draftSrp.find((word) => word.active);
     if (activeWord) {
-      srpRefs.current[activeWord.id]?.click();
+      srpRefs.current[activeWord.id]?.focus();
     }
 
     const wordsNotInWordList = draftSrp

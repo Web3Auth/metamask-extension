@@ -115,7 +115,6 @@ class SecureWalletPage {
       this.recoveryPhraseChips,
     ]);
 
-    let finalWords: string[] = [];
     let quizWordsString = '';
     const recoveryPhraseChips = await this.driver.findElement(
       this.recoveryPhraseChips,

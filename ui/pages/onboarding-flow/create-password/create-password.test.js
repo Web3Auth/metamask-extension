@@ -86,6 +86,7 @@ describe('Onboarding Create Password', () => {
           value: '1234567',
         },
       };
+
       fireEvent.change(createPasswordInput, event);
       expect(createPasswordInput).toHaveAttribute('type', 'password');
 

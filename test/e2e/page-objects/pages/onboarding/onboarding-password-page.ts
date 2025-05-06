@@ -18,11 +18,8 @@ class OnboardingPasswordPage {
     tag: 'h2',
   };
 
-  private readonly createWalletButton =
+  private readonly createPasswordButton =
     '[data-testid="create-password-submit"]';
-
-  private readonly importWalletButton =
-    '[data-testid="create-password-import"]';
 
   private readonly incorrectPasswordWarningMessage = {
     text: "Passwords don't match",
@@ -51,29 +48,16 @@ class OnboardingPasswordPage {
   }
 
   /**
-   * Create a password for new imported wallet
-   *
-   * @param password - The password to create. Defaults to WALLET_PASSWORD.
-   */
-  async createImportedWalletPassword(
-    password: string = WALLET_PASSWORD,
-  ): Promise<void> {
-    console.log('Create password for new imported wallet');
-    await this.fillWalletPassword(password, password);
-    await this.driver.clickElementAndWaitToDisappear(this.importWalletButton);
-  }
-
-  /**
-   * Create a password for new created wallet
+   * Create a password for wallet
    *
    * @param password - The new password to create. Defaults to WALLET_PASSWORD.
    */
   async createWalletPassword(
     password: string = WALLET_PASSWORD,
   ): Promise<void> {
-    console.log('Create password for new created wallet');
+    console.log('Create password for wallet');
     await this.fillWalletPassword(password, password);
-    await this.driver.clickElementAndWaitToDisappear(this.createWalletButton);
+    await this.driver.clickElementAndWaitToDisappear(this.createPasswordButton);
   }
 
   /**
@@ -95,7 +79,7 @@ class OnboardingPasswordPage {
   async check_confirmPasswordButtonIsDisabled(): Promise<void> {
     console.log('Check the confirm password button is disabled');
     const confirmPasswordButton = await this.driver.findElement(
-      this.createWalletButton,
+      this.createPasswordButton,
     );
     assert.equal(await confirmPasswordButton.isEnabled(), false);
   }

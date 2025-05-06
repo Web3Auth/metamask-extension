@@ -65,19 +65,31 @@
     "isAddingNewNetwork": "boolean",
     "isMultiRpcOnboarding": "boolean",
     "errorInSettings": null,
-    "showNewSrpAddedToast": "boolean"
+    "showNewSrpAddedToast": "boolean",
+    "passwordHint": "string",
+    "showPasswordHintSavedToast": "boolean"
   },
   "bridge": "object",
   "confirmAlerts": "object",
   "confirmTransaction": "object",
-  "gas": { "customData": { "price": null, "limit": null } },
-  "history": { "mostRecentOverviewPage": "/" },
+  "gas": {
+    "customData": {
+      "price": null,
+      "limit": null
+    }
+  },
+  "history": {
+    "mostRecentOverviewPage": "/"
+  },
   "invalidCustomNetwork": "object",
   "localeMessages": "object",
   "metamask": {
     "isInitialized": true,
     "isUnlocked": true,
-    "internalAccounts": { "accounts": "object", "selectedAccount": "string" },
+    "internalAccounts": {
+      "accounts": "object",
+      "selectedAccount": "string"
+    },
     "transactions": "object",
     "networkConfigurations": "object",
     "addressBook": "object",
@@ -94,7 +106,9 @@
       "showMultiRpcModal": "boolean",
       "tokenSortConfig": "object",
       "shouldShowAggregatedBalancePopover": "boolean",
-      "tokenNetworkFilter": { "0x539": "boolean" },
+      "tokenNetworkFilter": {
+        "0x539": "boolean"
+      },
       "smartTransactionsMigrationApplied": "boolean"
     },
     "firstTimeFlowType": "import",
@@ -128,7 +142,10 @@
     "throttledOrigins": "object",
     "connectedStatusPopoverHasBeenShown": true,
     "defaultHomeActiveTabName": null,
-    "browserEnvironment": { "os": "string", "browser": "string" },
+    "browserEnvironment": {
+      "os": "string",
+      "browser": "string"
+    },
     "popupGasPollTokens": "object",
     "notificationGasPollTokens": "object",
     "fullScreenGasPollTokens": "object",
@@ -170,7 +187,9 @@
     "selectedNetworkClientId": "string",
     "networksMetadata": {
       "networkConfigurationId": {
-        "EIPS": { "1559": false },
+        "EIPS": {
+          "1559": false
+        },
         "status": "available"
       }
     },
@@ -220,7 +239,10 @@
     "metaMetricsDataDeletionId": null,
     "metaMetricsDataDeletionTimestamp": 0,
     "currentCurrency": "usd",
-    "alertEnabledness": { "unconnectedAccount": true, "web3ShimUsage": true },
+    "alertEnabledness": {
+      "unconnectedAccount": true,
+      "web3ShimUsage": true
+    },
     "unconnectedAccountAlertShownOrigins": "object",
     "web3ShimUsageOrigins": "object",
     "seedPhraseBackedUp": true,
@@ -230,7 +252,10 @@
     "permissionActivityLog": "object",
     "subjectMetadata": "object",
     "announcements": "object",
-    "orderedNetworkList": { "0": "object", "1": "object" },
+    "orderedNetworkList": {
+      "0": "object",
+      "1": "object"
+    },
     "pinnedAccountList": {},
     "hiddenAccountList": {},
     "gasFeeEstimatesByChainId": {},
@@ -238,7 +263,9 @@
     "estimatedGasFeeTimeBounds": {},
     "gasEstimateType": "none",
     "nonRPCGasFeeApisDisabled": "boolean",
-    "tokensChainsCache": { "0x539": "object" },
+    "tokensChainsCache": {
+      "0x539": "object"
+    },
     "preventPollingOnNetworkRestart": false,
     "allTokens": {},
     "allIgnoredTokens": {},
@@ -258,8 +285,14 @@
     "logs": "object",
     "fiatCurrency": "usd",
     "rates": {
-      "btc": { "conversionDate": 0, "conversionRate": 0 },
-      "sol": { "conversionDate": 0, "conversionRate": 0 }
+      "btc": {
+        "conversionDate": 0,
+        "conversionRate": 0
+      },
+      "sol": {
+        "conversionDate": 0,
+        "conversionRate": 0
+      }
     },
     "cryptocurrencies": ["btc", "sol"],
     "snaps": "object",
@@ -296,7 +329,10 @@
     "remoteFeatureFlags": {
       "feature1": true,
       "feature2": false,
-      "feature3": { "name": "groupC", "value": "valueC" }
+      "feature3": {
+        "name": "groupC",
+        "value": "valueC"
+      }
     },
     "cacheTimestamp": "number",
     "accounts": "object",
@@ -368,7 +404,9 @@
     "quotesLoadingStatus": null,
     "quoteFetchError": null,
     "quotesRefreshCount": 0,
-    "bridgeStatusState": { "txHistory": "object" },
+    "bridgeStatusState": {
+      "txHistory": "object"
+    },
     "ensEntries": "object",
     "ensResolutionsByAddress": "object",
     "pendingApprovals": "object",
@@ -385,5 +423,7 @@
   "ramps": "object",
   "send": "object",
   "swaps": "object",
-  "unconnectedAccount": { "state": "CLOSED" }
+  "unconnectedAccount": {
+    "state": "CLOSED"
+  }
 }
