@@ -33,6 +33,7 @@ import {
 } from './selectors';
 import { ALERT_STATE } from './ducks/alerts';
 import {
+  getIsUnlocked,
   getUnconnectedAccountAlertEnabledness,
   getUnconnectedAccountAlertShown,
 } from './ducks/metamask/metamask';
@@ -254,6 +255,20 @@ async function runInitialActions(store) {
     const thisPopupId = Date.now();
     global.metamask.id = thisPopupId;
     await store.dispatch(actions.setCurrentExtensionPopupId(thisPopupId));
+  }
+
+  const isUnlocked = getIsUnlocked(state);
+  try {
+    // check seedless password outdated at app init
+    const isPasswordOutdated = await store.dispatch(
+      actions.checkIsSeedlessPasswordOutdated(),
+    );
+    if (isUnlocked && isPasswordOutdated) {
+      // lock app if password is outdated and app is unlocked
+      await store.dispatch(actions.lockMetamask());
+    }
+  } catch (e) {
+    log.error('[Metamask] checkIsSeedlessPasswordOutdated error', e);
   }
 }
 
