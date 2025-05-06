@@ -6,11 +6,11 @@ INFURA_PROJECT_ID=00000000000
 
 ; This variable is required for seedless onboarding
 GOOGLE_CLIENT_ID=
-GOOGLE_AUTH_URI=https://accounts.google.com/o/oauth2/v2/auth
 APPLE_CLIENT_ID=
-APPLE_AUTH_URI=https://appleid.apple.com/auth/authorize
 AUTH_SERVER_URL=http://localhost:3060
-WEB3AUTH_NETWORK=sapphire_testnet
+WEB3AUTH_NETWORK=sapphire_devnet
+AUTH_CONNECTION_ID=byoa-server
+GROUPED_AUTH_CONNECTION_ID=mm-seedless-onboarding
 
 ; This variable is not required but it's necessary for the storybook
 ; to render stories that use onchain data.
