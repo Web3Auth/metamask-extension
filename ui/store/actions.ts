@@ -498,31 +498,34 @@ export function changePassword(
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
   return async (dispatch: MetaMaskReduxDispatch) => {
     try {
-      await submitRequestToBackground<void>('changePassword', [
+      const result = await submitRequestToBackground<void>('changePassword', [
         newPassword,
         oldPassword,
       ]);
       dispatch(hideLoadingIndication());
     } catch (error) {
+      if (isErrorWithMessage(error)) {
+        if (error.message.toLowerCase().includes('outdated password')) {
+          // password outdated, set outdated state and lock metamask
+          await dispatch(checkIsSeedlessPasswordOutdated(true));
+          await dispatch(lockMetamask());
+        }
+      }
       dispatch(hideLoadingIndication());
-
       dispatch(displayWarning(error));
       throw error;
     }
   };
 }
 
-export function checkIsSeedlessPasswordOutdated(): ThunkAction<
-  boolean | undefined,
-  MetaMaskReduxState,
-  unknown,
-  AnyAction
-> {
+export function checkIsSeedlessPasswordOutdated(
+  skipCache = false,
+): ThunkAction<boolean | undefined, MetaMaskReduxState, unknown, AnyAction> {
   return async (dispatch: MetaMaskReduxDispatch) => {
     try {
       const isPasswordOutdated = await submitRequestToBackground<boolean>(
         'checkIsSeedlessPasswordOutdated',
-        [],
+        [skipCache],
       );
       return isPasswordOutdated;
     } catch (error) {
