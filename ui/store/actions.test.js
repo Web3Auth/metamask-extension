@@ -3215,6 +3215,86 @@ describe('Actions', () => {
     });
   });
 
+  describe('#checkIsSeedlessPasswordOutdated', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('calls checkIsSeedlessPasswordOutdated in background and returns true', async () => {
+      const store = mockStore();
+
+      const checkIsSeedlessPasswordOutdatedStub = sinon
+        .stub()
+        .callsFake(() => Promise.resolve(true));
+
+      setBackgroundConnection({
+        submitRequestToBackground: checkIsSeedlessPasswordOutdatedStub,
+      });
+
+      const result = await store.dispatch(
+        actions.checkIsSeedlessPasswordOutdated(),
+      );
+      expect(
+        checkIsSeedlessPasswordOutdatedStub.calledOnceWith(
+          'checkIsSeedlessPasswordOutdated',
+          [],
+        ),
+      ).toBe(true);
+      expect(result).toBe(true);
+      expect(store.getActions()).toStrictEqual([]);
+    });
+
+    it('calls checkIsSeedlessPasswordOutdated in background and returns false', async () => {
+      const store = mockStore();
+
+      const checkIsSeedlessPasswordOutdatedStub = sinon
+        .stub()
+        .callsFake(() => Promise.resolve(false));
+
+      setBackgroundConnection({
+        submitRequestToBackground: checkIsSeedlessPasswordOutdatedStub,
+      });
+
+      const result = await store.dispatch(
+        actions.checkIsSeedlessPasswordOutdated(),
+      );
+      expect(
+        checkIsSeedlessPasswordOutdatedStub.calledOnceWith(
+          'checkIsSeedlessPasswordOutdated',
+          [],
+        ),
+      ).toBe(true);
+      expect(result).toBe(false);
+      expect(store.getActions()).toStrictEqual([]);
+    });
+
+    it('displays warning error message when background call errors', async () => {
+      const store = mockStore();
+      const error = new Error('Password outdated check failed');
+      const checkIsSeedlessPasswordOutdatedStub = sinon.stub().rejects(error);
+
+      setBackgroundConnection({
+        submitRequestToBackground: checkIsSeedlessPasswordOutdatedStub,
+      });
+
+      const expectedActions = [
+        { type: 'DISPLAY_WARNING', payload: 'Password outdated check failed' },
+      ];
+
+      await expect(
+        store.dispatch(actions.checkIsSeedlessPasswordOutdated()),
+      ).rejects.toThrow(error);
+
+      expect(
+        checkIsSeedlessPasswordOutdatedStub.calledOnceWith(
+          'checkIsSeedlessPasswordOutdated',
+          [],
+        ),
+      ).toBe(true);
+      expect(store.getActions()).toStrictEqual(expectedActions);
+    });
+  });
+
   describe('getTokenStandardAndDetailsByChain', () => {
     afterEach(() => {
       sinon.restore();
@@ -3258,6 +3338,78 @@ describe('Actions', () => {
 
       await store.dispatch(actions.setManageInstitutionalWallets(true));
       expect(setManageInstitutionalWalletsStub.calledOnceWith(true)).toBe(true);
+    });
+  });
+
+  describe('#tryUnlockMetamaskWithGlobalSeedlessPassword', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('calls submitLatestGlobalSeedlessPassword and unlocks successfully', async () => {
+      const store = mockStore();
+
+      const submitLatestGlobalSeedlessPasswordStub = sinon
+        .stub()
+        .callsFake((_, cb) => cb());
+      const getStatePatchesStub = sinon.stub().callsFake((cb) => cb(null, []));
+
+      setBackgroundConnection({
+        submitLatestGlobalSeedlessPassword:
+          submitLatestGlobalSeedlessPasswordStub,
+        getStatePatches: getStatePatchesStub,
+      });
+
+      const expectedActions = [
+        { type: actionConstants.SHOW_LOADING, payload: undefined },
+        { type: actionConstants.UNLOCK_IN_PROGRESS },
+        { type: actionConstants.UNLOCK_SUCCEEDED, value: undefined },
+        { type: actionConstants.HIDE_LOADING },
+      ];
+
+      await store.dispatch(
+        actions.tryUnlockMetamaskWithGlobalSeedlessPassword('testpassword'),
+      );
+
+      expect(submitLatestGlobalSeedlessPasswordStub.callCount).toStrictEqual(1);
+      expect(
+        submitLatestGlobalSeedlessPasswordStub.calledWith('testpassword'),
+      ).toBe(true);
+      expect(getStatePatchesStub.callCount).toBeGreaterThanOrEqual(1); // forceUpdateMetamaskState calls it
+      expect(store.getActions()).toStrictEqual(expectedActions);
+    });
+
+    it('handles errors when submitLatestGlobalSeedlessPassword fails', async () => {
+      const store = mockStore();
+      const error = new Error('Unlock failed');
+
+      const submitLatestGlobalSeedlessPasswordStub = sinon
+        .stub()
+        .callsFake((_, cb) => cb(error));
+
+      setBackgroundConnection({
+        submitLatestGlobalSeedlessPassword:
+          submitLatestGlobalSeedlessPasswordStub,
+      });
+
+      const expectedActions = [
+        { type: actionConstants.SHOW_LOADING, payload: undefined },
+        { type: actionConstants.UNLOCK_IN_PROGRESS },
+        { type: actionConstants.UNLOCK_FAILED, value: 'Unlock failed' },
+        { type: actionConstants.HIDE_LOADING },
+      ];
+
+      await expect(
+        store.dispatch(
+          actions.tryUnlockMetamaskWithGlobalSeedlessPassword('testpassword'),
+        ),
+      ).rejects.toThrow(error);
+
+      expect(submitLatestGlobalSeedlessPasswordStub.callCount).toStrictEqual(1);
+      expect(
+        submitLatestGlobalSeedlessPasswordStub.calledWith('testpassword'),
+      ).toBe(true);
+      expect(store.getActions()).toStrictEqual(expectedActions);
     });
   });
 });

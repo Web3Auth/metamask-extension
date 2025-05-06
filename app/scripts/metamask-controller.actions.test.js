@@ -462,4 +462,110 @@ describe('MetaMaskController', function () {
       ).toHaveBeenCalled();
     });
   });
+
+  describe('#submitLatestGlobalSeedlessPassword', function () {
+    const globalPassword = 'newGlobalPassword';
+    const currentDevicePassword = 'oldDevicePassword';
+
+    beforeEach(() => {
+      // Reset spies for each test
+      jest.restoreAllMocks();
+      metamaskController.onboardingController.state.firstTimeFlowType =
+        FirstTimeFlowType.seedless;
+
+      jest
+        .spyOn(
+          metamaskController.seedlessOnboardingController,
+          'recoverCurrentDevicePassword',
+        )
+        .mockResolvedValue({ password: currentDevicePassword });
+      jest
+        .spyOn(
+          metamaskController.seedlessOnboardingController,
+          'syncLatestGlobalPassword',
+        )
+        .mockResolvedValue(undefined);
+      jest
+        .spyOn(metamaskController, 'submitPassword')
+        .mockResolvedValue(undefined);
+      jest
+        .spyOn(metamaskController.keyringController, 'changePassword')
+        .mockResolvedValue(undefined);
+      jest
+        .spyOn(
+          metamaskController.seedlessOnboardingController,
+          'checkIsPasswordOutdated',
+        )
+        .mockResolvedValue(false); // Default to not outdated
+    });
+
+    it('should successfully sync password if flow is seedless', async function () {
+      await metamaskController.submitLatestGlobalSeedlessPassword(
+        globalPassword,
+      );
+
+      expect(
+        metamaskController.seedlessOnboardingController
+          .recoverCurrentDevicePassword,
+      ).toHaveBeenCalledWith({ globalPassword });
+      expect(
+        metamaskController.seedlessOnboardingController
+          .syncLatestGlobalPassword,
+      ).toHaveBeenCalledWith({
+        oldPassword: currentDevicePassword,
+        globalPassword,
+      });
+      expect(metamaskController.submitPassword).toHaveBeenCalledWith(
+        currentDevicePassword,
+      );
+      expect(
+        metamaskController.keyringController.changePassword,
+      ).toHaveBeenCalledWith(globalPassword);
+      expect(
+        metamaskController.seedlessOnboardingController.checkIsPasswordOutdated,
+      ).toHaveBeenCalledWith({ skipCache: true });
+    });
+
+    it('should throw an error if firstTimeFlowType is not seedless', async function () {
+      metamaskController.onboardingController.state.firstTimeFlowType =
+        FirstTimeFlowType.create; // Not seedless
+
+      await expect(
+        metamaskController.submitLatestGlobalSeedlessPassword(globalPassword),
+      ).rejects.toThrow(
+        'This method is only available for seedless onboarding flow',
+      );
+    });
+
+    it('should throw and not proceed if recoverCurrentDevicePassword fails', async function () {
+      const recoveryError = new Error('Recovery failed');
+      jest
+        .spyOn(
+          metamaskController.seedlessOnboardingController,
+          'recoverCurrentDevicePassword',
+        )
+        .mockRejectedValue(recoveryError);
+
+      const syncSpy = jest.spyOn(
+        metamaskController.seedlessOnboardingController,
+        'syncLatestGlobalPassword',
+      );
+      const submitPasswordSpy = jest.spyOn(
+        metamaskController,
+        'submitPassword',
+      );
+      const changePasswordSpy = jest.spyOn(
+        metamaskController.keyringController,
+        'changePassword',
+      );
+
+      await expect(
+        metamaskController.submitLatestGlobalSeedlessPassword(globalPassword),
+      ).rejects.toThrow(recoveryError);
+
+      expect(syncSpy).not.toHaveBeenCalled();
+      expect(submitPasswordSpy).not.toHaveBeenCalled();
+      expect(changePasswordSpy).not.toHaveBeenCalled();
+    });
+  });
 });
