@@ -515,6 +515,9 @@ export default class MetamaskController extends EventEmitter {
     // lock to ensure only one vault created at once
     this.createVaultMutex = new Mutex();
 
+    // lock to ensure only one seedless password sync is running at once
+    this.syncSeedlessGlobalPasswordMutex = new Mutex();
+
     this.extension.runtime.onInstalled.addListener((details) => {
       if (details.reason === 'update') {
         if (version === '8.1.0') {
@@ -3561,6 +3564,10 @@ export default class MetamaskController extends EventEmitter {
       fetchAllSeedPhrases: this.fetchAllSeedPhrases.bind(this),
       updateBackupMetadataState: this.updateBackupMetadataState.bind(this),
       changePassword: this.changePassword.bind(this),
+      checkIsSeedlessPasswordOutdated:
+        this.checkIsSeedlessPasswordOutdated.bind(this),
+      submitLatestGlobalSeedlessPassword:
+        this.submitLatestGlobalSeedlessPassword.bind(this),
 
       // hardware wallets
       connectHardware: this.connectHardware.bind(this),
@@ -4797,6 +4804,68 @@ export default class MetamaskController extends EventEmitter {
 
       throw error;
     }
+  }
+
+  /**
+   * Sync latest global seedless password.
+   * Swap current device password with latest global password.
+   *
+   * @param {string} globalPassword - latest global seedless password
+   */
+  async submitLatestGlobalSeedlessPassword(globalPassword) {
+    const { firstTimeFlowType } = this.onboardingController.state;
+
+    if (firstTimeFlowType !== FirstTimeFlowType.seedless) {
+      // this is only available for seedless onboarding flow
+      throw new Error(
+        'This method is only available for seedless onboarding flow',
+      );
+    }
+
+    const releaseLock = await this.syncSeedlessGlobalPasswordMutex.acquire();
+    try {
+      // recover the current device password
+      const { password: currentDevicePassword } =
+        await this.seedlessOnboardingController.recoverCurrentDevicePassword({
+          globalPassword,
+        });
+
+      // update seedlessOnboardingController to use latest global password
+      await this.seedlessOnboardingController.syncLatestGlobalPassword({
+        oldPassword: currentDevicePassword,
+        globalPassword,
+      });
+
+      // use current device password to unlock the keyringController vault
+      await this.submitPassword(currentDevicePassword);
+      // update vault password to global password
+      await this.keyringController.changePassword(globalPassword);
+
+      // reset password outdated cache after successful syncing
+      await this.seedlessOnboardingController.checkIsPasswordOutdated({
+        skipCache: true,
+      });
+    } finally {
+      releaseLock();
+    }
+  }
+
+  /**
+   * Checks if the seedless password is outdated.
+   *
+   * @returns {Promise<boolean | undefined>} true if the password is outdated, false otherwise, undefined if the flow is not seedless
+   */
+  async checkIsSeedlessPasswordOutdated() {
+    const { firstTimeFlowType } = this.onboardingController.state;
+
+    if (firstTimeFlowType !== FirstTimeFlowType.seedless) {
+      // this is only available for seedless onboarding flow
+      return undefined;
+    }
+
+    const isPasswordOutdated =
+      await this.seedlessOnboardingController.checkIsPasswordOutdated();
+    return isPasswordOutdated;
   }
 
   /**
