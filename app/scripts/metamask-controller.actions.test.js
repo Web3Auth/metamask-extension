@@ -13,6 +13,7 @@ import { ApprovalRequestNotFoundError } from '@metamask/approval-controller';
 import { PermissionsRequestNotFoundError } from '@metamask/permission-controller';
 import nock from 'nock';
 import mockEncryptor from '../../test/lib/mock-encryptor';
+import { FirstTimeFlowType } from '../../shared/constants/onboarding';
 import MetaMaskController from './metamask-controller';
 
 const { Ganache } = require('../../test/e2e/seeder/ganache');
@@ -418,6 +419,47 @@ describe('MetaMaskController', function () {
           data: 'DUMMY_DATA',
         }),
       ).toThrow(error);
+    });
+  });
+
+  describe('#checkIsSeedlessPasswordOutdated', function () {
+    it('should return undefined if firstTimeFlowType is not seedless', async function () {
+      metamaskController.onboardingController.state.firstTimeFlowType =
+        FirstTimeFlowType.create;
+      const result = await metamaskController.checkIsSeedlessPasswordOutdated();
+      expect(result).toBeUndefined();
+    });
+
+    it('should return false if firstTimeFlowType is seedless and password is not outdated', async function () {
+      metamaskController.onboardingController.state.firstTimeFlowType =
+        FirstTimeFlowType.seedless;
+      jest
+        .spyOn(
+          metamaskController.seedlessOnboardingController,
+          'checkIsPasswordOutdated',
+        )
+        .mockResolvedValue(false);
+      const result = await metamaskController.checkIsSeedlessPasswordOutdated();
+      expect(result).toBe(false);
+      expect(
+        metamaskController.seedlessOnboardingController.checkIsPasswordOutdated,
+      ).toHaveBeenCalled();
+    });
+
+    it('should return true if firstTimeFlowType is seedless and password is outdated', async function () {
+      metamaskController.onboardingController.state.firstTimeFlowType =
+        FirstTimeFlowType.seedless;
+      jest
+        .spyOn(
+          metamaskController.seedlessOnboardingController,
+          'checkIsPasswordOutdated',
+        )
+        .mockResolvedValue(true);
+      const result = await metamaskController.checkIsSeedlessPasswordOutdated();
+      expect(result).toBe(true);
+      expect(
+        metamaskController.seedlessOnboardingController.checkIsPasswordOutdated,
+      ).toHaveBeenCalled();
     });
   });
 });
