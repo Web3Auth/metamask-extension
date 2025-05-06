@@ -4853,9 +4853,10 @@ export default class MetamaskController extends EventEmitter {
   /**
    * Checks if the seedless password is outdated.
    *
+   * @param {boolean} skipCache - whether to skip the cache
    * @returns {Promise<boolean | undefined>} true if the password is outdated, false otherwise, undefined if the flow is not seedless
    */
-  async checkIsSeedlessPasswordOutdated() {
+  async checkIsSeedlessPasswordOutdated(skipCache = false) {
     const { firstTimeFlowType } = this.onboardingController.state;
 
     if (firstTimeFlowType !== FirstTimeFlowType.seedless) {
@@ -4864,7 +4865,9 @@ export default class MetamaskController extends EventEmitter {
     }
 
     const isPasswordOutdated =
-      await this.seedlessOnboardingController.checkIsPasswordOutdated();
+      await this.seedlessOnboardingController.checkIsPasswordOutdated({
+        skipCache,
+      });
     return isPasswordOutdated;
   }
 
