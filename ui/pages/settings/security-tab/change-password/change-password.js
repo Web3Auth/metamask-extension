@@ -39,7 +39,7 @@ const ChangePassword = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [eventEmitter] = useState(new EventEmitter());
-  const [step, setStep] = useState(ChangePasswordSteps.ChangePassword);
+  const [step, setStep] = useState(ChangePasswordSteps.CurrentPassword);
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [isIncorrectPasswordError, setIsIncorrectPasswordError] =

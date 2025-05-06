@@ -178,14 +178,13 @@ export default class Home extends PureComponent {
     useExternalServices: PropTypes.bool,
     setBasicFunctionalityModalOpen: PropTypes.func,
     fetchBuyableChains: PropTypes.func.isRequired,
+    isSeedlessPasswordOutdated: PropTypes.bool,
   };
 
   state = {
     canShowBlockageNotification: true,
     notificationClosing: false,
     redirecting: false,
-    // TODO: Should come from state or backend
-    showPasswordChangedModal: false,
   };
 
   constructor(props) {
@@ -809,6 +808,7 @@ export default class Home extends PureComponent {
       firstTimeFlowType,
       newNetworkAddedConfigurationId,
       showMultiRpcModal,
+      isSeedlessPasswordOutdated,
       ///: END:ONLY_INCLUDE_IF
     } = this.props;
 
@@ -849,7 +849,7 @@ export default class Home extends PureComponent {
           participateInMetaMetrics === true
             ? this.renderOnboardingPopover()
             : null}
-          {this.state.showPasswordChangedModal && <PasswordChangedModal />}
+          {isSeedlessPasswordOutdated && <PasswordChangedModal />}
           {
             ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
           }

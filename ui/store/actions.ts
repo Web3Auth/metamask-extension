@@ -498,7 +498,7 @@ export function changePassword(
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
   return async (dispatch: MetaMaskReduxDispatch) => {
     try {
-      const result = await submitRequestToBackground<void>('changePassword', [
+      await submitRequestToBackground<void>('changePassword', [
         newPassword,
         oldPassword,
       ]);
@@ -506,9 +506,8 @@ export function changePassword(
     } catch (error) {
       if (isErrorWithMessage(error)) {
         if (error.message.toLowerCase().includes('outdated password')) {
-          // password outdated, set outdated state and lock metamask
+          // password outdated, set outdated state
           await dispatch(checkIsSeedlessPasswordOutdated(true));
-          await dispatch(lockMetamask());
         }
       }
       dispatch(hideLoadingIndication());

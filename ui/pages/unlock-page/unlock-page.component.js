@@ -123,8 +123,6 @@ export default class UnlockPage extends Component {
     showResetPasswordModal: false,
     showEraseWalletModal: false,
     isLocked: false,
-    // TODO: Get from backend
-    isPasswordChangedRecently: false,
   };
 
   submitting = false;
@@ -143,7 +141,7 @@ export default class UnlockPage extends Component {
     if (isSeedlessPasswordOutdated) {
       // first error if seedless password is outdated
       const { t } = this.context;
-      this.setState({ error: t('unlockPageSeedlessPasswordOutdated') });
+      this.setState({ error: t('passwordChangedRecently') });
     }
   }
 
@@ -300,7 +298,7 @@ export default class UnlockPage extends Component {
     const { passwordHint } = this.props;
     const { t } = this.context;
 
-    if (!error && !showHint && !this.state.isPasswordChangedRecently) {
+    if (!error && !showHint) {
       return null;
     }
 
@@ -310,22 +308,13 @@ export default class UnlockPage extends Component {
         display={Display.Flex}
         flexDirection={FlexDirection.Column}
       >
-        {error ? (
+        {error && (
           <HelpText
             textAlign={TextAlign.Left}
             severity={HelpTextSeverity.Danger}
           >
             {error}
           </HelpText>
-        ) : (
-          this.state.isPasswordChangedRecently && (
-            <HelpText
-              textAlign={TextAlign.Left}
-              severity={HelpTextSeverity.Danger}
-            >
-              {t('passwordChangedRecentlyError')}
-            </HelpText>
-          )
         )}
         {showHint && (
           <HelpText textAlign={TextAlign.Left} color={TextColor.textMuted}>
@@ -348,7 +337,6 @@ export default class UnlockPage extends Component {
       showResetPasswordModal,
       showEraseWalletModal,
       isLocked,
-      isPasswordChangedRecently,
     } = this.state;
     const { t } = this.context;
     const { passwordHint } = this.props;
@@ -425,7 +413,7 @@ export default class UnlockPage extends Component {
                 type="password"
                 value={password}
                 onChange={(event) => this.handleInputChange(event)}
-                error={error || isPasswordChangedRecently}
+                error={error}
                 helpText={this.renderHelpText()}
                 autoComplete="current-password"
                 autoFocus
