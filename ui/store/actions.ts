@@ -195,6 +195,43 @@ export function tryUnlockMetamask(
   };
 }
 
+export function tryUnlockMetamaskWithGlobalSeedlessPassword(
+  globalPassword: string,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+    dispatch(unlockInProgress());
+    log.debug(`background.submitLatestGlobalSeedlessPassword`);
+
+    return new Promise<void>((resolve, reject) => {
+      callBackgroundMethod(
+        'submitLatestGlobalSeedlessPassword',
+        [globalPassword],
+        (error) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          resolve();
+        },
+      );
+    })
+      .then(() => {
+        dispatch(unlockSucceeded());
+        return forceUpdateMetamaskState(dispatch);
+      })
+      .then(() => {
+        dispatch(hideLoadingIndication());
+      })
+      .catch((err) => {
+        dispatch(unlockFailed(getErrorMessage(err)));
+        dispatch(hideLoadingIndication());
+        return Promise.reject(err);
+      });
+  };
+}
+
 /**
  * Adds a new account where all data is encrypted using the given password and
  * where all addresses are generated from a given seed phrase.
@@ -469,6 +506,26 @@ export function changePassword(
     } catch (error) {
       dispatch(hideLoadingIndication());
 
+      dispatch(displayWarning(error));
+      throw error;
+    }
+  };
+}
+
+export function checkIsSeedlessPasswordOutdated(): ThunkAction<
+  boolean | undefined,
+  MetaMaskReduxState,
+  unknown,
+  AnyAction
+> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    try {
+      const isPasswordOutdated = await submitRequestToBackground<boolean>(
+        'checkIsSeedlessPasswordOutdated',
+        [],
+      );
+      return isPasswordOutdated;
+    } catch (error) {
       dispatch(displayWarning(error));
       throw error;
     }
