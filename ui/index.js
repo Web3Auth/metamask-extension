@@ -41,6 +41,7 @@ import Root from './pages';
 import txHelper from './helpers/utils/tx-helper';
 import { setBackgroundConnection } from './store/background-connection';
 import { getStartupTraceTags } from './helpers/utils/tags';
+import { SEEDLESS_PASSWORD_OUTDATED_CHECK_INTERVAL_MS } from './constants';
 
 log.setLevel(global.METAMASK_DEBUG ? 'debug' : 'warn', false);
 
@@ -263,6 +264,10 @@ async function runInitialActions(store) {
     const isPasswordOutdated = await store.dispatch(
       actions.checkIsSeedlessPasswordOutdated(),
     );
+    // periodically check seedless password outdated when app UI is open
+    setInterval(async () => {
+      await store.dispatch(actions.checkIsSeedlessPasswordOutdated());
+    }, SEEDLESS_PASSWORD_OUTDATED_CHECK_INTERVAL_MS);
     if (isUnlocked && isPasswordOutdated) {
       // lock app if password is outdated and app is unlocked
       await store.dispatch(actions.lockMetamask());
