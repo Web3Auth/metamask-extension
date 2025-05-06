@@ -11,26 +11,33 @@ import {
 } from '../../helpers/constants/routes';
 import {
   tryUnlockMetamask,
+  tryUnlockMetamaskWithGlobalSeedlessPassword,
   markPasswordForgotten,
   forceUpdateMetamaskState,
 } from '../../store/actions';
 import UnlockPage from './unlock-page.component';
+import { getIsSeedlessPasswordOutdated } from '../../ducks/metamask/metamask';
 
 const mapStateToProps = (state) => {
   const {
     metamask: { isUnlocked, preferences, firstTimeFlow },
   } = state;
   const { passwordHint } = preferences;
+  const isSeedlessPasswordOutdated = getIsSeedlessPasswordOutdated(state);
+
   return {
     isUnlocked,
     passwordHint,
     firstTimeFlow,
+    isSeedlessPasswordOutdated,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     tryUnlockMetamask: (password) => dispatch(tryUnlockMetamask(password)),
+    tryUnlockMetamaskWithGlobalSeedlessPassword: (globalPassword) =>
+      dispatch(tryUnlockMetamaskWithGlobalSeedlessPassword(globalPassword)),
     markPasswordForgotten: () => dispatch(markPasswordForgotten()),
     forceUpdateMetamaskState: () => forceUpdateMetamaskState(dispatch),
   };
@@ -42,6 +49,7 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
     markPasswordForgotten,
     // eslint-disable-next-line no-shadow
     tryUnlockMetamask,
+    tryUnlockMetamaskWithGlobalSeedlessPassword,
     ...restDispatchProps
   } = dispatchProps;
   const { history, onSubmit: ownPropsSubmit, ...restOwnProps } = ownProps;
@@ -56,8 +64,14 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
     }
   };
 
+  const { isSeedlessPasswordOutdated } = stateProps;
   const onSubmit = async (password) => {
-    await tryUnlockMetamask(password);
+    if (isSeedlessPasswordOutdated) {
+      // use global seedless password to unlock the vault if seedless password is outdated
+      await tryUnlockMetamaskWithGlobalSeedlessPassword(password);
+    } else {
+      await tryUnlockMetamask(password);
+    }
 
     history.push(DEFAULT_ROUTE);
   };

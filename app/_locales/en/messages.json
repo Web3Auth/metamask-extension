@@ -6790,6 +6790,9 @@
   "unlockPageTooManyFailedAttemptsPermanent": {
     "message": "Too many failed attempts. Your account is permanently locked."
   },
+  "unlockPageSeedlessPasswordOutdated": {
+    "message": "Your password was recently changed."
+  },
   "unpin": {
     "message": "Unpin"
   },

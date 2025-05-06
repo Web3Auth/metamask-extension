@@ -99,6 +99,10 @@ export default class UnlockPage extends Component {
      */
     isUnlocked: PropTypes.bool,
     /**
+     * Whether the seedless password is outdated
+     */
+    isSeedlessPasswordOutdated: PropTypes.bool,
+    /**
      * onSubmit handler when form is submitted
      */
     onSubmit: PropTypes.func,
@@ -128,10 +132,16 @@ export default class UnlockPage extends Component {
   animationEventEmitter = new EventEmitter();
 
   UNSAFE_componentWillMount() {
-    const { isUnlocked, history } = this.props;
+    const { isUnlocked, history, isSeedlessPasswordOutdated } = this.props;
 
     if (isUnlocked) {
       history.push(DEFAULT_ROUTE);
+    }
+
+    if (isSeedlessPasswordOutdated) {
+      // first error if seedless password is outdated
+      const { t } = this.context;
+      this.setState({ error: t('unlockPageSeedlessPasswordOutdated') });
     }
   }
 
