@@ -6256,17 +6256,16 @@ __metadata:
 
 "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz::locator=metamask-crx%40workspace%3A.":
   version: 0.0.0
-  resolution: "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz#./seedless-onboarding-controller.tgz::hash=99f756&locator=metamask-crx%40workspace%3A."
+  resolution: "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz#./seedless-onboarding-controller.tgz::hash=6e78b7&locator=metamask-crx%40workspace%3A."
   dependencies:
     "@metamask/auth-network-utils": ./auth-network-utils.tgz
     "@metamask/base-controller": "npm:^8.0.0"
-    "@metamask/browser-passworder": "npm:^4.3.0"
     "@metamask/toprf-secure-backup": ./toprf-secure-backup.tgz
     "@metamask/utils": "npm:^11.2.0"
     async-mutex: "npm:^0.5.0"
   peerDependencies:
     "@metamask/keyring-controller": ^21.0.0
-  checksum: 10/4f54fee769eb35c22104b8a4839b4beac61bc26ac628f38257c7a88d42cb8424807f3211208d35913a63c1af1a97ce8cf1d77764bdfa0183db17d9f53661d7d0
+  checksum: 10/9d670b7f746fee046b12cd8f43f790d73b4397038215551a8fab1067118b8dddf4cb067e996d12c8212424fe1c0550e274d2c637045e3a0c997c323b107b78ca
   languageName: node
   linkType: hard
 
@@ -6580,7 +6579,7 @@ __metadata:
 
 "@metamask/toprf-secure-backup@file:./toprf-secure-backup.tgz::locator=metamask-crx%40workspace%3A.":
   version: 0.0.0
-  resolution: "@metamask/toprf-secure-backup@file:./toprf-secure-backup.tgz#./toprf-secure-backup.tgz::hash=928fb2&locator=metamask-crx%40workspace%3A."
+  resolution: "@metamask/toprf-secure-backup@file:./toprf-secure-backup.tgz#./toprf-secure-backup.tgz::hash=d2926f&locator=metamask-crx%40workspace%3A."
   dependencies:
     "@metamask/auth-network-utils": "npm:^0.0.0"
     "@noble/ciphers": "npm:^1.2.1"
@@ -6592,7 +6591,7 @@ __metadata:
     "@toruslabs/fetch-node-details": "npm:^15.0.0"
     "@toruslabs/http-helpers": "npm:^8.1.1"
     bn.js: "npm:^5.2.1"
-  checksum: 10/e61959c0711a4b9478a59438d887129c30cb4153158b75ca1db3c06e0501b014a4f68bc011f99e41c374751a8d3782e5fd04f97c053aff8fb1208f1937ff7a74
+  checksum: 10/288109ec1abcd6b7e2aecdb305013a2667e635f851b6940065e22e1ad01fb7c10c5cd58fb56a7848da3184633e7b318e9f81c505443f1735eac2bccd6275ce30
   languageName: node
   linkType: hard
 
