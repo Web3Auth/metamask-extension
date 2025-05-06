@@ -15,8 +15,8 @@ import {
   markPasswordForgotten,
   forceUpdateMetamaskState,
 } from '../../store/actions';
-import UnlockPage from './unlock-page.component';
 import { getIsSeedlessPasswordOutdated } from '../../ducks/metamask/metamask';
+import UnlockPage from './unlock-page.component';
 
 const mapStateToProps = (state) => {
   const {
@@ -49,6 +49,7 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
     markPasswordForgotten,
     // eslint-disable-next-line no-shadow
     tryUnlockMetamask,
+    // eslint-disable-next-line no-shadow
     tryUnlockMetamaskWithGlobalSeedlessPassword,
     ...restDispatchProps
   } = dispatchProps;
