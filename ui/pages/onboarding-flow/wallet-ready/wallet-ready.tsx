@@ -44,9 +44,9 @@ import {
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
-import { selectIsProfileSyncingEnabled } from '../../../selectors/identity/profile-syncing';
 import { getSeedPhraseBackedUp } from '../../../ducks/metamask/metamask';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
+import { selectIsBackupAndSyncEnabled } from '../../../selectors/identity/backup-and-sync';
 
 export default function WalletReady() {
   const history = useHistory();
@@ -61,7 +61,7 @@ export default function WalletReady() {
   // const learnHowToKeepWordsSafe =
   //   'https://community.metamask.io/t/what-is-a-secret-recovery-phrase-and-how-to-keep-your-crypto-wallet-secure/3440';
 
-  const isProfileSyncingEnabled = useSelector(selectIsProfileSyncingEnabled);
+  const isProfileSyncingEnabled = useSelector(selectIsBackupAndSyncEnabled);
 
   const passwordHint = useSelector(getPasswordHint);
 
