@@ -11,7 +11,7 @@
   flex: 0 0 auto;
 
   &--welcome {
-    background-color: #eac2ff;
+    background-color: transparent;
   }
 
   @include design-system.screen-sm-max {

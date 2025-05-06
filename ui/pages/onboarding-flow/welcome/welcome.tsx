@@ -1,101 +1,40 @@
-import EventEmitter from 'events';
-import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import classnames from 'classnames';
-import Mascot from '../../../components/ui/mascot';
-import { isFlask, isBeta } from '../../../helpers/utils/build-types';
-import {
-  Box,
-  ButtonBase,
-  ButtonBaseSize,
-  Text,
-} from '../../../components/component-library';
-import {
-  Display,
-  JustifyContent,
-  AlignItems,
-  BlockSize,
-  TextVariant,
-} from '../../../helpers/constants/design-system';
-import { ONBOARDING_GET_STARTED_ROUTE } from '../../../helpers/constants/routes';
-import TermsOfUsePopup from '../../../components/app/terms-of-use-popup';
-import { useI18nContext } from '../../../hooks/useI18nContext';
-import { setTermsOfUseLastAgreed } from '../../../store/actions';
+import React, { useEffect, useState } from 'react';
+import WelcomeBanner from './welcome-banner';
+
+const WelcomePageState = {
+  Banner: 'Banner',
+  Login: 'Login',
+};
 
 export default function Welcome() {
-  const history = useHistory();
-  const t = useI18nContext();
-  const dispatch = useDispatch();
-  const [eventEmitter] = useState(new EventEmitter());
-  const [showTermsOfUse, setShowTermsOfUse] = useState(false);
+  const [pageState, setPageState] = useState(WelcomePageState.Banner);
 
-  const renderMascot = () => {
-    if (isFlask()) {
-      return (
-        <img src="./images/logo/metamask-fox.svg" width="290" height="278" />
-      );
+  useEffect(() => {
+    const container = document.getElementById('app-content');
+    if (container) {
+      if (pageState === WelcomePageState.Banner) {
+        container.classList.remove('welcome-login');
+        container.classList.add('welcome-banner');
+      } else {
+        container.classList.remove('welcome-banner');
+        container.classList.add('welcome-login');
+      }
     }
-    if (isBeta()) {
-      return (
-        <img src="./images/logo/metamask-fox.svg" width="290" height="278" />
-      );
-    }
-    return (
-      <Mascot animationEventEmitter={eventEmitter} width="432" height="432" />
-    );
-  };
 
-  const onAcceptTermsOfUse = () => {
-    dispatch(setTermsOfUseLastAgreed(new Date().getTime()));
-    history.push(ONBOARDING_GET_STARTED_ROUTE);
-  };
+    return () => {
+      if (container) {
+        container.classList.remove('welcome-banner');
+        container.classList.remove('welcome-login');
+      }
+    };
+  }, [pageState]);
 
   return (
     <div className="welcome">
-      <div className="welcome__wrapper">
-        <div className="welcome__title">
-          <Text className="welcome__title-text" as="h2">
-            {t('welcomeTitle')}
-          </Text>
-        </div>
-        <div
-          className={classnames('welcome__mascot', {
-            'welcome__mascot--image': isFlask() || isBeta(),
-          })}
-        >
-          {renderMascot()}
-        </div>
-        <Box
-          className="welcome__button-container"
-          display={Display.Flex}
-          justifyContent={JustifyContent.center}
-          alignItems={AlignItems.center}
-        >
-          <ButtonBase
-            data-testid="onboarding-get-started-button"
-            className="welcome__button"
-            width={BlockSize.Full}
-            size={ButtonBaseSize.Lg}
-            onClick={() => setShowTermsOfUse(true)}
-          >
-            <Text
-              className="welcome__button-text"
-              variant={TextVariant.bodyMdMedium}
-            >
-              {t('welcomeGetStarted')}
-            </Text>
-          </ButtonBase>
-        </Box>
-      </div>
-      <TermsOfUsePopup
-        isOpen={showTermsOfUse}
-        onClose={() => setShowTermsOfUse(false)}
-        onAccept={() => {
-          setShowTermsOfUse(false);
-          onAcceptTermsOfUse();
-        }}
-      />
+      {pageState === WelcomePageState.Banner && (
+        <WelcomeBanner onAccept={() => setPageState(WelcomePageState.Login)} />
+      )}
+      {pageState === WelcomePageState.Login && <h1>Login</h1>}
     </div>
   );
 }
