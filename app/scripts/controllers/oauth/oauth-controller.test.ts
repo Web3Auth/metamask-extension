@@ -1,7 +1,7 @@
 import {
   Web3AuthNetwork,
   AuthConnection,
-} from '@metamask-previews/seedless-onboarding-controller';
+} from '@metamask/seedless-onboarding-controller';
 import OAuthController from './oauth-controller';
 import { OAuthControllerMessenger, OAuthLoginEnv } from './types';
 import { createLoginHandler } from './login-handler-factory';

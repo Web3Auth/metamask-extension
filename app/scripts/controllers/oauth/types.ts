@@ -6,7 +6,7 @@ import {
 import {
   Web3AuthNetwork,
   AuthConnection,
-} from '@metamask-previews/seedless-onboarding-controller';
+} from '@metamask/seedless-onboarding-controller';
 
 export const controllerName = 'OAuthController';
 
