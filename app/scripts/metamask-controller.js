@@ -5351,7 +5351,8 @@ export default class MetamaskController extends EventEmitter {
    * @param {string} password - The user's password
    */
   async submitPassword(password) {
-    const { completedOnboarding } = this.onboardingController.state;
+    const { completedOnboarding, firstTimeFlowType } =
+      this.onboardingController.state;
 
     // Before attempting to unlock the keyrings, we need the offscreen to have loaded.
     await this.offscreenPromise;
@@ -5375,6 +5376,11 @@ export default class MetamaskController extends EventEmitter {
     // Optimistically called to not block MetaMask login due to
     // Ledger Keyring GitHub downtime
     if (completedOnboarding) {
+      if (firstTimeFlowType === FirstTimeFlowType.seedless) {
+        // unlock the seedless onboarding vault
+        this.seedlessOnboardingController.submitPassword(password);
+      }
+
       this.#withKeyringForDevice(
         { name: HardwareDeviceNames.ledger },
         async (keyring) => this.setLedgerTransportPreference(keyring),

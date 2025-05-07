@@ -1,2 +1,2 @@
-export { getSeedlessOnboardingControllerInitMessenger } from './seedless-onboarding-controller-messenger';
-export type { SeedlessOnboardingControllerInitMessenger } from './seedless-onboarding-controller-messenger';
+export { getSeedlessOnboardingControllerMessenger } from './seedless-onboarding-controller-messenger';
+export type { SeedlessOnboardingControllerMessenger } from './seedless-onboarding-controller-messenger';

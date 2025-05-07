@@ -5,8 +5,8 @@ import {
 import { Messenger } from '@metamask/base-controller';
 import { ControllerInitRequest } from '../types';
 import {
-  getSeedlessOnboardingControllerInitMessenger,
-  SeedlessOnboardingControllerInitMessenger,
+  getSeedlessOnboardingControllerMessenger,
+  SeedlessOnboardingControllerMessenger,
 } from '../messengers/seedless-onboarding';
 import { buildControllerInitRequestMock } from '../test/utils';
 import { SeedlessOnboardingControllerInit } from './seedless-onboarding-controller-init';
@@ -14,13 +14,13 @@ import { SeedlessOnboardingControllerInit } from './seedless-onboarding-controll
 jest.mock('@metamask/seedless-onboarding-controller');
 
 function buildInitRequestMock(): jest.Mocked<
-  ControllerInitRequest<SeedlessOnboardingControllerInitMessenger>
+  ControllerInitRequest<SeedlessOnboardingControllerMessenger>
 > {
   const baseControllerMessenger = new Messenger();
 
   return {
     ...buildControllerInitRequestMock(),
-    controllerMessenger: getSeedlessOnboardingControllerInitMessenger(
+    controllerMessenger: getSeedlessOnboardingControllerMessenger(
       baseControllerMessenger,
     ),
     initMessenger: undefined,
@@ -39,12 +39,14 @@ describe('SeedlessOnboardingControllerInit', () => {
   it('should return controller instance', () => {
     const requestMock = buildInitRequestMock();
     expect(
+      // @ts-expect-error TODO: Resolve mismatch between base-controller versions.
       SeedlessOnboardingControllerInit(requestMock).controller,
     ).toBeInstanceOf(SeedlessOnboardingController);
   });
 
   it('initializes with correct messenger and state', () => {
     const requestMock = buildInitRequestMock();
+    // @ts-expect-error TODO: Resolve mismatch between base-controller versions.
     SeedlessOnboardingControllerInit(requestMock);
 
     expect(SeedlessOnboardingControllerClassMock).toHaveBeenCalledWith({

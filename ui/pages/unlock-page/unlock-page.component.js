@@ -291,8 +291,6 @@ export default class UnlockPage extends Component {
     const { passwordHint } = this.props;
     const { t } = this.context;
 
-    console.log('this.state', this.state);
-
     if (!error && !showHint) {
       return null;
     }
