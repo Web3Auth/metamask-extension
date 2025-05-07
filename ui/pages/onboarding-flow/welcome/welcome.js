@@ -17,7 +17,6 @@ import {
   AlignItems,
   BlockSize,
   TextVariant,
-  TextColor,
 } from '../../../helpers/constants/design-system';
 import { ONBOARDING_GET_STARTED_ROUTE } from '../../../helpers/constants/routes';
 import TermsOfUsePopup from '../../../components/app/terms-of-use-popup';

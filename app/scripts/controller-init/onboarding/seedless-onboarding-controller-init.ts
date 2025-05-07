@@ -9,6 +9,7 @@ import { encryptorFactory } from '../../lib/encryptor-factory';
 
 export const SeedlessOnboardingControllerInit: ControllerInitFunction<
   SeedlessOnboardingController<EncryptionKey>,
+  // @ts-expect-error TODO: Resolve mismatch between base-controller versions.
   SeedlessOnboardingControllerMessenger
 > = (request) => {
   const { controllerMessenger, persistedState } = request;

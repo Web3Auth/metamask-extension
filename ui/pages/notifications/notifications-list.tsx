@@ -22,7 +22,8 @@ export type NotificationsListProps = {
   notifications: Notification[];
   isLoading: boolean;
   isError: boolean;
-  notificationsCount: number;
+  // eslint-disable-next-line react/no-unused-prop-types
+  notificationsCount: number; // This is actually used in NotificationsList component
 };
 
 // NOTE - Tab filters could change once we support more notifications.

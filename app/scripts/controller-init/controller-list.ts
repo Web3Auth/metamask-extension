@@ -39,6 +39,7 @@ import { Controller as UserStorageController } from '@metamask/profile-sync-cont
 import { Controller as NotificationServicesController } from '@metamask/notification-services-controller/notification-services';
 import { Controller as NotificationServicesPushController } from '@metamask/notification-services-controller/push-services';
 import { SeedlessOnboardingController } from '@metamask/seedless-onboarding-controller';
+import { EncryptionKey } from '@metamask/browser-passworder';
 import OnboardingController from '../controllers/onboarding';
 import { PreferencesController } from '../controllers/preferences-controller';
 import SwapsController from '../controllers/swaps';
@@ -80,7 +81,7 @@ export type Controller =
       state: Record<string, unknown>;
     })
   | UserStorageController
-  | SeedlessOnboardingController
+  | SeedlessOnboardingController<EncryptionKey>
   | InstitutionalSnapController
   | UserStorageController
   | TokenRatesController
@@ -118,7 +119,7 @@ export type ControllerFlatState = AccountsController['state'] &
   TransactionController['state'] &
   SwapsController['state'] &
   UserStorageController['state'] &
-  SeedlessOnboardingController['state'] &
+  SeedlessOnboardingController<EncryptionKey>['state'] &
   TokenRatesController['state'] &
   NftController['state'] &
   NftDetectionController['state'];

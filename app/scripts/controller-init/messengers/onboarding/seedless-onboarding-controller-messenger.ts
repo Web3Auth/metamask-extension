@@ -27,17 +27,11 @@ export type SeedlessOnboardingControllerMessenger = ReturnType<
  * @returns The restricted messenger.
  */
 export function getSeedlessOnboardingControllerMessenger(
-  messenger: Messenger<
-    MessengerActions,
-    MessengerEvents
-  >,
+  messenger: Messenger<MessengerActions, MessengerEvents>,
 ) {
   return messenger.getRestricted({
     name: 'SeedlessOnboardingController',
     allowedActions: [],
-    allowedEvents: [
-      'KeyringController:lock',
-      'KeyringController:unlock',
-    ],
+    allowedEvents: ['KeyringController:lock', 'KeyringController:unlock'],
   });
 }
