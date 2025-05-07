@@ -4990,20 +4990,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/auth-network-utils@file:./auth-network-utils.tgz::locator=metamask-crx%40workspace%3A.":
-  version: 0.0.0
-  resolution: "@metamask/auth-network-utils@file:./auth-network-utils.tgz#./auth-network-utils.tgz::hash=71b1b4&locator=metamask-crx%40workspace%3A."
+"@metamask/auth-network-utils@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@metamask/auth-network-utils@npm:0.1.0"
   dependencies:
     "@noble/curves": "npm:^1.8.1"
     "@noble/hashes": "npm:^1.7.1"
     "@toruslabs/bs58": "npm:^1.0.0"
     "@toruslabs/constants": "npm:^15.0.0"
-    "@toruslabs/eccrypto": "npm:^6.0.2"
+    "@toruslabs/eccrypto": "npm:^6.1.0"
     bn.js: "npm:^5.2.1"
     elliptic: "npm:^6.6.1"
     json-stable-stringify: "npm:^1.2.1"
     loglevel: "npm:^1.9.2"
-  checksum: 10/b3e5d557b6a9adcaca4cb6cb45f1c3ca59ac12c05601dff701272b2765c60d36235a9ea566064d4437f45cfb1de2888c35e61cd1bf34b2f909ac47e7e7a5d775
+  checksum: 10/5becc59a4fbb76be0411a50118ca67bbf9d15dcf3552062c6c873dd1662a2f1ff438a7c0afa3f9112a7a539a0c1e5a5d853bf69b3e35219ac54889cefb895d9c
   languageName: node
   linkType: hard
 
@@ -5018,16 +5018,6 @@ __metadata:
   bin:
     auto-changelog: dist/cli.js
   checksum: 10/a6705126d7c555e69ce9002e10fec3b878e73037a98bb632d7c0f6e3637031b39ffa8cb6ed67ae01089a3fc56ca35b84c76574fb2dcfc275585bbe5a6e3cd933
-  languageName: node
-  linkType: hard
-
-"@metamask/base-controller@npm:^7.0.1, @metamask/base-controller@npm:^7.0.3, @metamask/base-controller@npm:^7.1.1":
-  version: 7.1.1
-  resolution: "@metamask/base-controller@npm:7.1.1"
-  dependencies:
-    "@metamask/utils": "npm:^11.0.1"
-    immer: "npm:^9.0.6"
-  checksum: 10/d45abc9e0f3f42a0ea7f0a52734f3749fafc5fefc73608230ab0815578e83a9fc28fe57dc7000f6f8df2cdcee5b53f68bb971091075bec9de6b7f747de627c60
   languageName: node
   linkType: hard
 
@@ -6256,17 +6246,16 @@ __metadata:
 
 "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz::locator=metamask-crx%40workspace%3A.":
   version: 0.0.0
-  resolution: "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz#./seedless-onboarding-controller.tgz::hash=99f756&locator=metamask-crx%40workspace%3A."
+  resolution: "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz#./seedless-onboarding-controller.tgz::hash=060faf&locator=metamask-crx%40workspace%3A."
   dependencies:
-    "@metamask/auth-network-utils": ./auth-network-utils.tgz
-    "@metamask/base-controller": "npm:^8.0.0"
-    "@metamask/browser-passworder": "npm:^4.3.0"
-    "@metamask/toprf-secure-backup": ./toprf-secure-backup.tgz
+    "@metamask/auth-network-utils": "npm:^0.1.0"
+    "@metamask/base-controller": "npm:^8.0.1"
+    "@metamask/toprf-secure-backup": "npm:^0.1.0"
     "@metamask/utils": "npm:^11.2.0"
     async-mutex: "npm:^0.5.0"
   peerDependencies:
     "@metamask/keyring-controller": ^21.0.0
-  checksum: 10/4f54fee769eb35c22104b8a4839b4beac61bc26ac628f38257c7a88d42cb8424807f3211208d35913a63c1af1a97ce8cf1d77764bdfa0183db17d9f53661d7d0
+  checksum: 10/5aad603e323f125e71001dd65b3b2fdf6c76e1cef74e2cb90e1178c0b8a5474136f8365e0293dd46937eaeece3c128f1da3dfdffc5609133e68f6c5f1d1dc653
   languageName: node
   linkType: hard
 
@@ -6578,21 +6567,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/toprf-secure-backup@file:./toprf-secure-backup.tgz::locator=metamask-crx%40workspace%3A.":
-  version: 0.0.0
-  resolution: "@metamask/toprf-secure-backup@file:./toprf-secure-backup.tgz#./toprf-secure-backup.tgz::hash=928fb2&locator=metamask-crx%40workspace%3A."
+"@metamask/toprf-secure-backup@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "@metamask/toprf-secure-backup@npm:0.1.0"
   dependencies:
-    "@metamask/auth-network-utils": "npm:^0.0.0"
+    "@metamask/auth-network-utils": "npm:^0.1.0"
     "@noble/ciphers": "npm:^1.2.1"
     "@noble/curves": "npm:^1.8.1"
     "@noble/hashes": "npm:^1.7.1"
     "@sentry/core": "npm:^9.10.0"
     "@toruslabs/constants": "npm:^15.0.0"
-    "@toruslabs/eccrypto": "npm:^6.0.2"
+    "@toruslabs/eccrypto": "npm:^6.1.0"
     "@toruslabs/fetch-node-details": "npm:^15.0.0"
     "@toruslabs/http-helpers": "npm:^8.1.1"
     bn.js: "npm:^5.2.1"
-  checksum: 10/e61959c0711a4b9478a59438d887129c30cb4153158b75ca1db3c06e0501b014a4f68bc011f99e41c374751a8d3782e5fd04f97c053aff8fb1208f1937ff7a74
+  checksum: 10/ef6d1cfabe13b793807398c1bd00a27c0eb20f84411d54425da49c5742dffee83b3cf0d12daa7af170d4175eeca4b2eceecbf1465992ba3a35f4ace77d49e4c1
   languageName: node
   linkType: hard
 
@@ -10779,12 +10768,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@toruslabs/eccrypto@npm:^6.0.2":
-  version: 6.0.2
-  resolution: "@toruslabs/eccrypto@npm:6.0.2"
+"@toruslabs/eccrypto@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "@toruslabs/eccrypto@npm:6.1.0"
   dependencies:
     elliptic: "npm:^6.6.1"
-  checksum: 10/a9444da5a65186b3b361095df2fbfd66aa09ffe5723610c71636165e2798942cfc74d89a5bf63507aacf2518baee453bcf04ff353c5e2978a32c29db276a2c41
+  checksum: 10/8f79621ec4bd712eb12e70c0385353aa70221fe2b501ee674718c74a4147f82ede3ff38a045254b9da4bc9a5d1f891b87025904b7de8f6b8962791681ee65837
   languageName: node
   linkType: hard
 
@@ -27933,7 +27922,6 @@ __metadata:
     "@metamask/test-bundler": "npm:^1.0.0"
     "@metamask/test-dapp": "npm:9.3.0"
     "@metamask/test-dapp-multichain": "npm:^0.10.0"
-    "@metamask/toprf-secure-backup": ./toprf-secure-backup.tgz
     "@metamask/transaction-controller": "npm:^54.1.0"
     "@metamask/user-operation-controller": "npm:^31.0.0"
     "@metamask/utils": "npm:^11.1.0"

@@ -226,8 +226,7 @@
     "@ethereumjs/tx@npm:^5.4.0": "patch:@ethereumjs/tx@npm%3A5.4.0#~/.yarn/patches/@ethereumjs-tx-npm-5.4.0-0c4a0f973e.patch",
     "@ethereumjs/tx": "patch:@ethereumjs/tx@npm%3A5.4.0#~/.yarn/patches/@ethereumjs-tx-npm-5.4.0-0c4a0f973e.patch",
     "@keystonehq/metamask-airgapped-keyring": "patch:@keystonehq/metamask-airgapped-keyring@npm%3A0.15.2#~/.yarn/patches/@keystonehq-metamask-airgapped-keyring-npm-0.15.2-94dd4b40d7.patch",
-    "@metamask/auth-network-utils": "file:./auth-network-utils.tgz",
-    "@metamask/toprf-secure-backup": "file:./toprf-secure-backup.tgz"
+    "@metamask/base-controller": "^8.0.0"
   },
   "dependencies": {
     "@babel/runtime": "patch:@babel/runtime@npm%3A7.25.9#~/.yarn/patches/@babel-runtime-npm-7.25.9-fe8c62510a.patch",
@@ -331,7 +330,6 @@
     "@metamask/snaps-utils": "^9.2.0",
     "@metamask/solana-wallet-snap": "^1.24.0",
     "@metamask/solana-wallet-standard": "^0.1.1",
-    "@metamask/toprf-secure-backup": "./toprf-secure-backup.tgz",
     "@metamask/transaction-controller": "^54.1.0",
     "@metamask/user-operation-controller": "^31.0.0",
     "@metamask/utils": "^11.1.0",
