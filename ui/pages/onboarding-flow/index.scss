@@ -7,7 +7,6 @@
 @import 'secure-your-wallet/index';
 @import 'privacy-settings/index';
 @import 'create-password/index';
-@import 'creation-successful/index';
 @import 'wallet-ready/index';
 @import 'welcome/index';
 @import 'import-srp/index';
@@ -27,12 +26,12 @@
   justify-content: flex-start;
 
   &--welcome {
-    background-color: #EAC2FF;
+    background-color: #eac2ff;
     justify-content: center;
   }
 
   &__wrapper {
-    padding: 24px;
+    padding: 32px 24px;
     width: 100%;
     max-width: 446px;
     min-height: 627px;

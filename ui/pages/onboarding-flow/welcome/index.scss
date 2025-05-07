@@ -11,16 +11,25 @@
     font-family: var(--font-family-hero);
     color: var(--brand-colors-purple-purple800);
     font-size: 104px;
-    line-height: 1.05em;
+    line-height: 1.1em;
     text-align: center;
     text-transform: uppercase;
+
+    @include design-system.screen-lg-max {
+      font-size: 80px;
+    }
   }
 
   &__mascot {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: -80px;
+    margin-top: -107px;
+
+    &--image {
+      margin-top: -40px;
+      margin-bottom: 92px;
+    }
   }
 
   &__button-container {

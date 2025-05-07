@@ -13,6 +13,7 @@ import { TransactionUpdateController } from '@metamask-institutional/transaction
 import { AccountsController } from '@metamask/accounts-controller';
 import {
   AssetsContractController,
+  DeFiPositionsController,
   MultichainAssetsController,
   MultichainAssetsRatesController,
   MultichainBalancesController,
@@ -51,6 +52,7 @@ import { InstitutionalSnapController } from '../controllers/institutional-snap/I
 export type Controller =
   | AuthenticationController
   | CronjobController
+  | DeFiPositionsController
   | ExecutionService
   | GasFeeController
   | JsonSnapsRegistry
@@ -96,6 +98,7 @@ export type Controller =
 export type ControllerFlatState = AccountsController['state'] &
   AuthenticationController['state'] &
   CronjobController['state'] &
+  DeFiPositionsController['state'] &
   GasFeeController['state'] &
   JsonSnapsRegistry['state'] &
   KeyringController['state'] &

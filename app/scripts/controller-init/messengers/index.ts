@@ -30,7 +30,7 @@ import {
   getAuthenticationControllerMessenger,
   getUserStorageControllerMessenger,
 } from './identity';
-import { getSeedlessOnboardingControllerMessenger } from './onboarding/seedless-onboarding-controller-messenger';
+import { getSeedlessOnboardingControllerInitMessenger } from './seedless-onboarding/seedless-onboarding-controller-messenger';
 import {
   getAssetsContractControllerMessenger,
   getNftControllerMessenger,
@@ -41,6 +41,8 @@ import {
   getNotificationServicesControllerMessenger,
   getNotificationServicesPushControllerMessenger,
 } from './notifications';
+import { getDeFiPositionsControllerMessenger } from './defi-positions';
+import { getDeFiPositionsControllerInitMessenger } from './defi-positions/defi-positions-controller-messenger';
 
 export const CONTROLLER_MESSENGERS = {
   AuthenticationController: {
@@ -50,6 +52,10 @@ export const CONTROLLER_MESSENGERS = {
   CronjobController: {
     getMessenger: getCronjobControllerMessenger,
     getInitMessenger: noop,
+  },
+  DeFiPositionsController: {
+    getMessenger: getDeFiPositionsControllerMessenger,
+    getInitMessenger: getDeFiPositionsControllerInitMessenger,
   },
   ExecutionService: {
     getMessenger: getExecutionServiceMessenger,
@@ -120,7 +126,7 @@ export const CONTROLLER_MESSENGERS = {
     getInitMessenger: noop,
   },
   SeedlessOnboardingController: {
-    getMessenger: getSeedlessOnboardingControllerMessenger,
+    getMessenger: getSeedlessOnboardingControllerInitMessenger,
     getInitMessenger: noop,
   },
   TokenRatesController: {

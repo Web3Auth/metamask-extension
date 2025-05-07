@@ -1,7 +1,6 @@
-import React, { useState, useMemo, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
-import zxcvbn from 'zxcvbn';
 import { useSelector } from 'react-redux';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
@@ -14,17 +13,17 @@ import {
 } from '../../../helpers/constants/design-system';
 import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+  ONBOARDING_COMPLETION_ROUTE,
   ONBOARDING_METAMETRICS,
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
-  ONBOARDING_COMPLETION_ROUTE,
   ///: END:ONLY_INCLUDE_IF
 } from '../../../helpers/constants/routes';
-import { PASSWORD_MIN_LENGTH } from '../../../helpers/constants/common';
 import ZENDESK_URLS from '../../../helpers/constants/zendesk-url';
 import {
   getFirstTimeFlowType,
   getCurrentKeyring,
   getMetaMetricsId,
+  getParticipateInMetaMetrics,
 } from '../../../selectors';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
@@ -39,12 +38,16 @@ import {
   ButtonSize,
   ButtonVariant,
   Checkbox,
-  FormTextField,
-  FormTextFieldSize,
   IconName,
   Text,
 } from '../../../components/component-library';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
+///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+import { PLATFORM_FIREFOX } from '../../../../shared/constants/app';
+// eslint-disable-next-line import/no-restricted-paths
+import { getPlatform } from '../../../../app/scripts/lib/util';
+import PasswordForm from '../../../components/app/password-form/password-form';
+///: END:ONLY_INCLUDE_IF
 
 export default function CreatePassword({
   createNewAccount,
@@ -52,15 +55,8 @@ export default function CreatePassword({
   secretRecoveryPhrase,
 }) {
   const t = useI18nContext();
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [password, setPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [passwordStrength, setPasswordStrength] = useState('');
-  const [passwordStrengthText, setPasswordStrengthText] = useState('');
-  const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [termsChecked, setTermsChecked] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [newAccountCreationInProgress, setNewAccountCreationInProgress] =
     useState(false);
   const history = useHistory();
@@ -68,9 +64,7 @@ export default function CreatePassword({
   const trackEvent = useContext(MetaMetricsContext);
   const currentKeyring = useSelector(getCurrentKeyring);
 
-  const participateInMetaMetrics = useSelector((state) =>
-    Boolean(state.metamask.participateInMetaMetrics),
-  );
+  const participateInMetaMetrics = useSelector(getParticipateInMetaMetrics);
   const metametricsId = useSelector(getMetaMetricsId);
   const base64MetametricsId = Buffer.from(metametricsId ?? '').toString(
     'base64',
@@ -108,88 +102,10 @@ export default function CreatePassword({
     newAccountCreationInProgress,
   ]);
 
-  const isValid = useMemo(() => {
-    if (!password || !confirmPassword || password !== confirmPassword) {
-      return false;
-    }
-
-    if (password.length < PASSWORD_MIN_LENGTH) {
-      return false;
-    }
-
-    return !passwordError && !confirmPasswordError;
-  }, [password, confirmPassword, passwordError, confirmPasswordError]);
-
-  const getPasswordStrengthLabel = (isTooShort, score) => {
-    if (isTooShort) {
-      return {
-        className: 'create-password__weak',
-        dataTestId: 'short-password-error',
-        text: t('passwordNotLongEnough'),
-        description: '',
-      };
-    }
-    if (score >= 4) {
-      return {
-        className: 'create-password__strong',
-        dataTestId: 'strong-password',
-        text: t('strong'),
-        description: '',
-      };
-    }
-    if (score === 3) {
-      return {
-        className: 'create-password__average',
-        dataTestId: 'average-password',
-        text: t('average'),
-        description: t('passwordStrengthDescription'),
-      };
-    }
-    return {
-      className: 'create-password__weak',
-      dataTestId: 'weak-password',
-      text: t('weak'),
-      description: t('passwordStrengthDescription'),
-    };
-  };
-
-  const handlePasswordChange = (passwordInput) => {
-    const isTooShort =
-      passwordInput.length && passwordInput.length < PASSWORD_MIN_LENGTH;
-    const { score } = zxcvbn(passwordInput);
-    const passwordStrengthLabel = getPasswordStrengthLabel(isTooShort, score);
-    const passwordStrengthComponent = t('passwordStrength', [
-      <span
-        key={score}
-        data-testid={passwordStrengthLabel.dataTestId}
-        className={passwordStrengthLabel.className}
-      >
-        {passwordStrengthLabel.text}
-      </span>,
-    ]);
-    const confirmError =
-      !confirmPassword || passwordInput === confirmPassword
-        ? ''
-        : t('passwordsDontMatch');
-
-    setPassword(passwordInput);
-    setPasswordStrength(passwordStrengthComponent);
-    setPasswordStrengthText(passwordStrengthLabel.description);
-    setConfirmPasswordError(confirmError);
-  };
-
-  const handleConfirmPasswordChange = (confirmPasswordInput) => {
-    const error =
-      password === confirmPasswordInput ? '' : t('passwordsDontMatch');
-
-    setConfirmPassword(confirmPasswordInput);
-    setConfirmPasswordError(error);
-  };
-
   const handleCreate = async (event) => {
     event?.preventDefault();
 
-    if (!isValid) {
+    if (!password) {
       return;
     }
 
@@ -205,7 +121,9 @@ export default function CreatePassword({
     ) {
       await importWithRecoveryPhrase(password, secretRecoveryPhrase);
       ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-      history.push(ONBOARDING_METAMETRICS);
+      getPlatform() === PLATFORM_FIREFOX
+        ? history.push(ONBOARDING_COMPLETION_ROUTE)
+        : history.push(ONBOARDING_METAMETRICS);
       ///: END:ONLY_INCLUDE_IF
     } else {
       // Otherwise we are in create new wallet flow
@@ -222,7 +140,7 @@ export default function CreatePassword({
           ///: END:ONLY_INCLUDE_IF
         }
       } catch (error) {
-        setPasswordError(error.message);
+        console.error(error);
       }
     }
   };
@@ -256,6 +174,7 @@ export default function CreatePassword({
               size={ButtonIconSize.Md}
               data-testid="create-password-back-button"
               onClick={() => history.goBack()}
+              ariaLabel="back"
             />
           </Box>
           <Box
@@ -272,76 +191,11 @@ export default function CreatePassword({
                 firstTimeFlowType === FirstTimeFlowType.import ? 2 : 3,
               ])}
             </Text>
-            <Text variant={TextVariant.headingLg}>{t('createPassword')}</Text>
+            <Text variant={TextVariant.headingLg} as="h2">
+              {t('createPassword')}
+            </Text>
           </Box>
-          <FormTextField
-            passwordStrength={passwordStrength}
-            passwordStrengthText={passwordStrengthText}
-            dataTestId="create-password-new"
-            autoFocus
-            placeholder={t('newPasswordPlaceholder')}
-            label={t('newPassword')}
-            labelProps={{ marginBottom: 1 }}
-            size={FormTextFieldSize.Lg}
-            value={password}
-            type={showPassword ? 'text' : 'password'}
-            onChange={(e) => {
-              handlePasswordChange(e.target.value);
-            }}
-            helpText={
-              (passwordStrength || passwordStrengthText) && (
-                <Box>
-                  {passwordStrength && (
-                    <Text as="div" variant={TextVariant.inherit}>
-                      {passwordStrength}
-                    </Text>
-                  )}
-                  {passwordStrengthText && (
-                    <Text as="div" variant={TextVariant.inherit}>
-                      {passwordStrengthText}
-                    </Text>
-                  )}
-                </Box>
-              )
-            }
-            endAccessory={
-              <ButtonIcon
-                iconName={showPassword ? IconName.EyeSlash : IconName.Eye}
-                data-testid="show-password"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowPassword(!showPassword);
-                }}
-              />
-            }
-          />
-          <FormTextField
-            dataTestId="create-password-confirm"
-            marginTop={4}
-            placeholder={t('confirmPasswordPlaceholder')}
-            label={t('confirmPassword')}
-            labelProps={{ marginBottom: 1 }}
-            size={FormTextFieldSize.Lg}
-            error={Boolean(confirmPasswordError)}
-            helpText={confirmPasswordError}
-            value={confirmPassword}
-            type={showConfirmPassword ? 'text' : 'password'}
-            onChange={(e) => {
-              handleConfirmPasswordChange(e.target.value);
-            }}
-            endAccessory={
-              <ButtonIcon
-                iconName={
-                  showConfirmPassword ? IconName.EyeSlash : IconName.Eye
-                }
-                data-testid="show-password"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowConfirmPassword(!showConfirmPassword);
-                }}
-              />
-            }
-          />
+          <PasswordForm onChange={(newPassword) => setPassword(newPassword)} />
         </div>
         <div className="create-password__footer">
           <Box
@@ -361,23 +215,24 @@ export default function CreatePassword({
                 <Text variant={TextVariant.bodyMd} marginLeft={2}>
                   {
                     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-                    t('passwordTermsWarning', [createPasswordLink])
+                    t('passwordTermsWarning')
                     ///: END:ONLY_INCLUDE_IF
                   }
+                  &nbsp;
+                  {createPasswordLink}
                 </Text>
               }
             />
           </Box>
-
           {
             ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
             <Button
               data-testid="create-password-submit"
               variant={ButtonVariant.Primary}
               width={BlockSize.Full}
-              size={ButtonSize.Large}
+              size={ButtonSize.Lg}
               className="create-password__form--submit-button"
-              disabled={!isValid || !termsChecked}
+              disabled={!password || !termsChecked}
             >
               {t('confirm')}
             </Button>

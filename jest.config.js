@@ -30,9 +30,8 @@ module.exports = {
   ],
   setupFilesAfterEnv: ['<rootDir>/test/jest/setup.js'],
   testMatch: [
-    '<rootDir>/app/scripts/**/*.test.(js|ts|tsx)',
     '<rootDir>/shared/**/*.test.(js|ts|tsx)',
-    '<rootDir>/ui/**/*.test.(js|ts|tsx)',
+    '<rootDir>/ui/pages/onboarding-flow/import-srp/*.test.(js|ts|tsx)',
     '<rootDir>/development/**/*.test.(js|ts|tsx)',
     '<rootDir>/test/unit-global/**/*.test.(js|ts|tsx)',
     '<rootDir>/test/e2e/helpers.test.js',

@@ -3575,7 +3575,7 @@ export function resetOnboardingAction() {
  */
 export function startOAuthLogin(
   provider: AuthConnection,
-): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+): ThunkAction<Promise<boolean>, MetaMaskReduxState, unknown, AnyAction> {
   return async (dispatch: MetaMaskReduxDispatch) => {
     dispatch(showLoadingIndication());
 
@@ -3584,7 +3584,7 @@ export function startOAuthLogin(
         provider,
       ]);
       return isNewUser;
-    } catch (err) {
+    } catch (error) {
       dispatch(displayWarning(error));
       if (isErrorWithMessage(error)) {
         throw new Error(getErrorMessage(error));
@@ -5461,10 +5461,16 @@ export function cancelSmartTransaction(
 }
 
 // TODO: Not a thunk but rather a wrapper around a background call
-export function fetchSmartTransactionsLiveness() {
+export function fetchSmartTransactionsLiveness({
+  networkClientId,
+}: {
+  networkClientId?: string;
+} = {}) {
   return async () => {
     try {
-      await submitRequestToBackground('fetchSmartTransactionsLiveness');
+      await submitRequestToBackground('fetchSmartTransactionsLiveness', [
+        { networkClientId },
+      ]);
     } catch (err) {
       logErrorWithMessage(err);
     }

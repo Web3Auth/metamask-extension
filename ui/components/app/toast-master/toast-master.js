@@ -75,9 +75,9 @@ export function ToastMaster() {
   const onSwapsScreen =
     location.pathname === SWAPS_ROUTE ||
     location.pathname === PREPARE_SWAP_ROUTE;
-  const onWalletReadyScreen = location.pathname === ONBOARDING_COMPLETION_ROUTE;
   const onBridgeScreen =
     location.pathname === `${CROSS_CHAIN_SWAP_ROUTE}${PREPARE_SWAP_ROUTE}`;
+  const onWalletReadyScreen = location.pathname === ONBOARDING_COMPLETION_ROUTE;
 
   if (onHomeScreen) {
     return (
