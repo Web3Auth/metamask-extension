@@ -4,7 +4,7 @@ import {
   SeedlessOnboardingControllerStateChangeEvent,
 } from '@metamask/seedless-onboarding-controller';
 
-export type SeedlessOnboardingControllerMessenger = ReturnType<
+export type SeedlessOnboardingControllerInitMessenger = ReturnType<
   typeof getSeedlessOnboardingControllerMessenger
 >;
 

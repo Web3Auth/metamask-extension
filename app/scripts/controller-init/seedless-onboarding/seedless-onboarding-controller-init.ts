@@ -8,8 +8,7 @@ import { ControllerInitFunction } from '../types';
 export const SeedlessOnboardingControllerInit: ControllerInitFunction<
   SeedlessOnboardingController,
   SeedlessOnboardingControllerMessenger
-> = (request) => {
-  const { controllerMessenger, persistedState } = request;
+> = ({ controllerMessenger, persistedState }) => {
   const controller = new SeedlessOnboardingController({
     messenger: controllerMessenger,
     state: persistedState.SeedlessOnboardingController,
