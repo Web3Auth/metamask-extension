@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Switch, Route, useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import classnames from 'classnames';
+import { keccak256 } from 'ethereumjs-util';
 import Unlock from '../unlock-page';
 import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-flask)
@@ -32,8 +33,13 @@ import {
   createNewVaultAndGetSeedPhrase,
   unlockAndGetSeedPhrase,
   createNewVaultAndRestore,
+  createAndBackupSeedPhrase,
+  restoreBackupAndGetSeedPhrase,
 } from '../../store/actions';
-import { getFirstTimeFlowTypeRouteAfterUnlock } from '../../selectors';
+import {
+  getFirstTimeFlowType,
+  getFirstTimeFlowTypeRouteAfterUnlock,
+} from '../../selectors';
 import { MetaMetricsContext } from '../../contexts/metametrics';
 import Button from '../../components/ui/button';
 import RevealSRPModal from '../../components/app/reveal-SRP-modal';
@@ -46,6 +52,7 @@ import {
 import ExperimentalArea from '../../components/app/flask/experimental-area';
 ///: END:ONLY_INCLUDE_IF
 import { submitRequestToBackgroundAndCatch } from '../../components/app/toast-master/utils';
+import { FirstTimeFlowType } from '../../../shared/constants/onboarding';
 import { getHDEntropyIndex } from '../../selectors/selectors';
 import OnboardingFlowSwitch from './onboarding-flow-switch/onboarding-flow-switch';
 import ReviewRecoveryPhrase from './recovery-phrase/review-recovery-phrase';
@@ -66,6 +73,7 @@ import CreatePassword from './create-password/create-password';
 const TWITTER_URL = 'https://twitter.com/MetaMask';
 
 export default function OnboardingFlow() {
+  const [passwordHash, setPasswordHash] = useState(null);
   const [secretRecoveryPhrase, setSecretRecoveryPhrase] = useState('');
   const dispatch = useDispatch();
   const { pathname, search } = useLocation();
@@ -73,6 +81,7 @@ export default function OnboardingFlow() {
   const t = useI18nContext();
   const hdEntropyIndex = useSelector(getHDEntropyIndex);
   const completedOnboarding = useSelector(getCompletedOnboarding);
+  const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const nextRoute = useSelector(getFirstTimeFlowTypeRouteAfterUnlock);
   const isFromReminder = new URLSearchParams(search).get('isFromReminder');
   const trackEvent = useContext(MetaMetricsContext);
@@ -107,23 +116,70 @@ export default function OnboardingFlow() {
     history,
   ]);
 
-  const handleCreateNewAccount = async (password) => {
+  const getPasswordHash = (password) => {
+    const passwordAsBuffer = Buffer.from(password, 'utf8');
+    const passwordHashString = Buffer.from(
+      keccak256(passwordAsBuffer),
+    ).toString('hex');
+    return passwordHashString;
+  };
+
+  const handleDefaultOnboardingFlow = async (password) => {
     const newSecretRecoveryPhrase = await dispatch(
       createNewVaultAndGetSeedPhrase(password),
     );
     setSecretRecoveryPhrase(newSecretRecoveryPhrase);
   };
 
-  const handleUnlock = async (password) => {
-    const retrievedSecretRecoveryPhrase = await dispatch(
-      unlockAndGetSeedPhrase(password),
+  const handleSeedlessOnboardingFlow = async (password) => {
+    const newSecretRecoveryPhrase = await dispatch(
+      createAndBackupSeedPhrase(password),
     );
+    setSecretRecoveryPhrase(newSecretRecoveryPhrase);
+  };
+
+  const handleCreateNewAccount = async (password) => {
+    setPasswordHash(getPasswordHash(password));
+    if (firstTimeFlowType === FirstTimeFlowType.seedless) {
+      await handleSeedlessOnboardingFlow(password);
+    } else {
+      await handleDefaultOnboardingFlow(password);
+    }
+  };
+
+  const handleUnlock = async (password) => {
+    setPasswordHash(getPasswordHash(password));
+
+    let retrievedSecretRecoveryPhrase;
+    if (firstTimeFlowType === FirstTimeFlowType.seedless) {
+      retrievedSecretRecoveryPhrase = await dispatch(
+        restoreBackupAndGetSeedPhrase(password),
+      );
+
+      if (retrievedSecretRecoveryPhrase === null) {
+        // if the seed phrase is not found, ask user to setup the password and generate a new seed phrase
+        history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
+        return;
+      }
+    } else {
+      retrievedSecretRecoveryPhrase = await dispatch(
+        unlockAndGetSeedPhrase(password),
+      );
+    }
+
     setSecretRecoveryPhrase(retrievedSecretRecoveryPhrase);
     history.push(nextRoute);
   };
 
   const handleImportWithRecoveryPhrase = async (password, srp) => {
     return await dispatch(createNewVaultAndRestore(password, srp));
+  };
+
+  const validatePasswordHint = (hint) => {
+    const hintHash = getPasswordHash(hint);
+    if (hintHash === passwordHash) {
+      throw new Error('Invalid password hint');
+    }
   };
 
   const showPasswordModalToAllowSRPReveal =
@@ -214,7 +270,16 @@ export default function OnboardingFlow() {
             path={ONBOARDING_METAMETRICS}
             component={MetaMetricsComponent}
           />
-          <Route path={ONBOARDING_PASSWORD_HINT} component={PasswordHint} />
+          <Route
+            path={ONBOARDING_PASSWORD_HINT}
+            render={(routeProps) => (
+              <PasswordHint
+                {...routeProps}
+                passwordHash={passwordHash}
+                validatePasswordHint={validatePasswordHint}
+              />
+            )}
+          />
           <Route path={ONBOARDING_ACCOUNT_EXIST} component={AccountExist} />
           <Route
             path={ONBOARDING_ACCOUNT_NOT_FOUND}

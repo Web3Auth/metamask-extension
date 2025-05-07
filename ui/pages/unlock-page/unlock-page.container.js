@@ -18,12 +18,13 @@ import UnlockPage from './unlock-page.component';
 
 const mapStateToProps = (state) => {
   const {
-    metamask: { isUnlocked, preferences },
+    metamask: { isUnlocked, preferences, firstTimeFlow },
   } = state;
   const { passwordHint } = preferences;
   return {
     isUnlocked,
     passwordHint,
+    firstTimeFlow,
   };
 };
 
@@ -54,6 +55,7 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
 
   const onSubmit = async (password) => {
     await propsTryUnlockMetamask(password);
+
     history.push(DEFAULT_ROUTE);
   };
 

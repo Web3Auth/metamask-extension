@@ -23,15 +23,17 @@ import {
   SECURITY_ALERTS_LEARN_MORE_LINK,
   TRANSACTION_SIMULATIONS_LEARN_MORE_LINK,
 } from '../../../../shared/lib/ui-utils';
-import SRPQuiz from '../../../components/app/srp-quiz-modal/SRPQuiz';
 import {
   Button,
-  ButtonSize,
   Icon,
   IconSize,
   IconName,
   Box,
   Text,
+  BannerAlert,
+  BannerAlertSeverity,
+  ButtonVariant,
+  ButtonSize,
 } from '../../../components/component-library';
 import TextField from '../../../components/ui/text-field';
 import ToggleButton from '../../../components/ui/toggle-button';
@@ -48,7 +50,9 @@ import {
 } from '../../../helpers/constants/design-system';
 import {
   ADD_POPULAR_CUSTOM_NETWORK,
+  SECURITY_PASSWORD_HINT_ROUTE,
   REVEAL_SRP_LIST_ROUTE,
+  SECURITY_PASSWORD_CHANGE_ROUTE,
 } from '../../../helpers/constants/routes';
 import {
   getNumberOfSettingRoutesInTab,
@@ -56,6 +60,7 @@ import {
 } from '../../../helpers/utils/settings-search';
 
 import { updateDataDeletionTaskStatus } from '../../../store/actions';
+import SRPQuiz from '../../../components/app/srp-quiz-modal';
 import MetametricsToggle from './metametrics-toggle';
 import ProfileSyncToggle from './profile-sync-toggle';
 import DeleteMetametricsDataButton from './delete-metametrics-data-button';
@@ -106,6 +111,9 @@ export default class SecurityTab extends PureComponent {
     metaMetricsDataDeletionId: PropTypes.string,
     hdEntropyIndex: PropTypes.number,
     hasMultipleHdKeyrings: PropTypes.bool,
+    socialLoginEmail: PropTypes.string,
+    socialLoginEnabled: PropTypes.bool,
+    allSrpBackupsEnabled: PropTypes.bool,
   };
 
   state = {
@@ -162,25 +170,58 @@ export default class SecurityTab extends PureComponent {
     toggleMethod(!value);
   }
 
-  hideSrpQuizModal = () => this.setState({ srpQuizModalVisible: false });
-
   renderSeedWords() {
     const { t } = this.context;
-    const { history, hasMultipleHdKeyrings } = this.props;
+    const {
+      history,
+      hasMultipleHdKeyrings,
+      socialLoginEmail,
+      socialLoginEnabled,
+      allSrpBackupsEnabled,
+    } = this.props;
 
     return (
       <>
         <div
-          ref={this.settingsRefs[1]}
+          ref={this.settingsRefs[22]}
           className="settings-page__security-tab-sub-header"
         >
-          {t('secretRecoveryPhrase')}
+          {t('securitySrpTitle')}
         </div>
         <div className="settings-page__content-padded">
+          <div className="settings-page__content-description">
+            {t('securitySrpDescription')}
+          </div>
+          <BannerAlert
+            title={t('securitySrpLoginWithAppleOrGoogle')}
+            description={socialLoginEmail}
+            paddingTop={2}
+            paddingBottom={2}
+            marginTop={4}
+            severity={
+              socialLoginEnabled
+                ? BannerAlertSeverity.Success
+                : BannerAlertSeverity.Warning
+            }
+          />
+          {/* TODO: get severity from controller */}
+          <BannerAlert
+            title={t('securitySrpBackupSrp')}
+            paddingTop={2}
+            paddingBottom={2}
+            marginTop={4}
+            severity={
+              allSrpBackupsEnabled
+                ? BannerAlertSeverity.Success
+                : BannerAlertSeverity.Warning
+            }
+          />
           <Button
             data-testid="reveal-seed-words"
             type="danger"
             size={ButtonSize.Lg}
+            block
+            marginTop={4}
             onClick={(event) => {
               event.preventDefault();
               this.context.trackEvent({
@@ -209,7 +250,7 @@ export default class SecurityTab extends PureComponent {
               this.setState({ srpQuizModalVisible: true });
             }}
           >
-            {t('revealSeedWords')}
+            {t('securitySrpProtect')}
           </Button>
           {this.state.srpQuizModalVisible && (
             <SRPQuiz
@@ -217,6 +258,48 @@ export default class SecurityTab extends PureComponent {
               onClose={this.hideSrpQuizModal}
             />
           )}
+        </div>
+      </>
+    );
+  }
+
+  renderPassword() {
+    const { t } = this.context;
+    const { history } = this.props;
+
+    return (
+      <>
+        <div
+          ref={this.settingsRefs[23]}
+          className="settings-page__security-tab-sub-header"
+        >
+          {t('securityChangePasswordTitle')}
+        </div>
+        <div className="settings-page__content-padded">
+          <div className="settings-page__content-description">
+            {t('securityChangePasswordDescription')}
+          </div>
+          <Button
+            width={BlockSize.Full}
+            marginTop={4}
+            block
+            onClick={() => {
+              history.push(SECURITY_PASSWORD_CHANGE_ROUTE);
+            }}
+          >
+            {t('securityChangePasswordChange')}
+          </Button>
+          <Button
+            variant={ButtonVariant.Secondary}
+            width={BlockSize.Full}
+            marginTop={4}
+            block
+            onClick={() => {
+              history.push(SECURITY_PASSWORD_HINT_ROUTE);
+            }}
+          >
+            {t('securityChangePasswordHint')}
+          </Button>
         </div>
       </>
     );
@@ -1150,6 +1233,7 @@ export default class SecurityTab extends PureComponent {
           {this.context.t('security')}
         </span>
         {this.renderSeedWords()}
+        {this.renderPassword()}
         {this.renderSecurityAlertsToggle()}
         <span className="settings-page__security-tab-sub-header__bold">
           {this.context.t('privacy')}

@@ -105,6 +105,7 @@ import { InstitutionalFeaturesController } from '@metamask-institutional/institu
 import { CustodyController } from '@metamask-institutional/custody-controller';
 import { TransactionUpdateController } from '@metamask-institutional/transaction-update';
 ///: END:ONLY_INCLUDE_IF
+import { RecoveryError } from '@metamask/seedless-onboarding-controller';
 import { SignatureController } from '@metamask/signature-controller';
 import { wordlist } from '@metamask/scure-bip39/dist/wordlists/english';
 
@@ -402,6 +403,7 @@ import {
 import { AuthenticationControllerInit } from './controller-init/identity/authentication-controller-init';
 import { UserStorageControllerInit } from './controller-init/identity/user-storage-controller-init';
 import { DeFiPositionsControllerInit } from './controller-init/defi-positions/defi-positions-controller-init';
+import { SeedlessOnboardingControllerInit } from './controller-init/seedless-onboarding/seedless-onboarding-controller-init';
 import {
   getCallsStatus,
   getCapabilities,
@@ -409,6 +411,7 @@ import {
 } from './lib/transaction/eip5792';
 import { NotificationServicesControllerInit } from './controller-init/notifications/notification-services-controller-init';
 import { NotificationServicesPushControllerInit } from './controller-init/notifications/notification-services-push-controller-init';
+import OAuthController from './controllers/oauth/oauth-controller';
 
 export const METAMASK_CONTROLLER_EVENTS = {
   // Fired after state changes that impact the extension badge (unapproved msg count)
@@ -987,8 +990,25 @@ export default class MetamaskController extends EventEmitter {
       state: initState.OnboardingController,
     });
 
-    let additionalKeyrings = [keyringBuilderFactory(QRHardwareKeyring)];
+    const oauthControllerMessenger = this.controllerMessenger.getRestricted({
+      name: 'OAuthController',
+      allowedActions: [],
+      allowedEvents: [],
+    });
+    this.oauthController = new OAuthController({
+      messenger: oauthControllerMessenger,
+      state: initState.OAuthController,
+      env: {
+        web3AuthNetwork: process.env.WEB3AUTH_NETWORK,
+        authServerUrl: process.env.AUTH_SERVER_URL,
+        googleClientId: process.env.GOOGLE_CLIENT_ID,
+        appleClientId: process.env.APPLE_CLIENT_ID,
+        authConnectionId: process.env.AUTH_CONNECTION_ID,
+        groupedAuthConnectionId: process.env.GROUPED_AUTH_CONNECTION_ID,
+      },
+    });
 
+    let additionalKeyrings = [keyringBuilderFactory(QRHardwareKeyring)];
     const keyringOverrides = this.opts.overrides?.keyrings;
 
     if (isManifestV3 === false) {
@@ -1846,6 +1866,7 @@ export default class MetamaskController extends EventEmitter {
       MultichainNetworkController: MultichainNetworkControllerInit,
       AuthenticationController: AuthenticationControllerInit,
       UserStorageController: UserStorageControllerInit,
+      SeedlessOnboardingController: SeedlessOnboardingControllerInit,
       NotificationServicesController: NotificationServicesControllerInit,
       NotificationServicesPushController:
         NotificationServicesPushControllerInit,
@@ -1895,6 +1916,8 @@ export default class MetamaskController extends EventEmitter {
       controllersByName.MultichainNetworkController;
     this.authenticationController = controllersByName.AuthenticationController;
     this.userStorageController = controllersByName.UserStorageController;
+    this.seedlessOnboardingController =
+      controllersByName.SeedlessOnboardingController;
     this.notificationServicesController =
       controllersByName.NotificationServicesController;
     this.notificationServicesPushController =
@@ -2105,6 +2128,8 @@ export default class MetamaskController extends EventEmitter {
       NetworkController: this.networkController,
       AlertController: this.alertController,
       OnboardingController: this.onboardingController,
+      OAuthController: this.oauthController,
+      SeedlessOnboardingController: this.seedlessOnboardingController,
       PermissionController: this.permissionController,
       PermissionLogController: this.permissionLogController,
       SubjectMetadataController: this.subjectMetadataController,
@@ -2164,6 +2189,8 @@ export default class MetamaskController extends EventEmitter {
         CurrencyController: this.currencyRateController,
         AlertController: this.alertController,
         OnboardingController: this.onboardingController,
+        OAuthController: this.oauthController,
+        SeedlessOnboardingController: this.seedlessOnboardingController,
         PermissionController: this.permissionController,
         PermissionLogController: this.permissionLogController,
         SubjectMetadataController: this.subjectMetadataController,
@@ -3555,6 +3582,15 @@ export default class MetamaskController extends EventEmitter {
         getAccountsBySnapId(this.getSnapKeyring.bind(this), snapId),
       ///: END:ONLY_INCLUDE_IF
 
+      // oauth controller
+      startOAuthLogin: this.startOAuthLogin.bind(this),
+
+      // seedless onboarding
+      createSeedPhraseBackup: this.createSeedPhraseBackup.bind(this),
+      fetchAllSeedPhrases: this.fetchAllSeedPhrases.bind(this),
+      updateBackupMetadataState: this.updateBackupMetadataState.bind(this),
+      changePassword: this.changePassword.bind(this),
+
       // hardware wallets
       connectHardware: this.connectHardware.bind(this),
       forgetDevice: this.forgetDevice.bind(this),
@@ -3815,6 +3851,7 @@ export default class MetamaskController extends EventEmitter {
         this.generateNewMnemonicAndAddToVault.bind(this),
       importMnemonicToVault: this.importMnemonicToVault.bind(this),
       exportAccount: this.exportAccount.bind(this),
+      getAccountsByKeyringId: this.getAccountsByKeyringId.bind(this),
 
       // txController
       updateTransaction: txController.updateTransaction.bind(txController),
@@ -4700,6 +4737,143 @@ export default class MetamaskController extends EventEmitter {
   //=============================================================================
 
   /**
+   * Login with social login provider and get User Onboarding details.
+   *
+   * AuthenticationResult is an object that contains the temporary Auth token for next step of onboarding flow
+   * and user's onboarding status to indicate whether the user has already completed the seedless onboarding flow.
+   *
+   * @param {AuthConnection} provider - social login provider, `google` | `apple`
+   * @returns {Promise<boolean>} true if user has not completed the seedless onboarding flow, false otherwise
+   */
+  async startOAuthLogin(provider) {
+    try {
+      const oAuthLoginResult = await this.oauthController.startOAuthLogin(
+        provider,
+      );
+
+      const { isNewUser } =
+        await this.seedlessOnboardingController.authenticate(oAuthLoginResult);
+
+      return isNewUser;
+    } catch (error) {
+      log.error('Error while starting social login', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Creates a seed phrase backup for the user.
+   *
+   * Generate Encryption Key from the password using the Threshold OPRF and encrypt the seed phrase with the key.
+   * Save the encrypted seed phrase in the metadata store.
+   *
+   * @param {string} password - The user's password.
+   * @param {number[]} encodedSeedPhrase - The seed phrase to backup.
+   * @param {string} keyringId - The keyring id of the backup seed phrase.
+   */
+  async createSeedPhraseBackup(password, encodedSeedPhrase, keyringId) {
+    try {
+      const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
+
+      const seedPhrase =
+        this._convertMnemonicToWordlistIndices(seedPhraseAsBuffer);
+
+      await this.seedlessOnboardingController.createToprfKeyAndBackupSeedPhrase(
+        password,
+        seedPhrase,
+        keyringId,
+      );
+    } catch (error) {
+      log.error('[createSeedPhraseBackup] error', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetches and restores the seed phrase metadata.
+   *
+   * If the seedphrase is not found in the metadata store, it creates new seedphrase and saves it in the metadata store.
+   *
+   * Otherwise, it creates a new vault using the restored seedphrase from metadata store.
+   *
+   * @param {string} password - The user's password.
+   * @returns {Promise<Buffer[]>} The seed phrase.
+   */
+  async fetchAllSeedPhrases(password) {
+    try {
+      // fetch all seed phrases
+      // seedPhrases are sorted by creation date, the latest seed phrase is the first one in the array
+      const allSeedPhrases =
+        await this.seedlessOnboardingController.fetchAllSeedPhrases(password);
+
+      if (allSeedPhrases.length === 0) {
+        return null;
+      }
+
+      return allSeedPhrases.map((phrase) =>
+        this._convertEnglishWordlistIndicesToCodepoints(phrase),
+      );
+    } catch (error) {
+      log.error(
+        'Error while fetching and restoring seed phrase metadata.',
+        error,
+      );
+
+      if (error instanceof RecoveryError) {
+        throw new JsonRpcError(-32603, error.message, error.data);
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * Updates the Seedless Onboarding backup metadata state, with backup seed phrase id and backup seed phrase.
+   *
+   * @param {string} keyringId - The keyring id of the backup seed phrase.
+   * @param {string} encodedSeedPhrase - The backup seed phrase.
+   */
+  async updateBackupMetadataState(keyringId, encodedSeedPhrase) {
+    const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
+    this.seedlessOnboardingController.updateBackupMetadataState(
+      keyringId,
+      this._convertMnemonicToWordlistIndices(seedPhraseAsBuffer),
+    );
+  }
+
+  /**
+   * Changes the password for the seedless onboarding.
+   *
+   * @param {string} newPassword - The new password.
+   * @param {string} oldPassword - The old password.
+   * @returns {Promise<void>}
+   */
+  async changePassword(newPassword, oldPassword) {
+    // change password for the seedless onboarding flow
+    await this.seedlessOnboardingController.changePassword(
+      newPassword,
+      oldPassword,
+    );
+
+    // also update the vault password for keyring controller
+    await this.keyringController.changePassword(newPassword);
+  }
+
+  /**
+   * Get all accounts for a given keyring id.
+   *
+   * @param {string} keyringId - The keyring id.
+   * @returns {Promise<`0x${string}`[]>} The accounts.
+   */
+  async getAccountsByKeyringId(keyringId) {
+    const accounts = await this.keyringController.withKeyring(
+      { id: keyringId },
+      async ({ keyring }) => keyring.getAccounts(),
+    );
+    return accounts;
+  }
+
+  /**
    * Creates a new Vault and create a new keychain.
    *
    * A vault, or KeyringController, is a controller that contains
@@ -4710,12 +4884,14 @@ export default class MetamaskController extends EventEmitter {
    * For example, a mnemonic phrase can generate many accounts, and is a keyring.
    *
    * @param {string} password
-   * @returns {object} vault
+   * @returns {Array} created keyrings metadata
    */
   async createNewVaultAndKeychain(password) {
     const releaseLock = await this.createVaultMutex.acquire();
     try {
-      return await this.keyringController.createNewVaultAndKeychain(password);
+      await this.keyringController.createNewVaultAndKeychain(password);
+
+      return this.keyringController.state.keyringsMetadata;
     } finally {
       releaseLock();
     }
@@ -4862,6 +5038,8 @@ export default class MetamaskController extends EventEmitter {
           async (keyring) => this.setLedgerTransportPreference(keyring),
         );
       }
+
+      return this.keyringController.state.keyringsMetadata;
     } finally {
       releaseLock();
     }

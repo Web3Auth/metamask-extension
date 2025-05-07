@@ -1431,6 +1431,12 @@
   "createPassword": {
     "message": "Create password"
   },
+  "createPasswordCreating": {
+    "message": "Creating password..."
+  },
+  "createPasswordCreatingNote": {
+    "message": "This shouldn't take long"
+  },
   "createSnapAccountDescription": {
     "message": "$1 wants to add a new account to MetaMask."
   },
@@ -1616,11 +1622,33 @@
   "defaultRpcUrl": {
     "message": "Default RPC URL"
   },
+  "defaultSettingsBasicFunctionalityDescription": {
+    "message": "This includes basic features like token details and gas settings. Keep this feature on for the best experience while using MetaMask. Read our $1 to learn more.",
+    "description": "$1 will have text saying Privacy Policy"
+  },
+  "defaultSettingsBasicFunctionalityTitle": {
+    "message": "Basic functionality"
+  },
+  "defaultSettingsProfileSyncDescription1": {
+    "message": "Sync settings, messages, and more across MetaMask Extension, Mobile, and Portfolio. You’ll need a unique ID to use this feature, which will be created if you allow data syncing. This makes it possible to sync your data across platforms. We’ll use your Secret Recovery Phrase to create this ID."
+  },
+  "defaultSettingsProfileSyncDescription2": {
+    "message": "Notifications rely on this feature, and won’t be available when turned off."
+  },
+  "defaultSettingsProfileSyncTitle": {
+    "message": "Profile sync"
+  },
   "defaultSettingsSubTitle": {
     "message": "MetaMask uses default settings to best balance safety and ease of use. Change these settings to further increase your privacy."
   },
+  "defaultSettingsThirdPartyAPIDescription": {
+    "message": "If you don’t want to share your IP address or Ethereum address with any third parties, you may want to turn off features that use them. This will impact your MetaMask experience."
+  },
+  "defaultSettingsThirdPartyAPITitle": {
+    "message": "Third-party APIs"
+  },
   "defaultSettingsTitle": {
-    "message": "Default privacy settings"
+    "message": "Default settings"
   },
   "defi": {
     "message": "DeFi"
@@ -4658,7 +4686,7 @@
     "message": "A token here reuses a symbol from another token you watch, this can be confusing or deceptive."
   },
   "revealSecretRecoveryPhrase": {
-    "message": "Reveal Secret Recovery Phrase"
+    "message": "Protect your wallet"
   },
   "revealSeedWords": {
     "message": "Reveal Secret Recovery Phrase"
@@ -4800,15 +4828,54 @@
   "securityAndPrivacy": {
     "message": "Security & privacy"
   },
+  "securityChangePasswordChange": {
+    "message": "Change password"
+  },
+  "securityChangePasswordDescription": {
+    "message": "Choose a strong password to unlock MetaMask app on your device. If you lose this password, you will need your Secret Recovery Phrase to re-import your wallet."
+  },
+  "securityChangePasswordHint": {
+    "message": "Password hint"
+  },
+  "securityChangePasswordTitle": {
+    "message": "Password"
+  },
   "securityDescription": {
     "message": "Reduce your chances of joining unsafe networks and protect your accounts"
   },
   "securityMessageLinkForNetworks": {
     "message": "network scams and security risks"
   },
+  "securityMultiSrp": {
+    "message": "Protect your wallet"
+  },
+  "securityPassword": {
+    "message": "Change Password"
+  },
+  "securityPasswordHint": {
+    "message": "Password Hint"
+  },
+  "securityPrivacyPath": {
+    "message": "Settings > Security & Privacy."
+  },
   "securityProviderPoweredBy": {
     "message": "Powered by $1",
     "description": "The security provider that is providing data"
+  },
+  "securitySrpBackupSrp": {
+    "message": "Back up Secret Recovery Phrase"
+  },
+  "securitySrpDescription": {
+    "message": "Back up your Secret Recovery Phrase and link your wallet to an Apple or Google account. Be sure to store your Secret Recovery Phrase in a safe place that only you can access and won’t forget."
+  },
+  "securitySrpLoginWithAppleOrGoogle": {
+    "message": "Log in with Apple or Google"
+  },
+  "securitySrpProtect": {
+    "message": "Protect your wallet"
+  },
+  "securitySrpTitle": {
+    "message": "Secret Recovery Phrase"
   },
   "seeAllPermissions": {
     "message": "See all permissions",
@@ -6255,6 +6322,54 @@
   "themeDescription": {
     "message": "Choose your preferred MetaMask theme."
   },
+  "thirdPartyAPIBatchAccountBalanceDescription": {
+    "message": "Get balance updates for all your accounts at once. It allows for a faster and overall better experience for managing multiple accounts. Turning off this feature means others are less likely to associate one account with another."
+  },
+  "thirdPartyAPIBatchAccountBalanceTitle": {
+    "message": "Batch account balance"
+  },
+  "thirdPartyAPIIPFSGatewayDescription": {
+    "message": "MetaMask uses third-party services to show images of your NFTs stored on IPFS, display information related to ENS addresses entered in your browser's address bar, and fetch icons for different tokens."
+  },
+  "thirdPartyAPIIPFSGatewayTitle": {
+    "message": "IPFS gateway"
+  },
+  "thirdPartyAPINetworkDetailsCheckDescription": {
+    "message": "MetaMask uses chainid.network to show accurate and standardized network details. This reduces your chances of connecting to malicious or incorrect network."
+  },
+  "thirdPartyAPINetworkDetailsCheckTitle": {
+    "message": "Network details check"
+  },
+  "thirdPartyAPINftDetectionDescription": {
+    "message": "Displays all NFTs including fake ones airdropped by scammers. "
+  },
+  "thirdPartyAPINftDetectionTitle": {
+    "message": "Autodetect NFTs"
+  },
+  "thirdPartyAPISettingsDescription": {
+    "message": "These settings use third-party APIs to work. If you don't want to share your IP address or Ethereum address with any third parties, you may want to turn off features that use them. This will impact your MetaMask experience."
+  },
+  "thirdPartyAPISettingsTitle": {
+    "message": "Third-party APIs"
+  },
+  "thirdPartyAPIshowIncomingTransactionsDescription": {
+    "message": "This relies on different third-party APIs for each network."
+  },
+  "thirdPartyAPIshowIncomingTransactionsTitle": {
+    "message": "Show incoming transactions"
+  },
+  "thirdPartyDisplayNftMediaDescription": {
+    "message": "NFT autodetection relies on this feature."
+  },
+  "thirdPartyDisplayNftMediaTitle": {
+    "message": "Display NFT media"
+  },
+  "thirdPartyProposedNicknamesDescription": {
+    "message": "We’ll fetch proposed nicknames for addresses you interact with from third-party sources like Etherscan, Infura, and Lens protocol."
+  },
+  "thirdPartyProposedNicknamesTitle": {
+    "message": "Proposed nicknames"
+  },
   "thirdPartySoftware": {
     "message": "Third-party software notice",
     "description": "Title of a popup modal displayed when installing a snap for the first time."
@@ -6561,6 +6676,16 @@
     "message": "Hint: $1",
     "description": "$1 is the password hint"
   },
+  "unlockPageIncorrectPassword": {
+    "message": "Password is incorrect. Please try again."
+  },
+  "unlockPageTooManyFailedAttempts": {
+    "message": "Too many failed attempts. Please try again in $1.",
+    "description": "$1 time to try again"
+  },
+  "unlockPageTooManyFailedAttemptsPermanent": {
+    "message": "Too many failed attempts. Your account is permanently locked."
+  },
   "unpin": {
     "message": "Unpin"
   },
@@ -6611,6 +6736,9 @@
   },
   "use4ByteResolution": {
     "message": "Decode smart contracts"
+  },
+  "useDifferentLoginMethod": {
+    "message": "Use a different login method"
   },
   "useMultiAccountBalanceChecker": {
     "message": "Batch account balance requests"

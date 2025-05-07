@@ -12,8 +12,8 @@ import {
   IconColor,
 } from '../../../helpers/constants/design-system';
 import {
-  ONBOARDING_COMPLETION_ROUTE,
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+  ONBOARDING_COMPLETION_ROUTE,
   ONBOARDING_METAMETRICS,
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
   ///: END:ONLY_INCLUDE_IF
@@ -82,7 +82,10 @@ export default function CreatePassword({
 
   useEffect(() => {
     if (currentKeyring && !newAccountCreationInProgress) {
-      if (firstTimeFlowType === FirstTimeFlowType.import) {
+      if (
+        firstTimeFlowType === FirstTimeFlowType.import ||
+        firstTimeFlowType === FirstTimeFlowType.seedless
+      ) {
         ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
         history.replace(ONBOARDING_METAMETRICS);
         ///: END:ONLY_INCLUDE_IF

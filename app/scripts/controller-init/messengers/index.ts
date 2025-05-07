@@ -30,6 +30,7 @@ import {
   getAuthenticationControllerMessenger,
   getUserStorageControllerMessenger,
 } from './identity';
+import { getSeedlessOnboardingControllerMessenger } from './seedless-onboarding/seedless-onboarding-controller-messenger';
 import {
   getAssetsContractControllerMessenger,
   getNftControllerMessenger,
@@ -122,6 +123,10 @@ export const CONTROLLER_MESSENGERS = {
   },
   UserStorageController: {
     getMessenger: getUserStorageControllerMessenger,
+    getInitMessenger: noop,
+  },
+  SeedlessOnboardingController: {
+    getMessenger: getSeedlessOnboardingControllerMessenger,
     getInitMessenger: noop,
   },
   TokenRatesController: {

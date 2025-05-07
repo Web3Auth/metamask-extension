@@ -2,6 +2,7 @@ import EventEmitter from 'events';
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import { AuthConnection } from '@metamask/seedless-onboarding-controller';
 import Mascot from '../../../components/ui/mascot';
 import {
   Button,
@@ -16,12 +17,15 @@ import {
   MetaMetricsEventCategory,
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
-import { setFirstTimeFlowType } from '../../../store/actions';
+import { setFirstTimeFlowType, startOAuthLogin } from '../../../store/actions';
 import {
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
   ONBOARDING_COMPLETION_ROUTE,
   ONBOARDING_CREATE_PASSWORD_ROUTE,
   ONBOARDING_IMPORT_WITH_SRP_ROUTE,
+  ONBOARDING_ACCOUNT_EXIST,
+  ONBOARDING_ACCOUNT_NOT_FOUND,
+  ONBOARDING_UNLOCK_ROUTE,
 } from '../../../helpers/constants/routes';
 import { getFirstTimeFlowType, getCurrentKeyring } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
@@ -63,6 +67,49 @@ export default function GetStarted() {
     newAccountCreationInProgress,
   ]);
   const trackEvent = useContext(MetaMetricsContext);
+
+  const onClickSocialLogin = async (provider: AuthConnection) => {
+    setIsLoggingIn(true);
+    try {
+      setNewAccountCreationInProgress(true);
+      dispatch(setFirstTimeFlowType(FirstTimeFlowType.seedless));
+
+      const isNewUser = (await dispatch(
+        startOAuthLogin(provider),
+      )) as unknown as boolean;
+      setIsLoggingIn(false);
+      // if user is not new user and login option is new, redirect to account exist page
+      if (loginOption === 'new' && !isNewUser) {
+        history.push(ONBOARDING_ACCOUNT_EXIST);
+        return;
+      } else if (loginOption === 'existing' && isNewUser) {
+        // if user is new user and login option is existing, redirect to account not found page
+        history.push(ONBOARDING_ACCOUNT_NOT_FOUND);
+        return;
+      }
+
+      if (!isNewUser) {
+        // redirect to login page
+        history.push(ONBOARDING_UNLOCK_ROUTE);
+        return;
+      }
+
+      trackEvent({
+        category: MetaMetricsEventCategory.Onboarding,
+        // TODO: add seedless onboarding event to MetaMetrics?
+        event: MetaMetricsEventName.OnboardingWalletCreationStarted,
+        properties: {
+          account_type: 'metamask',
+        },
+      });
+
+      ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+      history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
+      ///: END:ONLY_INCLUDE_IF
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
 
   const onCreateClick = async () => {
     setIsLoggingIn(true);
@@ -127,8 +174,7 @@ export default function GetStarted() {
         onImportClick();
       }
     } else {
-      // TODO: handle social login
-      console.log('handleLogin', loginType);
+      onClickSocialLogin(loginType as AuthConnection);
     }
   };
 

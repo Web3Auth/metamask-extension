@@ -45,7 +45,7 @@ import {
   NetworkConfiguration,
 } from '@metamask/network-controller';
 import { InterfaceState } from '@metamask/snaps-sdk';
-import { KeyringTypes } from '@metamask/keyring-controller';
+import { KeyringMetadata, KeyringTypes } from '@metamask/keyring-controller';
 import type { NotificationServicesController } from '@metamask/notification-services-controller';
 import { USER_STORAGE_FEATURE_NAMES } from '@metamask/profile-sync-controller/sdk';
 import { Patch } from 'immer';
@@ -53,6 +53,7 @@ import { Patch } from 'immer';
 import { HandlerType } from '@metamask/snaps-utils';
 ///: END:ONLY_INCLUDE_IF
 import { BACKUPANDSYNC_FEATURES } from '@metamask/profile-sync-controller/user-storage';
+import { AuthConnection } from '@metamask/seedless-onboarding-controller';
 import switchDirection from '../../shared/lib/switch-direction';
 import {
   ENVIRONMENT_TYPE_NOTIFICATION,
@@ -320,6 +321,35 @@ export function createNewVaultAndGetSeedPhrase(
   };
 }
 
+export function createAndBackupSeedPhrase(
+  password: string,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      const [firstKeyring] = await createNewVault(password);
+      const seedPhrase = await getSeedPhrase(password);
+
+      if (!firstKeyring) {
+        throw new Error('No keyring found');
+      }
+
+      await createSeedPhraseBackup(password, seedPhrase, firstKeyring.id);
+      return seedPhrase;
+    } catch (error) {
+      dispatch(displayWarning(error));
+      if (isErrorWithMessage(error)) {
+        throw new Error(getErrorMessage(error));
+      } else {
+        throw error;
+      }
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
+  };
+}
+
 export function unlockAndGetSeedPhrase(
   password: string,
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
@@ -344,6 +374,81 @@ export function unlockAndGetSeedPhrase(
   };
 }
 
+/**
+ * Fetches and restores the seed phrase from the metadata store and restore the vault using the seed phrase.
+ *
+ * @param password - The password.
+ * @returns The seed phrase.
+ */
+export function restoreBackupAndGetSeedPhrase(
+  password: string,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      // fetch all the backup seed phrases
+      const seedPhrases = await fetchAllSeedPhrases(password);
+      if (seedPhrases === null || seedPhrases.length === 0) {
+        return null;
+      }
+
+      // get the first seed phrase from the array
+      const firstSeedPhrase = seedPhrases[seedPhrases.length - 1];
+      const encodedSeedPhrase = Array.from(
+        Buffer.from(firstSeedPhrase).values(),
+      );
+
+      // restore the vault using the seed phrase
+      const [firstKeyring] = await submitRequestToBackground<KeyringMetadata[]>(
+        'createNewVaultAndRestore',
+        [password, encodedSeedPhrase],
+      );
+
+      if (!firstKeyring) {
+        throw new Error('No keyring found');
+      }
+
+      // update the backup metadata state for the seedless onboarding flow
+      await updateBackupMetadataState(firstKeyring.id, firstSeedPhrase);
+
+      await forceUpdateMetamaskState(dispatch);
+      return firstSeedPhrase;
+    } catch (error) {
+      dispatch(displayWarning(error));
+      throw error;
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
+  };
+}
+
+/**
+ * Changes the password for the seedless onboarding.
+ *
+ * @param newPassword - The new password.
+ * @param oldPassword - The old password.
+ */
+export function changePassword(
+  newPassword: string,
+  oldPassword: string,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    try {
+      await submitRequestToBackground<void>('changePassword', [
+        newPassword,
+        oldPassword,
+      ]);
+      dispatch(hideLoadingIndication());
+    } catch (error) {
+      dispatch(hideLoadingIndication());
+
+      dispatch(displayWarning(error));
+      throw error;
+    }
+  };
+}
+
 export function submitPassword(password: string): Promise<void> {
   return new Promise((resolve, reject) => {
     callBackgroundMethod('submitPassword', [password], (error) => {
@@ -357,17 +462,15 @@ export function submitPassword(password: string): Promise<void> {
   });
 }
 
-export function createNewVault(password: string): Promise<boolean> {
-  return new Promise((resolve, reject) => {
-    callBackgroundMethod('createNewVaultAndKeychain', [password], (error) => {
-      if (error) {
-        reject(error);
-        return;
-      }
+export async function createNewVault(
+  password: string,
+): Promise<KeyringMetadata[]> {
+  const keyringsMetadata = await submitRequestToBackground<KeyringMetadata[]>(
+    'createNewVaultAndKeychain',
+    [password],
+  );
 
-      resolve(true);
-    });
-  });
+  return keyringsMetadata;
 }
 
 export function verifyPassword(password: string): Promise<boolean> {
@@ -422,6 +525,89 @@ export function tryReverseResolveAddress(
       });
     });
   };
+}
+
+/**
+ * Creates a seed phrase backup in the metadata store for seedless onboarding flow.
+ *
+ * @param password - The password.
+ * @param seedPhrase - The seed phrase.
+ * @param keyringId - The keyring id of the backup seed phrase.
+ */
+export async function createSeedPhraseBackup(
+  password: string,
+  seedPhrase: string,
+  keyringId: string,
+): Promise<void> {
+  const encodedSeedPhrase = Array.from(
+    Buffer.from(seedPhrase, 'utf8').values(),
+  );
+  await submitRequestToBackground('createSeedPhraseBackup', [
+    password,
+    encodedSeedPhrase,
+    keyringId,
+  ]);
+}
+
+/**
+ * Fetches all seed phrases from the metadata store.
+ *
+ * Seedphrases are sorted by creation date, the latest seed phrase is the first one in the array.
+ *
+ * @param password - The password.
+ * @returns The seed phrases.
+ */
+export async function fetchAllSeedPhrases(
+  password: string,
+): Promise<Buffer[] | null> {
+  const encodedSeedPhrases = await submitRequestToBackground<Buffer[]>(
+    'fetchAllSeedPhrases',
+    [password],
+  );
+  return encodedSeedPhrases;
+}
+
+/**
+ * Updates the Seedless Onboarding backup metadata state, with backup seed phrase id and backup seed phrase.
+ *
+ * @param keyringId - The keyring id of the backup seed phrase.
+ * @param seedPhrase - The backup seed phrase.
+ */
+export async function updateBackupMetadataState(
+  keyringId: string,
+  seedPhrase: string,
+): Promise<void> {
+  // Encode the secret recovery phrase as an array of integers so that it is
+  // serialized as JSON properly.
+  const encodedSeedPhrase = Array.from(
+    Buffer.from(seedPhrase, 'utf8').values(),
+  );
+
+  await submitRequestToBackground('updateBackupMetadataState', [
+    keyringId,
+    encodedSeedPhrase,
+  ]);
+}
+
+/**
+ * Fetches the accounts for a given keyring id.
+ *
+ * @param keyringId - The keyring id.
+ * @returns The accounts.
+ */
+export async function getAccountsByKeyringId(
+  keyringId: string,
+): Promise<string[]> {
+  try {
+    const accounts = await submitRequestToBackground<string[]>(
+      'getAccountsByKeyringId',
+      [keyringId],
+    );
+    return accounts;
+  } catch (error) {
+    console.error('[getAccountsByKeyringId] error', error);
+    throw error;
+  }
 }
 
 export function resetAccount(): ThunkAction<
@@ -3373,6 +3559,37 @@ export function resetOnboarding(): ThunkAction<
 export function resetOnboardingAction() {
   return {
     type: actionConstants.RESET_ONBOARDING,
+  };
+}
+
+/**
+ * Starts the OAuth2 login process for the given Social Login type
+ * and authenticate the user with the Seedless Onboarding Services.
+ *
+ * @param provider - The authentication connection to use (google | apple).
+ * @returns The social login result.
+ */
+export function startOAuthLogin(
+  provider: AuthConnection,
+): ThunkAction<Promise<boolean>, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      const isNewUser = await submitRequestToBackground('startOAuthLogin', [
+        provider,
+      ]);
+      return isNewUser;
+    } catch (error) {
+      dispatch(displayWarning(error));
+      if (isErrorWithMessage(error)) {
+        throw new Error(getErrorMessage(error));
+      } else {
+        throw error;
+      }
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
   };
 }
 

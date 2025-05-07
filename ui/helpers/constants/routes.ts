@@ -71,6 +71,14 @@ export const REVEAL_SRP_LIST_ROUTE =
 PATH_NAME_MAP[REVEAL_SRP_LIST_ROUTE] =
   'Reveal Secret Recovery Phrase List Page';
 
+export const SECURITY_PASSWORD_CHANGE_ROUTE =
+  '/settings/security-and-privacy/password-change';
+PATH_NAME_MAP[SECURITY_PASSWORD_CHANGE_ROUTE] = 'Change Password';
+
+export const SECURITY_PASSWORD_HINT_ROUTE =
+  '/settings/security-and-privacy/password-hint';
+PATH_NAME_MAP[SECURITY_PASSWORD_HINT_ROUTE] = 'Password Hint';
+
 export const REVEAL_SEED_ROUTE = '/seed';
 // This `:keyringId` parameter is actually optional.
 PATH_NAME_MAP[`${REVEAL_SEED_ROUTE}/:keyringId`] =

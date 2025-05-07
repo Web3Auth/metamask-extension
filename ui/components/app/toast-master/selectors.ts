@@ -20,7 +20,9 @@ type State = Omit<MetaMaskReduxState, 'appState'> & {
   appState: {
     showNftDetectionEnablementToast?: boolean;
     showPasswordHintSavedToast?: boolean;
+    ///: BEGIN:ONLY_INCLUDE_IF(multi-srp)
     showNewSrpAddedToast?: boolean;
+    ///: END:ONLY_INCLUDE_IF
   };
   metamask: {
     newPrivacyPolicyToastClickedOrClosed?: boolean;

@@ -4,7 +4,7 @@ import thunk from 'redux-thunk';
 import { fireEvent, renderWithProvider } from '../../../../test/jest';
 import initializedMockState from '../../../../test/data/mock-state.json';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
-import { UNLOCK_ROUTE } from '../../../helpers/constants/routes';
+import { ONBOARDING_UNLOCK_ROUTE } from '../../../helpers/constants/routes';
 import CreationSuccessful from './account-exist';
 
 const mockHistoryPush = jest.fn();
@@ -27,6 +27,7 @@ describe('Account Exist Seedless Onboarding View', () => {
       metamask: {
         ...initializedMockState.metamask,
         firstTimeFlowType: FirstTimeFlowType.seedless,
+        socialLoginEmail: 'test@test.com',
       },
     };
     const customMockStore = configureMockStore([thunk])(
@@ -43,12 +44,27 @@ describe('Account Exist Seedless Onboarding View', () => {
     const loginButton = getByText('Log in');
     expect(loginButton).toBeInTheDocument();
     expect(loginButton.nodeName).toBe('BUTTON');
+    expect(getByText(/test@test.com/u)).toBeInTheDocument();
   });
 
   it('should navigate to the unlock page when the button is clicked', () => {
-    const { getByText } = renderWithProvider(<CreationSuccessful />);
+    const importFirstTimeFlowState = {
+      ...initializedMockState,
+      metamask: {
+        ...initializedMockState.metamask,
+        firstTimeFlowType: FirstTimeFlowType.seedless,
+        socialLoginEmail: 'test@test.com',
+      },
+    };
+    const customMockStore = configureMockStore([thunk])(
+      importFirstTimeFlowState,
+    );
+    const { getByText } = renderWithProvider(
+      <CreationSuccessful />,
+      customMockStore,
+    );
     const loginButton = getByText('Log in');
     fireEvent.click(loginButton);
-    expect(mockHistoryPush).toHaveBeenCalledWith(UNLOCK_ROUTE);
+    expect(mockHistoryPush).toHaveBeenCalledWith(ONBOARDING_UNLOCK_ROUTE);
   });
 });
