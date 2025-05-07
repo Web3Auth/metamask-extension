@@ -48,6 +48,12 @@ export default function AccountNotFound() {
     // TODO: process the creation of a new wallet using the social login
     history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
   };
+
+  const onLoginWithDifferentMethod = async () => {
+    // TODO: Cleanup social login state and redirect to welcome page
+    console.log('onLoginWithDifferentMethod');
+  };
+
   return (
     <Box
       className="account-not-found"
@@ -114,15 +120,25 @@ export default function AccountNotFound() {
         justifyContent={JustifyContent.center}
         alignItems={AlignItems.center}
         width={BlockSize.Full}
+        gap={2}
       >
         <Button
-          data-testid="onboarding-complete-done"
+          data-testid="account-not-found-create-one"
           variant={ButtonVariant.Primary}
           size={ButtonSize.Lg}
           width={BlockSize.Full}
           onClick={onCreateOne}
         >
           {t('accountNotFoundCreateOne')}
+        </Button>
+        <Button
+          data-testid="account-not-found-login-with-different-method"
+          variant={ButtonVariant.Secondary}
+          size={ButtonSize.Lg}
+          width={BlockSize.Full}
+          onClick={onLoginWithDifferentMethod}
+        >
+          {t('useDifferentLoginMethod')}
         </Button>
       </Box>
     </Box>
