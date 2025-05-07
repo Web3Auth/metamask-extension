@@ -230,16 +230,14 @@ export default class UnlockPage extends Component {
   handleInputChange(event) {
     const { target } = event;
     this.setState({ password: target.value, error: null });
-    // tell mascot to look at page action
-    if (target.getBoundingClientRect) {
-      const element = target;
-      const boundingRect = element.getBoundingClientRect();
-      const coordinates = getCaretCoordinates(element, element.selectionEnd);
-      this.animationEventEmitter.emit('point', {
-        x: boundingRect.left + coordinates.left - element.scrollLeft,
-        y: boundingRect.top + coordinates.top - element.scrollTop,
-      });
-    }
+
+    const element = target;
+    const boundingRect = element.getBoundingClientRect();
+    const coordinates = getCaretCoordinates(element, element.selectionEnd ?? 0);
+    this.animationEventEmitter.emit('point', {
+      x: boundingRect.left + coordinates.left - element.scrollLeft,
+      y: boundingRect.top + coordinates.top - element.scrollTop,
+    });
   }
 
   renderMascot = () => {
@@ -359,7 +357,6 @@ export default class UnlockPage extends Component {
               <FormTextField
                 value={password}
                 id="password"
-                data-testid="unlock-password"
                 label={
                   <Box
                     display={Display.Flex}
@@ -389,7 +386,7 @@ export default class UnlockPage extends Component {
                   type: InputType.Password,
                 }}
                 onChange={(event) => this.handleInputChange(event)}
-                error={error}
+                error={Boolean(error)}
                 helpText={this.renderHelpText()}
                 autoComplete="current-password"
                 autoFocus
@@ -400,63 +397,62 @@ export default class UnlockPage extends Component {
                 }}
               />
             </div>
-          </form>
-          <div className="unlock-page__footer">
-            <Box
-              className="unlock-page__buttons"
-              display={Display.Flex}
-              flexDirection={FlexDirection.Column}
-              width={BlockSize.Full}
-              gap={4}
-            >
-              <Button
-                variant={ButtonVariant.Primary}
-                size={ButtonSize.Lg}
-                block
-                type="submit"
-                data-testid="unlock-submit"
-                disabled={!this.state.password || isLocked}
-                onClick={this.handleSubmit}
+            <div className="unlock-page__footer">
+              <Box
+                className="unlock-page__buttons"
+                display={Display.Flex}
+                flexDirection={FlexDirection.Column}
+                width={BlockSize.Full}
+                gap={4}
               >
-                {this.context.t('unlock')}
-              </Button>
-              <ButtonLink
-                data-testid="unlock-forgot-password-button"
-                key="import-account"
-                onClick={() => onRestore()}
-              >
-                {t('forgotPassword')}
-              </ButtonLink>
-            </Box>
-            <div className="unlock-page__support">
-              {t('needHelp', [
-                <a
-                  href={SUPPORT_LINK}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  key="need-help-link"
-                  onClick={() => {
-                    this.context.trackEvent(
-                      {
-                        category: MetaMetricsEventCategory.Navigation,
-                        event: MetaMetricsEventName.SupportLinkClicked,
-                        properties: {
-                          url: SUPPORT_LINK,
-                        },
-                      },
-                      {
-                        contextPropsIntoEventProperties: [
-                          MetaMetricsContextProp.PageTitle,
-                        ],
-                      },
-                    );
-                  }}
+                <Button
+                  variant={ButtonVariant.Primary}
+                  size={ButtonSize.Lg}
+                  block
+                  type="submit"
+                  data-testid="unlock-submit"
+                  disabled={!password || isLocked}
                 >
-                  {needHelpText}
-                </a>,
-              ])}
+                  {this.context.t('unlock')}
+                </Button>
+                <ButtonLink
+                  data-testid="unlock-forgot-password-button"
+                  key="import-account"
+                  onClick={() => onRestore()}
+                >
+                  {t('forgotPassword')}
+                </ButtonLink>
+              </Box>
+              <div className="unlock-page__support">
+                {t('needHelp', [
+                  <a
+                    href={SUPPORT_LINK}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    key="need-help-link"
+                    onClick={() => {
+                      this.context.trackEvent(
+                        {
+                          category: MetaMetricsEventCategory.Navigation,
+                          event: MetaMetricsEventName.SupportLinkClicked,
+                          properties: {
+                            url: SUPPORT_LINK,
+                          },
+                        },
+                        {
+                          contextPropsIntoEventProperties: [
+                            MetaMetricsContextProp.PageTitle,
+                          ],
+                        },
+                      );
+                    }}
+                  >
+                    {needHelpText}
+                  </a>,
+                ])}
+              </div>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     );
