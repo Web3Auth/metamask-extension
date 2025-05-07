@@ -41,6 +41,11 @@ export default function AccountExist() {
     history.push(ONBOARDING_UNLOCK_ROUTE);
   };
 
+  const onLoginWithDifferentMethod = async () => {
+    // TODO: Cleanup social login state and redirect to welcome page
+    console.log('onLoginWithDifferentMethod');
+  };
+
   useEffect(() => {
     if (firstTimeFlowType !== FirstTimeFlowType.seedless) {
       history.push(ONBOARDING_WELCOME_ROUTE);
@@ -113,15 +118,25 @@ export default function AccountExist() {
         justifyContent={JustifyContent.center}
         alignItems={AlignItems.center}
         width={BlockSize.Full}
+        gap={2}
       >
         <Button
-          data-testid="onboarding-complete-done"
+          data-testid="account-exist-login"
           variant={ButtonVariant.Primary}
           size={ButtonSize.Lg}
           width={BlockSize.Full}
           onClick={onDone}
         >
           {t('accountAlreadyExistsLogin')}
+        </Button>
+        <Button
+          data-testid="account-exist-login-with-different-method"
+          variant={ButtonVariant.Secondary}
+          size={ButtonSize.Lg}
+          width={BlockSize.Full}
+          onClick={onLoginWithDifferentMethod}
+        >
+          {t('useDifferentLoginMethod')}
         </Button>
       </Box>
     </Box>
