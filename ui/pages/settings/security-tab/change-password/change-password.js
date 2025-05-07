@@ -1,15 +1,11 @@
 import EventEmitter from 'events';
-import React, { useMemo, useState } from 'react';
-import zxcvbn from 'zxcvbn';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import {
   Box,
   Button,
-  ButtonIcon,
   FormTextField,
-  FormTextFieldSize,
-  IconName,
   Text,
   TextFieldType,
 } from '../../../../components/component-library';
@@ -24,8 +20,8 @@ import { isBeta, isFlask } from '../../../../helpers/utils/build-types';
 import Mascot from '../../../../components/ui/mascot';
 import Spinner from '../../../../components/ui/spinner';
 import { useI18nContext } from '../../../../hooks/useI18nContext';
-import { PASSWORD_MIN_LENGTH } from '../../../../helpers/constants/common';
 import { changePassword, verifyPassword } from '../../../../store/actions';
+import PasswordForm from '../../../../components/app/password-form/password-form';
 
 const ChangePasswordSteps = {
   CurrentPassword: 1,
@@ -44,80 +40,7 @@ const ChangePassword = () => {
   const [isIncorrectPasswordError, setIsIncorrectPasswordError] =
     useState(false);
 
-  const [passwordStrength, setPasswordStrength] = useState('');
-  const [passwordStrengthText, setPasswordStrengthText] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [newPassword, setNewPassword] = useState('');
-
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [confirmPasswordError, setConfirmPasswordError] = useState('');
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const getPasswordStrengthLabel = (isTooShort, score) => {
-    if (isTooShort) {
-      return {
-        className: 'create-password__weak',
-        dataTestId: 'short-password-error',
-        text: t('passwordNotLongEnough'),
-        description: '',
-      };
-    }
-    if (score >= 4) {
-      return {
-        className: 'create-password__strong',
-        dataTestId: 'strong-password',
-        text: t('strong'),
-        description: '',
-      };
-    }
-    if (score === 3) {
-      return {
-        className: 'create-password__average',
-        dataTestId: 'average-password',
-        text: t('average'),
-        description: t('passwordStrengthDescription'),
-      };
-    }
-    return {
-      className: 'create-password__weak',
-      dataTestId: 'weak-password',
-      text: t('weak'),
-      description: t('passwordStrengthDescription'),
-    };
-  };
-
-  const handleNewPasswordChange = (passwordInput) => {
-    const isTooShort =
-      passwordInput.length && passwordInput.length < PASSWORD_MIN_LENGTH;
-    const { score } = zxcvbn(passwordInput);
-    const passwordStrengthLabel = getPasswordStrengthLabel(isTooShort, score);
-    const passwordStrengthComponent = t('passwordStrength', [
-      <span
-        key={score}
-        data-testid={passwordStrengthLabel.dataTestId}
-        className={passwordStrengthLabel.className}
-      >
-        {passwordStrengthLabel.text}
-      </span>,
-    ]);
-    const confirmError =
-      !confirmPassword || passwordInput === confirmPassword
-        ? ''
-        : t('passwordsDontMatch');
-
-    setNewPassword(passwordInput);
-    setPasswordStrength(passwordStrengthComponent);
-    setPasswordStrengthText(passwordStrengthLabel.description);
-    setConfirmPasswordError(confirmError);
-  };
-
-  const handleConfirmNewPasswordChange = (confirmPasswordInput) => {
-    const error =
-      newPassword === confirmPasswordInput ? '' : t('passwordsDontMatch');
-
-    setConfirmPassword(confirmPasswordInput);
-    setConfirmPasswordError(error);
-  };
 
   const renderMascot = () => {
     if (isFlask()) {
@@ -135,18 +58,6 @@ const ChangePassword = () => {
     );
   };
 
-  const isValid = useMemo(() => {
-    if (!newPassword || !confirmPassword || newPassword !== confirmPassword) {
-      return false;
-    }
-
-    if (newPassword.length < PASSWORD_MIN_LENGTH) {
-      return false;
-    }
-
-    return !confirmPasswordError;
-  }, [newPassword, confirmPassword, confirmPasswordError]);
-
   const handleSubmitCurrentPassword = async () => {
     try {
       await verifyPassword(currentPassword);
@@ -158,7 +69,7 @@ const ChangePassword = () => {
   };
 
   const handleSubmitNewPassword = async () => {
-    if (!isValid) {
+    if (!newPassword) {
       return;
     }
 
@@ -225,77 +136,9 @@ const ChangePassword = () => {
         >
           <Box className="change-password__form-container">
             <div className="change-password__form-container__content">
-              <FormTextField
-                dataTestId="change-password-new"
-                passwordStrength={passwordStrength}
-                passwordStrengthText={passwordStrengthText}
-                autoFocus
-                placeholder={t('newPasswordPlaceholder')}
-                label={t('newPassword')}
-                labelProps={{ marginBottom: 1 }}
-                size={FormTextFieldSize.Lg}
-                value={newPassword}
-                type={showPassword ? 'text' : 'password'}
-                onChange={(e) => {
-                  handleNewPasswordChange(e.target.value);
-                }}
-                helpText={
-                  (passwordStrength || passwordStrengthText) && (
-                    <Box>
-                      {passwordStrength && (
-                        <Text as="div" variant={TextVariant.inherit}>
-                          {passwordStrength}
-                        </Text>
-                      )}
-                      {passwordStrengthText && (
-                        <Text as="div" variant={TextVariant.inherit}>
-                          {passwordStrengthText}
-                        </Text>
-                      )}
-                    </Box>
-                  )
-                }
-                endAccessory={
-                  <ButtonIcon
-                    iconName={showPassword ? IconName.EyeSlash : IconName.Eye}
-                    data-testid="show-password"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setShowPassword(!showPassword);
-                    }}
-                  />
-                }
-              />
-
-              <FormTextField
-                dataTestId="create-password-confirm"
-                marginTop={4}
-                placeholder={t('confirmPasswordPlaceholder')}
-                label={t('confirmPassword')}
-                labelProps={{ marginBottom: 1 }}
-                size={FormTextFieldSize.Lg}
-                error={Boolean(confirmPasswordError)}
-                helpText={confirmPasswordError}
-                value={confirmPassword}
-                type={showConfirmPassword ? 'text' : 'password'}
-                onChange={(e) => {
-                  handleConfirmNewPasswordChange(e.target.value);
-                }}
-                endAccessory={
-                  <ButtonIcon
-                    iconName={
-                      showConfirmPassword ? IconName.EyeSlash : IconName.Eye
-                    }
-                    data-testid="show-password"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setShowConfirmPassword(!showConfirmPassword);
-                    }}
-                  />
-                }
-              />
+              <PasswordForm onChange={(password) => setNewPassword(password)} />
             </div>
-            <Button type="submit" disabled={!isValid} block>
+            <Button type="submit" disabled={!newPassword} block>
               {t('save')}
             </Button>
           </Box>

@@ -2037,6 +2037,9 @@
   "enterOptionalPassword": {
     "message": "Enter optional password"
   },
+  "enterPassword": {
+    "message": "Enter password"
+  },
   "enterPasswordContinue": {
     "message": "Enter password to continue"
   },
@@ -3412,7 +3415,7 @@
     "message": "New password"
   },
   "newPasswordPlaceholder": {
-    "message": "Use at least 8 characters"
+    "message": "Enter a strong password"
   },
   "newPrivacyPolicyActionButton": {
     "message": "Read more"
@@ -4922,13 +4925,32 @@
     "message": "Back up Secret Recovery Phrase"
   },
   "securitySrpDescription": {
-    "message": "Back up your Secret Recovery Phrase and link your wallet to an Apple or Google account. Be sure to store your Secret Recovery Phrase in a safe place that only you can access and won’t forget."
+    "message": "Back up your Secret Recovery Phrase. Be sure to store your Secret Recovery Phrase in a safe place that only you can access and won’t forget."
   },
   "securitySrpLoginWithAppleOrGoogle": {
     "message": "Log in with Apple or Google"
   },
   "securitySrpProtect": {
     "message": "Protect your wallet"
+  },
+  "securitySrpSocialLoginDescription": {
+    "message": "Back up your Secret Recovery Phrase and link your wallet to an Apple or Google account. Be sure to store your Secret Recovery Phrase in a safe place that only you can access and won’t forget."
+  },
+  "securitySocialLoginDisabled": {
+    "message": "Log in with Apple/Google"
+  },
+  "securitySocialLoginDisabledDescription": {
+    "message": "Access your wallet anytime with your Apple/Google login and password."
+  },
+  "securitySocialLoginEnabled": {
+    "message": "Email recovery enabled"
+  },
+  "securitySocialLoginEnabledDescription": {
+    "message": "Access your wallet anytime with your $1 login and password.",
+    "description": "The $1 is the text 'Apple/Google'"
+  },
+  "securitySocialLoginSetup": {
+    "message": "Set up"
   },
   "securitySrpTitle": {
     "message": "Secret Recovery Phrase"
@@ -5721,6 +5743,9 @@
   "srpListName": {
     "message": "Secret Recovery Phrase $1",
     "description": "$1 is the order of the Secret Recovery Phrase"
+  },
+  "srpListBackup": {
+    "message": "Back up"
   },
   "srpListNumberOfAccounts": {
     "message": "$1 accounts",
