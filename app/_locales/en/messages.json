@@ -4921,21 +4921,6 @@
     "message": "Powered by $1",
     "description": "The security provider that is providing data"
   },
-  "securitySrpBackupSrp": {
-    "message": "Back up Secret Recovery Phrase"
-  },
-  "securitySrpDescription": {
-    "message": "Back up your Secret Recovery Phrase. Be sure to store your Secret Recovery Phrase in a safe place that only you can access and won’t forget."
-  },
-  "securitySrpLoginWithAppleOrGoogle": {
-    "message": "Log in with Apple or Google"
-  },
-  "securitySrpProtect": {
-    "message": "Protect your wallet"
-  },
-  "securitySrpSocialLoginDescription": {
-    "message": "Back up your Secret Recovery Phrase and link your wallet to an Apple or Google account. Be sure to store your Secret Recovery Phrase in a safe place that only you can access and won’t forget."
-  },
   "securitySocialLoginDisabled": {
     "message": "Log in with Apple/Google"
   },
@@ -4951,6 +4936,21 @@
   },
   "securitySocialLoginSetup": {
     "message": "Set up"
+  },
+  "securitySrpBackupSrp": {
+    "message": "Back up Secret Recovery Phrase"
+  },
+  "securitySrpDescription": {
+    "message": "Back up your Secret Recovery Phrase. Be sure to store your Secret Recovery Phrase in a safe place that only you can access and won’t forget."
+  },
+  "securitySrpLoginWithAppleOrGoogle": {
+    "message": "Log in with Apple or Google"
+  },
+  "securitySrpProtect": {
+    "message": "Protect your wallet"
+  },
+  "securitySrpSocialLoginDescription": {
+    "message": "Back up your Secret Recovery Phrase and link your wallet to an Apple or Google account. Be sure to store your Secret Recovery Phrase in a safe place that only you can access and won’t forget."
   },
   "securitySrpTitle": {
     "message": "Secret Recovery Phrase"
@@ -5740,12 +5740,12 @@
     "message": "I have a $1-word phrase",
     "description": "This is the text for each option in the dropdown where a user selects how many words their secret recovery phrase has during import. The $1 is the number of words (either 12, 15, 18, 21, or 24)."
   },
+  "srpListBackup": {
+    "message": "Back up"
+  },
   "srpListName": {
     "message": "Secret Recovery Phrase $1",
     "description": "$1 is the order of the Secret Recovery Phrase"
-  },
-  "srpListBackup": {
-    "message": "Back up"
   },
   "srpListNumberOfAccounts": {
     "message": "$1 accounts",
