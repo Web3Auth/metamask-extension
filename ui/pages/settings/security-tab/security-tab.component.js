@@ -183,27 +183,27 @@ export default class SecurityTab extends PureComponent {
     return (
       <>
         <div
-          ref={this.settingsRefs[22]}
+          ref={this.settingsRefs[1]}
           className="settings-page__security-tab-sub-header"
         >
           {t('securitySrpTitle')}
         </div>
         <div className="settings-page__content-padded">
           <div className="settings-page__content-description">
-            {t('securitySrpDescription')}
+            {socialLoginEnabled
+              ? t('securitySrpSocialLoginDescription')
+              : t('securitySrpDescription')}
           </div>
-          <BannerAlert
-            title={t('securitySrpLoginWithAppleOrGoogle')}
-            description={socialLoginEmail}
-            paddingTop={2}
-            paddingBottom={2}
-            marginTop={4}
-            severity={
-              socialLoginEnabled
-                ? BannerAlertSeverity.Success
-                : BannerAlertSeverity.Warning
-            }
-          />
+          {socialLoginEnabled && (
+            <BannerAlert
+              title={t('securitySrpLoginWithAppleOrGoogle')}
+              description={socialLoginEmail}
+              paddingTop={2}
+              paddingBottom={2}
+              marginTop={4}
+              severity={BannerAlertSeverity.Success}
+            />
+          )}
           {/* TODO: get severity from controller */}
           <BannerAlert
             title={t('securitySrpBackupSrp')}
@@ -241,7 +241,8 @@ export default class SecurityTab extends PureComponent {
                   location: 'Settings',
                 },
               });
-              if (hasMultipleHdKeyrings) {
+
+              if (hasMultipleHdKeyrings || socialLoginEnabled) {
                 history.push({
                   pathname: REVEAL_SRP_LIST_ROUTE,
                 });
@@ -250,7 +251,9 @@ export default class SecurityTab extends PureComponent {
               this.setState({ srpQuizModalVisible: true });
             }}
           >
-            {t('securitySrpProtect')}
+            {socialLoginEnabled
+              ? t('securitySrpProtect')
+              : t('revealSeedWords')}
           </Button>
           {this.state.srpQuizModalVisible && (
             <SRPQuiz
@@ -270,7 +273,7 @@ export default class SecurityTab extends PureComponent {
     return (
       <>
         <div
-          ref={this.settingsRefs[23]}
+          ref={this.settingsRefs[2]}
           className="settings-page__security-tab-sub-header"
         >
           {t('securityChangePasswordTitle')}
@@ -1220,6 +1223,7 @@ export default class SecurityTab extends PureComponent {
       petnamesEnabled,
       dataCollectionForMarketing,
       setDataCollectionForMarketing,
+      socialLoginEnabled,
     } = this.props;
     const { showDataCollectionDisclaimer } = this.state;
 
@@ -1233,7 +1237,7 @@ export default class SecurityTab extends PureComponent {
           {this.context.t('security')}
         </span>
         {this.renderSeedWords()}
-        {this.renderPassword()}
+        {socialLoginEnabled && this.renderPassword()}
         {this.renderSecurityAlertsToggle()}
         <span className="settings-page__security-tab-sub-header__bold">
           {this.context.t('privacy')}

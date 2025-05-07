@@ -378,8 +378,10 @@ env:
 
   # OAuth provider config
   - GOOGLE_CLIENT_ID: ''
+  - GOOGLE_AUTH_URI: ''
   - AUTH_CONNECTION_ID: ''
   - APPLE_CLIENT_ID: ''
+  - APPLE_AUTH_URI: ''
   - GROUPED_AUTH_CONNECTION_ID: ''
   - AUTH_SERVER_URL: ''
   - WEB3AUTH_NETWORK: ''

@@ -184,6 +184,14 @@ const SETTINGS_CONSTANTS = [
     route: `${SECURITY_ROUTE}#reveal-secretrecovery`,
     icon: 'fa fa-lock',
   },
+  // securityAndPrivacy settingsRefs[2]
+  {
+    tabMessage: (t) => t('securityAndPrivacy'),
+    sectionMessage: (t) => t('securityChangePasswordTitle'),
+    descriptionMessage: (t) => t('securityChangePasswordDescription'),
+    route: `${SECURITY_ROUTE}#password`,
+    icon: 'fa fa-lock',
+  },
   // securityAndPrivacy settingsRefs[3]
   {
     tabMessage: (t) => t('securityAndPrivacy'),
