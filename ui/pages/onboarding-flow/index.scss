@@ -27,7 +27,9 @@
 
   &--welcome {
     background-color: transparent;
-    justify-content: center;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 0; 
   }
 
   &__wrapper {
@@ -41,6 +43,7 @@
     &--welcome {
       border: none;
       max-width: inherit;
+      padding: 0;
     }
 
     &--unlock {

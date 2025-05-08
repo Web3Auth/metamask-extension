@@ -6,6 +6,8 @@ import {
   Box,
   ButtonBase,
   ButtonBaseSize,
+  Icon,
+  IconName,
   Text,
 } from '../../../components/component-library';
 import {
@@ -14,10 +16,12 @@ import {
   AlignItems,
   BlockSize,
   TextVariant,
+  TextColor,
 } from '../../../helpers/constants/design-system';
 import TermsOfUsePopup from '../../../components/app/terms-of-use-popup';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { setTermsOfUseLastAgreed } from '../../../store/actions';
+import { brandColor } from '@metamask/design-tokens';
 
 export default function WelcomeBanner({ onAccept }: { onAccept: () => void }) {
   const t = useI18nContext();
@@ -33,32 +37,27 @@ export default function WelcomeBanner({ onAccept }: { onAccept: () => void }) {
   return (
     <div className="welcome-banner">
       <div className="welcome-banner__wrapper">
-        <div className="welcome-banner__title">
-          <Text className="welcome-banner__title-text" as="h2">
-            {t('welcomeTitle')}
-          </Text>
-        </div>
-        <Box
-          className="welcome-banner__button-container"
-          display={Display.Flex}
-          justifyContent={JustifyContent.center}
-          alignItems={AlignItems.center}
+        <Text className="welcome-banner__title" as="h2" marginBottom={8}>
+          {t('welcomeTitle')}
+        </Text>
+        <Text className="welcome-banner__description" marginBottom={6}>
+          Trusted by millions, MetaMask is a secure wallet making the world of
+          web3 accessible to all.
+        </Text>
+        <ButtonBase
+          data-testid="onboarding-get-started-button"
+          className="welcome-banner__button"
+          size={ButtonBaseSize.Lg}
+          onClick={() => setShowTermsOfUse(true)}
+          endIconName={IconName.Arrow2Right}
         >
-          <ButtonBase
-            data-testid="onboarding-get-started-button"
-            className="welcome-banner__button"
-            width={BlockSize.Full}
-            size={ButtonBaseSize.Lg}
-            onClick={() => setShowTermsOfUse(true)}
+          <Text
+            className="welcome-banner__button-text"
+            variant={TextVariant.bodyMdMedium}
           >
-            <Text
-              className="welcome-banner__button-text"
-              variant={TextVariant.bodyMdMedium}
-            >
-              {t('welcomeGetStarted')}
-            </Text>
-          </ButtonBase>
-        </Box>
+            {t('welcomeGetStarted')}
+          </Text>
+        </ButtonBase>
       </div>
       <TermsOfUsePopup
         isOpen={showTermsOfUse}

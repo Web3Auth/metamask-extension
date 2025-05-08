@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import WelcomeBanner from './welcome-banner';
+import WelcomeGetStarted from './welcome-get-started';
 
 const WelcomePageState = {
   Banner: 'Banner',
@@ -34,7 +35,7 @@ export default function Welcome() {
       {pageState === WelcomePageState.Banner && (
         <WelcomeBanner onAccept={() => setPageState(WelcomePageState.Login)} />
       )}
-      {pageState === WelcomePageState.Login && <h1>Login</h1>}
+      {pageState === WelcomePageState.Login && <WelcomeGetStarted />}
     </div>
   );
 }
