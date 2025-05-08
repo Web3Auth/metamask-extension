@@ -23,7 +23,10 @@ import {
   FontWeight,
   IconColor,
 } from '../../../../helpers/constants/design-system';
-import { getSocialLoginEmail } from '../../../../selectors/backup';
+import {
+  getSocialLoginEmail,
+  getSocialLoginType,
+} from '../../../../selectors/backup';
 import { useI18nContext } from '../../../../hooks/useI18nContext';
 
 export const RevealSrpList = () => {
@@ -33,7 +36,7 @@ export const RevealSrpList = () => {
 
   const socialLoginEmail = useSelector(getSocialLoginEmail);
   const socialLoginEnabled = Boolean(socialLoginEmail);
-  const socialLoginType = AuthConnection.Apple;
+  const socialLoginType = useSelector(getSocialLoginType);
 
   const socialLoginCardTitle = () => {
     if (socialLoginEnabled) {
