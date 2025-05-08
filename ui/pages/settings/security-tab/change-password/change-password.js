@@ -160,12 +160,9 @@ const ChangePassword = () => {
     }
   };
 
-  const handleSubmitNewPassword = async () => {
-    if (!isValid) {
-      return;
-    }
-
+  const onChangePassword = async () => {
     try {
+      setShowChangePasswordWarning(false);
       setStep(ChangePasswordSteps.CreatingPassword);
       await dispatch(changePassword(newPassword, currentPassword));
 
@@ -177,6 +174,14 @@ const ChangePassword = () => {
       setStep(ChangePasswordSteps.CreatingPassword);
     }
   };
+
+  const onSubmitChangePasswordForm = () => {
+    if (!isValid) {
+      return;
+    }
+    setShowChangePasswordWarning(true);
+  };
+
   return (
     <div className="change-password">
       {step === ChangePasswordSteps.CurrentPassword && (
@@ -223,7 +228,7 @@ const ChangePassword = () => {
           className="change-password__form"
           onSubmit={(e) => {
             e.preventDefault();
-            setShowChangePasswordWarning(true);
+            onSubmitChangePasswordForm();
           }}
         >
           <Box className="change-password__form-container">
@@ -325,8 +330,7 @@ const ChangePassword = () => {
       {showChangePasswordWarning && (
         <ChangePasswordWarning
           onConfirm={() => {
-            handleSubmitNewPassword();
-            setShowChangePasswordWarning(false);
+            onChangePassword();
           }}
           onCancel={() => setShowChangePasswordWarning(false)}
         />
