@@ -258,20 +258,13 @@ async function runInitialActions(store) {
     await store.dispatch(actions.setCurrentExtensionPopupId(thisPopupId));
   }
 
-  const isUnlocked = getIsUnlocked(state);
   try {
     // check seedless password outdated at app init
-    const isPasswordOutdated = await store.dispatch(
-      actions.checkIsSeedlessPasswordOutdated(),
-    );
+    await store.dispatch(actions.checkIsSeedlessPasswordOutdated());
     // periodically check seedless password outdated when app UI is open
     setInterval(async () => {
       await store.dispatch(actions.checkIsSeedlessPasswordOutdated());
     }, SEEDLESS_PASSWORD_OUTDATED_CHECK_INTERVAL_MS);
-    if (isUnlocked && isPasswordOutdated) {
-      // lock app if password is outdated and app is unlocked
-      await store.dispatch(actions.lockMetamask());
-    }
   } catch (e) {
     log.error('[Metamask] checkIsSeedlessPasswordOutdated error', e);
   }

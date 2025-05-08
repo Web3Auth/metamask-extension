@@ -33,7 +33,9 @@ export default function PasswordChangedModal() {
   return (
     <Modal
       isOpen
-      onClose={() => {}}
+      onClose={() => {
+        // NOTE: this modal is not closable, user can only press continue
+      }}
       className="password-changed-modal"
       data-testid="password-changed-modal"
     >

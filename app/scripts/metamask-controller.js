@@ -4830,21 +4830,28 @@ export default class MetamaskController extends EventEmitter {
           globalPassword,
         });
 
-      // update seedlessOnboardingController to use latest global password
-      await this.seedlessOnboardingController.syncLatestGlobalPassword({
-        oldPassword: currentDevicePassword,
-        globalPassword,
-      });
-
       // use current device password to unlock the keyringController vault
       await this.submitPassword(currentDevicePassword);
-      // update vault password to global password
-      await this.keyringController.changePassword(globalPassword);
 
-      // reset password outdated cache after successful syncing
-      await this.seedlessOnboardingController.checkIsPasswordOutdated({
-        skipCache: true,
-      });
+      try {
+        // update seedlessOnboardingController to use latest global password
+        await this.seedlessOnboardingController.syncLatestGlobalPassword({
+          oldPassword: currentDevicePassword,
+          globalPassword,
+        });
+
+        // update vault password to global password
+        await this.keyringController.changePassword(globalPassword);
+
+        // check password outdated again skip cache to reset the cache after successful syncing
+        await this.seedlessOnboardingController.checkIsPasswordOutdated({
+          skipCache: true,
+        });
+      } catch (err) {
+        // lock app again on error after submitPassword succeeded
+        await this.setLocked();
+        throw err;
+      }
     } finally {
       releaseLock();
     }
