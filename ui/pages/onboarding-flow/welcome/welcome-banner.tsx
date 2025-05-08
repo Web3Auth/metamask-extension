@@ -1,32 +1,20 @@
-import EventEmitter from 'events';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import {
-  Box,
   ButtonBase,
   ButtonBaseSize,
-  Icon,
   IconName,
   Text,
 } from '../../../components/component-library';
-import {
-  Display,
-  JustifyContent,
-  AlignItems,
-  BlockSize,
-  TextVariant,
-  TextColor,
-} from '../../../helpers/constants/design-system';
+import { TextVariant } from '../../../helpers/constants/design-system';
 import TermsOfUsePopup from '../../../components/app/terms-of-use-popup';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { setTermsOfUseLastAgreed } from '../../../store/actions';
-import { brandColor } from '@metamask/design-tokens';
 
 export default function WelcomeBanner({ onAccept }: { onAccept: () => void }) {
   const t = useI18nContext();
   const dispatch = useDispatch();
-  const [eventEmitter] = useState(new EventEmitter());
   const [showTermsOfUse, setShowTermsOfUse] = useState(false);
 
   const onAcceptTermsOfUse = () => {
@@ -41,8 +29,7 @@ export default function WelcomeBanner({ onAccept }: { onAccept: () => void }) {
           {t('welcomeTitle')}
         </Text>
         <Text className="welcome-banner__description" marginBottom={6}>
-          Trusted by millions, MetaMask is a secure wallet making the world of
-          web3 accessible to all.
+          {t('welcomeDescription')}
         </Text>
         <ButtonBase
           data-testid="onboarding-get-started-button"

@@ -60,11 +60,11 @@ html {
   html[data-theme] & {
     background: var(--color-background-default);
 
-    &.welcome-banner {
+    &.app-content--welcome-banner {
       background: var(--brand-colors-lime-lime050) url('/images/welcome-banner.png') no-repeat calc(50% + 500px) 160px;
     }
 
-    &.welcome-login {
+    &.app-content--welcome-login {
       background: var(--brand-colors-purple-purple800) url('/images/welcome-page.png') no-repeat center center;
     }
   }

@@ -1,7 +1,6 @@
 @use "design-system";
 
 .welcome-banner {
-
   &__wrapper {
     width: 100%;
     max-width: 1280px;
@@ -48,12 +47,12 @@
   }
 }
 
-.welcome-get-started {
+.welcome-login {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 1rem;
-  height: 100%;
+  height: 728px;
   width: 446px;
   margin: 8px auto 0;
   background-color: var(--brand-colors-purple-purple100);
@@ -67,7 +66,7 @@
     align-items: center;
     justify-content: space-between;
     flex: 1;
-    padding: 40px;
+    padding: 80px 0;
   }
 
   &__title {
@@ -79,13 +78,20 @@
     text-align: center;
   }
 
-  &__logo {
-    text-align: center;
+  &__mascot {
+    &--image {
+      margin-top: -40px;
+    }
   }
 
   &__social-icon {
     width: 24px;
     height: 24px;
+  }
+
+  &__create-button {
+    background-color: var(--brand-colors-black);
+    color: var(--brand-colors-white);
   }
 
   &__import-button {
