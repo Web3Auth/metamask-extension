@@ -114,21 +114,15 @@ export const SrpList = ({
                 </Text>
               )}
             </Box>
-            {!keyring.hasBackup && (
-              <Box
-                display={Display.Flex}
-                alignItems={AlignItems.center}
-                gap={2}
+            <Box display={Display.Flex} alignItems={AlignItems.center} gap={2}>
+              <Text
+                fontWeight={FontWeight.Medium}
+                color={TextColor.errorDefault}
               >
-                <Text
-                  fontWeight={FontWeight.Medium}
-                  color={TextColor.errorDefault}
-                >
-                  {t('srpListBackup')}
-                </Text>
-                <Icon name={IconName.ArrowRight} size={IconSize.Sm} />
-              </Box>
-            )}
+                {t('srpListBackup')}
+              </Text>
+              <Icon name={IconName.ArrowRight} size={IconSize.Sm} />
+            </Box>
           </Box>
           {showAccounts[index] && (
             <Box>

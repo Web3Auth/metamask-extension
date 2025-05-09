@@ -113,7 +113,6 @@ export default class SecurityTab extends PureComponent {
     hasMultipleHdKeyrings: PropTypes.bool,
     socialLoginEmail: PropTypes.string,
     socialLoginEnabled: PropTypes.bool,
-    allSrpBackupsEnabled: PropTypes.bool,
   };
 
   state = {
@@ -177,7 +176,6 @@ export default class SecurityTab extends PureComponent {
       hasMultipleHdKeyrings,
       socialLoginEmail,
       socialLoginEnabled,
-      allSrpBackupsEnabled,
     } = this.props;
 
     return (
@@ -205,17 +203,15 @@ export default class SecurityTab extends PureComponent {
             />
           )}
           {/* TODO: get severity from controller */}
-          <BannerAlert
-            title={t('securitySrpBackupSrp')}
-            paddingTop={2}
-            paddingBottom={2}
-            marginTop={4}
-            severity={
-              allSrpBackupsEnabled
-                ? BannerAlertSeverity.Success
-                : BannerAlertSeverity.Warning
-            }
-          />
+          {!socialLoginEnabled && (
+            <BannerAlert
+              title={t('securitySrpBackupSrp')}
+              paddingTop={2}
+              paddingBottom={2}
+              marginTop={4}
+              severity={BannerAlertSeverity.Warning}
+            />
+          )}
           <Button
             data-testid="reveal-seed-words"
             type="danger"

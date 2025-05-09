@@ -26,7 +26,6 @@ import {
   getMetaMetricsDataDeletionId,
   getHDEntropyIndex,
 } from '../../../selectors/selectors';
-import { getBackupState } from '../../../selectors/backup';
 import { getNetworkConfigurationsByChainId } from '../../../../shared/modules/selectors/networks';
 import { openBasicFunctionalityModal } from '../../../ducks/app/app';
 
@@ -59,9 +58,6 @@ const mapStateToProps = (state) => {
   const hasMultipleHdKeyrings = getMetaMaskHdKeyrings(state).length > 1;
 
   const socialLoginEnabled = Boolean(socialLoginEmail);
-  const allSrpBackupsEnabled = getBackupState(state).every(
-    (backup) => backup.hasBackup,
-  );
 
   return {
     networkConfigurations,
@@ -86,7 +82,6 @@ const mapStateToProps = (state) => {
     hasMultipleHdKeyrings,
     socialLoginEmail,
     socialLoginEnabled,
-    allSrpBackupsEnabled,
   };
 };
 

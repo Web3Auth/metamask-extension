@@ -3,13 +3,10 @@ import { useSelector } from 'react-redux';
 import { KeyringMetadata, KeyringObject } from '@metamask/keyring-controller';
 import { InternalAccount } from '@metamask/keyring-internal-api';
 import { getInternalAccounts } from '../../selectors/accounts';
-import { getBackupState, getMetaMaskHdKeyrings } from '../../selectors';
+import { getMetaMaskHdKeyrings } from '../../selectors';
 
 // TODO: Move this data type to the @metamask/keyring-controller module
-type KeyringObjectWithMetadata = KeyringObject & {
-  metadata: KeyringMetadata;
-  hasBackup: boolean;
-};
+type KeyringObjectWithMetadata = KeyringObject & { metadata: KeyringMetadata };
 
 /**
  * Custom hook that combines HD keyrings with their snap accounts that were derived from the same entropy source.
@@ -21,7 +18,6 @@ export const useHdKeyringsWithSnapAccounts = () => {
     getMetaMaskHdKeyrings,
   );
   const internalAccounts = useSelector(getInternalAccounts);
-  const backupState = useSelector(getBackupState);
 
   return useMemo(() => {
     return hdKeyrings.map((keyring) => {
@@ -31,16 +27,11 @@ export const useHdKeyringsWithSnapAccounts = () => {
             account.options?.entropySource === keyring.metadata.id,
         )
         .map((account: InternalAccount) => account.address);
-      const hasBackup = Boolean(
-        backupState.find((backup) => backup.id === keyring.metadata.id)
-          ?.hasBackup,
-      );
 
       return {
         ...keyring,
         accounts: [...keyring.accounts, ...firstPartySnapAccounts],
-        hasBackup,
       };
     });
-  }, [hdKeyrings, internalAccounts, backupState]);
+  }, [hdKeyrings, internalAccounts]);
 };

@@ -26,7 +26,7 @@ import {
 import {
   getSocialLoginEmail,
   getSocialLoginType,
-} from '../../../../selectors/backup';
+} from '../../../../selectors/social-syncs';
 import { useI18nContext } from '../../../../hooks/useI18nContext';
 
 export const RevealSrpList = () => {

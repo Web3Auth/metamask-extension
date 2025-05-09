@@ -25,13 +25,13 @@ export function getKeyringsMetadata(state: BackupState): KeyringMetadata[] {
   return state.metamask.keyringsMetadata;
 }
 
-export function getSocialBackups(state: BackupState) {
+export function getSocialSyncs(state: BackupState) {
   return state.metamask.socialBackupsMetadata;
 }
 
-export function getBackupState(state: BackupState) {
+export function getSocialSyncState(state: BackupState) {
   const keyringsMetadata = getKeyringsMetadata(state);
-  const socialBackups = getSocialBackups(state);
+  const socialBackups = getSocialSyncs(state);
 
   return keyringsMetadata.map((keyring) => {
     const hasBackup = socialBackups.find((backup) => backup.id === keyring.id);
