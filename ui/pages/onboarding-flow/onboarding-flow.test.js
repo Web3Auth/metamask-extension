@@ -33,6 +33,7 @@ jest.mock('../../store/actions', () => ({
   createNewVaultAndRestore: jest.fn(),
   setOnboardingDate: jest.fn(() => ({ type: 'TEST_DISPATCH' })),
   setIsBackupAndSyncFeatureEnabled: jest.fn(),
+  hideLoadingIndication: jest.fn(() => ({ type: 'HIDE_LOADING_INDICATION' })),
 }));
 
 describe('Onboarding Flow', () => {

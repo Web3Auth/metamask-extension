@@ -2149,10 +2149,9 @@
         }
       }
     },
-    "bridgeStatusState": {
-      "txHistory": {}
-    },
-    "throttledOrigins": {}
+    "txHistory": {},
+    "throttledOrigins": {},
+    "delegations": {}
   },
   "ramps": {
     "buyableChains": [

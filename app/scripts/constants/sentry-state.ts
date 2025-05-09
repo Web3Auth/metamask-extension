@@ -112,13 +112,6 @@ export const SENTRY_BACKGROUND_STATE = {
     assetsRates: false,
   },
   BridgeController: {
-    bridgeFeatureFlags: {
-      extensionConfig: {
-        support: false,
-        chains: {},
-      },
-      mobileConfig: false,
-    },
     assetExchangeRates: false,
     quoteRequest: {
       walletAddress: false,
@@ -137,9 +130,7 @@ export const SENTRY_BACKGROUND_STATE = {
     quotesRefreshCount: true,
   },
   BridgeStatusController: {
-    bridgeStatusState: {
-      txHistory: false,
-    },
+    txHistory: false,
   },
   CronjobController: {
     jobs: false,
