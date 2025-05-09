@@ -16,6 +16,7 @@ import {
   AlignItems,
   BlockSize,
   TextVariant,
+  FontWeight,
 } from '../../../../helpers/constants/design-system';
 import { getMetaMaskAccounts } from '../../../../selectors/selectors';
 import { InternalAccountWithBalance } from '../../../../selectors/selectors.types';
@@ -86,7 +87,9 @@ export const SrpList = ({
             justifyContent={JustifyContent.spaceBetween}
           >
             <Box>
-              <Text>{t('srpListName', [index + 1])}</Text>
+              <Text fontWeight={FontWeight.Medium}>
+                {t('srpListName', [index + 1])}
+              </Text>
               {!hideShowAccounts && (
                 <Text
                   variant={TextVariant.bodySm}
@@ -111,7 +114,16 @@ export const SrpList = ({
                 </Text>
               )}
             </Box>
-            <Icon name={IconName.ArrowRight} size={IconSize.Sm} />
+            <Box display={Display.Flex} alignItems={AlignItems.center} gap={2}>
+              {/* TODO: show this only when srp is not backed up */}
+              <Text
+                fontWeight={FontWeight.Medium}
+                color={TextColor.errorDefault}
+              >
+                {t('srpListBackup')}
+              </Text>
+              <Icon name={IconName.ArrowRight} size={IconSize.Sm} />
+            </Box>
           </Box>
           {showAccounts[index] && (
             <Box>

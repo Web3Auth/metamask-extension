@@ -62,14 +62,9 @@
   }
 
   &__form {
-    width: 100%;
-    margin: 24px 0 0;
+    display: contents;
   }
 
-  &__link {
-    font-size: unset;
-    font-weight: medium;
-  }
 
   &__support {
     margin-top: 24px;

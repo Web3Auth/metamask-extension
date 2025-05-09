@@ -1,3 +1,4 @@
+import { Browser } from 'selenium-webdriver';
 import { withFixtures } from '../../helpers';
 import { WALLET_PASSWORD } from '../../constants';
 import FixtureBuilder from '../../fixture-builder';
@@ -10,6 +11,7 @@ import OnboardingPasswordPage from '../../page-objects/pages/onboarding/onboardi
 import SecureWalletPage from '../../page-objects/pages/onboarding/secure-wallet-page';
 import StartOnboardingPage from '../../page-objects/pages/onboarding/start-onboarding-page';
 import TestDappSendEthWithPrivateKey from '../../page-objects/pages/test-dapp-send-eth-with-private-key';
+import OnboardingGetStartedPage from '../../page-objects/pages/onboarding/onboarding-get-started-page';
 
 describe('Incremental Security', function (this: Suite) {
   it('Back up Secret Recovery Phrase from backup reminder', async function () {
@@ -28,15 +30,20 @@ describe('Incremental Security', function (this: Suite) {
         );
         await driver.navigate();
 
+        // skip collect metametrics
+        if (process.env.SELENIUM_BROWSER === Browser.FIREFOX) {
+          const onboardingMetricsPage = new OnboardingMetricsPage(driver);
+          await onboardingMetricsPage.clickNoThanksButton();
+        }
+
         // agree to terms of use and start onboarding
         const startOnboardingPage = new StartOnboardingPage(driver);
         await startOnboardingPage.check_pageIsLoaded();
-        await startOnboardingPage.checkTermsCheckbox();
-        await startOnboardingPage.clickCreateWalletButton();
+        await startOnboardingPage.agreeToTermsOfUse();
 
-        // skip collect metametrics
-        const onboardingMetricsPage = new OnboardingMetricsPage(driver);
-        await onboardingMetricsPage.clickNoThanksButton();
+        const onboardingGetStartedPage = new OnboardingGetStartedPage(driver);
+        await onboardingGetStartedPage.check_pageIsLoaded();
+        await onboardingGetStartedPage.createWalletWithSrp();
 
         // create password
         const onboardingPasswordPage = new OnboardingPasswordPage(driver);
@@ -47,6 +54,12 @@ describe('Incremental Security', function (this: Suite) {
         const secureWalletPage = new SecureWalletPage(driver);
         await secureWalletPage.check_pageIsLoaded();
         await secureWalletPage.skipSRPBackup();
+
+        // skip collect metametrics
+        if (process.env.SELENIUM_BROWSER !== Browser.FIREFOX) {
+          const onboardingMetricsPage = new OnboardingMetricsPage(driver);
+          await onboardingMetricsPage.clickNoThanksButton();
+        }
 
         // complete onboarding and pin extension
         const onboardingCompletePage = new OnboardingCompletePage(driver);

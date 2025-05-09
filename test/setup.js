@@ -14,4 +14,3 @@ global.chrome.identity = {
   getRedirectURL: () => 'https://mocked-redirect-uri',
   launchWebAuthFlow: () => Promise.resolve('https://mocked-redirect-uri?code=mocked-code'),
 };
-

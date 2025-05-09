@@ -4,13 +4,15 @@
 ; This variable is required
 INFURA_PROJECT_ID=00000000000
 
-; This variable is required for seedless onboarding
+; This variable is required for OAuth login
+AUTH_CONNECTION_ID=
+GROUPED_AUTH_CONNECTION_ID=
 GOOGLE_CLIENT_ID=
 APPLE_CLIENT_ID=
-AUTH_SERVER_URL=http://localhost:3060
-WEB3AUTH_NETWORK=sapphire_devnet
 AUTH_CONNECTION_ID=byoa-server
 GROUPED_AUTH_CONNECTION_ID=mm-seedless-onboarding
+AUTH_SERVER_URL=
+WEB3AUTH_NETWORK=
 
 ; This variable is not required but it's necessary for the storybook
 ; to render stories that use onchain data.

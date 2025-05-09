@@ -45,23 +45,19 @@ const mapDispatchToProps = (dispatch) => {
 
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
   const {
-    // eslint-disable-next-line no-shadow
-    markPasswordForgotten,
-    // eslint-disable-next-line no-shadow
-    tryUnlockMetamask,
-    // eslint-disable-next-line no-shadow
-    tryUnlockMetamaskWithGlobalSeedlessPassword,
+    markPasswordForgotten: propsMarkPasswordForgotten,
+    tryUnlockMetamask: propsTryUnlockMetamask,
+    tryUnlockMetamaskWithGlobalSeedlessPassword: propsTryUnlockMetamaskWithGlobalSeedlessPassword,
     ...restDispatchProps
   } = dispatchProps;
   const { history, onSubmit: ownPropsSubmit, ...restOwnProps } = ownProps;
 
   // TODO: might remove this once new forget password flow is implemented
   const onImport = async () => {
-    await markPasswordForgotten();
+    await propsMarkPasswordForgotten();
     history.push(RESTORE_VAULT_ROUTE);
-
     if (getEnvironmentType() === ENVIRONMENT_TYPE_POPUP) {
-      global.platform.openExtensionInBrowser(RESTORE_VAULT_ROUTE);
+      global.platform.openExtensionInBrowser?.(RESTORE_VAULT_ROUTE);
     }
   };
 
@@ -69,9 +65,9 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
   const onSubmit = async (password) => {
     if (isSeedlessPasswordOutdated) {
       // use global seedless password to unlock the vault if seedless password is outdated
-      await tryUnlockMetamaskWithGlobalSeedlessPassword(password);
+      await propsTryUnlockMetamaskWithGlobalSeedlessPassword(password);
     } else {
-      await tryUnlockMetamask(password);
+      await propsTryUnlockMetamask(password);
     }
 
     history.push(DEFAULT_ROUTE);
