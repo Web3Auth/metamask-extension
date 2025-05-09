@@ -30,6 +30,7 @@ import {
 import type { CarouselSlide } from '../../../../shared/constants/app-state';
 import {
   useCarouselManagement,
+  DOWNLOAD_MOBILE_APP_SLIDE,
   ///: BEGIN:ONLY_INCLUDE_IF(solana)
   SOLANA_SLIDE,
   ///: END:ONLY_INCLUDE_IF
@@ -38,6 +39,7 @@ import {
 import { CreateSolanaAccountModal } from '../create-solana-account-modal';
 import { getLastSelectedSolanaAccount } from '../../../selectors/multichain';
 ///: END:ONLY_INCLUDE_IF
+import DownloadMobileAppModal from '../../app/download-mobile-modal';
 import {
   AccountOverviewTabsProps,
   AccountOverviewTabs,
@@ -67,6 +69,9 @@ export const AccountOverviewLayout = ({
   const defaultSwapsToken = useSelector(getSwapsDefaultToken, isEqual);
   ///: END:ONLY_INCLUDE_IF
 
+  const [showDownloadMobileAppModal, setShowDownloadMobileAppModal] =
+    useState(false);
+
   const { slides } = useCarouselManagement();
 
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
@@ -93,6 +98,10 @@ export const AccountOverviewLayout = ({
       }
     }
     ///: END:ONLY_INCLUDE_IF
+
+    if (id === DOWNLOAD_MOBILE_APP_SLIDE.id) {
+      setShowDownloadMobileAppModal(true);
+    }
 
     trackEvent({
       event: MetaMetricsEventName.BannerSelect,
@@ -151,6 +160,11 @@ export const AccountOverviewLayout = ({
         )
         ///: END:ONLY_INCLUDE_IF
       }
+      {showDownloadMobileAppModal && (
+        <DownloadMobileAppModal
+          onClose={() => setShowDownloadMobileAppModal(false)}
+        />
+      )}
     </>
   );
 };

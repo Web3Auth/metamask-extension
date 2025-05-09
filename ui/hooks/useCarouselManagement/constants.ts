@@ -64,6 +64,14 @@ export const MULTI_SRP_SLIDE = {
   image: './images/slide-multi-srp-icon.svg',
 };
 
+// TODO: Check the image to use for the download mobile app slide
+export const DOWNLOAD_MOBILE_APP_SLIDE = {
+  id: 'downloadMobileApp',
+  title: 'slideDownloadMobileAppTitle',
+  description: 'slideDownloadMobileAppDescription',
+  image: './images/slide-bridge-icon.svg',
+};
+
 export const ZERO_BALANCE = '0x0';
 
 export const SWEEPSTAKES_START = new Date('2025-04-09T00:00:00Z');

@@ -11,6 +11,7 @@ import {
   ///: END:ONLY_INCLUDE_IF
   CARD_SLIDE,
   CASH_SLIDE,
+  DOWNLOAD_MOBILE_APP_SLIDE,
   REMOTE_MODE_SLIDE,
   SWEEPSTAKES_START,
   SWEEPSTAKES_END,
@@ -54,6 +55,7 @@ export const useCarouselManagement = ({
       undismissable: hasZeroBalance,
     };
 
+    defaultSlides.push(DOWNLOAD_MOBILE_APP_SLIDE);
     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
     defaultSlides.push(BRIDGE_SLIDE);
     ///: END:ONLY_INCLUDE_IF
