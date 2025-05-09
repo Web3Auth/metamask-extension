@@ -93,6 +93,16 @@
   "accountDetails": {
     "message": "Account details"
   },
+  "accountAlreadyExistsLoginDescription": {
+    "message": "An account with “$1” already exists. Do you want to try logging in instead?",
+    "description": "$1 is the account email"
+  },
+  "accountAlreadyExistsLogin": {
+    "message": "Log in"
+  },
+  "accountAlreadyExistsTitle": {
+    "message": "Account already exists"
+  },
   "accountIdenticon": {
     "message": "Account identicon"
   },
@@ -1020,6 +1030,12 @@
   },
   "chainListReturnedDifferentTickerSymbol": {
     "message": "This token symbol doesn't match the network name or chain ID entered. Many popular tokens use similar symbols, which scammers can use to trick you into sending them a more valuable token in return. Verify everything before you continue."
+  },
+  "changePasswordWarning": {
+    "message": "Warning: Wallets will be locked from all devices"
+  },
+  "changePasswordWarningDescription": {
+    "message": "For safety, this action will lock wallet access on any other device you're currently signed into. To regain access, you'll need to log in again with your new password."
   },
   "chooseYourNetwork": {
     "message": "Choose your network"
@@ -2604,6 +2620,9 @@
   "importWallet": {
     "message": "Import wallet"
   },
+  "importAWallet": {
+    "message": "Import a wallet"
+  },
   "importWalletOrAccountHeader": {
     "message": "Import a wallet or account"
   },
@@ -3820,6 +3839,10 @@
     "message": "We’ll let you know if we plan to use this data for other purposes. You can review our $1 any time (we never sell the data you provide here).",
     "description": "$1 represents `onboardingMetametricsPrivacyPolicy`"
   },
+  "onboardingMetametricsTerms": {
+    "message": "We’ll let you know if we plan to use this data for other purposes. You can review our $1 any time (we never sell the data you provide here).",
+    "description": "$1 represents `onboardingMetametricsPrivacyPolicy`"
+  },
   "onboardingMetametricsTitle": {
     "message": "Help us improve MetaMask"
   },
@@ -3829,14 +3852,29 @@
   "onboardingOptionTitle": {
     "message": "Choose an option to continue"
   },
+  "onboardingPinExtensionBillboardAccess": {
+    "message": "Full access"
+  },
+  "onboardingPinExtensionBillboardDescription": {
+    "message": "These extensions can see and change information"
+  },
+  "onboardingPinExtensionBillboardDescription2": {
+    "message": "on this site."
+  },
+  "onboardingPinExtensionBillboardTitle": {
+    "message": "Extensions"
+  },
+  "onboardingPinExtensionChrome": {
+    "message": "Click the browser extension icon"
+  },
   "onboardingPinExtensionDescription": {
-    "message": "Pin MetaMask on your browser so it's accessible and easy to view transaction confirmations."
+    "message": "Pin MetaMask on your browser so it’s accessible and easy to view transaction confirmations."
   },
   "onboardingPinExtensionDescription2": {
-    "message": "You can open MetaMask by clicking on the extension and access your wallet with 1 click."
+    "message": "Access your MetaMask wallet with 1 click by clicking on the extension."
   },
   "onboardingPinExtensionDescription3": {
-    "message": "Click browser extension icon to access it instantly"
+    "message": "Click Chrome extension icon to access it instantly"
   },
   "onboardingPinExtensionTitle": {
     "message": "Installation is complete!"
@@ -3940,23 +3978,32 @@
   "password": {
     "message": "Password"
   },
+  "passwordChangedRecently": {
+    "message": "Password changed recently"
+  },
+  "passwordChangedRecentlyDescription": {
+    "message": "Your password has been changed recently. You would need to type in your new password to continue being logged in."
+  },
+  "passwordChangedRecentlyError": {
+    "message": "Your password was changed recently."
+  },
   "passwordHintCreate": {
     "message": "Create a password hint"
+  },
+  "passwordHintTitle": {
+    "message": "Password hint"
   },
   "passwordHintDescription": {
     "message": "Leave yourself a hint to help remember your password. This hint won’t be shared."
   },
-  "passwordHintError": {
-    "message": "You can’t use the password as a hint"
-  },
   "passwordHintLeaveHint": {
     "message": "Remember: If you lose your password, you won’t be able to use your wallet."
   },
+  "passwordHintError": {
+    "message": "You can’t use the password as a hint"
+  },
   "passwordHintSaved": {
     "message": "Password hint saved"
-  },
-  "passwordHintTitle": {
-    "message": "Password hint"
   },
   "passwordNotLongEnough": {
     "message": "Password not long enough"
@@ -6715,6 +6762,20 @@
   "unlockPageTooManyFailedAttemptsPermanent": {
     "message": "Too many failed attempts. Your account is permanently locked."
   },
+  "unlockPageHint": {
+    "message": "Hint: $1",
+    "description": "$1 is the password hint"
+  },
+  "unlockPageIncorrectPassword": {
+    "message": "Password is incorrect. Please try again."
+  },
+  "unlockPageTooManyFailedAttempts": {
+    "message": "Too many failed attempts. Please try again in $1.",
+    "description": "$1 time to try again"
+  },
+  "unlockPageTooManyFailedAttemptsPermanent": {
+    "message": "Too many failed attempts. Your account is permanently locked."
+  },
   "unpin": {
     "message": "Unpin"
   },
@@ -6880,6 +6941,19 @@
   },
   "walletConnectionGuide": {
     "message": "our hardware wallet connection guide"
+  },
+  "walletReadyLearn": {
+    "message": "$1 you can keep this phrase safe so you never lose access to your money.",
+    "description": "$1 is the link to Learn how"
+  },
+  "walletReadyLearnRemind": {
+    "message": "You can back up your wallets or see your Secret Recovery Phrase in Settings > Security & Password."
+  },
+  "walletReadyLoseSrp": {
+    "message": "If you lose your Secret Recovery Phrase, you won’t be able to use your wallet."
+  },
+  "walletReadyLoseSrpRemind": {
+    "message": "If you don’t back up your Secret Recovery Phrase, you’ll lose access to your funds if you get locked out of the app or get a new device."
   },
   "walletReadyLearn": {
     "message": "$1 you can keep this phrase safe so you never lose access to your money.",

@@ -11,9 +11,11 @@ import {
 } from '../../helpers/constants/routes';
 import {
   tryUnlockMetamask,
+  tryUnlockMetamaskWithGlobalSeedlessPassword,
   markPasswordForgotten,
   forceUpdateMetamaskState,
 } from '../../store/actions';
+import { getIsSeedlessPasswordOutdated } from '../../ducks/metamask/metamask';
 import UnlockPage from './unlock-page.component';
 
 const mapStateToProps = (state) => {
@@ -21,16 +23,21 @@ const mapStateToProps = (state) => {
     metamask: { isUnlocked, preferences, firstTimeFlow },
   } = state;
   const { passwordHint } = preferences;
+  const isSeedlessPasswordOutdated = getIsSeedlessPasswordOutdated(state);
+
   return {
     isUnlocked,
     passwordHint,
     firstTimeFlow,
+    isSeedlessPasswordOutdated,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     tryUnlockMetamask: (password) => dispatch(tryUnlockMetamask(password)),
+    tryUnlockMetamaskWithGlobalSeedlessPassword: (globalPassword) =>
+      dispatch(tryUnlockMetamaskWithGlobalSeedlessPassword(globalPassword)),
     markPasswordForgotten: () => dispatch(markPasswordForgotten()),
     forceUpdateMetamaskState: () => forceUpdateMetamaskState(dispatch),
   };
@@ -40,6 +47,7 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
   const {
     markPasswordForgotten: propsMarkPasswordForgotten,
     tryUnlockMetamask: propsTryUnlockMetamask,
+    tryUnlockMetamaskWithGlobalSeedlessPassword: propsTryUnlockMetamaskWithGlobalSeedlessPassword,
     ...restDispatchProps
   } = dispatchProps;
   const { history, onSubmit: ownPropsSubmit, ...restOwnProps } = ownProps;
@@ -53,8 +61,14 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
     }
   };
 
+  const { isSeedlessPasswordOutdated } = stateProps;
   const onSubmit = async (password) => {
-    await propsTryUnlockMetamask(password);
+    if (isSeedlessPasswordOutdated) {
+      // use global seedless password to unlock the vault if seedless password is outdated
+      await propsTryUnlockMetamaskWithGlobalSeedlessPassword(password);
+    } else {
+      await propsTryUnlockMetamask(password);
+    }
 
     history.push(DEFAULT_ROUTE);
   };

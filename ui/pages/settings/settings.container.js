@@ -44,6 +44,7 @@ import { toggleNetworkMenu } from '../../store/actions';
 import { getSnapName } from '../../helpers/utils/util';
 import { decodeSnapIdFromPathname } from '../../helpers/utils/snaps';
 import Settings from './settings.component';
+import { getIsSeedlessPasswordOutdated } from '../../ducks/metamask/metamask';
 
 const ROUTES_TO_I18N_KEYS = {
   [ABOUT_US_ROUTE]: 'about',
@@ -138,6 +139,8 @@ const mapStateToProps = (state, ownProps) => {
   const snapSettingsTitle =
     isSnapSettingsRoute && snapNameGetter(decodeSnapIdFromPathname(pathname));
 
+  const isSeedlessPasswordOutdated = getIsSeedlessPasswordOutdated(state);
+
   return {
     addNewNetwork,
     addressName,
@@ -148,6 +151,7 @@ const mapStateToProps = (state, ownProps) => {
     initialBreadCrumbRoute,
     isAddressEntryPage,
     isPopup,
+    isSeedlessPasswordOutdated,
     mostRecentOverviewPage: getMostRecentOverviewPage(state),
     pathnameI18nKey,
     settingsPageSnaps,

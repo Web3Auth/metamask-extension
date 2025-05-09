@@ -51,6 +51,7 @@ import { getEnvironmentType } from '../../../app/scripts/lib/util';
 import { ENVIRONMENT_TYPE_POPUP } from '../../../shared/constants/app';
 import { SnapIcon } from '../../components/app/snaps/snap-icon';
 import { SnapSettingsRenderer } from '../../components/app/snaps/snap-settings-page';
+import PasswordChangedModal from '../../components/app/password-changed-modal';
 import SettingsTab from './settings-tab';
 import AdvancedTab from './advanced-tab';
 import InfoTab from './info-tab';
@@ -79,6 +80,7 @@ class SettingsPage extends PureComponent {
     initialBreadCrumbRoute: PropTypes.string,
     isAddressEntryPage: PropTypes.bool,
     isPopup: PropTypes.bool,
+    isSeedlessPasswordOutdated: PropTypes.bool,
     mostRecentOverviewPage: PropTypes.string.isRequired,
     pathnameI18nKey: PropTypes.string,
     settingsPageSnaps: PropTypes.array,
@@ -129,6 +131,7 @@ class SettingsPage extends PureComponent {
       currentPath,
       mostRecentOverviewPage,
       addNewNetwork,
+      isSeedlessPasswordOutdated,
     } = this.props;
 
     const { searchResults, isSearchList, searchText } = this.state;
@@ -141,6 +144,7 @@ class SettingsPage extends PureComponent {
           'settings-page--selected': currentPath !== SETTINGS_ROUTE,
         })}
       >
+        {isSeedlessPasswordOutdated && <PasswordChangedModal />}
         <Box
           className="settings-page__header"
           padding={4}

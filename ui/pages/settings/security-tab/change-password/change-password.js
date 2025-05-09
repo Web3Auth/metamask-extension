@@ -22,6 +22,7 @@ import Spinner from '../../../../components/ui/spinner';
 import { useI18nContext } from '../../../../hooks/useI18nContext';
 import { changePassword, verifyPassword } from '../../../../store/actions';
 import PasswordForm from '../../../../components/app/password-form/password-form';
+import ChangePasswordWarning from './change-password-warning';
 
 const ChangePasswordSteps = {
   CurrentPassword: 1,
@@ -41,6 +42,8 @@ const ChangePassword = () => {
     useState(false);
 
   const [newPassword, setNewPassword] = useState('');
+  const [showChangePasswordWarning, setShowChangePasswordWarning] =
+    useState(false);
 
   const renderMascot = () => {
     if (isFlask()) {
@@ -68,12 +71,9 @@ const ChangePassword = () => {
     }
   };
 
-  const handleSubmitNewPassword = async () => {
-    if (!newPassword) {
-      return;
-    }
-
+  const onChangePassword = async () => {
     try {
+      setShowChangePasswordWarning(false);
       setStep(ChangePasswordSteps.CreatingPassword);
       await dispatch(changePassword(newPassword, currentPassword));
 
@@ -85,6 +85,14 @@ const ChangePassword = () => {
       setStep(ChangePasswordSteps.CreatingPassword);
     }
   };
+
+  const onSubmitChangePasswordForm = () => {
+    if (!newPassword) {
+      return;
+    }
+    setShowChangePasswordWarning(true);
+  };
+
   return (
     <div className="change-password">
       {step === ChangePasswordSteps.CurrentPassword && (
@@ -131,7 +139,7 @@ const ChangePassword = () => {
           className="change-password__form"
           onSubmit={(e) => {
             e.preventDefault();
-            handleSubmitNewPassword();
+            onSubmitChangePasswordForm();
           }}
         >
           <Box className="change-password__form-container">
@@ -161,6 +169,14 @@ const ChangePassword = () => {
             {t('createPasswordCreatingNote')}
           </Text>
         </Box>
+      )}
+      {showChangePasswordWarning && (
+        <ChangePasswordWarning
+          onConfirm={() => {
+            onChangePassword();
+          }}
+          onCancel={() => setShowChangePasswordWarning(false)}
+        />
       )}
     </div>
   );
