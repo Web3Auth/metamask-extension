@@ -39,12 +39,14 @@ describe('SeedlessOnboardingControllerInit', () => {
   it('should return controller instance', () => {
     const requestMock = buildInitRequestMock();
     expect(
+      // @ts-expect-error TODO: Resolve mismatch between base-controller versions.
       SeedlessOnboardingControllerInit(requestMock).controller,
     ).toBeInstanceOf(SeedlessOnboardingController);
   });
 
   it('initializes with correct messenger and state', () => {
     const requestMock = buildInitRequestMock();
+    // @ts-expect-error TODO: Resolve mismatch between base-controller versions.
     SeedlessOnboardingControllerInit(requestMock);
 
     expect(SeedlessOnboardingControllerClassMock).toHaveBeenCalledWith({

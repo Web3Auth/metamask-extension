@@ -5021,6 +5021,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@metamask/base-controller@npm:^7.0.1, @metamask/base-controller@npm:^7.0.3, @metamask/base-controller@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "@metamask/base-controller@npm:7.1.1"
+  dependencies:
+    "@metamask/utils": "npm:^11.0.1"
+    immer: "npm:^9.0.6"
+  checksum: 10/d45abc9e0f3f42a0ea7f0a52734f3749fafc5fefc73608230ab0815578e83a9fc28fe57dc7000f6f8df2cdcee5b53f68bb971091075bec9de6b7f747de627c60
+  languageName: node
+  linkType: hard
+
 "@metamask/base-controller@npm:^8.0.0":
   version: 8.0.0
   resolution: "@metamask/base-controller@npm:8.0.0"
@@ -5028,6 +5038,16 @@ __metadata:
     "@metamask/utils": "npm:^11.1.0"
     immer: "npm:^9.0.6"
   checksum: 10/10d55f4af8962581d11a45d0fa3241c47c6dcede307ea0c119844b5e8bf417be4ec7a805d0a18a36ab125b201ec1478ea387f0e72928268a84b6a2aad39e07ef
+  languageName: node
+  linkType: hard
+
+"@metamask/base-controller@npm:^8.0.1":
+  version: 8.0.1
+  resolution: "@metamask/base-controller@npm:8.0.1"
+  dependencies:
+    "@metamask/utils": "npm:^11.2.0"
+    immer: "npm:^9.0.6"
+  checksum: 10/5ef02099ce2e2246c534a7742b45704417beebf2c21db70241d09c3ddbb549ff3375284ece00edf4051029facff181e5e05f135e97b943ec6c514eecce4fa37a
   languageName: node
   linkType: hard
 
@@ -6246,15 +6266,16 @@ __metadata:
 
 "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz::locator=metamask-crx%40workspace%3A.":
   version: 0.0.0
-  resolution: "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz#./seedless-onboarding-controller.tgz::hash=ad9329&locator=metamask-crx%40workspace%3A."
+  resolution: "@metamask/seedless-onboarding-controller@file:./seedless-onboarding-controller.tgz#./seedless-onboarding-controller.tgz::hash=060faf&locator=metamask-crx%40workspace%3A."
   dependencies:
     "@metamask/auth-network-utils": "npm:^0.1.0"
     "@metamask/base-controller": "npm:^8.0.1"
-    "@metamask/browser-passworder": "npm:^4.3.0"
     "@metamask/toprf-secure-backup": "npm:^0.1.0"
     "@metamask/utils": "npm:^11.2.0"
     async-mutex: "npm:^0.5.0"
-  checksum: 10/709d13393ec836fa22c7e00ca92d28f31af83b6ada2de1da3c1a4a4e917b1f7aea83676822c59ed6d62901a6f5f07561b85513bf9fb5a6bd9cc433e8255861f4
+  peerDependencies:
+    "@metamask/keyring-controller": ^21.0.0
+  checksum: 10/5aad603e323f125e71001dd65b3b2fdf6c76e1cef74e2cb90e1178c0b8a5474136f8365e0293dd46937eaeece3c128f1da3dfdffc5609133e68f6c5f1d1dc653
   languageName: node
   linkType: hard
 

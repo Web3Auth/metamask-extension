@@ -77,6 +77,7 @@ import {
   getSelectedInternalAccount,
   getMetaMaskHdKeyrings,
   getAllPermittedAccountsForCurrentTab,
+  getFirstTimeFlowType,
 } from '../selectors';
 import {
   getSelectedNetworkClientId,
@@ -245,18 +246,29 @@ export function createNewVaultAndRestore(
 export function importMnemonicToVault(
   mnemonic: string,
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
-  return (dispatch: MetaMaskReduxDispatch) => {
+  return (
+    dispatch: MetaMaskReduxDispatch,
+    getState: () => MetaMaskReduxState,
+  ) => {
     dispatch(showLoadingIndication());
     log.debug(`background.importMnemonicToVault`);
 
+    const firstTimeFlowType = getFirstTimeFlowType(getState());
+    const shouldDoSocialBackup =
+      firstTimeFlowType === FirstTimeFlowType.seedless;
+
     return new Promise<void>((resolve, reject) => {
-      callBackgroundMethod('importMnemonicToVault', [mnemonic], (err) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve();
-      });
+      callBackgroundMethod(
+        'importMnemonicToVault',
+        [mnemonic, shouldDoSocialBackup],
+        (err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        },
+      );
     })
       .then(async () => {
         dispatch(hideLoadingIndication());
@@ -267,6 +279,21 @@ export function importMnemonicToVault(
         return Promise.reject(err);
       });
   };
+}
+
+export async function restoreSeedPhrasesToVault(
+  password: string,
+  seedPhrases: Uint8Array[],
+): Promise<void> {
+  try {
+    await submitRequestToBackground('restoreSeedPhrasesToVault', [
+      password,
+      seedPhrases,
+    ]);
+  } catch (error) {
+    console.error('[restoreSeedPhrasesToVault] error', error);
+    throw error;
+  }
 }
 
 export function generateNewMnemonicAndAddToVault(): ThunkAction<
@@ -388,37 +415,36 @@ export function restoreBackupAndGetSeedPhrase(
 
     try {
       // fetch all the backup seed phrases
-      const seedPhrases = await fetchAllSeedPhrases(password);
-      if (seedPhrases === null || seedPhrases.length === 0) {
+      // get the first seed phrase from the array, this is the oldest seed phrase
+      // and we will use it to create the initial vault
+      const [firstSeedPhrase, ...remainingSeedPhrases] =
+        await fetchAllSeedPhrases(password);
+      if (!firstSeedPhrase) {
         return null;
       }
 
-      // get the first seed phrase from the array
-      const firstSeedPhrase = seedPhrases[seedPhrases.length - 1];
       const encodedSeedPhrase = Array.from(
         Buffer.from(firstSeedPhrase).values(),
       );
 
       // restore the vault using the seed phrase
-      const [firstKeyring] = await submitRequestToBackground<KeyringMetadata[]>(
-        'createNewVaultAndRestore',
-        [password, encodedSeedPhrase],
-      );
+      await submitRequestToBackground('createNewVaultAndRestore', [
+        password,
+        encodedSeedPhrase,
+      ]);
 
-      if (!firstKeyring) {
-        throw new Error('No keyring found');
+      // restore the remaining Mnemonics/SeedPhrases to the vault
+      if (remainingSeedPhrases.length > 0) {
+        await restoreSeedPhrasesToVault(password, remainingSeedPhrases);
       }
 
-      // update the backup metadata state for the seedless onboarding flow
-      await updateBackupMetadataState(firstKeyring.id, firstSeedPhrase);
-
       await forceUpdateMetamaskState(dispatch);
+      dispatch(hideLoadingIndication());
       return firstSeedPhrase;
     } catch (error) {
+      dispatch(hideLoadingIndication());
       dispatch(displayWarning(error));
       throw error;
-    } finally {
-      dispatch(hideLoadingIndication());
     }
   };
 }
@@ -565,28 +591,6 @@ export async function fetchAllSeedPhrases(
     [password],
   );
   return encodedSeedPhrases;
-}
-
-/**
- * Updates the Seedless Onboarding backup metadata state, with backup seed phrase id and backup seed phrase.
- *
- * @param keyringId - The keyring id of the backup seed phrase.
- * @param seedPhrase - The backup seed phrase.
- */
-export async function updateBackupMetadataState(
-  keyringId: string,
-  seedPhrase: string,
-): Promise<void> {
-  // Encode the secret recovery phrase as an array of integers so that it is
-  // serialized as JSON properly.
-  const encodedSeedPhrase = Array.from(
-    Buffer.from(seedPhrase, 'utf8').values(),
-  );
-
-  await submitRequestToBackground('updateBackupMetadataState', [
-    keyringId,
-    encodedSeedPhrase,
-  ]);
 }
 
 /**

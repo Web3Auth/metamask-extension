@@ -18,6 +18,7 @@ export const useHdKeyringsWithSnapAccounts = () => {
     getMetaMaskHdKeyrings,
   );
   const internalAccounts = useSelector(getInternalAccounts);
+
   return useMemo(() => {
     return hdKeyrings.map((keyring) => {
       const firstPartySnapAccounts = internalAccounts

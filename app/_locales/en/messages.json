@@ -3937,13 +3937,13 @@
     "message": "Create a password hint"
   },
   "passwordHintDescription": {
-    "message": "Leave yourself a hint to help remember where your Secret Recovery Phrase is stored. This hint is stored on your device, and won’t be shared."
+    "message": "Leave yourself a hint to help remember your password. This hint won’t be shared."
   },
   "passwordHintError": {
     "message": "You can’t use the password as a hint"
   },
   "passwordHintLeaveHint": {
-    "message": "Leave yourself a hint to help remember where your Secret Recovery Phrase is stored."
+    "message": "Remember: If you lose your password, you won’t be able to use your wallet."
   },
   "passwordHintSaved": {
     "message": "Password hint saved"
@@ -4852,8 +4852,14 @@
   "securityPassword": {
     "message": "Change Password"
   },
+  "securityPassword": {
+    "message": "Change Password"
+  },
   "securityPasswordHint": {
     "message": "Password Hint"
+  },
+  "securityPrivacyPath": {
+    "message": "Settings > Security & Privacy."
   },
   "securityPrivacyPath": {
     "message": "Settings > Security & Privacy."
@@ -4862,17 +4868,56 @@
     "message": "Powered by $1",
     "description": "The security provider that is providing data"
   },
+  "securityProviderPoweredBy": {
+    "message": "Powered by $1",
+    "description": "The security provider that is providing data"
+  },
+  "securitySocialLoginDisabled": {
+    "message": "Log in with Apple/Google"
+  },
+  "securitySocialLoginDisabled": {
+    "message": "Log in with Apple/Google"
+  },
+  "securitySocialLoginDisabledDescription": {
+    "message": "Access your wallet anytime with your Apple/Google login and password."
+  },
+  "securitySocialLoginEnabled": {
+    "message": "Email recovery enabled"
+  },
+  "securitySocialLoginEnabled": {
+    "message": "Email recovery enabled"
+  },
+  "securitySocialLoginEnabledDescription": {
+    "message": "Access your wallet anytime with your $1 login and password.",
+    "description": "The $1 is the text 'Apple/Google'"
+  },
+  "securitySocialLoginEnabledDescription": {
+    "message": "Access your wallet anytime with your $1 login and password.",
+    "description": "The $1 is the text 'Apple/Google'"
+  },
+  "securitySocialLoginSetup": {
+    "message": "Set up"
+  },
+  "securitySocialLoginSetup": {
+    "message": "Set up"
+  },
   "securitySrpBackupSrp": {
     "message": "Back up Secret Recovery Phrase"
   },
   "securitySrpDescription": {
-    "message": "Back up your Secret Recovery Phrase and link your wallet to an Apple or Google account. Be sure to store your Secret Recovery Phrase in a safe place that only you can access and won’t forget."
+    "message": "Back up your Secret Recovery Phrase. Be sure to store your Secret Recovery Phrase in a safe place that only you can access and won’t forget."
   },
   "securitySrpLoginWithAppleOrGoogle": {
     "message": "Log in with Apple or Google"
   },
   "securitySrpProtect": {
     "message": "Protect your wallet"
+  },
+  "securitySrpSocialLoginDescription": {
+    "message": "Back up your Secret Recovery Phrase and link your wallet to an Apple or Google account. Be sure to store your Secret Recovery Phrase in a safe place that only you can access and won’t forget."
+  },
+  "securitySrpTitle": {
+    "message": "Secret Recovery Phrase"
   },
   "securitySrpTitle": {
     "message": "Secret Recovery Phrase"
@@ -5613,6 +5658,9 @@
   "srpInputNumberOfWords": {
     "message": "I have a $1-word phrase",
     "description": "This is the text for each option in the dropdown where a user selects how many words their secret recovery phrase has during import. The $1 is the number of words (either 12, 15, 18, 21, or 24)."
+  },
+  "srpListBackup": {
+    "message": "Back up"
   },
   "srpListName": {
     "message": "Secret Recovery Phrase $1",

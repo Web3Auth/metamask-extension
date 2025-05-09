@@ -97,7 +97,6 @@ const mapStateToProps = (state, ownProps) => {
   const isSnapSettingsRoute = Boolean(pathname.match(SNAP_SETTINGS_ROUTE));
 
   const isPopup = getEnvironmentType() === ENVIRONMENT_TYPE_POPUP;
-  console.log('pathname', pathname);
   const pathnameI18nKey = ROUTES_TO_I18N_KEYS[pathname];
 
   let backRoute = SETTINGS_ROUTE;

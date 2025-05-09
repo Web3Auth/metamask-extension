@@ -240,6 +240,32 @@ export default class UnlockPage extends Component {
     });
   }
 
+  renderSubmitButton() {
+    const style = {
+      backgroundColor: 'var(--color-primary-default)',
+      color: 'var(--color-primary-inverse)',
+      marginTop: '20px',
+      height: '56px',
+      fontWeight: '500',
+      boxShadow: 'none',
+      borderRadius: '100px',
+    };
+
+    return (
+      <Button
+        type="submit"
+        data-testid="unlock-submit"
+        style={style}
+        disabled={!this.state.password}
+        variant="contained"
+        size="large"
+        onClick={this.handleSubmit}
+      >
+        {this.context.t('unlock')}
+      </Button>
+    );
+  }
+
   renderMascot = () => {
     if (isFlask()) {
       return (
@@ -264,8 +290,6 @@ export default class UnlockPage extends Component {
     const { error, showHint } = this.state;
     const { passwordHint } = this.props;
     const { t } = this.context;
-
-    console.log('this.state', this.state);
 
     if (!error && !showHint) {
       return null;

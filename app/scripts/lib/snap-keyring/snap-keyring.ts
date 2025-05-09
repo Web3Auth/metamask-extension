@@ -574,6 +574,7 @@ export function snapKeyringBuilder(
   helpers: SnapKeyringHelpers,
 ) {
   const builder = (() => {
+    // @ts-expect-error TODO: Resolve mismatch between base-controller versions.
     return new SnapKeyring(messenger, new SnapKeyringImpl(messenger, helpers));
   }) as SnapKeyringBuilder;
   builder.type = SnapKeyring.type;
