@@ -23,7 +23,7 @@ import {
   getPermittedEthChainIds,
 } from '@metamask/chain-agnostic-permission';
 import { KeyringTypes } from '@metamask/keyring-controller';
-import { BridgeFeatureFlagsKey } from '@metamask/bridge-controller';
+import { selectBridgeFeatureFlags } from '@metamask/bridge-controller';
 import {
   KnownCaipNamespace,
   parseCaipAccountId,
@@ -205,6 +205,10 @@ export function getEditedNetwork(state) {
 
 export function getIsAddingNewNetwork(state) {
   return state.appState.isAddingNewNetwork;
+}
+
+export function getIsAccessedFromDappConnectedSitePopover(state) {
+  return state.appState.isAccessedFromDappConnectedSitePopover;
 }
 
 export function getIsMultiRpcOnboarding(state) {
@@ -1008,6 +1012,14 @@ export function getAddressBook(state) {
   return Object.values(state.metamask.addressBook[chainId]);
 }
 
+export function getCompleteAddressBook(state) {
+  const addresses = state.metamask.addressBook;
+  const addressWithChainId = Object.fromEntries(
+    Object.entries(addresses).filter(([key]) => key !== '*'),
+  );
+  return Object.values(addressWithChainId);
+}
+
 export function getEnsResolutionByAddress(state, address) {
   if (state.metamask.ensResolutionsByAddress[address]) {
     const ensResolution = state.metamask.ensResolutionsByAddress[address];
@@ -1024,6 +1036,22 @@ export function getEnsResolutionByAddress(state, address) {
 }
 
 export function getAddressBookEntry(state, address) {
+  if (process.env.REMOVE_GNS) {
+    const addressBook = getCompleteAddressBook(state);
+
+    for (const item of addressBook) {
+      for (const key in item) {
+        if (Object.prototype.hasOwnProperty.call(item, key)) {
+          const contact = item[key];
+          if (isEqualCaseInsensitive(contact.address, address)) {
+            return contact;
+          }
+        }
+      }
+    }
+
+    return null;
+  }
   const addressBook = getAddressBook(state);
   const entry = addressBook.find((contact) =>
     isEqualCaseInsensitive(contact.address, address),
@@ -1810,19 +1838,20 @@ export function getIsBridgeChain(state, overrideChainId) {
   return ALLOWED_BRIDGE_CHAIN_IDS.includes(chainId);
 }
 
-function getBridgeFeatureFlags(state) {
-  return state.metamask.bridgeFeatureFlags;
-}
+const getBridgeFeatureFlags = createDeepEqualSelector(
+  [(state) => getRemoteFeatureFlags(state).bridgeConfig],
+  (bridgeConfig) => {
+    const validatedFlags = selectBridgeFeatureFlags({
+      remoteFeatureFlags: { bridgeConfig },
+    });
+    return validatedFlags;
+  },
+);
 
 export const getIsBridgeEnabled = createSelector(
   [getBridgeFeatureFlags, getUseExternalServices],
   (bridgeFeatureFlags, shouldUseExternalServices) => {
-    return (
-      (shouldUseExternalServices &&
-        bridgeFeatureFlags?.[BridgeFeatureFlagsKey.EXTENSION_CONFIG]
-          ?.support) ??
-      false
-    );
+    return (shouldUseExternalServices && bridgeFeatureFlags?.support) ?? false;
   },
 );
 
@@ -2026,21 +2055,6 @@ export function getShouldShowAggregatedBalancePopover(state) {
   const { shouldShowAggregatedBalancePopover } = getPreferences(state);
   return shouldShowAggregatedBalancePopover;
 }
-
-export const getConnectedSnapsList = createDeepEqualSelector(
-  getSnapsList,
-  (snapsData) => {
-    const snapsList = {};
-
-    Object.values(snapsData).forEach((snap) => {
-      if (!snapsList[snap.name]) {
-        snapsList[snap.name] = snap;
-      }
-    });
-
-    return snapsList;
-  },
-);
 
 export const getMemoizedCurrentChainId = createDeepEqualSelector(
   getCurrentChainId,
@@ -2958,15 +2972,15 @@ export function getIsCustomNetwork(state) {
 }
 
 /**
- * Get the state of the `nePortfolioDiscoverButton` remote feature flag.
+ * Get the state of the `neNetworkDiscoverButton` remote feature flag.
  * This flag determines whether the user should see a `Discover` button on the network menu list.
  *
  * @param {*} state
- * @returns The state of the `nePortfolioDiscoverButton` remote feature flag.
+ * @returns The state of the `neNetworkDiscoverButton` remote feature flag.
  */
-export function getIsPortfolioDiscoverButtonEnabled(state) {
-  const { nePortfolioDiscoverButton } = getRemoteFeatureFlags(state);
-  return Boolean(nePortfolioDiscoverButton);
+export function getNetworkDiscoverButtonEnabled(state) {
+  const { neNetworkDiscoverButton } = getRemoteFeatureFlags(state);
+  return neNetworkDiscoverButton;
 }
 
 export function getBlockExplorerLinkText(
