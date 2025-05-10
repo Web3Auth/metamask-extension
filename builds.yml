@@ -247,6 +247,18 @@ env:
   - __FIREBASE_DEFAULTS__: null
 
   ###
+  # RPC Failover
+  ###
+
+  - QUICKNODE_MAINNET_URL: null
+  - QUICKNODE_LINEA_MAINNET_URL: null
+  - QUICKNODE_ARBITRUM_URL: null
+  - QUICKNODE_AVALANCHE_URL: null
+  - QUICKNODE_OPTIMISM_URL: null
+  - QUICKNODE_POLYGON_URL: null
+  - QUICKNODE_BASE_URL: null
+
+  ###
   # API keys to 3rd party services
   ###
 
@@ -368,3 +380,11 @@ env:
 
   # Address of enforcer used for gasless EIP-7702 transactions
   - GASLESS_7702_ENFORCER_ADDRESS: null
+
+  # OAuth provider config
+  - GOOGLE_CLIENT_ID: ''
+  - AUTH_CONNECTION_ID: ''
+  - APPLE_CLIENT_ID: ''
+  - GROUPED_AUTH_CONNECTION_ID: ''
+  - AUTH_SERVER_URL: ''
+  - WEB3AUTH_NETWORK: ''
