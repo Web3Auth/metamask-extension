@@ -179,6 +179,7 @@ import {
 } from '@metamask/bridge-status-controller';
 
 ///: BEGIN:ONLY_INCLUDE_IF(build-mmi)
+import { RecoveryError } from '@metamask/seedless-onboarding-controller';
 import { toChecksumHexAddress } from '../../shared/modules/hexstring-utils';
 ///: END:ONLY_INCLUDE_IF
 
@@ -424,6 +425,7 @@ import {
 } from './lib/network-controller/messenger-action-handlers';
 import { getIsQuicknodeEndpointUrl } from './lib/network-controller/utils';
 import OAuthController from './controllers/oauth/oauth-controller';
+import { SeedlessOnboardingControllerInit } from './controller-init/seedless-onboarding/seedless-onboarding-controller-init';
 
 export const METAMASK_CONTROLLER_EVENTS = {
   // Fired after state changes that impact the extension badge (unapproved msg count)
@@ -2010,6 +2012,7 @@ export default class MetamaskController extends EventEmitter {
         NotificationServicesPushControllerInit,
       DeFiPositionsController: DeFiPositionsControllerInit,
       DelegationController: DelegationControllerInit,
+      SeedlessOnboardingController: SeedlessOnboardingControllerInit,
     };
 
     const {
@@ -2061,6 +2064,8 @@ export default class MetamaskController extends EventEmitter {
     this.notificationServicesPushController =
       controllersByName.NotificationServicesPushController;
     this.deFiPositionsController = controllersByName.DeFiPositionsController;
+    this.seedlessOnboardingController =
+      controllersByName.SeedlessOnboardingController;
 
     this.notificationServicesController.init();
 
@@ -2267,6 +2272,7 @@ export default class MetamaskController extends EventEmitter {
       AlertController: this.alertController,
       OnboardingController: this.onboardingController,
       OAuthController: this.oauthController,
+      SeedlessOnboardingController: this.seedlessOnboardingController,
       PermissionController: this.permissionController,
       PermissionLogController: this.permissionLogController,
       SubjectMetadataController: this.subjectMetadataController,
@@ -2327,6 +2333,7 @@ export default class MetamaskController extends EventEmitter {
         AlertController: this.alertController,
         OnboardingController: this.onboardingController,
         OAuthController: this.oauthController,
+        SeedlessOnboardingController: this.seedlessOnboardingController,
         PermissionController: this.permissionController,
         PermissionLogController: this.permissionLogController,
         SubjectMetadataController: this.subjectMetadataController,
@@ -3705,10 +3712,14 @@ export default class MetamaskController extends EventEmitter {
         getAccountsBySnapId(this.getSnapKeyring.bind(this), snapId),
       ///: END:ONLY_INCLUDE_IF
 
-      // oauth controller
-      startOAuthLogin: this.oauthController.startOAuthLogin.bind(
-        this.oauthController,
-      ),
+      // social login
+      startOAuthLogin: this.startOAuthLogin.bind(this),
+
+      // seedless onboarding
+      createSeedPhraseBackup: this.createSeedPhraseBackup.bind(this),
+      fetchAllSeedPhrases: this.fetchAllSeedPhrases.bind(this),
+      updateBackupMetadataState: this.updateBackupMetadataState.bind(this),
+      changePassword: this.changePassword.bind(this),
 
       // hardware wallets
       connectHardware: this.connectHardware.bind(this),
@@ -4842,6 +4853,111 @@ export default class MetamaskController extends EventEmitter {
     } catch (e) {
       return null;
     }
+  }
+
+  /**
+   * Login with social login provider and get User Onboarding details.
+   *
+   * AuthenticationResult is an object that contains the temporary Auth token for next step of onboarding flow
+   * and user's onboarding status to indicate whether the user has already completed the seedless onboarding flow.
+   *
+   * @param {AuthConnection} provider - social login provider, `google` | `apple`
+   * @returns {Promise<boolean>} true if user has not completed the seedless onboarding flow, false otherwise
+   */
+  async startOAuthLogin(provider) {
+    try {
+      const oAuthLoginResult = await this.oauthController.startOAuthLogin(
+        provider,
+      );
+
+      const { isNewUser } =
+        await this.seedlessOnboardingController.authenticate(oAuthLoginResult);
+
+      return isNewUser;
+    } catch (error) {
+      log.error('Error while starting social login', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Creates a seed phrase backup for the user.
+   *
+   * Generate Encryption Key from the password using the Threshold OPRF and encrypt the seed phrase with the key.
+   * Save the encrypted seed phrase in the metadata store.
+   *
+   * @param {string} password - The user's password.
+   * @param {number[]} encodedSeedPhrase - The seed phrase to backup.
+   * @param {string} keyringId - The keyring id of the backup seed phrase.
+   */
+  async createSeedPhraseBackup(password, encodedSeedPhrase, keyringId) {
+    try {
+      const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
+
+      const seedPhrase =
+        this._convertMnemonicToWordlistIndices(seedPhraseAsBuffer);
+
+      await this.seedlessOnboardingController.createToprfKeyAndBackupSeedPhrase(
+        password,
+        seedPhrase,
+        keyringId,
+      );
+    } catch (error) {
+      log.error('[createSeedPhraseBackup] error', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetches and restores the seed phrase metadata.
+   *
+   * If the seedphrase is not found in the metadata store, it creates new seedphrase and saves it in the metadata store.
+   *
+   * Otherwise, it creates a new vault using the restored seedphrase from metadata store.
+   *
+   * @param {string} password - The user's password.
+   * @returns {Promise<Buffer[]>} The seed phrase.
+   */
+  async fetchAllSeedPhrases(password) {
+    try {
+      // fetch all seed phrases
+      // seedPhrases are sorted by creation date, the latest seed phrase is the first one in the array
+      const allSeedPhrases =
+        await this.seedlessOnboardingController.fetchAllSeedPhrases(password);
+
+      if (allSeedPhrases.length === 0) {
+        return null;
+      }
+
+      return allSeedPhrases.map((phrase) =>
+        this._convertEnglishWordlistIndicesToCodepoints(phrase),
+      );
+    } catch (error) {
+      log.error(
+        'Error while fetching and restoring seed phrase metadata.',
+        error,
+      );
+
+      if (error instanceof RecoveryError) {
+        throw new JsonRpcError(-32603, error.message, error.data);
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * Updates the Seedless Onboarding backup metadata state, with backup seed phrase id and backup seed phrase.
+   *
+   * @param {string} keyringId - The keyring id of the backup seed phrase.
+   * @param {string} encodedSeedPhrase - The backup seed phrase.
+   */
+  async updateBackupMetadataState(keyringId, encodedSeedPhrase) {
+    const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
+    this.seedlessOnboardingController.updateBackupMetadataState(
+      keyringId,
+      this._convertMnemonicToWordlistIndices(seedPhraseAsBuffer),
+    );
   }
 
   //=============================================================================
