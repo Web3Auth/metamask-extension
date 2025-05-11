@@ -18,7 +18,7 @@ export enum FirstTimeFlowType {
   restore = 'restore',
   /**
    * When a user logins with Social Login and goes through the Seedless Onboarding flow,
-   * they will have the 'seedless' firstTimeFlowType.
+   * they will have the 'social' firstTimeFlowType.
    */
-  seedless = 'seedless',
+  social = 'social',
 }
