@@ -177,7 +177,7 @@ import {
   BRIDGE_STATUS_CONTROLLER_NAME,
   BridgeStatusAction,
 } from '@metamask/bridge-status-controller';
-
+import { RecoveryError } from '@metamask/seedless-onboarding-controller';
 ///: BEGIN:ONLY_INCLUDE_IF(build-mmi)
 import { toChecksumHexAddress } from '../../shared/modules/hexstring-utils';
 ///: END:ONLY_INCLUDE_IF
@@ -259,6 +259,7 @@ import { BRIDGE_API_BASE_URL } from '../../shared/constants/bridge';
 import { MultichainWalletSnapClient } from '../../shared/lib/accounts';
 import { SOLANA_WALLET_SNAP_ID } from '../../shared/lib/accounts/solana-wallet-snap';
 ///: END:ONLY_INCLUDE_IF
+import { FirstTimeFlowType } from '../../shared/constants/onboarding';
 import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-mmi)
   handleMMITransactionUpdate,
@@ -3713,6 +3714,10 @@ export default class MetamaskController extends EventEmitter {
 
       // seedless onboarding
       startOAuthLogin: this.startOAuthLogin.bind(this),
+      resetOAuthLoginState: this.resetOAuthLoginState.bind(this),
+      createSeedPhraseBackup: this.createSeedPhraseBackup.bind(this),
+      fetchAllSeedPhrases: this.fetchAllSeedPhrases.bind(this),
+      updateBackupMetadataState: this.updateBackupMetadataState.bind(this),
 
       // hardware wallets
       connectHardware: this.connectHardware.bind(this),
@@ -4873,6 +4878,99 @@ export default class MetamaskController extends EventEmitter {
     }
   }
 
+  /**
+   * Resets the social login state and onboarding state.
+   */
+  resetOAuthLoginState() {
+    try {
+      this.seedlessOnboardingController.clearState();
+      this.onboardingController.setFirstTimeFlowType(null);
+    } catch (error) {
+      log.error('Error while resetting social login state', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Creates a seed phrase backup for the user.
+   *
+   * Generate Encryption Key from the password using the Threshold OPRF and encrypt the seed phrase with the key.
+   * Save the encrypted seed phrase in the metadata store.
+   *
+   * @param {string} password - The user's password.
+   * @param {number[]} encodedSeedPhrase - The seed phrase to backup.
+   * @param {string} keyringId - The keyring id of the backup seed phrase.
+   */
+  async createSeedPhraseBackup(password, encodedSeedPhrase, keyringId) {
+    try {
+      const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
+
+      const seedPhrase =
+        this._convertMnemonicToWordlistIndices(seedPhraseAsBuffer);
+
+      await this.seedlessOnboardingController.createToprfKeyAndBackupSeedPhrase(
+        password,
+        seedPhrase,
+        keyringId,
+      );
+    } catch (error) {
+      log.error('[createSeedPhraseBackup] error', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetches and restores the seed phrase metadata.
+   *
+   * If the seedphrase is not found in the metadata store, it creates new seedphrase and saves it in the metadata store.
+   *
+   * Otherwise, it creates a new vault using the restored seedphrase from metadata store.
+   *
+   * @param {string} password - The user's password.
+   * @returns {Promise<Buffer[]>} The seed phrase.
+   */
+  async fetchAllSeedPhrases(password) {
+    try {
+      // fetch all seed phrases
+      // seedPhrases are sorted by creation date, the latest seed phrase is the first one in the array
+      const allSeedPhrases =
+        await this.seedlessOnboardingController.fetchAllSeedPhrases(password);
+
+      if (allSeedPhrases.length === 0) {
+        return null;
+      }
+
+      return allSeedPhrases.map((phrase) =>
+        this._convertEnglishWordlistIndicesToCodepoints(phrase),
+      );
+    } catch (error) {
+      log.error(
+        'Error while fetching and restoring seed phrase metadata.',
+        error,
+      );
+
+      if (error instanceof RecoveryError) {
+        throw new JsonRpcError(-32603, error.message, error.data);
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * Updates the Seedless Onboarding backup metadata state, with backup seed phrase id and backup seed phrase.
+   *
+   * @param {string} keyringId - The keyring id of the backup seed phrase.
+   * @param {string} encodedSeedPhrase - The backup seed phrase.
+   */
+  async updateBackupMetadataState(keyringId, encodedSeedPhrase) {
+    const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
+    this.seedlessOnboardingController.updateBackupMetadataState(
+      keyringId,
+      this._convertMnemonicToWordlistIndices(seedPhraseAsBuffer),
+    );
+  }
+
   //=============================================================================
   // VAULT / KEYRING RELATED METHODS
   //=============================================================================
@@ -4888,12 +4986,14 @@ export default class MetamaskController extends EventEmitter {
    * For example, a mnemonic phrase can generate many accounts, and is a keyring.
    *
    * @param {string} password
-   * @returns {object} vault
+   * @returns {Array} created keyrings metadata
    */
   async createNewVaultAndKeychain(password) {
     const releaseLock = await this.createVaultMutex.acquire();
     try {
-      return await this.keyringController.createNewVaultAndKeychain(password);
+      await this.keyringController.createNewVaultAndKeychain(password);
+
+      return this.keyringController.state.keyringsMetadata;
     } finally {
       releaseLock();
     }
@@ -4993,7 +5093,8 @@ export default class MetamaskController extends EventEmitter {
   async createNewVaultAndRestore(password, encodedSeedPhrase) {
     const releaseLock = await this.createVaultMutex.acquire();
     try {
-      const { completedOnboarding } = this.onboardingController.state;
+      const { completedOnboarding, firstTimeFlowType } =
+        this.onboardingController.state;
 
       const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
 
@@ -5025,6 +5126,11 @@ export default class MetamaskController extends EventEmitter {
         this._convertMnemonicToWordlistIndices(seedPhraseAsBuffer),
       );
 
+      if (firstTimeFlowType === FirstTimeFlowType.social) {
+        // update the Onboarding state when user restore the existing wallet with social login
+        this.onboardingController.setRestoreWithSocialLogin(true);
+      }
+
       if (completedOnboarding) {
         ///: BEGIN:ONLY_INCLUDE_IF(solana)
         await this._addSolanaAccount();
@@ -5040,6 +5146,8 @@ export default class MetamaskController extends EventEmitter {
           async (keyring) => this.setLedgerTransportPreference(keyring),
         );
       }
+
+      return this.keyringController.state.keyringsMetadata;
     } finally {
       releaseLock();
     }
