@@ -51,6 +51,7 @@ import {
   ADD_POPULAR_CUSTOM_NETWORK,
   SECURITY_PASSWORD_HINT_ROUTE,
   REVEAL_SRP_LIST_ROUTE,
+  SECURITY_PASSWORD_CHANGE_ROUTE,
 } from '../../../helpers/constants/routes';
 import {
   getNumberOfSettingRoutesInTab,
@@ -237,6 +238,27 @@ export default class SecurityTab extends PureComponent {
 
     return (
       <>
+        <div
+          ref={this.settingsRefs[2]}
+          className="settings-page__security-tab-sub-header"
+        >
+          {t('securityChangePasswordTitle')}
+        </div>
+        <div className="settings-page__content-padded">
+          <div className="settings-page__content-description">
+            {t('securityChangePasswordDescription')}
+          </div>
+          <Button
+            width={BlockSize.Full}
+            marginTop={4}
+            block
+            onClick={() => {
+              history.push(SECURITY_PASSWORD_CHANGE_ROUTE);
+            }}
+          >
+            {t('securityChangePasswordChange')}
+          </Button>
+        </div>
         <div
           ref={this.settingsRefs[2]}
           className="settings-page__security-tab-sub-header"

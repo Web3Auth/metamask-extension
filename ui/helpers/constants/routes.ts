@@ -75,6 +75,10 @@ export const SECURITY_PASSWORD_HINT_ROUTE =
   '/settings/security-and-privacy/password-hint';
 PATH_NAME_MAP[SECURITY_PASSWORD_HINT_ROUTE] = 'Password Hint';
 
+export const SECURITY_PASSWORD_CHANGE_ROUTE =
+  '/settings/security-and-privacy/password-change';
+PATH_NAME_MAP[SECURITY_PASSWORD_CHANGE_ROUTE] = 'Change Password';
+
 export const BACKUPANDSYNC_ROUTE =
   '/settings/security-and-privacy/backup-and-sync';
 PATH_NAME_MAP[BACKUPANDSYNC_ROUTE] = 'Backup And Sync Settings Page';

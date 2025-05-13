@@ -25,6 +25,7 @@ import {
   SECURITY_PASSWORD_HINT_ROUTE,
   REVEAL_SRP_LIST_ROUTE,
   BACKUPANDSYNC_ROUTE,
+  SECURITY_PASSWORD_CHANGE_ROUTE,
 } from '../../helpers/constants/routes';
 
 import { getSettingsRoutes } from '../../helpers/utils/settings-search';
@@ -54,6 +55,8 @@ import { SnapSettingsRenderer } from '../../components/app/snaps/snap-settings-p
 import SettingsTab from './settings-tab';
 import AdvancedTab from './advanced-tab';
 import InfoTab from './info-tab';
+// TODO: Fix this eslint error
+// eslint-disable-next-line import/default
 import SecurityTab from './security-tab';
 import ContactListTab from './contact-list-tab';
 import DeveloperOptionsTab from './developer-options-tab';
@@ -62,6 +65,7 @@ import SettingsSearch from './settings-search';
 import SettingsSearchList from './settings-search-list';
 import { RevealSrpList } from './security-tab/reveal-srp-list';
 import BackupAndSyncTab from './backup-and-sync-tab';
+import ChangePassword from './security-tab/change-password';
 import PasswordHint from './security-tab/password-hint';
 
 class SettingsPage extends PureComponent {
@@ -454,8 +458,10 @@ class SettingsPage extends PureComponent {
             return <Redirect to={{ pathname: DEFAULT_ROUTE }} />;
           }}
         />
+
         <Route exact path={SECURITY_ROUTE} component={SecurityTab} />
         <Route exact path={EXPERIMENTAL_ROUTE} component={ExperimentalTab} />
+
         {(process.env.ENABLE_SETTINGS_PAGE_DEV_OPTIONS ||
           process.env.IN_TEST) && (
           <Route
@@ -482,6 +488,11 @@ class SettingsPage extends PureComponent {
           component={PasswordHint}
         />
         <Route exact path={REVEAL_SRP_LIST_ROUTE} component={RevealSrpList} />
+        <Route
+          exact
+          path={SECURITY_PASSWORD_CHANGE_ROUTE}
+          component={ChangePassword}
+        />
         <Route
           render={(routeProps) => (
             <SettingsTab

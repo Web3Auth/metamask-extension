@@ -1503,6 +1503,12 @@
   "createPassword": {
     "message": "Create password"
   },
+  "createPasswordCreating": {
+    "message": "Creating password..."
+  },
+  "createPasswordCreatingNote": {
+    "message": "This shouldn't take long"
+  },
   "createSnapAccountDescription": {
     "message": "$1 wants to add a new account to MetaMask."
   },
@@ -4966,6 +4972,15 @@
   "securityChangePasswordTitle": {
     "message": "Password"
   },
+  "securityChangePasswordChange": {
+    "message": "Change password"
+  },
+  "securityChangePasswordDescription": {
+    "message": "Choose a strong password to unlock MetaMask app on your device. If you lose this password, you will need your Secret Recovery Phrase to re-import your wallet."
+  },
+  "securityChangePasswordTitle": {
+    "message": "Password"
+  },
   "securityDescription": {
     "message": "Reduce your chances of joining unsafe networks and protect your accounts"
   },
@@ -6809,6 +6824,9 @@
   "unlockPageHint": {
     "message": "Hint: $1",
     "description": "$1 is the password hint"
+  },
+  "unlockPageIncorrectPassword": {
+    "message": "Password is incorrect. Please try again."
   },
   "unpin": {
     "message": "Unpin"

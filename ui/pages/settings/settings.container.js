@@ -37,7 +37,7 @@ import {
   SNAP_SETTINGS_ROUTE,
   SECURITY_PASSWORD_HINT_ROUTE,
   REVEAL_SRP_LIST_ROUTE,
-  BACKUPANDSYNC_ROUTE,
+  SECURITY_PASSWORD_CHANGE_ROUTE,
 } from '../../helpers/constants/routes';
 import { getProviderConfig } from '../../../shared/modules/selectors/networks';
 import { toggleNetworkMenu } from '../../store/actions';
@@ -50,7 +50,6 @@ const ROUTES_TO_I18N_KEYS = {
   [ADD_NETWORK_ROUTE]: 'networks',
   [ADD_POPULAR_CUSTOM_NETWORK]: 'addNetwork',
   [ADVANCED_ROUTE]: 'advanced',
-  [BACKUPANDSYNC_ROUTE]: 'backupAndSync',
   [CONTACT_ADD_ROUTE]: 'newContact',
   [CONTACT_EDIT_ROUTE]: 'editContact',
   [CONTACT_LIST_ROUTE]: 'contacts',
@@ -63,6 +62,7 @@ const ROUTES_TO_I18N_KEYS = {
   [REVEAL_SRP_LIST_ROUTE]: 'revealSecretRecoveryPhrase',
   [SECURITY_ROUTE]: 'securityAndPrivacy',
   [SECURITY_PASSWORD_HINT_ROUTE]: 'securityPasswordHint',
+  [SECURITY_PASSWORD_CHANGE_ROUTE]: 'securityPassword',
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -83,6 +83,9 @@ const mapStateToProps = (state, ownProps) => {
   const isRevealSrpListPage = Boolean(pathname.match(REVEAL_SRP_LIST_ROUTE));
   const isPasswordHintPage = Boolean(
     pathname.match(SECURITY_PASSWORD_HINT_ROUTE),
+  );
+  const isPasswordChangePage = Boolean(
+    pathname.match(SECURITY_PASSWORD_CHANGE_ROUTE),
   );
   const isNetworksFormPage =
     Boolean(pathname.match(NETWORKS_FORM_ROUTE)) ||
@@ -105,7 +108,7 @@ const mapStateToProps = (state, ownProps) => {
     backRoute = NETWORKS_ROUTE;
   } else if (isAddPopularCustomNetwork) {
     backRoute = NETWORKS_ROUTE;
-  } else if (isRevealSrpListPage || isPasswordHintPage) {
+  } else if (isRevealSrpListPage || isPasswordHintPage || isPasswordChangePage) {
     backRoute = SECURITY_ROUTE;
   }
 
