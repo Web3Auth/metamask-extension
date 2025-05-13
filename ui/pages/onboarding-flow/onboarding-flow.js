@@ -33,7 +33,7 @@ import {
   createNewVaultAndRestore,
   setPasswordHash,
   createNewVaultAndSyncWithSocial,
-  restoreBackupAndGetSeedPhrase,
+  restoreSocialBackupAndGetSeedPhrase,
 } from '../../store/actions';
 import {
   getFirstTimeFlowType,
@@ -133,7 +133,7 @@ export default function OnboardingFlow() {
     let retrievedSecretRecoveryPhrase;
     if (firstTimeFlowType === FirstTimeFlowType.social) {
       retrievedSecretRecoveryPhrase = await dispatch(
-        restoreBackupAndGetSeedPhrase(password),
+        restoreSocialBackupAndGetSeedPhrase(password),
       );
 
       if (retrievedSecretRecoveryPhrase === null) {
