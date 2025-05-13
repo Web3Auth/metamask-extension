@@ -258,9 +258,12 @@ async function runInitialActions(store) {
     await store.dispatch(actions.setCurrentExtensionPopupId(thisPopupId));
   }
 
+  const isUnlocked = getIsUnlocked(state);
   try {
     // check seedless password outdated at app init
-    await store.dispatch(actions.checkIsSeedlessPasswordOutdated());
+    // if app is locked, check skip cache to ensure user need to input latest global password
+    const skipCache = !isUnlocked;
+    await store.dispatch(actions.checkIsSeedlessPasswordOutdated(skipCache));
     // periodically check seedless password outdated when app UI is open
     setInterval(async () => {
       await store.dispatch(actions.checkIsSeedlessPasswordOutdated());
