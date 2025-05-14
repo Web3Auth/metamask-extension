@@ -107,6 +107,15 @@ export type Preferences = {
   tokenNetworkFilter: Record<string, boolean>;
   shouldShowAggregatedBalancePopover: boolean;
   dismissSmartAccountSuggestionEnabled: boolean;
+  /**
+   * The hash of the password.
+   * This is used to prevent the user setting a password hint that is the same as the password.
+   */
+  passwordHash?: string;
+  /**
+   * The hint for the password.
+   */
+  passwordHint?: string;
 };
 
 // Omitting properties that already exist in the PreferencesState, as part of the preferences property.
@@ -209,6 +218,8 @@ export const getDefaultPreferencesControllerState =
         sortCallback: 'stringNumeric',
       },
       tokenNetworkFilter: {},
+      passwordHash: '',
+      passwordHint: '',
     },
     // ENS decentralized website resolution
     ipfsGateway: IPFS_DEFAULT_GATEWAY_URL,
@@ -372,6 +383,15 @@ const controllerMetadata = {
         anonymous: true,
       },
       smartTransactionsMigrationApplied: {
+        persist: true,
+        anonymous: true,
+      },
+      // we don't need to sent `passwordHash` and `passwordHint` to sentry
+      passwordHash: {
+        persist: true,
+        anonymous: true,
+      },
+      passwordHint: {
         persist: true,
         anonymous: true,
       },
