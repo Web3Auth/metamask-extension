@@ -263,7 +263,12 @@ async function runInitialActions(store) {
     // check seedless password outdated at app init
     // if app is locked, check skip cache to ensure user need to input latest global password
     const skipCache = !isUnlocked;
-    await store.dispatch(actions.checkIsSeedlessPasswordOutdated(skipCache));
+    const isPwOutdated = await store.dispatch(
+      actions.checkIsSeedlessPasswordOutdated(skipCache),
+    );
+    if (isPwOutdated) {
+      await store.dispatch(actions.forceUpdateMetamaskState());
+    }
     // periodically check seedless password outdated when app UI is open
     setInterval(async () => {
       await store.dispatch(actions.checkIsSeedlessPasswordOutdated());
