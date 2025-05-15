@@ -200,6 +200,26 @@ class HomePage {
   }
 
   /**
+   * Checks if popover is displayed on homepage.
+   *
+   * @param shouldBeDisplayed - Whether the popover should be displayed. Defaults to true.
+   */
+  async check_popoverIsDisplayed(
+    shouldBeDisplayed: boolean = true,
+  ): Promise<void> {
+    console.log(
+      `Checking if popover ${
+        shouldBeDisplayed ? 'is' : 'is not'
+      } displayed on homepage`,
+    );
+    if (shouldBeDisplayed) {
+      await this.driver.waitForSelector(this.popoverCloseButton);
+    } else {
+      await this.driver.assertElementNotPresent(this.popoverCloseButton);
+    }
+  }
+
+  /**
    * Checks if the toaster message for editing a network is displayed on the homepage.
    *
    * @param networkName - The name of the network that was edited.
@@ -272,7 +292,9 @@ class HomePage {
 
   async check_ifBridgeButtonIsClickable(): Promise<boolean> {
     try {
-      await this.driver.findClickableElement(this.bridgeButton, 1000);
+      await this.driver.findClickableElement(this.bridgeButton, {
+        timeout: 1000,
+      });
     } catch (e) {
       console.log('Bridge button not clickable', e);
       return false;
@@ -283,7 +305,9 @@ class HomePage {
 
   async check_ifSendButtonIsClickable(): Promise<boolean> {
     try {
-      await this.driver.findClickableElement(this.sendButton, 1000);
+      await this.driver.findClickableElement(this.sendButton, {
+        timeout: 1000,
+      });
     } catch (e) {
       console.log('Send button not clickable', e);
       return false;
@@ -294,7 +318,9 @@ class HomePage {
 
   async check_ifSwapButtonIsClickable(): Promise<boolean> {
     try {
-      await this.driver.findClickableElement(this.swapButton, 1000);
+      await this.driver.findClickableElement(this.swapButton, {
+        timeout: 1000,
+      });
     } catch (e) {
       console.log('Swap button not clickable', e);
       return false;
