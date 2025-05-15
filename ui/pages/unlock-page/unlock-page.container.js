@@ -47,7 +47,8 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
   const {
     markPasswordForgotten: propsMarkPasswordForgotten,
     tryUnlockMetamask: propsTryUnlockMetamask,
-    tryUnlockMetamaskWithGlobalSeedlessPassword: propsTryUnlockMetamaskWithGlobalSeedlessPassword,
+    tryUnlockMetamaskWithGlobalSeedlessPassword:
+      propsTryUnlockMetamaskWithGlobalSeedlessPassword,
     ...restDispatchProps
   } = dispatchProps;
   const { history, onSubmit: ownPropsSubmit, ...restOwnProps } = ownProps;

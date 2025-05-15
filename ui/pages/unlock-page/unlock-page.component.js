@@ -37,8 +37,6 @@ import {
 import { isFlask, isBeta } from '../../helpers/utils/build-types';
 import { SUPPORT_LINK } from '../../../shared/lib/ui-utils';
 import { getCaretCoordinates } from './unlock-page.util';
-import ResetPasswordModal from './reset-password-modal';
-import EraseWalletModal from './erase-wallet-modal';
 
 const formatTimeToUnlock = (timeInSeconds) => {
   if (timeInSeconds <= 60) {
@@ -124,8 +122,6 @@ export default class UnlockPage extends Component {
     password: '',
     error: null,
     showHint: false,
-    showResetPasswordModal: false,
-    showEraseWalletModal: false,
     isLocked: false,
   };
 
@@ -331,14 +327,7 @@ export default class UnlockPage extends Component {
   };
 
   render() {
-    const {
-      password,
-      error,
-      showHint,
-      showResetPasswordModal,
-      showEraseWalletModal,
-      isLocked,
-    } = this.state;
+    const { password, error, showHint, isLocked } = this.state;
     const { t } = this.context;
     const { passwordHint, onRestore } = this.props;
 
@@ -349,28 +338,6 @@ export default class UnlockPage extends Component {
         <div className="unlock-page" data-testid="unlock-page">
           <form className="unlock-page__form" onSubmit={this.handleSubmit}>
             <div className="unlock-page__content">
-              {showResetPasswordModal && (
-                <ResetPasswordModal
-                  onClose={() =>
-                    this.setState({ showResetPasswordModal: false })
-                  }
-                  onEraseWallet={() =>
-                    this.setState({
-                      showResetPasswordModal: false,
-                      showEraseWalletModal: true,
-                    })
-                  }
-                />
-              )}
-              {showEraseWalletModal && (
-                <EraseWalletModal
-                  onClose={() => this.setState({ showEraseWalletModal: false })}
-                  onEraseWallet={() =>
-                    // TODO: erase wallet
-                    this.setState({ showEraseWalletModal: false })
-                  }
-                />
-              )}
               <div className="unlock-page__mascot-container">
                 {this.renderMascot()}
                 {isBeta() ? (
@@ -409,7 +376,9 @@ export default class UnlockPage extends Component {
                           this.setState({ showHint: !showHint });
                         }}
                       >
-                        {showHint ? 'Hide hint' : 'Show hint'}
+                        {showHint
+                          ? t('unlockPageHintHide')
+                          : t('unlockPageHintShow')}
                       </ButtonLink>
                     )}
                   </Box>
