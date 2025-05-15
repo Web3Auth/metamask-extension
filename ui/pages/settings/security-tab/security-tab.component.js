@@ -23,6 +23,7 @@ import {
   SECURITY_ALERTS_LEARN_MORE_LINK,
   TRANSACTION_SIMULATIONS_LEARN_MORE_LINK,
 } from '../../../../shared/lib/ui-utils';
+import SRPQuiz from '../../../components/app/srp-quiz-modal/SRPQuiz';
 import {
   Button,
   Icon,
@@ -30,8 +31,6 @@ import {
   IconName,
   Box,
   Text,
-  BannerAlert,
-  BannerAlertSeverity,
   ButtonVariant,
   ButtonSize,
 } from '../../../components/component-library';
@@ -60,9 +59,8 @@ import {
 } from '../../../helpers/utils/settings-search';
 
 import { updateDataDeletionTaskStatus } from '../../../store/actions';
-import SRPQuiz from '../../../components/app/srp-quiz-modal';
+import ZENDESK_URLS from '../../../helpers/constants/zendesk-url';
 import MetametricsToggle from './metametrics-toggle';
-import ProfileSyncToggle from './profile-sync-toggle';
 import DeleteMetametricsDataButton from './delete-metametrics-data-button';
 
 export default class SecurityTab extends PureComponent {
@@ -111,9 +109,7 @@ export default class SecurityTab extends PureComponent {
     metaMetricsDataDeletionId: PropTypes.string,
     hdEntropyIndex: PropTypes.number,
     hasMultipleHdKeyrings: PropTypes.bool,
-    socialLoginEmail: PropTypes.string,
     socialLoginEnabled: PropTypes.bool,
-    allSrpBackupsEnabled: PropTypes.bool,
   };
 
   state = {
@@ -170,15 +166,11 @@ export default class SecurityTab extends PureComponent {
     toggleMethod(!value);
   }
 
+  hideSrpQuizModal = () => this.setState({ srpQuizModalVisible: false });
+
   renderSeedWords() {
     const { t } = this.context;
-    const {
-      history,
-      hasMultipleHdKeyrings,
-      socialLoginEmail,
-      socialLoginEnabled,
-      allSrpBackupsEnabled,
-    } = this.props;
+    const { history, hasMultipleHdKeyrings, socialLoginEnabled } = this.props;
 
     return (
       <>
@@ -194,28 +186,6 @@ export default class SecurityTab extends PureComponent {
               ? t('securitySrpSocialLoginDescription')
               : t('securitySrpDescription')}
           </div>
-          {socialLoginEnabled && (
-            <BannerAlert
-              title={t('securitySrpLoginWithAppleOrGoogle')}
-              description={socialLoginEmail}
-              paddingTop={2}
-              paddingBottom={2}
-              marginTop={4}
-              severity={BannerAlertSeverity.Success}
-            />
-          )}
-          {/* TODO: get severity from controller */}
-          <BannerAlert
-            title={t('securitySrpBackupSrp')}
-            paddingTop={2}
-            paddingBottom={2}
-            marginTop={4}
-            severity={
-              allSrpBackupsEnabled
-                ? BannerAlertSeverity.Success
-                : BannerAlertSeverity.Warning
-            }
-          />
           <Button
             data-testid="reveal-seed-words"
             type="danger"
@@ -241,7 +211,6 @@ export default class SecurityTab extends PureComponent {
                   location: 'Settings',
                 },
               });
-
               if (hasMultipleHdKeyrings || socialLoginEnabled) {
                 history.push({
                   pathname: REVEAL_SRP_LIST_ROUTE,
@@ -251,8 +220,8 @@ export default class SecurityTab extends PureComponent {
               this.setState({ srpQuizModalVisible: true });
             }}
           >
-            {socialLoginEnabled
-              ? t('securitySrpProtect')
+            {hasMultipleHdKeyrings || socialLoginEnabled
+              ? t('securitySrpWalletRecovery')
               : t('revealSeedWords')}
           </Button>
           {this.state.srpQuizModalVisible && (
@@ -509,6 +478,14 @@ export default class SecurityTab extends PureComponent {
                 key="cyn-consensys-privacy-link"
               >
                 {t('privacyMsg')}
+              </a>,
+              <a
+                href={ZENDESK_URLS.SOLANA_ACCOUNTS}
+                target="_blank"
+                rel="noopener noreferrer"
+                key="cyn-consensys-privacy-link"
+              >
+                {t('chooseYourNetworkDescriptionCallToAction')}
               </a>,
             ])}
           </div>
@@ -1223,7 +1200,6 @@ export default class SecurityTab extends PureComponent {
       petnamesEnabled,
       dataCollectionForMarketing,
       setDataCollectionForMarketing,
-      socialLoginEnabled,
     } = this.props;
     const { showDataCollectionDisclaimer } = this.state;
 
@@ -1237,19 +1213,11 @@ export default class SecurityTab extends PureComponent {
           {this.context.t('security')}
         </span>
         {this.renderSeedWords()}
-        {socialLoginEnabled && this.renderPassword()}
+        {this.renderPassword()}
         {this.renderSecurityAlertsToggle()}
         <span className="settings-page__security-tab-sub-header__bold">
           {this.context.t('privacy')}
         </span>
-
-        <div
-          ref={this.settingsRefs[21]}
-          className="settings-page__content-padded"
-          data-testid="profile-sync"
-        >
-          <ProfileSyncToggle />
-        </div>
 
         <div>
           <span className="settings-page__security-tab-sub-header">

@@ -24,6 +24,7 @@ import {
   SNAP_SETTINGS_ROUTE,
   SECURITY_PASSWORD_HINT_ROUTE,
   REVEAL_SRP_LIST_ROUTE,
+  BACKUPANDSYNC_ROUTE,
   SECURITY_PASSWORD_CHANGE_ROUTE,
 } from '../../helpers/constants/routes';
 
@@ -51,7 +52,6 @@ import { getEnvironmentType } from '../../../app/scripts/lib/util';
 import { ENVIRONMENT_TYPE_POPUP } from '../../../shared/constants/app';
 import { SnapIcon } from '../../components/app/snaps/snap-icon';
 import { SnapSettingsRenderer } from '../../components/app/snaps/snap-settings-page';
-import PasswordChangedModal from '../../components/app/password-changed-modal';
 import SettingsTab from './settings-tab';
 import AdvancedTab from './advanced-tab';
 import InfoTab from './info-tab';
@@ -64,8 +64,9 @@ import ExperimentalTab from './experimental-tab';
 import SettingsSearch from './settings-search';
 import SettingsSearchList from './settings-search-list';
 import { RevealSrpList } from './security-tab/reveal-srp-list';
-import PasswordHint from './security-tab/password-hint';
+import BackupAndSyncTab from './backup-and-sync-tab';
 import ChangePassword from './security-tab/change-password';
+import PasswordHint from './security-tab/password-hint';
 
 class SettingsPage extends PureComponent {
   static propTypes = {
@@ -80,7 +81,6 @@ class SettingsPage extends PureComponent {
     initialBreadCrumbRoute: PropTypes.string,
     isAddressEntryPage: PropTypes.bool,
     isPopup: PropTypes.bool,
-    isSeedlessPasswordOutdated: PropTypes.bool,
     mostRecentOverviewPage: PropTypes.string.isRequired,
     pathnameI18nKey: PropTypes.string,
     settingsPageSnaps: PropTypes.array,
@@ -131,7 +131,6 @@ class SettingsPage extends PureComponent {
       currentPath,
       mostRecentOverviewPage,
       addNewNetwork,
-      isSeedlessPasswordOutdated,
     } = this.props;
 
     const { searchResults, isSearchList, searchText } = this.state;
@@ -140,11 +139,13 @@ class SettingsPage extends PureComponent {
 
     return (
       <div
-        className={classnames('main-container settings-page', {
-          'settings-page--selected': currentPath !== SETTINGS_ROUTE,
-        })}
+        className={classnames(
+          'main-container main-container--has-shadow settings-page',
+          {
+            'settings-page--selected': currentPath !== SETTINGS_ROUTE,
+          },
+        )}
       >
-        {isSeedlessPasswordOutdated && <PasswordChangedModal />}
         <Box
           className="settings-page__header"
           padding={4}
@@ -346,6 +347,11 @@ class SettingsPage extends PureComponent {
         key: ADVANCED_ROUTE,
       },
       {
+        content: t('backupAndSync'),
+        icon: <Icon name={IconName.SecurityTime} />,
+        key: BACKUPANDSYNC_ROUTE,
+      },
+      {
         content: t('contacts'),
         icon: <Icon name={IconName.Book} />,
         key: CONTACT_LIST_ROUTE,
@@ -427,6 +433,7 @@ class SettingsPage extends PureComponent {
           component={SnapSettingsRenderer}
         />
         <Route exact path={ADVANCED_ROUTE} component={AdvancedTab} />
+        <Route exact path={BACKUPANDSYNC_ROUTE} component={BackupAndSyncTab} />
         <Route
           exact
           path={ADD_NETWORK_ROUTE}
@@ -475,12 +482,12 @@ class SettingsPage extends PureComponent {
           path={`${CONTACT_VIEW_ROUTE}/:id`}
           component={ContactListTab}
         />
-        <Route exact path={REVEAL_SRP_LIST_ROUTE} component={RevealSrpList} />
         <Route
           exact
           path={SECURITY_PASSWORD_HINT_ROUTE}
           component={PasswordHint}
         />
+        <Route exact path={REVEAL_SRP_LIST_ROUTE} component={RevealSrpList} />
         <Route
           exact
           path={SECURITY_PASSWORD_CHANGE_ROUTE}

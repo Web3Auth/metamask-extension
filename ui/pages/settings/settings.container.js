@@ -44,7 +44,6 @@ import { toggleNetworkMenu } from '../../store/actions';
 import { getSnapName } from '../../helpers/utils/util';
 import { decodeSnapIdFromPathname } from '../../helpers/utils/snaps';
 import Settings from './settings.component';
-import { getIsSeedlessPasswordOutdated } from '../../ducks/metamask/metamask';
 
 const ROUTES_TO_I18N_KEYS = {
   [ABOUT_US_ROUTE]: 'about',
@@ -60,10 +59,10 @@ const ROUTES_TO_I18N_KEYS = {
   [GENERAL_ROUTE]: 'general',
   [NETWORKS_FORM_ROUTE]: 'networks',
   [NETWORKS_ROUTE]: 'networks',
-  [REVEAL_SRP_LIST_ROUTE]: 'revealSecretRecoveryPhrase',
+  [REVEAL_SRP_LIST_ROUTE]: 'srpRevealListTitle',
   [SECURITY_ROUTE]: 'securityAndPrivacy',
-  [SECURITY_PASSWORD_CHANGE_ROUTE]: 'securityPassword',
   [SECURITY_PASSWORD_HINT_ROUTE]: 'securityPasswordHint',
+  [SECURITY_PASSWORD_CHANGE_ROUTE]: 'securityPassword',
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -82,11 +81,11 @@ const mapStateToProps = (state, ownProps) => {
   const isAddContactPage = Boolean(pathname.match(CONTACT_ADD_ROUTE));
   const isEditContactPage = Boolean(pathname.match(CONTACT_EDIT_ROUTE));
   const isRevealSrpListPage = Boolean(pathname.match(REVEAL_SRP_LIST_ROUTE));
-  const isPasswordChangePage = Boolean(
-    pathname.match(SECURITY_PASSWORD_CHANGE_ROUTE),
-  );
   const isPasswordHintPage = Boolean(
     pathname.match(SECURITY_PASSWORD_HINT_ROUTE),
+  );
+  const isPasswordChangePage = Boolean(
+    pathname.match(SECURITY_PASSWORD_CHANGE_ROUTE),
   );
   const isNetworksFormPage =
     Boolean(pathname.match(NETWORKS_FORM_ROUTE)) ||
@@ -111,8 +110,8 @@ const mapStateToProps = (state, ownProps) => {
     backRoute = NETWORKS_ROUTE;
   } else if (
     isRevealSrpListPage ||
-    isPasswordChangePage ||
-    isPasswordHintPage
+    isPasswordHintPage ||
+    isPasswordChangePage
   ) {
     backRoute = SECURITY_ROUTE;
   }
@@ -139,8 +138,6 @@ const mapStateToProps = (state, ownProps) => {
   const snapSettingsTitle =
     isSnapSettingsRoute && snapNameGetter(decodeSnapIdFromPathname(pathname));
 
-  const isSeedlessPasswordOutdated = getIsSeedlessPasswordOutdated(state);
-
   return {
     addNewNetwork,
     addressName,
@@ -151,7 +148,6 @@ const mapStateToProps = (state, ownProps) => {
     initialBreadCrumbRoute,
     isAddressEntryPage,
     isPopup,
-    isSeedlessPasswordOutdated,
     mostRecentOverviewPage: getMostRecentOverviewPage(state),
     pathnameI18nKey,
     settingsPageSnaps,
