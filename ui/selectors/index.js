@@ -10,4 +10,4 @@ export * from './accounts';
 export * from './remote-feature-flags';
 export * from './origin-throttling';
 export * from './multichain/networks';
-export * from './backup';
+export * from './social-sync';

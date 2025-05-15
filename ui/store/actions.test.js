@@ -210,7 +210,7 @@ describe('Actions', () => {
         { type: 'HIDE_LOADING_INDICATION' },
       ];
 
-      await store.dispatch(actions.createAndBackupSeedPhrase('password'));
+      await store.dispatch(actions.createNewVaultAndSyncWithSocial('password'));
 
       expect(store.getActions()).toStrictEqual(expectedActions);
       expect(getSeedPhraseStub.callCount).toStrictEqual(1);
@@ -245,8 +245,6 @@ describe('Actions', () => {
         background.createNewVaultAndRestore.callsFake((_, __, cb) =>
           cb(null, mockKeyringsMetadata),
         );
-      const updateBackupMetadataStateStub =
-        background.updateBackupMetadataState.callsFake((_, __, cb) => cb());
 
       setBackgroundConnection(background);
 
@@ -255,20 +253,16 @@ describe('Actions', () => {
         { type: 'HIDE_LOADING_INDICATION' },
       ];
 
-      await store.dispatch(actions.restoreBackupAndGetSeedPhrase('password'));
+      await store.dispatch(
+        actions.restoreSocialBackupAndGetSeedPhrase('password'),
+      );
 
       expect(fetchAllSeedPhrasesStub.callCount).toStrictEqual(1);
       expect(createNewVaultAndRestoreStub.callCount).toStrictEqual(1);
-      expect(
-        updateBackupMetadataStateStub.calledOnceWith(
-          mockKeyringsMetadata[0].id,
-          mockEncodedSeedPhrase,
-        ),
-      ).toStrictEqual(true);
       expect(store.getActions()).toStrictEqual(expectedActions);
     });
 
-    it('should not restore vault if no seed phrase is found', async () => {
+    it('should throw an error if no seed phrase is found', async () => {
       const store = mockStore();
 
       const fetchAllSeedPhrasesStub = background.fetchAllSeedPhrases.callsFake(
@@ -284,9 +278,12 @@ describe('Actions', () => {
       const expectedActions = [
         { type: 'SHOW_LOADING_INDICATION', payload: undefined },
         { type: 'HIDE_LOADING_INDICATION' },
+        { type: 'DISPLAY_WARNING', payload: 'No seed phrase found' },
       ];
 
-      await store.dispatch(actions.restoreBackupAndGetSeedPhrase('password'));
+      await expect(
+        store.dispatch(actions.restoreSocialBackupAndGetSeedPhrase('password')),
+      ).rejects.toThrow('No seed phrase found');
 
       expect(fetchAllSeedPhrasesStub.callCount).toStrictEqual(1);
       expect(createNewVaultAndRestoreStub.callCount).toStrictEqual(0);
@@ -304,14 +301,44 @@ describe('Actions', () => {
 
       const expectedActions = [
         { type: 'SHOW_LOADING_INDICATION', payload: undefined },
-        { type: 'DISPLAY_WARNING', payload: 'error' },
         { type: 'HIDE_LOADING_INDICATION' },
+        { type: 'DISPLAY_WARNING', payload: 'error' },
       ];
 
       await expect(
-        store.dispatch(actions.restoreBackupAndGetSeedPhrase('password')),
+        store.dispatch(actions.restoreSocialBackupAndGetSeedPhrase('password')),
       ).rejects.toThrow('error');
       console.log('store.getActions()', store.getActions());
+      expect(store.getActions()).toStrictEqual(expectedActions);
+    });
+  });
+
+  describe('#changePassword', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should change the password for both seedless onboarding and keyring controller', async () => {
+      const store = mockStore();
+      const oldPassword = 'old-password';
+      const newPassword = 'new-password';
+
+      const changePasswordStub = background.changePassword.callsFake(
+        (_, __, cb) => cb(),
+      );
+
+      setBackgroundConnection(background);
+
+      await store.dispatch(actions.changePassword(newPassword, oldPassword));
+
+      expect(
+        changePasswordStub.calledOnceWith(newPassword, oldPassword),
+      ).toStrictEqual(true);
+
+      const expectedActions = [
+        { type: 'SHOW_LOADING_INDICATION', payload: undefined },
+        { type: 'HIDE_LOADING_INDICATION' },
+      ];
       expect(store.getActions()).toStrictEqual(expectedActions);
     });
   });
@@ -2941,25 +2968,6 @@ describe('Actions', () => {
     });
   });
 
-  describe('showConfirmTurnOffProfileSyncing', () => {
-    it('should dispatch showModal with the correct payload', async () => {
-      const store = mockStore();
-
-      await store.dispatch(actions.showConfirmTurnOffProfileSyncing());
-
-      const expectedActions = [
-        {
-          payload: {
-            name: 'CONFIRM_TURN_OFF_PROFILE_SYNCING',
-          },
-          type: 'UI_MODAL_OPEN',
-        },
-      ];
-
-      await expect(store.getActions()).toStrictEqual(expectedActions);
-    });
-  });
-
   describe('#toggleExternalServices', () => {
     it('calls toggleExternalServices', async () => {
       const store = mockStore();
@@ -3225,7 +3233,7 @@ describe('Actions', () => {
       const store = mockStore();
       const importMnemonicToVaultStub = sinon
         .stub()
-        .callsFake((_, cb) => cb(null, {}));
+        .callsFake((_, __, cb) => cb(null, {}));
       background.getApi.returns({
         importMnemonicToVault: importMnemonicToVaultStub,
       });

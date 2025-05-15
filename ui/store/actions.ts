@@ -13,7 +13,7 @@ import { Action, AnyAction } from 'redux';
 import { providerErrors, serializeError } from '@metamask/rpc-errors';
 import type { DataWithOptionalCause } from '@metamask/rpc-errors';
 import {
-  CaipAssetType,
+  type CaipAssetType,
   type CaipChainId,
   type Hex,
   type Json,
@@ -53,8 +53,9 @@ import { Patch } from 'immer';
 import { HandlerType } from '@metamask/snaps-utils';
 ///: END:ONLY_INCLUDE_IF
 import { BACKUPANDSYNC_FEATURES } from '@metamask/profile-sync-controller/user-storage';
+import { keccak256 } from 'ethereumjs-util';
 import { AuthConnection } from '@metamask/seedless-onboarding-controller';
-import switchDirection from '../../shared/lib/switch-direction';
+import { switchDirection } from '../../shared/lib/switch-direction';
 import {
   ENVIRONMENT_TYPE_NOTIFICATION,
   ORIGIN_METAMASK,
@@ -135,6 +136,7 @@ import { EndTraceRequest } from '../../shared/lib/trace';
 import { isInternalAccountInPermittedAccountIds } from '../../shared/lib/multichain/chain-agnostic-permission-utils/caip-accounts';
 import { SortCriteria } from '../components/app/assets/util/sort';
 import { NOTIFICATIONS_EXPIRATION_DELAY } from '../helpers/constants/notifications';
+import { getDismissSmartAccountSuggestionEnabled } from '../pages/confirmations/selectors/preferences';
 import * as actionConstants from './actionConstants';
 
 import {
@@ -161,6 +163,180 @@ export function goHome() {
   };
 }
 // async actions
+
+/**
+ * Starts the OAuth2 login process for the given Social Login type
+ * and authenticate the user with the Seedless Onboarding Services.
+ *
+ * @param provider - The authentication connection to use (google | apple).
+ * @returns The social login result.
+ */
+export function startOAuthLogin(
+  provider: AuthConnection,
+): ThunkAction<Promise<boolean>, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      const isNewUser = await submitRequestToBackground('startOAuthLogin', [
+        provider,
+      ]);
+      return isNewUser;
+    } catch (error) {
+      dispatch(displayWarning(error));
+      if (isErrorWithMessage(error)) {
+        throw new Error(getErrorMessage(error));
+      } else {
+        throw error;
+      }
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
+  };
+}
+
+/**
+ * Resets the social login state.
+ *
+ * This function is used to reset the social login state when the user
+ * wants to login with a different method after the successful social login.
+ */
+export function resetOAuthLoginState() {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      await submitRequestToBackground('resetOAuthLoginState');
+    } catch (error) {
+      dispatch(displayWarning(error));
+      if (isErrorWithMessage(error)) {
+        throw new Error(getErrorMessage(error));
+      } else {
+        throw error;
+      }
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
+  };
+}
+
+/**
+ * Creates a new vault and backups/syncs the seed phrase with social login.
+ *
+ * @param password - The password.
+ * @returns The seed phrase.
+ */
+export function createNewVaultAndSyncWithSocial(
+  password: string,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      const [firstKeyring] = await createNewVault(password);
+      const seedPhrase = await getSeedPhrase(password);
+
+      if (!firstKeyring) {
+        throw new Error('No keyring found');
+      }
+
+      await createSeedPhraseBackup(password, seedPhrase, firstKeyring.id);
+      return seedPhrase;
+    } catch (error) {
+      dispatch(displayWarning(error));
+      if (isErrorWithMessage(error)) {
+        throw new Error(getErrorMessage(error));
+      } else {
+        throw error;
+      }
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
+  };
+}
+
+/**
+ * Fetches and restores the seed phrase from the metadata store using the social login and restore the vault using the seed phrase.
+ *
+ * @param password - The password.
+ * @returns The seed phrase.
+ */
+export function restoreSocialBackupAndGetSeedPhrase(
+  password: string,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      // get the first seed phrase from the array, this is the oldest seed phrase
+      // and we will use it to create the initial vault
+      const [firstSeedPhrase, ...remainingSeedPhrases] =
+        await fetchAllSeedPhrases(password);
+      if (!firstSeedPhrase) {
+        throw new Error('No seed phrase found');
+      }
+
+      // get the first seed phrase from the array
+      const encodedSeedPhrase = Array.from(
+        Buffer.from(firstSeedPhrase).values(),
+      );
+
+      // restore the vault using the seed phrase
+      await submitRequestToBackground('createNewVaultAndRestore', [
+        password,
+        encodedSeedPhrase,
+      ]);
+
+      // restore the remaining Mnemonics/SeedPhrases to the vault
+      if (remainingSeedPhrases.length > 0) {
+        await restoreSeedPhrasesToVault(remainingSeedPhrases);
+      }
+
+      await forceUpdateMetamaskState(dispatch);
+      dispatch(hideLoadingIndication());
+
+      return firstSeedPhrase;
+    } catch (error) {
+      console.error('[restoreSocialBackupAndGetSeedPhrase] error', error);
+      dispatch(hideLoadingIndication());
+      dispatch(displayWarning(error.message));
+      throw error;
+    }
+  };
+}
+
+/**
+ * Changes the password of the currently unlocked account.
+ *
+ * This function changes the password of the currently unlocked account (Keyring Vault) and
+ * also change the wallet password of the social login account.
+ *
+ * This changes affects the multiple devices sync, i.e. users will have to unlock the account
+ * using new password on any other devices where the account is unlocked.
+ *
+ * @param newPassword - The new password.
+ * @param oldPassword - The old password.
+ */
+export function changePassword(
+  newPassword: string,
+  oldPassword: string,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      await submitRequestToBackground<void>('changePassword', [
+        newPassword,
+        oldPassword,
+      ]);
+    } catch (error) {
+      dispatch(displayWarning(error));
+      throw error;
+    } finally {
+      dispatch(hideLoadingIndication());
+    }
+  };
+}
 
 export function tryUnlockMetamask(
   password: string,
@@ -291,8 +467,7 @@ export function importMnemonicToVault(
     log.debug(`background.importMnemonicToVault`);
 
     const firstTimeFlowType = getFirstTimeFlowType(getState());
-    const shouldDoSocialBackup =
-      firstTimeFlowType === FirstTimeFlowType.seedless;
+    const shouldDoSocialBackup = firstTimeFlowType === FirstTimeFlowType.social;
 
     return new Promise<void>((resolve, reject) => {
       callBackgroundMethod(
@@ -318,15 +493,16 @@ export function importMnemonicToVault(
   };
 }
 
+/**
+ * Restores/syncs multiple seed phrases from the social login flow to the keyring vault.
+ *
+ * @param seedPhrases - The seed phrases.
+ */
 export async function restoreSeedPhrasesToVault(
-  password: string,
   seedPhrases: Uint8Array[],
 ): Promise<void> {
   try {
-    await submitRequestToBackground('restoreSeedPhrasesToVault', [
-      password,
-      seedPhrases,
-    ]);
+    await submitRequestToBackground('restoreSeedPhrasesToVault', [seedPhrases]);
   } catch (error) {
     console.error('[restoreSeedPhrasesToVault] error', error);
     throw error;
@@ -486,37 +662,6 @@ export function restoreBackupAndGetSeedPhrase(
   };
 }
 
-/**
- * Changes the password for the seedless onboarding.
- *
- * @param newPassword - The new password.
- * @param oldPassword - The old password.
- */
-export function changePassword(
-  newPassword: string,
-  oldPassword: string,
-): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
-  return async (dispatch: MetaMaskReduxDispatch) => {
-    try {
-      await submitRequestToBackground<void>('changePassword', [
-        newPassword,
-        oldPassword,
-      ]);
-      dispatch(hideLoadingIndication());
-    } catch (error) {
-      if (isErrorWithMessage(error)) {
-        if (error.message.toLowerCase().includes('outdated password')) {
-          // password outdated, set outdated state
-          await dispatch(checkIsSeedlessPasswordOutdated(true));
-        }
-      }
-      dispatch(hideLoadingIndication());
-      dispatch(displayWarning(error));
-      throw error;
-    }
-  };
-}
-
 export function checkIsSeedlessPasswordOutdated(
   skipCache = false,
 ): ThunkAction<boolean | undefined, MetaMaskReduxState, unknown, AnyAction> {
@@ -545,6 +690,68 @@ export function submitPassword(password: string): Promise<void> {
       resolve();
     });
   });
+}
+
+/**
+ * Creates a seed phrase backup in the metadata store for seedless onboarding flow.
+ *
+ * @param password - The password.
+ * @param seedPhrase - The seed phrase.
+ * @param keyringId - The keyring id of the backup seed phrase.
+ */
+export async function createSeedPhraseBackup(
+  password: string,
+  seedPhrase: string,
+  keyringId: string,
+): Promise<void> {
+  const encodedSeedPhrase = Array.from(
+    Buffer.from(seedPhrase, 'utf8').values(),
+  );
+  await submitRequestToBackground('createSeedPhraseBackup', [
+    password,
+    encodedSeedPhrase,
+    keyringId,
+  ]);
+}
+
+/**
+ * Fetches all seed phrases from the metadata store.
+ *
+ * Seedphrases are sorted by creation date, the latest seed phrase is the first one in the array.
+ *
+ * @param password - The password.
+ * @returns The seed phrases.
+ */
+export async function fetchAllSeedPhrases(
+  password: string,
+): Promise<Buffer[] | null> {
+  const encodedSeedPhrases = await submitRequestToBackground<Buffer[]>(
+    'fetchAllSeedPhrases',
+    [password],
+  );
+  return encodedSeedPhrases;
+}
+
+/**
+ * Updates the Seedless Onboarding backup metadata state, with backup seed phrase id and backup seed phrase.
+ *
+ * @param keyringId - The keyring id of the backup seed phrase.
+ * @param seedPhrase - The backup seed phrase.
+ */
+export async function updateBackupMetadataState(
+  keyringId: string,
+  seedPhrase: string,
+): Promise<void> {
+  // Encode the secret recovery phrase as an array of integers so that it is
+  // serialized as JSON properly.
+  const encodedSeedPhrase = Array.from(
+    Buffer.from(seedPhrase, 'utf8').values(),
+  );
+
+  await submitRequestToBackground('updateBackupMetadataState', [
+    keyringId,
+    encodedSeedPhrase,
+  ]);
 }
 
 export async function createNewVault(
@@ -610,46 +817,6 @@ export function tryReverseResolveAddress(
       });
     });
   };
-}
-
-/**
- * Creates a seed phrase backup in the metadata store for seedless onboarding flow.
- *
- * @param password - The password.
- * @param seedPhrase - The seed phrase.
- * @param keyringId - The keyring id of the backup seed phrase.
- */
-export async function createSeedPhraseBackup(
-  password: string,
-  seedPhrase: string,
-  keyringId: string,
-): Promise<void> {
-  const encodedSeedPhrase = Array.from(
-    Buffer.from(seedPhrase, 'utf8').values(),
-  );
-  await submitRequestToBackground('createSeedPhraseBackup', [
-    password,
-    encodedSeedPhrase,
-    keyringId,
-  ]);
-}
-
-/**
- * Fetches all seed phrases from the metadata store.
- *
- * Seedphrases are sorted by creation date, the latest seed phrase is the first one in the array.
- *
- * @param password - The password.
- * @returns The seed phrases.
- */
-export async function fetchAllSeedPhrases(
-  password: string,
-): Promise<Buffer[] | null> {
-  const encodedSeedPhrases = await submitRequestToBackground<Buffer[]>(
-    'fetchAllSeedPhrases',
-    [password],
-  );
-  return encodedSeedPhrases;
 }
 
 /**
@@ -2975,12 +3142,12 @@ export function addToAddressBook(
   recipient: string,
   nickname = '',
   memo = '',
+  customChainId?: string,
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
   log.debug(`background.addToAddressBook`);
 
   return async (dispatch, getState) => {
-    const { chainId } = getProviderConfig(getState());
-
+    const chainId = customChainId || getProviderConfig(getState()).chainId;
     let set;
     try {
       set = await submitRequestToBackground('setAddressBook', [
@@ -3533,8 +3700,26 @@ export function setShowExtensionInFullSizeView(value: boolean) {
   return setPreference('showExtensionInFullSizeView', value);
 }
 
-export function setDismissSmartAccountSuggestionEnabled(value: boolean) {
-  return setPreference('dismissSmartAccountSuggestionEnabled', value);
+export function setDismissSmartAccountSuggestionEnabled(
+  value: boolean,
+): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
+  return async (dispatch, getState) => {
+    const prevDismissSmartAccountSuggestionEnabled =
+      getDismissSmartAccountSuggestionEnabled(getState());
+    trackMetaMetricsEvent({
+      category: MetaMetricsEventCategory.Settings,
+      event: MetaMetricsEventName.SettingsUpdated,
+      properties: {
+        dismiss_smt_acc_suggestion_enabled: value,
+        prev_dismiss_smt_acc_suggestion_enabled:
+          prevDismissSmartAccountSuggestionEnabled,
+      },
+    });
+    await dispatch(
+      setPreference('dismissSmartAccountSuggestionEnabled', value),
+    );
+    await forceUpdateMetamaskState(dispatch);
+  };
 }
 
 export function setTokenSortConfig(value: SortCriteria) {
@@ -3545,8 +3730,23 @@ export function setTokenNetworkFilter(value: Record<string, boolean>) {
   return setPreference('tokenNetworkFilter', value, false);
 }
 
-export function setPasswordHint(hint: string) {
+export function setPasswordHint(hint: string, passwordHash: string) {
+  const hintAsBuffer = Buffer.from(hint, 'utf8');
+  const passwordHintHash = Buffer.from(keccak256(hintAsBuffer)).toString('hex');
+
+  if (passwordHintHash === passwordHash) {
+    throw new Error('Invalid password hint');
+  }
+
   return setPreference('passwordHint', hint);
+}
+
+export function setPasswordHash(password: string) {
+  const passwordAsBuffer = Buffer.from(password, 'utf8');
+  const passwordHashString = Buffer.from(keccak256(passwordAsBuffer)).toString(
+    'hex',
+  );
+  return setPreference('passwordHash', passwordHashString);
 }
 
 export function setSmartTransactionsPreferenceEnabled(
@@ -3625,37 +3825,6 @@ export function resetOnboardingAction() {
   };
 }
 
-/**
- * Starts the OAuth2 login process for the given Social Login type
- * and authenticate the user with the Seedless Onboarding Services.
- *
- * @param provider - The authentication connection to use (google | apple).
- * @returns The social login result.
- */
-export function startOAuthLogin(
-  provider: AuthConnection,
-): ThunkAction<Promise<boolean>, MetaMaskReduxState, unknown, AnyAction> {
-  return async (dispatch: MetaMaskReduxDispatch) => {
-    dispatch(showLoadingIndication());
-
-    try {
-      const isNewUser = await submitRequestToBackground('startOAuthLogin', [
-        provider,
-      ]);
-      return isNewUser;
-    } catch (error) {
-      dispatch(displayWarning(error));
-      if (isErrorWithMessage(error)) {
-        throw new Error(getErrorMessage(error));
-      } else {
-        throw error;
-      }
-    } finally {
-      dispatch(hideLoadingIndication());
-    }
-  };
-}
-
 export function setServiceWorkerKeepAlivePreference(
   value: boolean,
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
@@ -3700,6 +3869,7 @@ export function toggleAccountMenu() {
 export function toggleNetworkMenu(payload?: {
   isAddingNewNetwork: boolean;
   isMultiRpcOnboarding: boolean;
+  isAccessedFromDappConnectedSitePopover?: boolean;
 }) {
   return {
     type: actionConstants.TOGGLE_NETWORK_MENU,
@@ -5090,13 +5260,15 @@ export async function tokenBalancesStopPollingByPollingToken(
  * Informs the TokenRatesController that the UI requires
  * token rate polling for the given chain id.
  *
- * @param chainId - The chain id to poll token rates on.
+ * @param chainIds - An array of chain ids to poll token rates on.
  * @returns polling token that can be used to stop polling
  */
-export async function tokenRatesStartPolling(chainId: string): Promise<string> {
+export async function tokenRatesStartPolling(
+  chainIds: string[],
+): Promise<string> {
   const pollingToken = await submitRequestToBackground(
     'tokenRatesStartPolling',
-    [{ chainId }],
+    [{ chainIds }],
   );
   await addPollingTokenToAppState(pollingToken);
   return pollingToken;
@@ -5958,7 +6130,7 @@ export function performSignOut(): ThunkAction<
  *
  * @param feature - The feature to enable or disable.
  * @param enabled - A boolean indicating whether to enable or disable the feature.
- * @returns A thunk action that, when dispatched, attempts to enable profile syncing.
+ * @returns A thunk action that, when dispatched, attempts to enable or disable a backup and sync feature.
  */
 export function setIsBackupAndSyncFeatureEnabled(
   feature: keyof typeof BACKUPANDSYNC_FEATURES,
@@ -6235,28 +6407,6 @@ export function checkAccountsPresence(
     }
   };
 }
-
-/**
- * Triggers a modal to confirm the action of turning off profile syncing.
- * This function dispatches an action to show a modal dialog asking the user to confirm if they want to turn off profile syncing.
- *
- * @returns A thunk action that, when dispatched, shows the confirmation modal.
- */
-export function showConfirmTurnOffProfileSyncing(): ThunkAction<
-  void,
-  MetaMaskReduxState,
-  unknown,
-  AnyAction
-> {
-  return (dispatch: MetaMaskReduxDispatch) => {
-    dispatch(
-      showModal({
-        name: 'CONFIRM_TURN_OFF_PROFILE_SYNCING',
-      }),
-    );
-  };
-}
-
 /**
  * Triggers a modal to confirm the action of turning on MetaMask notifications.
  * This function dispatches an action to show a modal dialog asking the user to confirm if they want to turn on MetaMask notifications.
