@@ -13,8 +13,8 @@ import {
 } from '../../../helpers/constants/design-system';
 import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-  ONBOARDING_COMPLETION_ROUTE,
   ONBOARDING_METAMETRICS,
+  ONBOARDING_COMPLETION_ROUTE,
   ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
   ///: END:ONLY_INCLUDE_IF
 } from '../../../helpers/constants/routes';
@@ -84,7 +84,7 @@ export default function CreatePassword({
     if (currentKeyring && !newAccountCreationInProgress) {
       if (
         firstTimeFlowType === FirstTimeFlowType.import ||
-        firstTimeFlowType === FirstTimeFlowType.seedless
+        firstTimeFlowType === FirstTimeFlowType.social
       ) {
         ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
         history.replace(ONBOARDING_METAMETRICS);
@@ -132,8 +132,10 @@ export default function CreatePassword({
           setNewAccountCreationInProgress(true);
           await createNewAccount(password);
         }
-        if (firstTimeFlowType === FirstTimeFlowType.seedless) {
+        if (firstTimeFlowType === FirstTimeFlowType.social) {
+          ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
           history.push(ONBOARDING_COMPLETION_ROUTE);
+          ///: END:ONLY_INCLUDE_IF
         } else {
           ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
           history.push(ONBOARDING_SECURE_YOUR_WALLET_ROUTE);

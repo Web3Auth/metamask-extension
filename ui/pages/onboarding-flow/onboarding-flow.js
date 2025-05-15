@@ -2,7 +2,6 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Switch, Route, useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import classnames from 'classnames';
-import { keccak256 } from 'ethereumjs-util';
 import Unlock from '../unlock-page';
 import {
   ///: BEGIN:ONLY_INCLUDE_IF(build-flask)
@@ -20,7 +19,6 @@ import {
   ONBOARDING_IMPORT_WITH_SRP_ROUTE,
   ONBOARDING_PIN_EXTENSION_ROUTE,
   ONBOARDING_METAMETRICS,
-  ONBOARDING_GET_STARTED_ROUTE,
   ONBOARDING_PASSWORD_HINT,
   ONBOARDING_ACCOUNT_EXIST,
   ONBOARDING_ACCOUNT_NOT_FOUND,
@@ -33,8 +31,9 @@ import {
   createNewVaultAndGetSeedPhrase,
   unlockAndGetSeedPhrase,
   createNewVaultAndRestore,
-  createAndBackupSeedPhrase,
-  restoreBackupAndGetSeedPhrase,
+  setPasswordHash,
+  createNewVaultAndSyncWithSocial,
+  restoreSocialBackupAndGetSeedPhrase,
 } from '../../store/actions';
 import {
   getFirstTimeFlowType,
@@ -52,28 +51,26 @@ import {
 import ExperimentalArea from '../../components/app/flask/experimental-area';
 ///: END:ONLY_INCLUDE_IF
 import { submitRequestToBackgroundAndCatch } from '../../components/app/toast-master/utils';
-import { FirstTimeFlowType } from '../../../shared/constants/onboarding';
 import { getHDEntropyIndex } from '../../selectors/selectors';
+import { FirstTimeFlowType } from '../../../shared/constants/onboarding';
 import OnboardingFlowSwitch from './onboarding-flow-switch/onboarding-flow-switch';
+import CreatePassword from './create-password/create-password';
 import ReviewRecoveryPhrase from './recovery-phrase/review-recovery-phrase';
 import SecureYourWallet from './secure-your-wallet/secure-your-wallet';
 import ConfirmRecoveryPhrase from './recovery-phrase/confirm-recovery-phrase';
 import PrivacySettings from './privacy-settings/privacy-settings';
-import WalletReady from './wallet-ready/wallet-ready';
-import Welcome from './welcome/welcome';
+import CreationSuccessful from './creation-successful/creation-successful';
+import OnboardingWelcome from './welcome/welcome';
 import ImportSRP from './import-srp/import-srp';
 import OnboardingPinExtension from './pin-extension/pin-extension';
 import MetaMetricsComponent from './metametrics/metametrics';
-import GetStarted from './get-started/get-started';
 import PasswordHint from './password-hint/password-hint';
 import AccountExist from './account-exist/account-exist';
 import AccountNotFound from './account-not-found/account-not-found';
-import CreatePassword from './create-password/create-password';
 
 const TWITTER_URL = 'https://twitter.com/MetaMask';
 
 export default function OnboardingFlow() {
-  const [passwordHash, setPasswordHash] = useState(null);
   const [secretRecoveryPhrase, setSecretRecoveryPhrase] = useState('');
   const dispatch = useDispatch();
   const { pathname, search } = useLocation();
@@ -116,44 +113,27 @@ export default function OnboardingFlow() {
     history,
   ]);
 
-  const getPasswordHash = (password) => {
-    const passwordAsBuffer = Buffer.from(password, 'utf8');
-    const passwordHashString = Buffer.from(
-      keccak256(passwordAsBuffer),
-    ).toString('hex');
-    return passwordHashString;
-  };
-
-  const handleDefaultOnboardingFlow = async (password) => {
-    const newSecretRecoveryPhrase = await dispatch(
-      createNewVaultAndGetSeedPhrase(password),
-    );
-    setSecretRecoveryPhrase(newSecretRecoveryPhrase);
-  };
-
-  const handleSeedlessOnboardingFlow = async (password) => {
-    const newSecretRecoveryPhrase = await dispatch(
-      createAndBackupSeedPhrase(password),
-    );
-    setSecretRecoveryPhrase(newSecretRecoveryPhrase);
-  };
-
   const handleCreateNewAccount = async (password) => {
-    setPasswordHash(getPasswordHash(password));
-    if (firstTimeFlowType === FirstTimeFlowType.seedless) {
-      await handleSeedlessOnboardingFlow(password);
+    let newSecretRecoveryPhrase;
+    if (firstTimeFlowType === FirstTimeFlowType.social) {
+      newSecretRecoveryPhrase = await dispatch(
+        createNewVaultAndSyncWithSocial(password),
+      );
     } else {
-      await handleDefaultOnboardingFlow(password);
+      newSecretRecoveryPhrase = await dispatch(
+        createNewVaultAndGetSeedPhrase(password),
+      );
     }
+    setSecretRecoveryPhrase(newSecretRecoveryPhrase);
+    // save `PasswordHash` in the preferences
+    dispatch(setPasswordHash(password));
   };
 
   const handleUnlock = async (password) => {
-    setPasswordHash(getPasswordHash(password));
-
     let retrievedSecretRecoveryPhrase;
-    if (firstTimeFlowType === FirstTimeFlowType.seedless) {
+    if (firstTimeFlowType === FirstTimeFlowType.social) {
       retrievedSecretRecoveryPhrase = await dispatch(
-        restoreBackupAndGetSeedPhrase(password),
+        restoreSocialBackupAndGetSeedPhrase(password),
       );
 
       if (retrievedSecretRecoveryPhrase === null) {
@@ -168,18 +148,13 @@ export default function OnboardingFlow() {
     }
 
     setSecretRecoveryPhrase(retrievedSecretRecoveryPhrase);
+    // save `PasswordHash` in the preferences
+    dispatch(setPasswordHash(password));
     history.push(nextRoute);
   };
 
   const handleImportWithRecoveryPhrase = async (password, srp) => {
     return await dispatch(createNewVaultAndRestore(password, srp));
-  };
-
-  const validatePasswordHint = (hint) => {
-    const hintHash = getPasswordHash(hint);
-    if (hintHash === passwordHash) {
-      throw new Error('Invalid password hint');
-    }
   };
 
   const showPasswordModalToAllowSRPReveal =
@@ -209,6 +184,11 @@ export default function OnboardingFlow() {
         })}
       >
         <Switch>
+          <Route path={ONBOARDING_ACCOUNT_EXIST} component={AccountExist} />
+          <Route
+            path={ONBOARDING_ACCOUNT_NOT_FOUND}
+            component={AccountNotFound}
+          />
           <Route
             path={ONBOARDING_CREATE_PASSWORD_ROUTE}
             render={(routeProps) => (
@@ -259,9 +239,14 @@ export default function OnboardingFlow() {
             path={ONBOARDING_PRIVACY_SETTINGS_ROUTE}
             component={PrivacySettings}
           />
-          <Route path={ONBOARDING_COMPLETION_ROUTE} component={WalletReady} />
-          <Route path={ONBOARDING_WELCOME_ROUTE} component={Welcome} />
-          <Route path={ONBOARDING_GET_STARTED_ROUTE} component={GetStarted} />
+          <Route
+            path={ONBOARDING_COMPLETION_ROUTE}
+            component={CreationSuccessful}
+          />
+          <Route
+            path={ONBOARDING_WELCOME_ROUTE}
+            component={OnboardingWelcome}
+          />
           <Route
             path={ONBOARDING_PIN_EXTENSION_ROUTE}
             component={OnboardingPinExtension}
@@ -270,21 +255,7 @@ export default function OnboardingFlow() {
             path={ONBOARDING_METAMETRICS}
             component={MetaMetricsComponent}
           />
-          <Route
-            path={ONBOARDING_PASSWORD_HINT}
-            render={(routeProps) => (
-              <PasswordHint
-                {...routeProps}
-                passwordHash={passwordHash}
-                validatePasswordHint={validatePasswordHint}
-              />
-            )}
-          />
-          <Route path={ONBOARDING_ACCOUNT_EXIST} component={AccountExist} />
-          <Route
-            path={ONBOARDING_ACCOUNT_NOT_FOUND}
-            component={AccountNotFound}
-          />
+          <Route path={ONBOARDING_PASSWORD_HINT} component={PasswordHint} />
           {
             ///: BEGIN:ONLY_INCLUDE_IF(build-flask)
           }

@@ -1,126 +1,49 @@
 import React from 'react';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
 import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import initializedMockState from '../../../../test/data/mock-state.json';
-import { renderWithProvider } from '../../../../test/lib/render-helpers';
-import {
-  ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
-  ONBOARDING_COMPLETION_ROUTE,
-  ONBOARDING_CREATE_PASSWORD_ROUTE,
-  ONBOARDING_IMPORT_WITH_SRP_ROUTE,
-} from '../../../helpers/constants/routes';
-import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
-import { setFirstTimeFlowType } from '../../../store/actions';
-import GetStarted from './get-started';
+import { fireEvent, renderWithProvider } from '../../../../test/jest';
+import Welcome from './welcome';
 
-const mockHistoryReplace = jest.fn();
 const mockHistoryPush = jest.fn();
-
-jest.mock('../../../store/actions.ts', () => ({
-  setFirstTimeFlowType: jest.fn().mockReturnValue(
-    jest.fn((type) => {
-      return type;
-    }),
-  ),
-}));
-
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useHistory: () => ({
     push: mockHistoryPush,
-    replace: mockHistoryReplace,
   }),
 }));
 
-describe('Onboarding Welcome Component', () => {
+describe('Welcome Page', () => {
   const mockState = {
     metamask: {
       internalAccounts: {
         accounts: {},
         selectedAccount: '',
       },
+      metaMetricsId: '0x00000000',
     },
   };
+  const mockStore = configureMockStore()(mockState);
 
-  afterEach(() => {
-    jest.clearAllMocks();
+  it('should render', () => {
+    const { getByText } = renderWithProvider(<Welcome />, mockStore);
+
+    expect(getByText('Welcome to MetaMask')).toBeInTheDocument();
+
+    expect(getByText('Get started')).toBeInTheDocument();
   });
 
-  describe('Initialized State Conditionals with keyrings and firstTimeFlowType', () => {
-    it('should route to secure your wallet when keyring is present but not imported first time flow type', () => {
-      const mockStore = configureMockStore([thunk])(initializedMockState);
+  it('should show the terms of use popup when the user clicks the "Get started" button', () => {
+    const { getByText, getByTestId } = renderWithProvider(
+      <Welcome />,
+      mockStore,
+    );
 
-      renderWithProvider(<GetStarted />, mockStore);
-      expect(mockHistoryReplace).toHaveBeenCalledWith(
-        ONBOARDING_SECURE_YOUR_WALLET_ROUTE,
-      );
-    });
+    const getStartedButton = getByText('Get started');
+    fireEvent.click(getStartedButton);
 
-    it('should route to completion when keyring is present and imported first time flow type', () => {
-      const importFirstTimeFlowState = {
-        ...initializedMockState,
-        metamask: {
-          ...initializedMockState.metamask,
-          firstTimeFlowType: FirstTimeFlowType.import,
-        },
-      };
-      const mockStore = configureMockStore([thunk])(importFirstTimeFlowState);
+    expect(getByText('Review our Terms of Use')).toBeInTheDocument();
 
-      renderWithProvider(<GetStarted />, mockStore);
-      expect(mockHistoryReplace).toHaveBeenCalledWith(
-        ONBOARDING_COMPLETION_ROUTE,
-      );
-    });
-  });
-
-  describe('Welcome Component', () => {
-    const mockStore = configureMockStore([thunk])(mockState);
-
-    it('should render', () => {
-      renderWithProvider(<GetStarted />, mockStore);
-      const onboardingWelcome = screen.queryByTestId('onboarding-welcome');
-      expect(onboardingWelcome).toBeInTheDocument();
-    });
-
-    it('should create new wallet modal', async () => {
-      const { getByText } = renderWithProvider(<GetStarted />, mockStore);
-      const createWallet = screen.getByTestId('onboarding-create-wallet');
-      fireEvent.click(createWallet);
-
-      const createSrpButton = getByText('Continue with Secret Recovery Phrase');
-      expect(createSrpButton).toBeInTheDocument();
-
-      fireEvent.click(createSrpButton);
-
-      await waitFor(() => {
-        expect(setFirstTimeFlowType).toHaveBeenCalledWith(
-          FirstTimeFlowType.create,
-        );
-        expect(mockHistoryPush).toHaveBeenCalledWith(
-          ONBOARDING_CREATE_PASSWORD_ROUTE,
-        );
-      });
-    });
-
-    it('should open login to existing wallet modal', async () => {
-      const { getByText } = renderWithProvider(<GetStarted />, mockStore);
-      const createWallet = screen.getByTestId('onboarding-import-wallet');
-      fireEvent.click(createWallet);
-
-      const importSrpButton = getByText('Import using Secret Recovery Phrase');
-      expect(importSrpButton).toBeInTheDocument();
-
-      fireEvent.click(importSrpButton);
-
-      await waitFor(() => {
-        expect(setFirstTimeFlowType).toHaveBeenCalledWith(
-          FirstTimeFlowType.import,
-        );
-        expect(mockHistoryPush).toHaveBeenCalledWith(
-          ONBOARDING_IMPORT_WITH_SRP_ROUTE,
-        );
-      });
-    });
+    const agreeButton = getByTestId('terms-of-use-agree-button');
+    expect(agreeButton).toBeInTheDocument();
+    expect(agreeButton).toBeDisabled();
   });
 });

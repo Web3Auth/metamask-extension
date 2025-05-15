@@ -186,10 +186,7 @@ export default function SrpInputImport({ onChange }: SrpInputImportProps) {
     <>
       <div className="srp-input-import__container">
         {draftSrp.length > 0 ? (
-          <div
-            className="srp-input-import__srp-container"
-            data-testid="srp-input-import__srp-container"
-          >
+          <div className="srp-input-import__srp-container">
             <div className="srp-input-import__words-list">
               {draftSrp.map((word, index) => (
                 <TextField
@@ -243,11 +240,9 @@ export default function SrpInputImport({ onChange }: SrpInputImportProps) {
             </div>
           </div>
         ) : (
-          <div
-            className="srp-input-import__srp-note"
-            data-testid="srp-input-import__srp-note-div"
-          >
+          <div className="srp-input-import__srp-note">
             <Textarea
+              data-testid="srp-input-import__srp-note"
               borderColor={BorderColor.transparent}
               backgroundColor={BackgroundColor.transparent}
               width={BlockSize.Full}
@@ -258,7 +253,6 @@ export default function SrpInputImport({ onChange }: SrpInputImportProps) {
               onChange={(e) => setFirstWord(e.target.value)}
               onKeyDown={handleOnKeyDown}
               onPaste={handleOnPaste}
-              data-testid="srp-input-import__srp-note"
             />
           </div>
         )}

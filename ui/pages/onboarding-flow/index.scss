@@ -1,19 +1,23 @@
 @use "design-system";
 
+// by using @use, and dropping the file extension, sass will inline the
+// stylesheet instead of creating generating an `import(carousel.css)`. This is
+// desirable because it reduces the number of render-blocking requests on app
+// startup.
+@use "react-responsive-carousel/lib/styles/carousel";
+
 @import 'account-exist/index';
-@import 'account-not-found/index';
 @import 'recovery-phrase/index';
 @import 'onboarding-app-header/index';
 @import 'secure-your-wallet/index';
 @import 'privacy-settings/index';
 @import 'create-password/index';
-@import 'wallet-ready/index';
+@import 'creation-successful/index';
 @import 'welcome/index';
 @import 'import-srp/index';
+@import 'password-hint/index';
 @import 'pin-extension/index';
 @import 'metametrics/index';
-@import 'get-started/index';
-@import 'password-hint/index';
 
 .onboarding-flow {
   background-color: var(--color-background-default);
@@ -26,8 +30,10 @@
   justify-content: flex-start;
 
   &--welcome {
-    background-color: #eac2ff;
-    justify-content: center;
+    background-color: transparent;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 0;
   }
 
   &__wrapper {
@@ -41,6 +47,7 @@
     &--welcome {
       border: none;
       max-width: inherit;
+      padding: 0;
     }
 
     &--unlock {

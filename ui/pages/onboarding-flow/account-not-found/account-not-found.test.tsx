@@ -31,8 +31,7 @@ describe('Account Not Found Seedless Onboarding View', () => {
       ...initializedMockState,
       metamask: {
         ...initializedMockState.metamask,
-        firstTimeFlowType: FirstTimeFlowType.seedless,
-        socialLoginEmail: 'test@test.com',
+        firstTimeFlowType: FirstTimeFlowType.social,
       },
     };
     const customMockStore = configureMockStore([thunk])(
@@ -49,26 +48,10 @@ describe('Account Not Found Seedless Onboarding View', () => {
     const loginButton = getByText('Yes, create a new wallet');
     expect(loginButton).toBeInTheDocument();
     expect(loginButton.nodeName).toBe('BUTTON');
-    expect(getByText(/test@test.com/u)).toBeInTheDocument();
   });
 
   it('should navigate to the create-password route when the button is clicked', () => {
-    const importFirstTimeFlowState = {
-      ...initializedMockState,
-      metamask: {
-        ...initializedMockState.metamask,
-        firstTimeFlowType: FirstTimeFlowType.seedless,
-        socialLoginEmail: 'test@test.com',
-      },
-    };
-    const customMockStore = configureMockStore([thunk])(
-      importFirstTimeFlowState,
-    );
-
-    const { getByText } = renderWithProvider(
-      <CreationSuccessful />,
-      customMockStore,
-    );
+    const { getByText } = renderWithProvider(<CreationSuccessful />);
     const loginButton = getByText('Yes, create a new wallet');
     fireEvent.click(loginButton);
     expect(mockHistoryPush).toHaveBeenCalledWith(

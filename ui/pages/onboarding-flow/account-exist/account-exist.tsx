@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
   ButtonSize,
@@ -29,25 +29,27 @@ import {
 } from '../../../helpers/constants/routes';
 import { getFirstTimeFlowType, getSocialLoginEmail } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
+import { resetOAuthLoginState } from '../../../store/actions';
 
 export default function AccountExist() {
   const history = useHistory();
+  const dispatch = useDispatch();
   const t = useI18nContext();
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const userSocialLoginEmail = useSelector(getSocialLoginEmail);
-  console.log('userSocialLoginEmail', userSocialLoginEmail);
 
   const onDone = async () => {
     history.push(ONBOARDING_UNLOCK_ROUTE);
   };
 
   const onLoginWithDifferentMethod = async () => {
-    // TODO: Cleanup social login state and redirect to welcome page
-    console.log('onLoginWithDifferentMethod');
+    // clear the social login state
+    await dispatch(resetOAuthLoginState());
+    history.push(ONBOARDING_WELCOME_ROUTE);
   };
 
   useEffect(() => {
-    if (firstTimeFlowType !== FirstTimeFlowType.seedless) {
+    if (firstTimeFlowType !== FirstTimeFlowType.social) {
       history.push(ONBOARDING_WELCOME_ROUTE);
     }
   }, [firstTimeFlowType, history]);
@@ -99,7 +101,7 @@ export default function AccountExist() {
             marginBottom={6}
           >
             <img
-              src="images/wallet-ready.svg"
+              src="images/account-status.png"
               width={276}
               height={276}
               alt="Account already exists"
@@ -121,7 +123,7 @@ export default function AccountExist() {
         gap={2}
       >
         <Button
-          data-testid="account-exist-login"
+          data-testid="onboarding-complete-done"
           variant={ButtonVariant.Primary}
           size={ButtonSize.Lg}
           width={BlockSize.Full}

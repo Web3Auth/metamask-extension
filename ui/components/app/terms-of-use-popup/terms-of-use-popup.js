@@ -37,7 +37,7 @@ import {
   TextVariant,
 } from '../../../helpers/constants/design-system';
 
-export default function TermsOfUsePopup({ isOpen, onClose, onAccept }) {
+export default function TermsOfUsePopup({ onClose, onAccept }) {
   const t = useContext(I18nContext);
   const [shouldShowScrollButton, setShouldShowScrollButton] = useState(true);
   const [isTermsOfUseChecked, setIsTermsOfUseChecked] = useState(false);
@@ -80,7 +80,7 @@ export default function TermsOfUsePopup({ isOpen, onClose, onAccept }) {
 
   return (
     <Modal
-      isOpen={isOpen}
+      isOpen
       onClose={onClose}
       isClosedOnOutsideClick={false}
       className="terms-of-use-popup"
@@ -1256,7 +1256,6 @@ export default function TermsOfUsePopup({ isOpen, onClose, onAccept }) {
 }
 
 TermsOfUsePopup.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
+  onClose: PropTypes.func,
   onAccept: PropTypes.func.isRequired,
 };

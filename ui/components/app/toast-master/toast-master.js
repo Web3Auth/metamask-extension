@@ -20,8 +20,8 @@ import {
   SEND_ROUTE,
   SWAPS_ROUTE,
   PREPARE_SWAP_ROUTE,
-  ONBOARDING_COMPLETION_ROUTE,
   CROSS_CHAIN_SWAP_ROUTE,
+  ONBOARDING_COMPLETION_ROUTE,
 } from '../../../helpers/constants/routes';
 import { getURLHost } from '../../../helpers/utils/util';
 import { useI18nContext } from '../../../hooks/useI18nContext';
@@ -386,7 +386,7 @@ function NewSrpAddedToast() {
   );
 }
 
-const PasswordHintSavedToast = () => {
+function PasswordHintSavedToast() {
   const t = useI18nContext();
   const dispatch = useDispatch();
 
@@ -411,4 +411,4 @@ const PasswordHintSavedToast = () => {
       />
     )
   );
-};
+}

@@ -15,23 +15,25 @@ import { isInternalAccountInPermittedAccountIds } from '../../../../shared/lib/m
 import { MetaMaskReduxState } from '../../../store/store';
 import { getIsPrivacyToastRecent } from './utils';
 
-// TODO: get this into one of the larger definitions of state type
-type State = Omit<MetaMaskReduxState, 'appState'> & {
-  appState: {
-    showNftDetectionEnablementToast?: boolean;
-    showPasswordHintSavedToast?: boolean;
-    ///: BEGIN:ONLY_INCLUDE_IF(multi-srp)
-    showNewSrpAddedToast?: boolean;
-    ///: END:ONLY_INCLUDE_IF
-  };
-  metamask: {
-    newPrivacyPolicyToastClickedOrClosed?: boolean;
-    newPrivacyPolicyToastShownDate?: number;
-    onboardingDate?: number;
-    showNftDetectionEnablementToast?: boolean;
-    surveyLinkLastClickedOrClosed?: number;
-    switchedNetworkNeverShowMessage?: boolean;
-  };
+type State = {
+  appState: Partial<
+    Pick<
+      MetaMaskReduxState['appState'],
+      | 'showNftDetectionEnablementToast'
+      | 'showNewSrpAddedToast'
+      | 'showPasswordHintSavedToast'
+    >
+  >;
+  metamask: Partial<
+    Pick<
+      MetaMaskReduxState['metamask'],
+      | 'newPrivacyPolicyToastClickedOrClosed'
+      | 'newPrivacyPolicyToastShownDate'
+      | 'onboardingDate'
+      | 'surveyLinkLastClickedOrClosed'
+      | 'switchedNetworkNeverShowMessage'
+    >
+  >;
 };
 
 /**
@@ -40,8 +42,8 @@ type State = Omit<MetaMaskReduxState, 'appState'> & {
  * @param state - The application state containing the necessary survey data.
  * @returns True if the current time is between the survey start and end times and the survey link was not last clicked or closed. False otherwise.
  */
-export function selectShowSurveyToast(state: State): boolean {
-  if (state.metamask?.surveyLinkLastClickedOrClosed) {
+export function selectShowSurveyToast(state: Pick<State, 'metamask'>): boolean {
+  if (state.metamask.surveyLinkLastClickedOrClosed) {
     return false;
   }
 
@@ -58,9 +60,9 @@ export function selectShowSurveyToast(state: State): boolean {
  * @param state - The application state containing the privacy policy data.
  * @returns Boolean is True if the toast should be shown, and the number is the date the toast was last shown.
  */
-export function selectShowPrivacyPolicyToast(state: State): {
+export function selectShowPrivacyPolicyToast(state: Pick<State, 'metamask'>): {
   showPrivacyPolicyToast: boolean;
-  newPrivacyPolicyToastShownDate?: number;
+  newPrivacyPolicyToastShownDate?: number | null;
 } {
   const {
     newPrivacyPolicyToastClickedOrClosed,
@@ -82,18 +84,16 @@ export function selectShowPrivacyPolicyToast(state: State): {
   return { showPrivacyPolicyToast, newPrivacyPolicyToastShownDate };
 }
 
-export function selectNftDetectionEnablementToast(state: State): boolean {
-  return Boolean(state.appState?.showNftDetectionEnablementToast);
-}
-
-export function selectPasswordHintSavedToast(state: State): boolean {
-  return Boolean(state.appState?.showPasswordHintSavedToast);
+export function selectNftDetectionEnablementToast(
+  state: Pick<State, 'appState'>,
+): boolean {
+  return Boolean(state.appState.showNftDetectionEnablementToast);
 }
 
 // If there is more than one connected account to activeTabOrigin,
 // *BUT* the current account is not one of them, show the banner
 export function selectShowConnectAccountToast(
-  state: State,
+  state: State & Pick<MetaMaskReduxState, 'activeTab'>,
   account: InternalAccount,
 ): boolean {
   const allowShowAccountSetting = getAlertEnabledness(state).unconnectedAccount;
@@ -108,7 +108,7 @@ export function selectShowConnectAccountToast(
   const showConnectAccountToast =
     allowShowAccountSetting &&
     account &&
-    state.activeTab?.origin &&
+    state.activeTab.origin &&
     isConnectableAccount &&
     connectedAccounts.length > 0 &&
     !isInternalAccountInPermittedAccountIds(account, connectedAccounts);
@@ -122,7 +122,9 @@ export function selectShowConnectAccountToast(
  * @param state - Redux state object.
  * @returns Boolean preference value
  */
-export function selectSwitchedNetworkNeverShowMessage(state: State): boolean {
+export function selectSwitchedNetworkNeverShowMessage(
+  state: Pick<State, 'metamask'>,
+): boolean {
   return Boolean(state.metamask.switchedNetworkNeverShowMessage);
 }
 
@@ -132,6 +134,10 @@ export function selectSwitchedNetworkNeverShowMessage(state: State): boolean {
  * @param state - Redux state object.
  * @returns Boolean preference value
  */
-export function selectNewSrpAdded(state: State): boolean {
+export function selectNewSrpAdded(state: Pick<State, 'appState'>): boolean {
   return Boolean(state.appState.showNewSrpAddedToast);
+}
+
+export function selectPasswordHintSavedToast(state: State): boolean {
+  return Boolean(state.appState?.showPasswordHintSavedToast);
 }

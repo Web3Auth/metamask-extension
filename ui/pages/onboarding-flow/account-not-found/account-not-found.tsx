@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
   ButtonSize,
@@ -30,29 +30,31 @@ import {
 
 import { getFirstTimeFlowType, getSocialLoginEmail } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
+import { resetOAuthLoginState } from '../../../store/actions';
 
 export default function AccountNotFound() {
   const history = useHistory();
+  const dispatch = useDispatch();
   const t = useI18nContext();
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const userSocialLoginEmail = useSelector(getSocialLoginEmail);
 
-  useEffect(() => {
-    if (firstTimeFlowType !== FirstTimeFlowType.seedless) {
-      // if the onboarding flow is not seedless, redirect to the welcome page
-      history.push(ONBOARDING_WELCOME_ROUTE);
-    }
-  }, [firstTimeFlowType, history]);
-
   const onCreateOne = async () => {
-    // TODO: process the creation of a new wallet using the social login
     history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
   };
 
   const onLoginWithDifferentMethod = async () => {
-    // TODO: Cleanup social login state and redirect to welcome page
-    console.log('onLoginWithDifferentMethod');
+    // clear the social login state
+    await dispatch(resetOAuthLoginState());
+    history.push(ONBOARDING_WELCOME_ROUTE);
   };
+
+  useEffect(() => {
+    if (firstTimeFlowType !== FirstTimeFlowType.social) {
+      // if the onboarding flow is not seedless, redirect to the welcome page
+      history.push(ONBOARDING_WELCOME_ROUTE);
+    }
+  }, [firstTimeFlowType, history]);
 
   return (
     <Box
@@ -101,7 +103,7 @@ export default function AccountNotFound() {
             marginBottom={6}
           >
             <img
-              src="images/wallet-ready.svg"
+              src="images/account-status.png"
               width={276}
               height={276}
               alt="Account already exists"
@@ -123,7 +125,7 @@ export default function AccountNotFound() {
         gap={2}
       >
         <Button
-          data-testid="account-not-found-create-one"
+          data-testid="onboarding-complete-done"
           variant={ButtonVariant.Primary}
           size={ButtonSize.Lg}
           width={BlockSize.Full}
