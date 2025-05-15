@@ -435,7 +435,6 @@ describe('MetaMaskController', () => {
         metamaskController.keyringController,
         'createNewVaultAndRestore',
       );
-
       jest.spyOn(
         metamaskController.seedlessOnboardingController,
         'authenticate',
@@ -715,6 +714,20 @@ describe('MetaMaskController', () => {
       });
     });
 
+    describe('#resetOAuthLoginState', () => {
+      it('should reset the social login state', async () => {
+        await metamaskController.resetOAuthLoginState();
+
+        const seedlessOnboardingState =
+          metamaskController.seedlessOnboardingController.state;
+        expect(seedlessOnboardingState.authConnection).toBe(undefined);
+        expect(seedlessOnboardingState.authConnectionId).toBe(undefined);
+        expect(seedlessOnboardingState.groupedAuthConnectionId).toBe(undefined);
+        expect(seedlessOnboardingState.userId).toBe(undefined);
+        expect(seedlessOnboardingState.socialLoginEmail).toBe(undefined);
+      });
+    });
+
     describe('#createNewVaultAndKeychain', () => {
       it('can only create new vault on keyringController once', async () => {
         const password = 'a-fake-password';
@@ -783,6 +796,33 @@ describe('MetaMaskController', () => {
 
         expect(fetchSrpBackupSpy).toHaveBeenCalledWith(password);
         expect(srpBackup.toString('utf8')).toStrictEqual(mockSeedPhrase);
+      });
+    });
+
+    describe('#changePassword', () => {
+      it('should change the password for both seedless onboarding and keyring controller', async () => {
+        const oldPassword = 'old-password';
+        const newPassword = 'new-password';
+
+        await metamaskController.createNewVaultAndKeychain(oldPassword);
+
+        const changePwdSeedlessOnboardingSpy = jest
+          .spyOn(
+            metamaskController.seedlessOnboardingController,
+            'changePassword',
+          )
+          .mockResolvedValueOnce();
+        const changePwdKeyringControllerSpy = jest
+          .spyOn(metamaskController.keyringController, 'changePassword')
+          .mockResolvedValueOnce();
+
+        await metamaskController.changePassword(newPassword, oldPassword);
+
+        expect(changePwdSeedlessOnboardingSpy).toHaveBeenCalledWith(
+          newPassword,
+          oldPassword,
+        );
+        expect(changePwdKeyringControllerSpy).toHaveBeenCalledWith(newPassword);
       });
     });
 
@@ -2782,7 +2822,6 @@ describe('MetaMaskController', () => {
     describe('#setupUntrustedCommunicationCaip', () => {
       let localMetamaskController;
       beforeEach(() => {
-        process.env.MULTICHAIN_API = true;
         localMetamaskController = new MetaMaskController({
           showUserConfirmation: noop,
           encryptor: mockEncryptor,
@@ -2808,7 +2847,6 @@ describe('MetaMaskController', () => {
       });
 
       afterAll(() => {
-        process.env.MULTICHAIN_API = false;
         tearDownMockMiddlewareLog();
       });
 
@@ -3374,8 +3412,8 @@ describe('MetaMaskController', () => {
         };
         const { provider } = createTestProviderTools({
           scaffold: providerResultStub,
-          networkId: '5',
-          chainId: '5',
+          networkId: '0x1',
+          chainId: '0x1',
         });
 
         const tokenData = {
@@ -3383,12 +3421,15 @@ describe('MetaMaskController', () => {
           symbol: 'DAI',
         };
 
-        await metamaskController.tokensController.addTokens([
-          {
-            address: '0x6b175474e89094c44da98b954eedeac495271d0f',
-            ...tokenData,
-          },
-        ]);
+        await metamaskController.tokensController.addTokens(
+          [
+            {
+              address: '0x6b175474e89094c44da98b954eedeac495271d0f',
+              ...tokenData,
+            },
+          ],
+          'networkConfigurationId1',
+        );
 
         metamaskController.provider = provider;
         const tokenDetails =
@@ -4171,6 +4212,7 @@ describe('MetaMaskController', () => {
         );
         // Second call should use derivation path on index 0
         expect(mockCreateAccount.mock.calls[1][1]).toStrictEqual({
+          accountNameSuggestion: expect.stringContaining('Solana Account'),
           derivationPath: "m/44'/501'/0'/0'",
           entropySource: expect.any(String),
         });
@@ -4183,6 +4225,7 @@ describe('MetaMaskController', () => {
 
         // Third call should use derivation path on index 1
         expect(mockCreateAccount.mock.calls[2][1]).toStrictEqual({
+          accountNameSuggestion: expect.stringContaining('Solana Account'),
           derivationPath: "m/44'/501'/1'/0'",
           entropySource: expect.any(String),
         });

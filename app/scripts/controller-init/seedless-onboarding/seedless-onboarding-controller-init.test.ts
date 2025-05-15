@@ -39,20 +39,26 @@ describe('SeedlessOnboardingControllerInit', () => {
   it('should return controller instance', () => {
     const requestMock = buildInitRequestMock();
     expect(
-      // @ts-expect-error TODO: Resolve mismatch between base-controller versions.
       SeedlessOnboardingControllerInit(requestMock).controller,
     ).toBeInstanceOf(SeedlessOnboardingController);
   });
 
   it('initializes with correct messenger and state', () => {
     const requestMock = buildInitRequestMock();
-    // @ts-expect-error TODO: Resolve mismatch between base-controller versions.
     SeedlessOnboardingControllerInit(requestMock);
 
     expect(SeedlessOnboardingControllerClassMock).toHaveBeenCalledWith({
       messenger: requestMock.controllerMessenger,
       state: requestMock.persistedState.SeedlessOnboardingController,
       network: Web3AuthNetwork.Devnet,
+      encryptor: {
+        decrypt: expect.any(Function),
+        decryptWithDetail: expect.any(Function),
+        decryptWithKey: expect.any(Function),
+        encrypt: expect.any(Function),
+        encryptWithDetail: expect.any(Function),
+        importKey: expect.any(Function),
+      },
     });
   });
 });

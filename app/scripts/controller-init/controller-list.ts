@@ -39,6 +39,8 @@ import { Controller as AuthenticationController } from '@metamask/profile-sync-c
 import { Controller as UserStorageController } from '@metamask/profile-sync-controller/user-storage';
 import { Controller as NotificationServicesController } from '@metamask/notification-services-controller/notification-services';
 import { Controller as NotificationServicesPushController } from '@metamask/notification-services-controller/push-services';
+import { DelegationController } from '@metamask/delegation-controller';
+
 import { SeedlessOnboardingController } from '@metamask/seedless-onboarding-controller';
 import { EncryptionKey } from '@metamask/browser-passworder';
 import OnboardingController from '../controllers/onboarding';
@@ -52,6 +54,7 @@ import { InstitutionalSnapController } from '../controllers/institutional-snap/I
 export type Controller =
   | AuthenticationController
   | CronjobController
+  | DelegationController
   | DeFiPositionsController
   | ExecutionService
   | GasFeeController
@@ -73,6 +76,7 @@ export type Controller =
   | PPOMController
   | PreferencesController
   | RateLimitController<RateLimitedApiMap>
+  | SeedlessOnboardingController<EncryptionKey>
   | SmartTransactionsController
   | SnapController
   | SnapInterfaceController
@@ -115,6 +119,7 @@ export type ControllerFlatState = AccountsController['state'] &
   >['state'] &
   PPOMController['state'] &
   PreferencesController['state'] &
+  SeedlessOnboardingController<EncryptionKey>['state'] &
   SmartTransactionsController['state'] &
   SnapController['state'] &
   SnapInsightsController['state'] &

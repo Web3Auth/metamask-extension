@@ -27,6 +27,6 @@ export function createLoginHandler(
         serverRedirectUri: env.serverRedirectUri,
       });
     default:
-      throw new Error('Invalid provider');
+      throw new Error(`Invalid social login provider: ${authConnection}`);
   }
 }

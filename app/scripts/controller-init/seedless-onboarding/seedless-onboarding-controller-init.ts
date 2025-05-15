@@ -9,7 +9,6 @@ import { encryptorFactory } from '../../lib/encryptor-factory';
 
 export const SeedlessOnboardingControllerInit: ControllerInitFunction<
   SeedlessOnboardingController<EncryptionKey>,
-  // @ts-expect-error TODO: Resolve mismatch between base-controller versions.
   SeedlessOnboardingControllerMessenger
 > = (request) => {
   const { controllerMessenger, persistedState } = request;
@@ -21,7 +20,9 @@ export const SeedlessOnboardingControllerInit: ControllerInitFunction<
     state: persistedState.SeedlessOnboardingController,
     network: Web3AuthNetwork.Devnet,
     encryptor: {
-      ...encryptor,
+      decrypt: (key, encryptedData) => encryptor.decrypt(key, encryptedData),
+      decryptWithDetail: (key, encryptedData) =>
+        encryptor.decryptWithDetail(key, encryptedData),
       decryptWithKey(key, encryptedData) {
         let payload: EncryptionResult;
         if (typeof encryptedData === 'string') {
@@ -30,8 +31,11 @@ export const SeedlessOnboardingControllerInit: ControllerInitFunction<
           payload = encryptedData;
         }
 
-        return encryptor.decryptWithKey(key, payload);
+        return encryptor.decryptWithKey(key as EncryptionKey, payload);
       },
+      encrypt: (key, data) => encryptor.encrypt(key, data),
+      encryptWithDetail: (key, data) => encryptor.encryptWithDetail(key, data),
+      importKey: (key) => encryptor.importKey(key),
     },
   });
 

@@ -30,7 +30,6 @@ import {
   getAuthenticationControllerMessenger,
   getUserStorageControllerMessenger,
 } from './identity';
-import { getSeedlessOnboardingControllerMessenger } from './seedless-onboarding/seedless-onboarding-controller-messenger';
 import {
   getAssetsContractControllerMessenger,
   getNftControllerMessenger,
@@ -43,6 +42,11 @@ import {
 } from './notifications';
 import { getDeFiPositionsControllerMessenger } from './defi-positions';
 import { getDeFiPositionsControllerInitMessenger } from './defi-positions/defi-positions-controller-messenger';
+import {
+  getDelegationControllerInitMessenger,
+  getDelegationControllerMessenger,
+} from './delegation/delegation-controller-messenger';
+import { getSeedlessOnboardingControllerMessenger } from './seedless-onboarding';
 
 export const CONTROLLER_MESSENGERS = {
   AuthenticationController: {
@@ -56,6 +60,10 @@ export const CONTROLLER_MESSENGERS = {
   DeFiPositionsController: {
     getMessenger: getDeFiPositionsControllerMessenger,
     getInitMessenger: getDeFiPositionsControllerInitMessenger,
+  },
+  DelegationController: {
+    getMessenger: getDelegationControllerMessenger,
+    getInitMessenger: getDelegationControllerInitMessenger,
   },
   ExecutionService: {
     getMessenger: getExecutionServiceMessenger,
@@ -97,6 +105,10 @@ export const CONTROLLER_MESSENGERS = {
     getMessenger: getRateLimitControllerMessenger,
     getInitMessenger: getRateLimitControllerInitMessenger,
   },
+  SeedlessOnboardingController: {
+    getMessenger: getSeedlessOnboardingControllerMessenger,
+    getInitMessenger: noop,
+  },
   SnapsRegistry: {
     getMessenger: getSnapsRegistryMessenger,
     getInitMessenger: noop,
@@ -123,10 +135,6 @@ export const CONTROLLER_MESSENGERS = {
   },
   UserStorageController: {
     getMessenger: getUserStorageControllerMessenger,
-    getInitMessenger: noop,
-  },
-  SeedlessOnboardingController: {
-    getMessenger: getSeedlessOnboardingControllerMessenger,
     getInitMessenger: noop,
   },
   TokenRatesController: {
