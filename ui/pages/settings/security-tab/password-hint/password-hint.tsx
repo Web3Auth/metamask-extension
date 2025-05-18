@@ -5,6 +5,7 @@ import {
   ButtonSize,
   ButtonVariant,
   FormTextField,
+  FormTextFieldSize,
   Text,
 } from '../../../../components/component-library';
 import {
@@ -24,7 +25,9 @@ const PasswordHint = () => {
   const [hint, setHint] = useState(useSelector(getPasswordHint));
   const passwordHash = useSelector(getPasswordHash);
 
-  const handlePasswordHintOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordHintOnChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const _hint = e.target.value;
     setHint(_hint);
     setIsSamePasswordError(false);
@@ -70,6 +73,7 @@ const PasswordHint = () => {
           <FormTextField
             value={hint}
             placeholder="e.g. mom’s home"
+            size={FormTextFieldSize.Lg}
             width={BlockSize.Full}
             borderRadius={BorderRadius.LG}
             error={isSamePasswordError}

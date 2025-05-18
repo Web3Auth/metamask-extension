@@ -5,7 +5,9 @@ import { useHistory } from 'react-router-dom';
 import {
   Box,
   Button,
+  ButtonSize,
   FormTextField,
+  FormTextFieldSize,
   Text,
   TextFieldType,
 } from '../../../../components/component-library';
@@ -101,6 +103,7 @@ const ChangePassword = () => {
               id="current-password"
               label={t('enterPasswordContinue')}
               placeholder={t('makeSureNoOneWatching')}
+              size={FormTextFieldSize.Lg}
               textFieldProps={{ type: TextFieldType.Password }}
               labelProps={{
                 marginBottom: 1,
@@ -122,6 +125,7 @@ const ChangePassword = () => {
             <Button
               type="submit"
               block
+              size={ButtonSize.Lg}
               disabled={isIncorrectPasswordError || !currentPassword}
             >
               {t('save')}
@@ -142,7 +146,12 @@ const ChangePassword = () => {
             <div className="change-password__form-container__content">
               <PasswordForm onChange={(password) => setNewPassword(password)} />
             </div>
-            <Button type="submit" disabled={!newPassword} block>
+            <Button
+              type="submit"
+              size={ButtonSize.Lg}
+              disabled={!newPassword}
+              block
+            >
               {t('save')}
             </Button>
           </Box>
