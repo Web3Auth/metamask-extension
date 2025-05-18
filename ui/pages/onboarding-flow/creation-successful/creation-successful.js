@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { capitalize } from 'lodash';
 import {
   Button,
   ButtonSize,
@@ -38,6 +39,7 @@ import {
   getFirstTimeFlowType,
   getHDEntropyIndex,
   getPasswordHint,
+  getSocialLoginType,
 } from '../../../selectors';
 import {
   MetaMetricsEventCategory,
@@ -57,6 +59,7 @@ export default function CreationSuccessful() {
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const currentKeyring = useSelector(getCurrentKeyring);
   const seedPhraseBackedUp = useSelector(getSeedPhraseBackedUp);
+  const userSocialLoginType = useSelector(getSocialLoginType);
   const learnMoreLink =
     'https://support.metamask.io/hc/en-us/articles/360015489591-Basic-Safety-and-Security-Tips-for-MetaMask';
   // const learnHowToKeepWordsSafe =
@@ -81,6 +84,45 @@ export default function CreationSuccessful() {
 
     // TODO: Check figma teaching fox animation
     return 'images/animations/fox/celebrating.lottie.json';
+  };
+
+  const renderDetails1 = () => {
+    if (userSocialLoginType) {
+      return t('walletReadySocialDetails1', [capitalize(userSocialLoginType)]);
+    }
+
+    if (firstTimeFlowType === FirstTimeFlowType.social || seedPhraseBackedUp) {
+      return t('walletReadyLoseSrp');
+    }
+
+    return t('walletReadyLoseSrpRemind');
+  };
+
+  const renderDetails2 = () => {
+    if (userSocialLoginType) {
+      return t('walletReadySocialDetails2');
+    }
+
+    if (firstTimeFlowType === FirstTimeFlowType.social || seedPhraseBackedUp) {
+      return t('walletReadyLearn', [
+        <ButtonLink
+          key="walletReadyLearn"
+          size={ButtonLinkSize.Inherit}
+          textProps={{
+            variant: TextVariant.bodyMd,
+            alignItems: AlignItems.flexStart,
+          }}
+          as="a"
+          href={learnMoreLink}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {t('learnHow')}
+        </ButtonLink>,
+      ]);
+    }
+
+    return t('walletReadyLearnRemind');
   };
 
   return (
@@ -118,29 +160,10 @@ export default function CreationSuccessful() {
             </Box>
           </Box>
           <Text variant={TextVariant.bodyMd} marginBottom={6}>
-            {seedPhraseBackedUp
-              ? t('walletReadyLoseSrp')
-              : t('walletReadyLoseSrpRemind')}
+            {renderDetails1()}
           </Text>
           <Text variant={TextVariant.bodyMd} marginBottom={6}>
-            {seedPhraseBackedUp
-              ? t('walletReadyLearn', [
-                  <ButtonLink
-                    key="walletReadyLearn"
-                    size={ButtonLinkSize.Inherit}
-                    textProps={{
-                      variant: TextVariant.bodyMd,
-                      alignItems: AlignItems.flexStart,
-                    }}
-                    as="a"
-                    href={learnMoreLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {t('learnHow')}
-                  </ButtonLink>,
-                ])
-              : t('walletReadyLearnRemind')}
+            {renderDetails2()}
           </Text>
         </Box>
 

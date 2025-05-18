@@ -52,6 +52,7 @@ export default function WelcomeBanner({ onAccept }: { onAccept: () => void }) {
             setShowTermsOfUse(false);
             onAcceptTermsOfUse();
           }}
+          onClose={() => setShowTermsOfUse(false)}
         />
       )}
     </div>
