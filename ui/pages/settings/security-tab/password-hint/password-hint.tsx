@@ -24,6 +24,17 @@ const PasswordHint = () => {
   const [hint, setHint] = useState(useSelector(getPasswordHint));
   const passwordHash = useSelector(getPasswordHash);
 
+  const handlePasswordHintOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const _hint = e.target.value;
+    setHint(_hint);
+    setIsSamePasswordError(false);
+    try {
+      dispatch(setPasswordHint(_hint, passwordHash));
+    } catch {
+      setIsSamePasswordError(true);
+    }
+  };
+
   const handleSubmitHint = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -63,7 +74,7 @@ const PasswordHint = () => {
             borderRadius={BorderRadius.LG}
             error={isSamePasswordError}
             helpText={isSamePasswordError ? t('passwordHintError') : null}
-            onChange={(e) => setHint(e.target.value)}
+            onChange={handlePasswordHintOnChange}
             onFocus={() => setIsSamePasswordError(false)}
             marginBottom={4}
           />
