@@ -135,10 +135,18 @@ export default function OnboardingPinExtension() {
               onChange={(index) => setSelectedIndex(index)}
             >
               <div className="onboarding-pin-extension__image-container">
-                <img src="/images/onboarding-extension-pin.svg" alt="" />
+                <img
+                  src="/images/onboarding-extension-pin.svg"
+                  className="onboarding-pin-extension__image-pin"
+                  alt=""
+                />
               </div>
               <div className="onboarding-pin-extension__image-container">
-                <img src="/images/onboarding-extension-launch.svg" alt="" />
+                <img
+                  src="/images/onboarding-extension-launch.svg"
+                  className="onboarding-pin-extension__image-launch"
+                  alt=""
+                />
               </div>
             </Carousel>
             <Box

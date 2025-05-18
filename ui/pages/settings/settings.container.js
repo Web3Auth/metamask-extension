@@ -62,7 +62,7 @@ const ROUTES_TO_I18N_KEYS = {
   [REVEAL_SRP_LIST_ROUTE]: 'srpRevealListTitle',
   [SECURITY_ROUTE]: 'securityAndPrivacy',
   [SECURITY_PASSWORD_HINT_ROUTE]: 'securityPasswordHint',
-  [SECURITY_PASSWORD_CHANGE_ROUTE]: 'securityPassword',
+  [SECURITY_PASSWORD_CHANGE_ROUTE]: 'securityPasswordChange',
 };
 
 const mapStateToProps = (state, ownProps) => {
