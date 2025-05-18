@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
   JustifyContent,
@@ -47,6 +47,7 @@ import { PLATFORM_FIREFOX } from '../../../../shared/constants/app';
 // eslint-disable-next-line import/no-restricted-paths
 import { getPlatform } from '../../../../app/scripts/lib/util';
 import PasswordForm from '../../../components/app/password-form/password-form';
+import { resetOAuthLoginState } from '../../../store/actions';
 ///: END:ONLY_INCLUDE_IF
 
 export default function CreatePassword({
@@ -59,6 +60,7 @@ export default function CreatePassword({
   const [termsChecked, setTermsChecked] = useState(false);
   const [newAccountCreationInProgress, setNewAccountCreationInProgress] =
     useState(false);
+  const dispatch = useDispatch();
   const history = useHistory();
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const trackEvent = useContext(MetaMetricsContext);
@@ -101,6 +103,13 @@ export default function CreatePassword({
     firstTimeFlowType,
     newAccountCreationInProgress,
   ]);
+
+  const handleBackClick = (e) => {
+    e.preventDefault();
+    // reset the social login state
+    dispatch(resetOAuthLoginState());
+    history.goBack();
+  };
 
   const handleCreate = async (event) => {
     event?.preventDefault();
@@ -175,7 +184,7 @@ export default function CreatePassword({
               color={IconColor.iconDefault}
               size={ButtonIconSize.Md}
               data-testid="create-password-back-button"
-              onClick={() => history.goBack()}
+              onClick={handleBackClick}
               ariaLabel="back"
             />
           </Box>
