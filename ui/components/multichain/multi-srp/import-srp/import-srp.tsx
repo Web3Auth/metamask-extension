@@ -338,7 +338,6 @@ export const ImportSrp = ({
         <ButtonPrimary
           width={BlockSize.Full}
           disabled={!isValidSrp || hasEmptyWordsOrIncorrectLength}
-          loading={loading}
           onClick={async () => {
             try {
               setLoading(true);
