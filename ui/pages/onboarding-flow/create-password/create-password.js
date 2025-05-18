@@ -48,6 +48,7 @@ import { PLATFORM_FIREFOX } from '../../../../shared/constants/app';
 import { getPlatform } from '../../../../app/scripts/lib/util';
 import PasswordForm from '../../../components/app/password-form/password-form';
 import { resetOAuthLoginState } from '../../../store/actions';
+import LoadingScreen from '../../../components/ui/loading-screen';
 ///: END:ONLY_INCLUDE_IF
 
 export default function CreatePassword({
@@ -260,6 +261,7 @@ export default function CreatePassword({
           data-testid="create-password-iframe"
         />
       ) : null}
+      {newAccountCreationInProgress && <LoadingScreen />}
     </div>
   );
 }
