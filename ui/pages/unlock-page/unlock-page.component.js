@@ -384,6 +384,7 @@ export default class UnlockPage extends Component {
                     </Text>
                     {passwordHint && (
                       <ButtonLink
+                        type="button"
                         onClick={() => {
                           this.setState({ showHint: !showHint });
                         }}
