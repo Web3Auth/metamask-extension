@@ -147,6 +147,8 @@ const mapStateToProps = (state, ownProps) => {
     initialBreadCrumbKey,
     initialBreadCrumbRoute,
     isAddressEntryPage,
+    isPasswordChangePage,
+    isPasswordHintPage,
     isPopup,
     mostRecentOverviewPage: getMostRecentOverviewPage(state),
     pathnameI18nKey,
