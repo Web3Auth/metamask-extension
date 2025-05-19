@@ -39,7 +39,9 @@ export default function PasswordHint() {
   const [hint, setHint] = useState(useSelector(getPasswordHint));
   const passwordHash = useSelector(getPasswordHash);
 
-  const handlePasswordHintOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordHintOnChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const _hint = e.target.value;
     setHint(_hint);
     setIsSamePasswordError(false);
