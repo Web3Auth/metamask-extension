@@ -323,6 +323,8 @@ env:
   - APPLE_AUTH_URI: ''
   - AUTH_SERVER_URL: ''
   - WEB3AUTH_NETWORK: ''
+  - AUTH_CONNECTION_ID: ''
+  - GROUPED_AUTH_CONNECTION_ID: ''
 
   # Enables the notifications feature within the build:
   - NOTIFICATIONS: ''
