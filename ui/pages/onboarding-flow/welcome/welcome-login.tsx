@@ -35,12 +35,7 @@ export default function WelcomeLogin({
       );
     }
     return (
-      <Mascot
-        animationEventEmitter={eventEmitter}
-        followMouse={false}
-        width="268"
-        height="268"
-      />
+      <Mascot animationEventEmitter={eventEmitter} width="268" height="268" />
     );
   };
 

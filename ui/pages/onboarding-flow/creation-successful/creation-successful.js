@@ -69,8 +69,13 @@ export default function CreationSuccessful() {
 
   const passwordHint = useSelector(getPasswordHint);
 
+  const isWalletReady =
+    firstTimeFlowType === FirstTimeFlowType.social ||
+    firstTimeFlowType === FirstTimeFlowType.import ||
+    seedPhraseBackedUp;
+
   const renderTitle = () => {
-    if (firstTimeFlowType === FirstTimeFlowType.social || seedPhraseBackedUp) {
+    if (isWalletReady) {
       return t('yourWalletIsReady');
     }
 
@@ -78,7 +83,7 @@ export default function CreationSuccessful() {
   };
 
   const renderFoxPath = () => {
-    if (firstTimeFlowType === FirstTimeFlowType.social || seedPhraseBackedUp) {
+    if (isWalletReady) {
       return 'images/animations/fox/celebrating.lottie.json';
     }
 
@@ -87,11 +92,11 @@ export default function CreationSuccessful() {
   };
 
   const renderDetails1 = () => {
-    if (userSocialLoginType) {
+    if (firstTimeFlowType === FirstTimeFlowType.social) {
       return t('walletReadySocialDetails1', [capitalize(userSocialLoginType)]);
     }
 
-    if (firstTimeFlowType === FirstTimeFlowType.social || seedPhraseBackedUp) {
+    if (isWalletReady) {
       return t('walletReadyLoseSrp');
     }
 
@@ -99,11 +104,11 @@ export default function CreationSuccessful() {
   };
 
   const renderDetails2 = () => {
-    if (userSocialLoginType) {
+    if (firstTimeFlowType === FirstTimeFlowType.social) {
       return t('walletReadySocialDetails2');
     }
 
-    if (firstTimeFlowType === FirstTimeFlowType.social || seedPhraseBackedUp) {
+    if (isWalletReady) {
       return t('walletReadyLearn', [
         <ButtonLink
           key="walletReadyLearn"
