@@ -285,8 +285,7 @@ export function restoreSocialBackupAndGetSeedPhrase(
         password,
         encodedSeedPhrase,
       ]);
-      console.log('vault restored');
-      console.log('remainingSeedPhrases', remainingSeedPhrases);
+
       // restore the remaining Mnemonics/SeedPhrases to the vault
       if (remainingSeedPhrases.length > 0) {
         await restoreSeedPhrasesToVault(remainingSeedPhrases);
