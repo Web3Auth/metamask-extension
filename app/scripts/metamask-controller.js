@@ -5397,6 +5397,7 @@ export default class MetamaskController extends EventEmitter {
   async _addSolanaAccountsWithBalances() {
     const { keyringsMetadata } = this.keyringController.state;
 
+    // walk through all the keyrings and import the solana accounts for the HD keyrings
     for (const { id } of keyringsMetadata) {
       // check if the keyring is an HD keyring
       const isHdKeyring = await this.keyringController.withKeyring(
