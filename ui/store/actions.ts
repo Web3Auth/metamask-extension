@@ -78,7 +78,6 @@ import {
   getSelectedInternalAccount,
   getMetaMaskHdKeyrings,
   getAllPermittedAccountsForCurrentTab,
-  getFirstTimeFlowType,
 } from '../selectors';
 import {
   getSelectedNetworkClientId,
@@ -286,7 +285,8 @@ export function restoreSocialBackupAndGetSeedPhrase(
         password,
         encodedSeedPhrase,
       ]);
-
+      console.log('vault restored');
+      console.log('remainingSeedPhrases', remainingSeedPhrases);
       // restore the remaining Mnemonics/SeedPhrases to the vault
       if (remainingSeedPhrases.length > 0) {
         await restoreSeedPhrasesToVault(remainingSeedPhrases);
@@ -422,28 +422,18 @@ export function createNewVaultAndRestore(
 export function importMnemonicToVault(
   mnemonic: string,
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
-  return (
-    dispatch: MetaMaskReduxDispatch,
-    getState: () => MetaMaskReduxState,
-  ) => {
+  return (dispatch: MetaMaskReduxDispatch) => {
     dispatch(showLoadingIndication());
     log.debug(`background.importMnemonicToVault`);
 
-    const firstTimeFlowType = getFirstTimeFlowType(getState());
-    const shouldDoSocialBackup = firstTimeFlowType === FirstTimeFlowType.social;
-
     return new Promise<void>((resolve, reject) => {
-      callBackgroundMethod(
-        'importMnemonicToVault',
-        [mnemonic, shouldDoSocialBackup],
-        (err) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          resolve();
-        },
-      );
+      callBackgroundMethod('importMnemonicToVault', [mnemonic], (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
+      });
     })
       .then(async () => {
         dispatch(hideLoadingIndication());
