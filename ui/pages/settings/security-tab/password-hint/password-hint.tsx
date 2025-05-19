@@ -17,6 +17,7 @@ import {
 import { useI18nContext } from '../../../../hooks/useI18nContext';
 import { getPasswordHint, getPasswordHash } from '../../../../selectors';
 import { setPasswordHint } from '../../../../store/actions';
+import { getKeccak256HashAsHexString } from '../../../../helpers/utils/hash.utils';
 
 const PasswordHint = () => {
   const t = useI18nContext();
@@ -30,12 +31,8 @@ const PasswordHint = () => {
   ) => {
     const _hint = e.target.value;
     setHint(_hint);
-    setIsSamePasswordError(false);
-    try {
-      dispatch(setPasswordHint(_hint, passwordHash));
-    } catch {
-      setIsSamePasswordError(true);
-    }
+    const hashedHint = getKeccak256HashAsHexString(_hint);
+    setIsSamePasswordError(hashedHint === passwordHash);
   };
 
   const handleSubmitHint = (e: React.FormEvent<HTMLFormElement>) => {

@@ -30,6 +30,7 @@ import { useI18nContext } from '../../../hooks/useI18nContext';
 import { setPasswordHint } from '../../../store/actions';
 import { setShowPasswordHintSavedToast } from '../../../components/app/toast-master/utils';
 import { getPasswordHint, getPasswordHash } from '../../../selectors';
+import { getKeccak256HashAsHexString } from '../../../helpers/utils/hash.utils';
 
 export default function PasswordHint() {
   const t = useI18nContext();
@@ -42,12 +43,8 @@ export default function PasswordHint() {
   const handlePasswordHintOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const _hint = e.target.value;
     setHint(_hint);
-    setIsSamePasswordError(false);
-    try {
-      dispatch(setPasswordHint(_hint, passwordHash));
-    } catch {
-      setIsSamePasswordError(true);
-    }
+    const hashedHint = getKeccak256HashAsHexString(_hint);
+    setIsSamePasswordError(hashedHint === passwordHash);
   };
 
   const handleSubmitHint = () => {

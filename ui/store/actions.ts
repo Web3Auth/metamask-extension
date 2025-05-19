@@ -53,7 +53,6 @@ import { Patch } from 'immer';
 import { HandlerType } from '@metamask/snaps-utils';
 ///: END:ONLY_INCLUDE_IF
 import { BACKUPANDSYNC_FEATURES } from '@metamask/profile-sync-controller/user-storage';
-import { keccak256 } from 'ethereumjs-util';
 import { AuthConnection } from '@metamask/seedless-onboarding-controller';
 import { switchDirection } from '../../shared/lib/switch-direction';
 import {
@@ -137,6 +136,7 @@ import { isInternalAccountInPermittedAccountIds } from '../../shared/lib/multich
 import { SortCriteria } from '../components/app/assets/util/sort';
 import { NOTIFICATIONS_EXPIRATION_DELAY } from '../helpers/constants/notifications';
 import { getDismissSmartAccountSuggestionEnabled } from '../pages/confirmations/selectors/preferences';
+import { getKeccak256HashAsHexString } from '../helpers/utils/hash.utils';
 import * as actionConstants from './actionConstants';
 
 import {
@@ -3579,8 +3579,7 @@ export function setTokenNetworkFilter(value: Record<string, boolean>) {
 }
 
 export function setPasswordHint(hint: string, passwordHash: string) {
-  const hintAsBuffer = Buffer.from(hint, 'utf8');
-  const passwordHintHash = Buffer.from(keccak256(hintAsBuffer)).toString('hex');
+  const passwordHintHash = getKeccak256HashAsHexString(hint);
 
   if (passwordHintHash === passwordHash) {
     throw new Error('Invalid password hint');
@@ -3590,10 +3589,7 @@ export function setPasswordHint(hint: string, passwordHash: string) {
 }
 
 export function setPasswordHash(password: string) {
-  const passwordAsBuffer = Buffer.from(password, 'utf8');
-  const passwordHashString = Buffer.from(keccak256(passwordAsBuffer)).toString(
-    'hex',
-  );
+  const passwordHashString = getKeccak256HashAsHexString(password);
   return setPreference('passwordHash', passwordHashString);
 }
 
