@@ -14,6 +14,8 @@ import {
   EXPERIMENTAL_ROUTE,
   DEVELOPER_OPTIONS_ROUTE,
   BACKUPANDSYNC_ROUTE,
+  SECURITY_PASSWORD_CHANGE_ROUTE,
+  SECURITY_PASSWORD_HINT_ROUTE,
 } from './routes';
 
 /**
@@ -197,6 +199,20 @@ const SETTINGS_CONSTANTS = [
     sectionMessage: (t) => t('revealSeedWords'),
     descriptionMessage: (t) => t('revealSeedWords'),
     route: `${SECURITY_ROUTE}#reveal-secretrecovery`,
+    icon: 'fa fa-lock',
+  },
+  {
+    tabMessage: (t) => t('securityAndPrivacy'),
+    sectionMessage: (t) => t('securityChangePasswordChange'),
+    descriptionMessage: (t) => t('securityChangePasswordChange'),
+    route: SECURITY_PASSWORD_CHANGE_ROUTE,
+    icon: 'fa fa-lock',
+  },
+  {
+    tabMessage: (t) => t('securityAndPrivacy'),
+    sectionMessage: (t) => t('securityPasswordHint'),
+    descriptionMessage: (t) => t('securityPasswordHint'),
+    route: SECURITY_PASSWORD_HINT_ROUTE,
     icon: 'fa fa-lock',
   },
   // securityAndPrivacy settingsRefs[3]
