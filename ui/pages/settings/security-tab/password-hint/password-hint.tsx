@@ -15,31 +15,43 @@ import {
   TextVariant,
 } from '../../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../../hooks/useI18nContext';
-import { getPasswordHint, getPasswordHash } from '../../../../selectors';
-import { setPasswordHint } from '../../../../store/actions';
-import { getKeccak256HashAsHexString } from '../../../../helpers/utils/hash.utils';
+import { getPasswordHint } from '../../../../selectors';
+import { setPasswordHint, verifyPassword } from '../../../../store/actions';
 
 const PasswordHint = () => {
   const t = useI18nContext();
   const dispatch = useDispatch();
   const [isSamePasswordError, setIsSamePasswordError] = useState(false);
   const [hint, setHint] = useState(useSelector(getPasswordHint));
-  const passwordHash = useSelector(getPasswordHash);
 
   const handlePasswordHintOnChange = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const _hint = e.target.value;
     setHint(_hint);
-    const hashedHint = getKeccak256HashAsHexString(_hint);
-    setIsSamePasswordError(hashedHint === passwordHash);
   };
 
-  const handleSubmitHint = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  // validate hint
+  // check if the hint is not the same as the password
+  const isValidPasswordHint = async () => {
     try {
-      dispatch(setPasswordHint(hint, passwordHash));
-    } catch (error) {
+      // checking if the hint is not the same as the password
+      // by submitting the hint to the verifyPassword function
+      await verifyPassword(hint);
+      return false;
+    } catch {
+      // if the hint is not the same as the password, the verifyPassword function will throw an error
+      return true;
+    }
+  };
+
+  const handleSubmitHint = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const isValid = await isValidPasswordHint();
+
+    if (isValid) {
+      dispatch(setPasswordHint(hint));
+    } else {
       setIsSamePasswordError(true);
     }
   };

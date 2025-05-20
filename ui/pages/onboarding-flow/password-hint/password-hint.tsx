@@ -27,10 +27,9 @@ import {
 } from '../../../components/component-library';
 import { ONBOARDING_COMPLETION_ROUTE } from '../../../helpers/constants/routes';
 import { useI18nContext } from '../../../hooks/useI18nContext';
-import { setPasswordHint } from '../../../store/actions';
+import { setPasswordHint, verifyPassword } from '../../../store/actions';
 import { setShowPasswordHintSavedToast } from '../../../components/app/toast-master/utils';
-import { getPasswordHint, getPasswordHash } from '../../../selectors';
-import { getKeccak256HashAsHexString } from '../../../helpers/utils/hash.utils';
+import { getPasswordHint } from '../../../selectors';
 
 export default function PasswordHint() {
   const t = useI18nContext();
@@ -38,25 +37,39 @@ export default function PasswordHint() {
   const history = useHistory();
   const [isSamePasswordError, setIsSamePasswordError] = useState(false);
   const [hint, setHint] = useState(useSelector(getPasswordHint));
-  const passwordHash = useSelector(getPasswordHash);
 
   const handlePasswordHintOnChange = (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const _hint = e.target.value;
     setHint(_hint);
-    const hashedHint = getKeccak256HashAsHexString(_hint);
-    setIsSamePasswordError(hashedHint === passwordHash);
+    setIsSamePasswordError(false);
   };
 
-  const handleSubmitHint = () => {
+  // validate hint
+  // check if the hint is not the same as the password
+  const isValidPasswordHint = async () => {
     try {
-      dispatch(setPasswordHint(hint, passwordHash));
+      // checking if the hint is not the same as the password
+      // by submitting the hint to the verifyPassword function
+      await verifyPassword(hint);
+      return false;
+    } catch {
+      // if the hint is not the same as the password, the verifyPassword function will throw an error
+      return true;
+    }
+  };
+
+  const handleSubmitHint = async () => {
+    const isValid = await isValidPasswordHint();
+
+    if (isValid) {
+      dispatch(setPasswordHint(hint));
       dispatch(setShowPasswordHintSavedToast(true));
       history.push(ONBOARDING_COMPLETION_ROUTE);
-    } catch {
-      setIsSamePasswordError(true);
+      return;
     }
+    setIsSamePasswordError(true);
   };
 
   return (

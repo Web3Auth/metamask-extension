@@ -31,7 +31,6 @@ import {
   createNewVaultAndGetSeedPhrase,
   unlockAndGetSeedPhrase,
   createNewVaultAndRestore,
-  setPasswordHash,
   createNewVaultAndSyncWithSocial,
   restoreSocialBackupAndGetSeedPhrase,
 } from '../../store/actions';
@@ -125,8 +124,6 @@ export default function OnboardingFlow() {
       );
     }
     setSecretRecoveryPhrase(newSecretRecoveryPhrase);
-    // save `PasswordHash` in the preferences
-    dispatch(setPasswordHash(password));
   };
 
   const handleUnlock = async (password) => {
@@ -148,8 +145,6 @@ export default function OnboardingFlow() {
     }
 
     setSecretRecoveryPhrase(retrievedSecretRecoveryPhrase);
-    // save `PasswordHash` in the preferences
-    dispatch(setPasswordHash(password));
     history.push(nextRoute);
   };
 
