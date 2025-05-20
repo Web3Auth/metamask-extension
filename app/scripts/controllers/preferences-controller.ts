@@ -108,11 +108,6 @@ export type Preferences = {
   shouldShowAggregatedBalancePopover: boolean;
   dismissSmartAccountSuggestionEnabled: boolean;
   /**
-   * The hash of the password.
-   * This is used to prevent the user setting a password hint that is the same as the password.
-   */
-  passwordHash?: string;
-  /**
    * The hint for the password.
    */
   passwordHint?: string;
@@ -218,7 +213,6 @@ export const getDefaultPreferencesControllerState =
         sortCallback: 'stringNumeric',
       },
       tokenNetworkFilter: {},
-      passwordHash: '',
       passwordHint: '',
     },
     // ENS decentralized website resolution
@@ -383,11 +377,6 @@ const controllerMetadata = {
         anonymous: true,
       },
       smartTransactionsMigrationApplied: {
-        persist: true,
-        anonymous: true,
-      },
-      // we don't need to sent `passwordHash` and `passwordHint` to sentry
-      passwordHash: {
         persist: true,
         anonymous: true,
       },
