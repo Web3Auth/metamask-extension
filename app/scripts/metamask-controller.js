@@ -4994,6 +4994,8 @@ export default class MetamaskController extends EventEmitter {
   async changePassword(newPassword, oldPassword) {
     const { firstTimeFlowType } = this.onboardingController.state;
 
+    console.log('firstTimeFlowType', firstTimeFlowType);
+
     if (firstTimeFlowType === FirstTimeFlowType.social) {
       // change password for the social login flow
       await this.seedlessOnboardingController.changePassword(

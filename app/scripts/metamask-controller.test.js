@@ -59,6 +59,7 @@ import {
   EndowmentTypes,
   RestrictedEthMethods,
 } from '../../shared/constants/permissions';
+import { FirstTimeFlowType } from '../../shared/constants/onboarding';
 import { deferredPromise } from './lib/util';
 import { METAMASK_COOKIE_HANDLER } from './constants/stream';
 import MetaMaskController from './metamask-controller';
@@ -804,6 +805,10 @@ describe('MetaMaskController', () => {
         const oldPassword = 'old-password';
         const newPassword = 'new-password';
 
+        metamaskController.onboardingController.setFirstTimeFlowType(
+          FirstTimeFlowType.social,
+        );
+
         await metamaskController.createNewVaultAndKeychain(oldPassword);
 
         const changePwdSeedlessOnboardingSpy = jest
@@ -822,6 +827,20 @@ describe('MetaMaskController', () => {
           newPassword,
           oldPassword,
         );
+        expect(changePwdKeyringControllerSpy).toHaveBeenCalledWith(newPassword);
+      });
+
+      it('should change the password for keyring controller only if the wallet is not created with social login', async () => {
+        const oldPassword = 'old-password';
+        const newPassword = 'new-password';
+
+        await metamaskController.createNewVaultAndKeychain(oldPassword);
+
+        const changePwdKeyringControllerSpy = jest
+          .spyOn(metamaskController.keyringController, 'changePassword')
+          .mockResolvedValueOnce();
+
+        await metamaskController.changePassword(newPassword, oldPassword);
         expect(changePwdKeyringControllerSpy).toHaveBeenCalledWith(newPassword);
       });
     });
