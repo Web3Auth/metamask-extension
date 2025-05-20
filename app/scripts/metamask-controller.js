@@ -250,7 +250,12 @@ import {
   TRANSFER_SINFLE_LOG_TOPIC_HASH,
 } from '../../shared/lib/transactions-controller-utils';
 import { getProviderConfig } from '../../shared/modules/selectors/networks';
-import { endTrace, trace } from '../../shared/lib/trace';
+import {
+  endTrace,
+  trace,
+  TraceName,
+  TraceOperation,
+} from '../../shared/lib/trace';
 import { ENVIRONMENT } from '../../development/build/constants';
 import fetchWithCache from '../../shared/lib/fetch-with-cache';
 import { MultichainNetworks } from '../../shared/constants/multichain/networks';
@@ -4879,8 +4884,25 @@ export default class MetamaskController extends EventEmitter {
         provider,
       );
 
-      const { isNewUser } =
-        await this.seedlessOnboardingController.authenticate(oAuthLoginResult);
+      let seedlessAuthSuccess = false;
+      let isNewUser = false;
+      try {
+        trace({
+          name: TraceName.OnboardingOAuthSeedlessAuthenticate,
+          op: TraceOperation.OnboardingSecurityOp,
+        });
+        const { isNewUser: newUser } =
+          await this.seedlessOnboardingController.authenticate(
+            oAuthLoginResult,
+          );
+        isNewUser = newUser;
+        seedlessAuthSuccess = true;
+      } finally {
+        endTrace({
+          name: TraceName.OnboardingOAuthSeedlessAuthenticate,
+          data: { success: seedlessAuthSuccess },
+        });
+      }
 
       return isNewUser;
     } catch (error) {
@@ -4913,7 +4935,12 @@ export default class MetamaskController extends EventEmitter {
    * @param {string} keyringId - The keyring id of the backup seed phrase.
    */
   async createSeedPhraseBackup(password, encodedSeedPhrase, keyringId) {
+    let createSeedPhraseBackupSuccess = false;
     try {
+      trace({
+        name: TraceName.OnboardingAddSrp,
+        op: TraceOperation.OnboardingSecurityOp,
+      });
       const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
 
       const seedPhrase =
@@ -4924,9 +4951,15 @@ export default class MetamaskController extends EventEmitter {
         seedPhrase,
         keyringId,
       );
+      createSeedPhraseBackupSuccess = true;
     } catch (error) {
       log.error('[createSeedPhraseBackup] error', error);
       throw error;
+    } finally {
+      endTrace({
+        name: TraceName.OnboardingAddSrp,
+        data: { success: createSeedPhraseBackupSuccess },
+      });
     }
   }
 
@@ -4941,11 +4974,17 @@ export default class MetamaskController extends EventEmitter {
    * @returns {Promise<Buffer[]>} The seed phrase.
    */
   async fetchAllSeedPhrases(password) {
+    let fetchAllSeedPhrasesSuccess = false;
     try {
+      trace({
+        name: TraceName.OnboardingFetchSrps,
+        op: TraceOperation.OnboardingSecurityOp,
+      });
       // fetch all seed phrases
       // seedPhrases are sorted by creation date, the latest seed phrase is the first one in the array
       const allSeedPhrases =
         await this.seedlessOnboardingController.fetchAllSeedPhrases(password);
+      fetchAllSeedPhrasesSuccess = true;
 
       if (allSeedPhrases.length === 0) {
         return null;
@@ -4965,6 +5004,11 @@ export default class MetamaskController extends EventEmitter {
       }
 
       throw error;
+    } finally {
+      endTrace({
+        name: TraceName.OnboardingFetchSrps,
+        data: { success: fetchAllSeedPhrasesSuccess },
+      });
     }
   }
 
@@ -4995,11 +5039,24 @@ export default class MetamaskController extends EventEmitter {
     const { firstTimeFlowType } = this.onboardingController.state;
 
     if (firstTimeFlowType === FirstTimeFlowType.social) {
-      // change password for the social login flow
-      await this.seedlessOnboardingController.changePassword(
-        newPassword,
-        oldPassword,
-      );
+      let changePasswordSuccess = false;
+      try {
+        trace({
+          name: TraceName.Onboarding.ChangePassword,
+          op: TraceOperation.OnboardingSecurityOp,
+        });
+        // change password for the social login flow
+        await this.seedlessOnboardingController.changePassword(
+          newPassword,
+          oldPassword,
+        );
+        changePasswordSuccess = true;
+      } finally {
+        endTrace({
+          name: TraceName.Onboarding.ChangePassword,
+          data: { success: changePasswordSuccess },
+        });
+      }
     }
 
     // also update the vault password for keyring controller
