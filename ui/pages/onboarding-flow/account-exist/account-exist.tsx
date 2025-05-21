@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
@@ -30,6 +30,12 @@ import {
 import { getFirstTimeFlowType, getSocialLoginEmail } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { resetOAuthLoginState } from '../../../store/actions';
+import {
+  trace,
+  endTrace,
+  TraceName,
+  TraceOperation,
+} from '../../../../shared/lib/trace';
 
 export default function AccountExist() {
   const history = useHistory();
@@ -37,8 +43,16 @@ export default function AccountExist() {
   const t = useI18nContext();
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const userSocialLoginEmail = useSelector(getSocialLoginEmail);
+  const location = useLocation();
+  const onboardingTraceCtx = location.state?.onboardingTraceCtx;
 
   const onDone = async () => {
+    trace({
+      name: TraceName.OnboardingExistingSocialLogin,
+      op: TraceOperation.OnboardingUserJourney,
+      tags: { source: 'account_status_redirect' },
+      parentContext: onboardingTraceCtx,
+    });
     history.push(ONBOARDING_UNLOCK_ROUTE);
   };
 
@@ -53,6 +67,10 @@ export default function AccountExist() {
       history.push(ONBOARDING_WELCOME_ROUTE);
     }
   }, [firstTimeFlowType, history]);
+
+  useEffect(() => {
+    endTrace({ name: TraceName.OnboardingNewSocialAccountExists });
+  }, []);
 
   return (
     <Box

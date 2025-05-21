@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
@@ -31,6 +31,12 @@ import {
 import { getFirstTimeFlowType, getSocialLoginEmail } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { resetOAuthLoginState } from '../../../store/actions';
+import {
+  endTrace,
+  trace,
+  TraceName,
+  TraceOperation,
+} from '../../../../shared/lib/trace';
 
 export default function AccountNotFound() {
   const history = useHistory();
@@ -38,8 +44,16 @@ export default function AccountNotFound() {
   const t = useI18nContext();
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const userSocialLoginEmail = useSelector(getSocialLoginEmail);
+  const location = useLocation();
+  const onboardingTraceCtx = location.state?.onboardingTraceCtx;
 
   const onCreateOne = async () => {
+    trace({
+      name: TraceName.OnboardingNewSocialCreateWallet,
+      op: TraceOperation.OnboardingUserJourney,
+      tags: { source: 'account_status_redirect' },
+      parentContext: onboardingTraceCtx,
+    });
     history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
   };
 
@@ -55,6 +69,10 @@ export default function AccountNotFound() {
       history.push(ONBOARDING_WELCOME_ROUTE);
     }
   }, [firstTimeFlowType, history]);
+
+  useEffect(() => {
+    endTrace({ name: TraceName.OnboardingExistingSocialAccountNotFound });
+  }, []);
 
   return (
     <Box
