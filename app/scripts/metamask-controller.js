@@ -4945,7 +4945,7 @@ export default class MetamaskController extends EventEmitter {
     let createSeedPhraseBackupSuccess = false;
     try {
       trace({
-        name: TraceName.OnboardingAddSrp,
+        name: TraceName.OnboardingCreateKeyAndBackupSrp,
         op: TraceOperation.OnboardingSecurityOp,
       });
       const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
@@ -4964,7 +4964,7 @@ export default class MetamaskController extends EventEmitter {
       throw error;
     } finally {
       endTrace({
-        name: TraceName.OnboardingAddSrp,
+        name: TraceName.OnboardingCreateKeyAndBackupSrp,
         data: { success: createSeedPhraseBackupSuccess },
       });
     }
@@ -5159,10 +5159,23 @@ export default class MetamaskController extends EventEmitter {
       this._convertMnemonicToWordlistIndices(seedPhraseAsBuffer);
 
     if (syncWithSocial) {
-      await this.seedlessOnboardingController.addNewSeedPhraseBackup(
-        seedPhraseAsUint8Array,
-        keyringId,
-      );
+      let addNewSeedPhraseBackupSuccess = false;
+      try {
+        trace({
+          name: TraceName.OnboardingAddSrp,
+          op: TraceOperation.OnboardingSecurityOp,
+        });
+        await this.seedlessOnboardingController.addNewSeedPhraseBackup(
+          seedPhraseAsUint8Array,
+          keyringId,
+        );
+        addNewSeedPhraseBackupSuccess = true;
+      } finally {
+        endTrace({
+          name: TraceName.OnboardingAddSrp,
+          data: { success: addNewSeedPhraseBackupSuccess },
+        });
+      }
     } else {
       // Do not sync the seed phrase to the server, only update the local state
       this.seedlessOnboardingController.updateBackupMetadataState({
