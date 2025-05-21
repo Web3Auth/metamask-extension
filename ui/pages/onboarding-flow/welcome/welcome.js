@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import {
@@ -23,6 +23,12 @@ import {
   MetaMetricsEventCategory,
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
+import {
+  trace,
+  endTrace,
+  TraceName,
+  TraceOperation,
+} from '../../../../shared/lib/trace';
 import WelcomeLogin from './welcome-login';
 import WelcomeBanner from './welcome-banner';
 import { LOGIN_OPTION, LOGIN_TYPE } from './types';
@@ -48,6 +54,9 @@ export default function OnboardingWelcome() {
   );
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
+  const onboardingTraceCtxRef = useRef(null);
+  const socialLoginTraceCtxRef = useRef(null);
+
   // Don't allow users to come back to this screen after they
   // have already imported or created a wallet
   useEffect(() => {
@@ -67,6 +76,14 @@ export default function OnboardingWelcome() {
     firstTimeFlowType,
     newAccountCreationInProgress,
   ]);
+
+  useEffect(() => {
+    onboardingTraceCtxRef.current = trace({
+      name: TraceName.OnboardingJourneyOverall,
+      op: TraceOperation.OnboardingUserJourney,
+    });
+  }, []);
+
   const trackEvent = useContext(MetaMetricsContext);
 
   const onCreateClick = async () => {
@@ -80,9 +97,16 @@ export default function OnboardingWelcome() {
         account_type: 'metamask',
       },
     });
+    trace({
+      name: TraceName.OnboardingNewSrpCreateWallet,
+      op: TraceOperation.OnboardingUserJourney,
+      parentContext: onboardingTraceCtxRef.current,
+    });
 
     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-    history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
+    history.push(ONBOARDING_CREATE_PASSWORD_ROUTE, {
+      onboardingTraceCtx: onboardingTraceCtxRef.current,
+    });
     ///: END:ONLY_INCLUDE_IF
   };
 
@@ -96,9 +120,16 @@ export default function OnboardingWelcome() {
         account_type: 'imported',
       },
     });
+    trace({
+      name: TraceName.OnboardingExistingSrpImport,
+      op: TraceOperation.OnboardingUserJourney,
+      parentContext: onboardingTraceCtxRef.current,
+    });
 
     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-    history.push(ONBOARDING_IMPORT_WITH_SRP_ROUTE);
+    history.push(ONBOARDING_IMPORT_WITH_SRP_ROUTE, {
+      onboardingTraceCtx: onboardingTraceCtxRef.current,
+    });
     ///: END:ONLY_INCLUDE_IF
   };
 
@@ -108,21 +139,54 @@ export default function OnboardingWelcome() {
       setNewAccountCreationInProgress(true);
       dispatch(setFirstTimeFlowType(FirstTimeFlowType.social));
 
+      socialLoginTraceCtxRef.current = trace({
+        name: TraceName.OnboardingSocialLoginAttempt,
+        op: TraceOperation.OnboardingUserJourney,
+        tags: { provider: socialConnectionType },
+        parentContext: onboardingTraceCtxRef.current,
+      });
+
       const isNewUser = await dispatch(startOAuthLogin(socialConnectionType));
+
+      if (socialLoginTraceCtxRef.current) {
+        endTrace({ name: TraceName.OnboardingSocialLoginAttempt });
+        socialLoginTraceCtxRef.current = null;
+      }
 
       // if user is not new user and login option is new, redirect to account exist page
       if (loginOption === 'new' && !isNewUser) {
-        history.push(ONBOARDING_ACCOUNT_EXIST);
+        trace({
+          name: TraceName.OnboardingNewSocialAccountExists,
+          op: TraceOperation.OnboardingUserJourney,
+          parentContext: socialLoginTraceCtxRef.current,
+        });
+        history.push(ONBOARDING_ACCOUNT_EXIST, {
+          onboardingTraceCtx: socialLoginTraceCtxRef.current,
+        });
         return;
       } else if (loginOption === 'existing' && isNewUser) {
+        trace({
+          name: TraceName.OnboardingExistingSocialAccountNotFound,
+          op: TraceOperation.OnboardingUserJourney,
+          parentContext: socialLoginTraceCtxRef.current,
+        });
         // if user is new user and login option is existing, redirect to account not found page
-        history.push(ONBOARDING_ACCOUNT_NOT_FOUND);
+        history.push(ONBOARDING_ACCOUNT_NOT_FOUND, {
+          onboardingTraceCtx: socialLoginTraceCtxRef.current,
+        });
         return;
       }
 
       if (!isNewUser) {
+        trace({
+          name: TraceName.OnboardingExistingSocialLogin,
+          op: TraceOperation.OnboardingUserJourney,
+          parentContext: socialLoginTraceCtxRef.current,
+        });
         // redirect to login page
-        history.push(ONBOARDING_UNLOCK_ROUTE);
+        history.push(ONBOARDING_UNLOCK_ROUTE, {
+          onboardingTraceCtx: socialLoginTraceCtxRef.current,
+        });
         return;
       }
 
@@ -135,8 +199,16 @@ export default function OnboardingWelcome() {
         },
       });
 
+      trace({
+        name: TraceName.OnboardingNewSocialCreateWallet,
+        op: TraceOperation.OnboardingUserJourney,
+        parentContext: socialLoginTraceCtxRef.current,
+      });
+
       ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-      history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
+      history.push(ONBOARDING_CREATE_PASSWORD_ROUTE, {
+        onboardingTraceCtx: onboardingTraceCtxRef.current,
+      });
       ///: END:ONLY_INCLUDE_IF
     } finally {
       setIsLoggingIn(false);
