@@ -5121,7 +5121,7 @@ export default class MetamaskController extends EventEmitter {
       let changePasswordSuccess = false;
       try {
         trace({
-          name: TraceName.Onboarding.ChangePassword,
+          name: TraceName.OnboardingResetPassword,
           op: TraceOperation.OnboardingSecurityOp,
         });
         // change password for the social login flow
@@ -5132,7 +5132,7 @@ export default class MetamaskController extends EventEmitter {
         changePasswordSuccess = true;
       } finally {
         endTrace({
-          name: TraceName.Onboarding.ChangePassword,
+          name: TraceName.OnboardingResetPassword,
           data: { success: changePasswordSuccess },
         });
       }
