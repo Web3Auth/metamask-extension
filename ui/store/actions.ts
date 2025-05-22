@@ -135,7 +135,6 @@ import { isInternalAccountInPermittedAccountIds } from '../../shared/lib/multich
 import { SortCriteria } from '../components/app/assets/util/sort';
 import { NOTIFICATIONS_EXPIRATION_DELAY } from '../helpers/constants/notifications';
 import { getDismissSmartAccountSuggestionEnabled } from '../pages/confirmations/selectors/preferences';
-import { getKeccak256HashAsHexString } from '../helpers/utils/hash.utils';
 import * as actionConstants from './actionConstants';
 
 import {
@@ -3628,21 +3627,6 @@ export function setTokenSortConfig(value: SortCriteria) {
 
 export function setTokenNetworkFilter(value: Record<string, boolean>) {
   return setPreference('tokenNetworkFilter', value, false);
-}
-
-export function setPasswordHint(hint: string, passwordHash: string) {
-  const passwordHintHash = getKeccak256HashAsHexString(hint);
-
-  if (passwordHintHash === passwordHash) {
-    throw new Error('Invalid password hint');
-  }
-
-  return setPreference('passwordHint', hint);
-}
-
-export function setPasswordHash(password: string) {
-  const passwordHashString = getKeccak256HashAsHexString(password);
-  return setPreference('passwordHash', passwordHashString);
 }
 
 export function setSmartTransactionsPreferenceEnabled(
