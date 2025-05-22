@@ -137,12 +137,23 @@ export default class UnlockPage extends Component {
 
     if (isUnlocked) {
       history.push(DEFAULT_ROUTE);
+      return;
     }
 
     if (isSeedlessPasswordOutdated) {
       // first error if seedless password is outdated
       const { t } = this.context;
       this.setState({ error: t('passwordChangedRecently') });
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (
+      !prevProps.isSeedlessPasswordOutdated &&
+      prevProps.isSeedlessPasswordOutdated !==
+        this.props.isSeedlessPasswordOutdated
+    ) {
+      this.setState({ error: this.context.t('passwordChangedRecently') });
     }
   }
 
