@@ -1,12 +1,5 @@
 @use "design-system";
 
-// by using @use, and dropping the file extension, sass will inline the
-// stylesheet instead of creating generating an `import(carousel.css)`. This is
-// desirable because it reduces the number of render-blocking requests on app
-// startup.
-@use "react-responsive-carousel/lib/styles/carousel";
-
-@import 'account-exist/index';
 @import 'recovery-phrase/index';
 @import 'onboarding-app-header/index';
 @import 'secure-your-wallet/index';
@@ -14,8 +7,6 @@
 @import 'create-password/index';
 @import 'creation-successful/index';
 @import 'welcome/index';
-@import 'import-srp/index';
-@import 'password-hint/index';
 @import 'pin-extension/index';
 @import 'metametrics/index';
 

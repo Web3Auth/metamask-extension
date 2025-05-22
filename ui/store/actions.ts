@@ -3641,21 +3641,6 @@ export function setTokenNetworkFilter(value: Record<string, boolean>) {
   return setPreference('tokenNetworkFilter', value, false);
 }
 
-export function setPasswordHint(hint: string, passwordHash: string) {
-  const passwordHintHash = getKeccak256HashAsHexString(hint);
-
-  if (passwordHintHash === passwordHash) {
-    throw new Error('Invalid password hint');
-  }
-
-  return setPreference('passwordHint', hint);
-}
-
-export function setPasswordHash(password: string) {
-  const passwordHashString = getKeccak256HashAsHexString(password);
-  return setPreference('passwordHash', passwordHashString);
-}
-
 export function setSmartTransactionsPreferenceEnabled(
   value: boolean,
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {
