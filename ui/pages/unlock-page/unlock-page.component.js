@@ -124,9 +124,8 @@ export default class UnlockPage extends Component {
     error: null,
     showResetPasswordModal: false,
     isLocked: false,
+    isSubmitting: false,
   };
-
-  submitting = false;
 
   failed_attempts = 0;
 
@@ -161,15 +160,14 @@ export default class UnlockPage extends Component {
     event.preventDefault();
     event.stopPropagation();
 
-    const { password } = this.state;
+    const { password, isSubmitting } = this.state;
     const { onSubmit } = this.props;
 
-    if (password === '' || this.submitting) {
+    if (password === '' || isSubmitting) {
       return;
     }
 
-    this.setState({ error: null });
-    this.submitting = true;
+    this.setState({ error: null, isSubmitting: true });
 
     try {
       await onSubmit(password);
@@ -188,7 +186,7 @@ export default class UnlockPage extends Component {
     } catch (error) {
       await this.handleLoginError(error);
     } finally {
-      this.submitting = false;
+      this.setState({ isSubmitting: false });
     }
   };
 
@@ -209,19 +207,13 @@ export default class UnlockPage extends Component {
       case SeedlessOnboardingControllerError.TooManyLoginAttempts:
         isLocked = true;
 
-        // TODO: check if we need to remove this
-        if (data.isPermanent) {
-          finalErrorMessage = t('unlockPageTooManyFailedAttemptsPermanent');
-        } else {
-          const initialRemainingTime = data.remainingTime;
-          finalErrorMessage = t('unlockPageTooManyFailedAttempts', [
-            <Counter
-              key="unlockPageTooManyFailedAttempts"
-              remainingTime={initialRemainingTime}
-              unlock={() => this.setState({ isLocked: false, error: '' })}
-            />,
-          ]);
-        }
+        finalErrorMessage = t('unlockPageTooManyFailedAttempts', [
+          <Counter
+            key="unlockPageTooManyFailedAttempts"
+            remainingTime={data.remainingTime}
+            unlock={() => this.setState({ isLocked: false, error: '' })}
+          />,
+        ]);
         errorReason = 'too_many_login_attempts';
         break;
       case 'Seed phrase not found':
@@ -315,7 +307,8 @@ export default class UnlockPage extends Component {
   };
 
   render() {
-    const { password, error, isLocked, showResetPasswordModal } = this.state;
+    const { password, error, isLocked, showResetPasswordModal, isSubmitting } =
+      this.state;
     const { t } = this.context;
 
     const needHelpText = t('needHelpLinkText');
@@ -399,7 +392,7 @@ export default class UnlockPage extends Component {
                   type="submit"
                   data-testid="unlock-submit"
                   disabled={!password || isLocked}
-                  loading={this.submitting}
+                  loading={isSubmitting}
                 >
                   {this.context.t('unlock')}
                 </Button>
