@@ -1477,11 +1477,6 @@ export function getAdvancedInlineGasShown(state) {
   return Boolean(state.metamask.featureFlags.advancedInlineGas);
 }
 
-export function getPasswordHint(state) {
-  const { passwordHint } = getPreferences(state);
-  return passwordHint;
-}
-
 /**
  * @param {string} svgString - The raw SVG string to make embeddable.
  * @returns {string} The embeddable SVG string.

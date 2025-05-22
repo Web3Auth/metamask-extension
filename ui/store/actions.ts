@@ -3629,10 +3629,6 @@ export function setTokenNetworkFilter(value: Record<string, boolean>) {
   return setPreference('tokenNetworkFilter', value, false);
 }
 
-export function setPasswordHint(hint: string) {
-  return setPreference('passwordHint', hint);
-}
-
 export function setSmartTransactionsPreferenceEnabled(
   value: boolean,
 ): ThunkAction<void, MetaMaskReduxState, unknown, AnyAction> {

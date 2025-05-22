@@ -107,10 +107,6 @@ export type Preferences = {
   tokenNetworkFilter: Record<string, boolean>;
   shouldShowAggregatedBalancePopover: boolean;
   dismissSmartAccountSuggestionEnabled: boolean;
-  /**
-   * The hint for the password.
-   */
-  passwordHint?: string;
 };
 
 // Omitting properties that already exist in the PreferencesState, as part of the preferences property.
@@ -213,7 +209,6 @@ export const getDefaultPreferencesControllerState =
         sortCallback: 'stringNumeric',
       },
       tokenNetworkFilter: {},
-      passwordHint: '',
     },
     // ENS decentralized website resolution
     ipfsGateway: IPFS_DEFAULT_GATEWAY_URL,
@@ -377,10 +372,6 @@ const controllerMetadata = {
         anonymous: true,
       },
       smartTransactionsMigrationApplied: {
-        persist: true,
-        anonymous: true,
-      },
-      passwordHint: {
         persist: true,
         anonymous: true,
       },
