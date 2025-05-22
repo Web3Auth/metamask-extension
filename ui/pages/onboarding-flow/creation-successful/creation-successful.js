@@ -1,6 +1,7 @@
 import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { capitalize } from 'lodash';
 import {
   Button,
   ButtonSize,
@@ -31,7 +32,11 @@ import {
   ONBOARDING_PRIVACY_SETTINGS_ROUTE,
   ONBOARDING_PIN_EXTENSION_ROUTE,
 } from '../../../helpers/constants/routes';
-import { getFirstTimeFlowType, getHDEntropyIndex } from '../../../selectors';
+import {
+  getFirstTimeFlowType,
+  getHDEntropyIndex,
+  getSocialLoginType,
+} from '../../../selectors';
 import {
   MetaMetricsEventCategory,
   MetaMetricsEventName,
@@ -49,6 +54,7 @@ export default function CreationSuccessful() {
   const hdEntropyIndex = useSelector(getHDEntropyIndex);
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const seedPhraseBackedUp = useSelector(getSeedPhraseBackedUp);
+  const userSocialLoginType = useSelector(getSocialLoginType);
   const learnMoreLink =
     'https://support.metamask.io/hc/en-us/articles/360015489591-Basic-Safety-and-Security-Tips-for-MetaMask';
   // const learnHowToKeepWordsSafe =
@@ -56,8 +62,13 @@ export default function CreationSuccessful() {
 
   const isBackupAndSyncEnabled = useSelector(selectIsBackupAndSyncEnabled);
 
+  const isWalletReady =
+    firstTimeFlowType === FirstTimeFlowType.social ||
+    firstTimeFlowType === FirstTimeFlowType.import ||
+    seedPhraseBackedUp;
+
   const renderTitle = useMemo(() => {
-    if (firstTimeFlowType === FirstTimeFlowType.social || seedPhraseBackedUp) {
+    if (isWalletReady) {
       return t('yourWalletIsReady');
     }
 
@@ -65,13 +76,52 @@ export default function CreationSuccessful() {
   }, [firstTimeFlowType, seedPhraseBackedUp, t]);
 
   const renderFoxPath = useMemo(() => {
-    if (firstTimeFlowType === FirstTimeFlowType.social || seedPhraseBackedUp) {
+    if (isWalletReady) {
       return 'images/animations/fox/celebrating.lottie.json';
     }
 
     // TODO: Check figma teaching fox animation
     return 'images/animations/fox/celebrating.lottie.json';
   }, [firstTimeFlowType, seedPhraseBackedUp]);
+
+  const renderDetails1 = () => {
+    if (firstTimeFlowType === FirstTimeFlowType.social) {
+      return t('walletReadySocialDetails1', [capitalize(userSocialLoginType)]);
+    }
+
+    if (isWalletReady) {
+      return t('walletReadyLoseSrp');
+    }
+
+    return t('walletReadyLoseSrpRemind');
+  };
+
+  const renderDetails2 = () => {
+    if (firstTimeFlowType === FirstTimeFlowType.social) {
+      return t('walletReadySocialDetails2');
+    }
+
+    if (isWalletReady) {
+      return t('walletReadyLearn', [
+        <ButtonLink
+          key="walletReadyLearn"
+          size={ButtonLinkSize.Inherit}
+          textProps={{
+            variant: TextVariant.bodyMd,
+            alignItems: AlignItems.flexStart,
+          }}
+          as="a"
+          href={learnMoreLink}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {t('learnHow')}
+        </ButtonLink>,
+      ]);
+    }
+
+    return t('walletReadyLearnRemind');
+  };
 
   return (
     <Box
@@ -116,29 +166,10 @@ export default function CreationSuccessful() {
             </Box>
           </Box>
           <Text variant={TextVariant.bodyMd} marginBottom={6}>
-            {seedPhraseBackedUp
-              ? t('walletReadyLoseSrp')
-              : t('walletReadyLoseSrpRemind')}
+            {renderDetails1()}
           </Text>
           <Text variant={TextVariant.bodyMd} marginBottom={6}>
-            {seedPhraseBackedUp
-              ? t('walletReadyLearn', [
-                  <ButtonLink
-                    key="walletReadyLearn"
-                    size={ButtonLinkSize.Inherit}
-                    textProps={{
-                      variant: TextVariant.bodyMd,
-                      alignItems: AlignItems.flexStart,
-                    }}
-                    as="a"
-                    href={learnMoreLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {t('learnHow')}
-                  </ButtonLink>,
-                ])
-              : t('walletReadyLearnRemind')}
+            {renderDetails2()}
           </Text>
         </Box>
 

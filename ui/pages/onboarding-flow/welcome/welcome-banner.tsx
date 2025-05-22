@@ -57,7 +57,15 @@ export default function WelcomeBanner({ onAccept }: { onAccept: () => void }) {
           </Text>
         </ButtonBase>
       </Box>
-      {showTermsOfUse && <TermsOfUsePopup onAccept={onAcceptTermsOfUse} />}
+      {showTermsOfUse && (
+        <TermsOfUsePopup
+          onAccept={() => {
+            setShowTermsOfUse(false);
+            onAcceptTermsOfUse();
+          }}
+          onClose={() => setShowTermsOfUse(false)}
+        />
+      )}
     </Box>
   );
 }

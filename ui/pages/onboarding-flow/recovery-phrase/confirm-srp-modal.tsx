@@ -51,7 +51,7 @@ export default function ConfirmSrpModal({
     >
       <ModalOverlay />
       <ModalContent alignItems={AlignItems.center}>
-        <ModalHeader onClose={onClose}>
+        <ModalHeader>
           <Box textAlign={TextAlign.Center}>
             <Icon
               name={isError ? IconName.CircleX : IconName.Confirmation}

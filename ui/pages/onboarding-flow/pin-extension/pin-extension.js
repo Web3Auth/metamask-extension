@@ -146,7 +146,11 @@ export default function OnboardingPinExtension() {
                 justifyContent={JustifyContent.center}
                 className="onboarding-pin-extension__image-container"
               >
-                <img src="/images/onboarding-extension-pin.svg" alt="" />
+                <img
+                  src="/images/onboarding-extension-pin.svg"
+                  className="onboarding-pin-extension__image-pin"
+                  alt=""
+                />
               </Box>
               <Box
                 display={Display.Flex}
@@ -154,7 +158,11 @@ export default function OnboardingPinExtension() {
                 justifyContent={JustifyContent.center}
                 className="onboarding-pin-extension__image-container"
               >
-                <img src="/images/onboarding-extension-launch.svg" alt="" />
+                <img
+                  src="/images/onboarding-extension-launch.svg"
+                  className="onboarding-pin-extension__image-launch"
+                  alt=""
+                />
               </Box>
             </Carousel>
             <Box
