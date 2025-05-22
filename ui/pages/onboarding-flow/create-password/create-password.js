@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
@@ -58,6 +58,7 @@ import {
   TraceOperation,
   bufferedEndTrace,
 } from '../../../../shared/lib/trace';
+import { useSentryTrace } from '../../../contexts/sentry-trace';
 
 export default function CreatePassword({
   createNewAccount,
@@ -91,8 +92,7 @@ export default function CreatePassword({
     analyticsIframeQuery,
   )}`;
 
-  const location = useLocation();
-  const onboardingTraceCtx = location.state?.onboardingTraceCtx;
+  const { onboardingParentContext } = useSentryTrace();
 
   useEffect(() => {
     if (currentKeyring && !newAccountCreationInProgress) {
@@ -117,18 +117,15 @@ export default function CreatePassword({
   ]);
 
   useEffect(() => {
-    if (!onboardingTraceCtx) {
-      return undefined;
-    }
     bufferedTrace({
       name: TraceName.OnboardingPasswordSetupAttempt,
       op: TraceOperation.OnboardingUserJourney,
-      parentContext: onboardingTraceCtx,
+      parentContext: onboardingParentContext.current,
     });
     return () => {
       bufferedEndTrace({ name: TraceName.OnboardingPasswordSetupAttempt });
     };
-  }, [onboardingTraceCtx]);
+  }, [onboardingParentContext]);
 
   const handleBackClick = (e) => {
     e.preventDefault();

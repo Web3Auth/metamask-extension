@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
@@ -36,6 +36,7 @@ import {
   TraceName,
   TraceOperation,
 } from '../../../../shared/lib/trace';
+import { useSentryTrace } from '../../../contexts/sentry-trace';
 
 export default function AccountExist() {
   const history = useHistory();
@@ -43,19 +44,16 @@ export default function AccountExist() {
   const t = useI18nContext();
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const userSocialLoginEmail = useSelector(getSocialLoginEmail);
-  const location = useLocation();
-  const onboardingTraceCtx = location.state?.onboardingTraceCtx;
+  const { onboardingParentContext } = useSentryTrace();
 
   const onDone = () => {
     bufferedTrace({
       name: TraceName.OnboardingExistingSocialLogin,
       op: TraceOperation.OnboardingUserJourney,
       tags: { source: 'account_status_redirect' },
-      parentContext: onboardingTraceCtx,
+      parentContext: onboardingParentContext.current,
     });
-    history.push(ONBOARDING_UNLOCK_ROUTE, {
-      onboardingTraceCtx,
-    });
+    history.push(ONBOARDING_UNLOCK_ROUTE);
   };
 
   const onLoginWithDifferentMethod = async () => {

@@ -271,7 +271,6 @@ export function bufferedTrace<T>(
       },
       parentTraceName, // Store the parent trace name for later reconnection
     });
-    return undefined as unknown as T | TraceContext;
   }
   if (fn) {
     return trace(request, fn);
@@ -299,7 +298,6 @@ export function bufferedEndTrace(request: EndTraceRequest): void {
         timestamp: request.timestamp ?? Date.now(),
       },
     });
-    return;
   }
   endTrace(request);
 }

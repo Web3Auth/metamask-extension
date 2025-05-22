@@ -42,6 +42,7 @@ import {
   bufferedTrace,
   bufferedEndTrace,
 } from '../../../shared/lib/trace';
+import { withSentryTrace } from '../../contexts/sentry-trace';
 import { getCaretCoordinates } from './unlock-page.util';
 import ResetPasswordModal from './reset-password-modal';
 
@@ -88,7 +89,7 @@ Counter.propTypes = {
   unlock: PropTypes.func.isRequired,
 };
 
-export default class UnlockPage extends Component {
+class UnlockPage extends Component {
   static contextTypes = {
     trackEvent: PropTypes.func,
     t: PropTypes.func,
@@ -129,6 +130,10 @@ export default class UnlockPage extends Component {
      * Whether social login is enabled
      */
     socialLoginEnabled: PropTypes.bool,
+    /**
+     * Sentry trace context ref for onboarding journey tracing
+     */
+    onboardingParentContext: PropTypes.object,
   };
 
   state = {
@@ -162,15 +167,11 @@ export default class UnlockPage extends Component {
   }
 
   componentDidMount() {
-    const { location } = this.props;
-    const { onboardingTraceCtx } = location?.state ?? {};
-    if (onboardingTraceCtx) {
-      this.passwordLoginAttemptTraceCtx = bufferedTrace({
-        name: TraceName.OnboardingPasswordLoginAttempt,
-        op: TraceOperation.OnboardingUserJourney,
-        parentContext: onboardingTraceCtx,
-      });
-    }
+    this.passwordLoginAttemptTraceCtx = bufferedTrace({
+      name: TraceName.OnboardingPasswordLoginAttempt,
+      op: TraceOperation.OnboardingUserJourney,
+      parentContext: this.props.onboardingParentContext.current,
+    });
   }
 
   componentWillUnmount() {
@@ -482,3 +483,5 @@ export default class UnlockPage extends Component {
     );
   }
 }
+
+export default withSentryTrace(UnlockPage);
