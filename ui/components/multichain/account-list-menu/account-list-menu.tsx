@@ -261,6 +261,7 @@ export const AccountListMenu = ({
       ),
     [accounts, allowedAccountTypes],
   );
+  console.log('filteredAccounts', filteredAccounts);
   const allChainIds = useSelector(getAllChainsToPoll);
   const selectedAccount = useSelector(getSelectedInternalAccount);
   const connectedSites = useSelector(

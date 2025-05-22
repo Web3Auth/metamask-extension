@@ -1383,14 +1383,23 @@ export default class MetamaskController extends EventEmitter {
       `${this.onboardingController.name}:stateChange`,
       previousValueComparator(async (prevState, currState) => {
         const { completedOnboarding: prevCompletedOnboarding } = prevState;
-        const { completedOnboarding: currCompletedOnboarding } = currState;
+        const {
+          completedOnboarding: currCompletedOnboarding,
+          restoreWithSocialLogin,
+        } = currState;
         if (!prevCompletedOnboarding && currCompletedOnboarding) {
           const { address } = this.accountsController.getSelectedAccount();
 
-          ///: BEGIN:ONLY_INCLUDE_IF(solana)
-          await this._addSolanaAccount();
-          ///: END:ONLY_INCLUDE_IF
-          await this._addAccountsWithBalance();
+          if (restoreWithSocialLogin) {
+            ///: BEGIN:ONLY_INCLUDE_IF(solana)
+            await this._addSolanaAccountsWithBalances();
+            ///: END:ONLY_INCLUDE_IF
+          } else {
+            ///: BEGIN:ONLY_INCLUDE_IF(solana)
+            await this._addSolanaAccount();
+            ///: END:ONLY_INCLUDE_IF
+            await this._addAccountsWithBalance();
+          }
 
           this.postOnboardingInitialization();
           this.triggerNetworkrequests();
@@ -5138,15 +5147,25 @@ export default class MetamaskController extends EventEmitter {
    * Imports a new mnemonic to the vault.
    *
    * @param {string} mnemonic - The mnemonic to import.
-   * @param {boolean} shouldCreateSocialBackup - whether to create a backup for the seedless onboarding flow
-   * @param {boolean} shouldSelectAccount - whether to select the new account in the wallet
+   * @param {object} options - The options for the import.
+   * @param {boolean} options.shouldCreateSocialBackup - whether to create a backup for the seedless onboarding flow
+   * @param {boolean} options.shouldSelectAccount - whether to select the new account in the wallet
+   * @param {boolean} options.shouldImportSolanaAccount - whether to import a Solana account
    * @returns {Promise<string>} new account address
    */
   async importMnemonicToVault(
     mnemonic,
-    shouldCreateSocialBackup = false,
-    shouldSelectAccount = true,
+    options = {
+      shouldCreateSocialBackup: true,
+      shouldSelectAccount: true,
+      shouldImportSolanaAccount: true,
+    },
   ) {
+    const {
+      shouldCreateSocialBackup,
+      shouldSelectAccount,
+      shouldImportSolanaAccount,
+    } = options;
     const releaseLock = await this.createVaultMutex.acquire();
     try {
       // TODO: `getKeyringsByType` is deprecated, this logic should probably be moved to the `KeyringController`.
@@ -5195,9 +5214,11 @@ export default class MetamaskController extends EventEmitter {
         this.accountsController.setSelectedAccount(account.id);
       }
 
-      ///: BEGIN:ONLY_INCLUDE_IF(solana)
-      await this._addSolanaAccount(id);
-      ///: END:ONLY_INCLUDE_IF
+      if (shouldImportSolanaAccount) {
+        ///: BEGIN:ONLY_INCLUDE_IF(solana)
+        await this._addSolanaAccount(id);
+        ///: END:ONLY_INCLUDE_IF
+      }
       await this._addAccountsWithBalance(id);
 
       return newAccountAddress;
@@ -5234,11 +5255,11 @@ export default class MetamaskController extends EventEmitter {
       const mnemonicToRestore = Buffer.from(seedPhrase).toString('utf8');
 
       // import the new mnemonic to the vault
-      await this.importMnemonicToVault(
-        mnemonicToRestore,
+      await this.importMnemonicToVault(mnemonicToRestore, {
         shouldCreateSocialBackup,
-        shouldSetSelectedAccount,
-      );
+        shouldSelectAccount: shouldSetSelectedAccount,
+        shouldImportSolanaAccount: false,
+      });
     }
   }
 
@@ -5318,11 +5339,6 @@ export default class MetamaskController extends EventEmitter {
         seedPhraseAsUint8Array,
       );
 
-      if (firstTimeFlowType === FirstTimeFlowType.social) {
-        // update the Onboarding state when user restore the existing wallet with social login
-        this.onboardingController.setRestoreWithSocialLogin(true);
-      }
-
       if (completedOnboarding) {
         ///: BEGIN:ONLY_INCLUDE_IF(solana)
         await this._addSolanaAccount();
@@ -5345,6 +5361,8 @@ export default class MetamaskController extends EventEmitter {
           keyringId: this.keyringController.state.keyringsMetadata[0].id,
           seedPhrase: seedPhraseAsUint8Array,
         });
+        // update the Onboarding state when user restore the existing wallet with social login
+        this.onboardingController.setRestoreWithSocialLogin(true);
       }
 
       return this.keyringController.state.keyringsMetadata;
@@ -5448,6 +5466,33 @@ export default class MetamaskController extends EventEmitter {
       );
     }
   }
+
+  /**
+   * Adds Solana accounts to the keyring.
+   *
+   * This method also adds the accounts with balances to the account list.
+   */
+  ///: BEGIN:ONLY_INCLUDE_IF(solana)
+  async _addSolanaAccountsWithBalances() {
+    const { keyringsMetadata } = this.keyringController.state;
+
+    // walk through all the keyrings and import the solana accounts for the HD keyrings
+    for (const { id } of keyringsMetadata) {
+      // check if the keyring is an HD keyring
+      const isHdKeyring = await this.keyringController.withKeyring(
+        { id },
+        async ({ keyring }) => {
+          return keyring.type === KeyringTypes.hd;
+        },
+      );
+      if (isHdKeyring) {
+        // add the solana account and the balance to the account list
+        await this._addSolanaAccount(id);
+        await this._addAccountsWithBalance(id);
+      }
+    }
+  }
+  ///: END:ONLY_INCLUDE_IF
 
   /**
    * Adds Solana account to the keyring.

@@ -10,6 +10,7 @@ import {
 } from '../../../../shared/constants/metametrics';
 import {
   CONFIRM_TRANSACTION_ROUTE,
+  ONBOARDING_ROUTE,
   SWAPS_ROUTE,
 } from '../../../helpers/constants/routes';
 
@@ -67,6 +68,9 @@ export const AppHeader = ({ location }) => {
       exact: false,
     }),
   );
+  const isOnboardingPage = Boolean(
+    matchPath(location.pathname, { path: ONBOARDING_ROUTE, exact: false }),
+  );
   const isSwapsPage = Boolean(
     matchPath(location.pathname, { path: SWAPS_ROUTE, exact: false }),
   );
@@ -119,21 +123,29 @@ export const AppHeader = ({ location }) => {
 
   return (
     <>
-      {isUnlocked && !popupStatus ? <MultichainMetaFoxLogo /> : null}
-      <AppHeaderContainer isUnlocked={isUnlocked} popupStatus={popupStatus}>
+      {isUnlocked && !isOnboardingPage && !popupStatus ? (
+        <MultichainMetaFoxLogo />
+      ) : null}
+      <AppHeaderContainer
+        isUnlocked={isUnlocked && !isOnboardingPage}
+        popupStatus={popupStatus}
+      >
         <>
           <Box
             className={classnames(
-              isUnlocked
+              isUnlocked && !isOnboardingPage
                 ? 'multichain-app-header__contents'
                 : 'multichain-app-header__lock-contents',
               {
-                'multichain-app-header-shadow': isUnlocked && !popupStatus,
+                'multichain-app-header-shadow':
+                  isUnlocked && !isOnboardingPage && !popupStatus,
               },
             )}
-            {...(isUnlocked ? unlockedStyling : lockStyling)}
+            {...(isUnlocked && !isOnboardingPage
+              ? unlockedStyling
+              : lockStyling)}
           >
-            {isUnlocked ? (
+            {isUnlocked && !isOnboardingPage ? (
               <AppHeaderUnlockedContent
                 popupStatus={popupStatus}
                 currentNetwork={multichainNetwork}

@@ -187,6 +187,8 @@ export default class UnlockPage extends Component {
       );
     } catch (error) {
       await this.handleLoginError(error);
+    } finally {
+      this.submitting = false;
     }
   };
 
@@ -242,7 +244,6 @@ export default class UnlockPage extends Component {
       });
     }
     this.setState({ error: finalErrorMessage, isLocked });
-    this.submitting = false;
   };
 
   handleInputChange(event) {
@@ -398,6 +399,7 @@ export default class UnlockPage extends Component {
                   type="submit"
                   data-testid="unlock-submit"
                   disabled={!password || isLocked}
+                  loading={this.submitting}
                 >
                   {this.context.t('unlock')}
                 </Button>
