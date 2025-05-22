@@ -32,8 +32,8 @@ import { getFirstTimeFlowType, getSocialLoginEmail } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { resetOAuthLoginState } from '../../../store/actions';
 import {
-  endTrace,
-  trace,
+  bufferedEndTrace,
+  bufferedTrace,
   TraceName,
   TraceOperation,
 } from '../../../../shared/lib/trace';
@@ -48,7 +48,7 @@ export default function AccountNotFound() {
   const onboardingTraceCtx = location.state?.onboardingTraceCtx;
 
   const onCreateOne = async () => {
-    trace({
+    bufferedTrace({
       name: TraceName.OnboardingNewSocialCreateWallet,
       op: TraceOperation.OnboardingUserJourney,
       tags: { source: 'account_status_redirect' },
@@ -71,7 +71,9 @@ export default function AccountNotFound() {
   }, [firstTimeFlowType, history]);
 
   useEffect(() => {
-    endTrace({ name: TraceName.OnboardingExistingSocialAccountNotFound });
+    bufferedEndTrace({
+      name: TraceName.OnboardingExistingSocialAccountNotFound,
+    });
   }, []);
 
   return (

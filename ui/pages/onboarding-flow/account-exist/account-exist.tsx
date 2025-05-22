@@ -31,8 +31,8 @@ import { getFirstTimeFlowType, getSocialLoginEmail } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { resetOAuthLoginState } from '../../../store/actions';
 import {
-  trace,
-  endTrace,
+  bufferedTrace,
+  bufferedEndTrace,
   TraceName,
   TraceOperation,
 } from '../../../../shared/lib/trace';
@@ -47,7 +47,7 @@ export default function AccountExist() {
   const onboardingTraceCtx = location.state?.onboardingTraceCtx;
 
   const onDone = async () => {
-    trace({
+    bufferedTrace({
       name: TraceName.OnboardingExistingSocialLogin,
       op: TraceOperation.OnboardingUserJourney,
       tags: { source: 'account_status_redirect' },
@@ -69,7 +69,7 @@ export default function AccountExist() {
   }, [firstTimeFlowType, history]);
 
   useEffect(() => {
-    endTrace({ name: TraceName.OnboardingNewSocialAccountExists });
+    bufferedEndTrace({ name: TraceName.OnboardingNewSocialAccountExists });
   }, []);
 
   return (

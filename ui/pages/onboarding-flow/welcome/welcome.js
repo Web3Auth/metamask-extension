@@ -24,8 +24,8 @@ import {
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
 import {
-  trace,
-  endTrace,
+  bufferedTrace,
+  bufferedEndTrace,
   TraceName,
   TraceOperation,
 } from '../../../../shared/lib/trace';
@@ -78,7 +78,7 @@ export default function OnboardingWelcome() {
   ]);
 
   useEffect(() => {
-    onboardingTraceCtxRef.current = trace({
+    onboardingTraceCtxRef.current = bufferedTrace({
       name: TraceName.OnboardingJourneyOverall,
       op: TraceOperation.OnboardingUserJourney,
     });
@@ -97,7 +97,7 @@ export default function OnboardingWelcome() {
         account_type: 'metamask',
       },
     });
-    trace({
+    bufferedTrace({
       name: TraceName.OnboardingNewSrpCreateWallet,
       op: TraceOperation.OnboardingUserJourney,
       parentContext: onboardingTraceCtxRef.current,
@@ -120,7 +120,7 @@ export default function OnboardingWelcome() {
         account_type: 'imported',
       },
     });
-    trace({
+    bufferedTrace({
       name: TraceName.OnboardingExistingSrpImport,
       op: TraceOperation.OnboardingUserJourney,
       parentContext: onboardingTraceCtxRef.current,
@@ -139,7 +139,7 @@ export default function OnboardingWelcome() {
       setNewAccountCreationInProgress(true);
       dispatch(setFirstTimeFlowType(FirstTimeFlowType.social));
 
-      socialLoginTraceCtxRef.current = trace({
+      socialLoginTraceCtxRef.current = bufferedTrace({
         name: TraceName.OnboardingSocialLoginAttempt,
         op: TraceOperation.OnboardingUserJourney,
         tags: { provider: socialConnectionType },
@@ -149,13 +149,13 @@ export default function OnboardingWelcome() {
       const isNewUser = await dispatch(startOAuthLogin(socialConnectionType));
 
       if (socialLoginTraceCtxRef.current) {
-        endTrace({ name: TraceName.OnboardingSocialLoginAttempt });
+        bufferedEndTrace({ name: TraceName.OnboardingSocialLoginAttempt });
         socialLoginTraceCtxRef.current = null;
       }
 
       // if user is not new user and login option is new, redirect to account exist page
       if (loginOption === 'new' && !isNewUser) {
-        trace({
+        bufferedTrace({
           name: TraceName.OnboardingNewSocialAccountExists,
           op: TraceOperation.OnboardingUserJourney,
           parentContext: socialLoginTraceCtxRef.current,
@@ -165,7 +165,7 @@ export default function OnboardingWelcome() {
         });
         return;
       } else if (loginOption === 'existing' && isNewUser) {
-        trace({
+        bufferedTrace({
           name: TraceName.OnboardingExistingSocialAccountNotFound,
           op: TraceOperation.OnboardingUserJourney,
           parentContext: socialLoginTraceCtxRef.current,
@@ -178,7 +178,7 @@ export default function OnboardingWelcome() {
       }
 
       if (!isNewUser) {
-        trace({
+        bufferedTrace({
           name: TraceName.OnboardingExistingSocialLogin,
           op: TraceOperation.OnboardingUserJourney,
           parentContext: socialLoginTraceCtxRef.current,
@@ -199,7 +199,7 @@ export default function OnboardingWelcome() {
         },
       });
 
-      trace({
+      bufferedTrace({
         name: TraceName.OnboardingNewSocialCreateWallet,
         op: TraceOperation.OnboardingUserJourney,
         parentContext: socialLoginTraceCtxRef.current,
