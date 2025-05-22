@@ -251,8 +251,10 @@ import {
 } from '../../shared/lib/transactions-controller-utils';
 import { getProviderConfig } from '../../shared/modules/selectors/networks';
 import {
-  endTrace,
   trace,
+  endTrace,
+  bufferedEndTrace,
+  bufferedTrace,
   TraceName,
   TraceOperation,
 } from '../../shared/lib/trace';
@@ -4894,7 +4896,7 @@ export default class MetamaskController extends EventEmitter {
       let seedlessAuthSuccess = false;
       let isNewUser = false;
       try {
-        trace({
+        bufferedTrace({
           name: TraceName.OnboardingOAuthSeedlessAuthenticate,
           op: TraceOperation.OnboardingSecurityOp,
         });
@@ -4905,7 +4907,7 @@ export default class MetamaskController extends EventEmitter {
         isNewUser = newUser;
         seedlessAuthSuccess = true;
       } finally {
-        endTrace({
+        bufferedEndTrace({
           name: TraceName.OnboardingOAuthSeedlessAuthenticate,
           data: { success: seedlessAuthSuccess },
         });
@@ -4944,7 +4946,7 @@ export default class MetamaskController extends EventEmitter {
   async createSeedPhraseBackup(password, encodedSeedPhrase, keyringId) {
     let createSeedPhraseBackupSuccess = false;
     try {
-      trace({
+      bufferedTrace({
         name: TraceName.OnboardingCreateKeyAndBackupSrp,
         op: TraceOperation.OnboardingSecurityOp,
       });
@@ -4963,7 +4965,7 @@ export default class MetamaskController extends EventEmitter {
       log.error('[createSeedPhraseBackup] error', error);
       throw error;
     } finally {
-      endTrace({
+      bufferedEndTrace({
         name: TraceName.OnboardingCreateKeyAndBackupSrp,
         data: { success: createSeedPhraseBackupSuccess },
       });
@@ -4983,7 +4985,7 @@ export default class MetamaskController extends EventEmitter {
   async fetchAllSeedPhrases(password) {
     let fetchAllSeedPhrasesSuccess = false;
     try {
-      trace({
+      bufferedTrace({
         name: TraceName.OnboardingFetchSrps,
         op: TraceOperation.OnboardingSecurityOp,
       });
@@ -5012,7 +5014,7 @@ export default class MetamaskController extends EventEmitter {
 
       throw error;
     } finally {
-      endTrace({
+      bufferedEndTrace({
         name: TraceName.OnboardingFetchSrps,
         data: { success: fetchAllSeedPhrasesSuccess },
       });
@@ -5120,7 +5122,7 @@ export default class MetamaskController extends EventEmitter {
     if (firstTimeFlowType === FirstTimeFlowType.social) {
       let changePasswordSuccess = false;
       try {
-        trace({
+        bufferedTrace({
           name: TraceName.OnboardingResetPassword,
           op: TraceOperation.OnboardingSecurityOp,
         });
@@ -5131,7 +5133,7 @@ export default class MetamaskController extends EventEmitter {
         );
         changePasswordSuccess = true;
       } finally {
-        endTrace({
+        bufferedEndTrace({
           name: TraceName.OnboardingResetPassword,
           data: { success: changePasswordSuccess },
         });
@@ -5161,7 +5163,7 @@ export default class MetamaskController extends EventEmitter {
     if (syncWithSocial) {
       let addNewSeedPhraseBackupSuccess = false;
       try {
-        trace({
+        bufferedTrace({
           name: TraceName.OnboardingAddSrp,
           op: TraceOperation.OnboardingSecurityOp,
         });
@@ -5171,7 +5173,7 @@ export default class MetamaskController extends EventEmitter {
         );
         addNewSeedPhraseBackupSuccess = true;
       } finally {
-        endTrace({
+        bufferedEndTrace({
           name: TraceName.OnboardingAddSrp,
           data: { success: addNewSeedPhraseBackupSuccess },
         });

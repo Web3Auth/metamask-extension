@@ -1,8 +1,8 @@
 import { BaseController } from '@metamask/base-controller';
 import { AuthConnection } from '@metamask/seedless-onboarding-controller';
 import {
-  endTrace,
-  trace,
+  bufferedEndTrace,
+  bufferedTrace,
   TraceName,
   TraceOperation,
 } from '../../../../shared/lib/trace';
@@ -72,7 +72,7 @@ export default class OAuthController extends BaseController<
     let providerLoginSuccess = false;
     let redirectUrlFromOAuth = null;
     try {
-      trace({
+      bufferedTrace({
         name: TraceName.OnboardingOAuthProviderLogin,
         op: TraceOperation.OnboardingSecurityOp,
       });
@@ -83,7 +83,7 @@ export default class OAuthController extends BaseController<
       });
       providerLoginSuccess = true;
     } finally {
-      endTrace({
+      bufferedEndTrace({
         name: TraceName.OnboardingOAuthProviderLogin,
         data: { success: providerLoginSuccess },
       });
@@ -96,7 +96,7 @@ export default class OAuthController extends BaseController<
 
     let getAuthTokensSuccess = false;
     try {
-      trace({
+      bufferedTrace({
         name: TraceName.OnboardingOAuthBYOAServerGetAuthTokens,
         op: TraceOperation.OnboardingSecurityOp,
       });
@@ -108,7 +108,7 @@ export default class OAuthController extends BaseController<
       getAuthTokensSuccess = true;
       return loginResult;
     } finally {
-      endTrace({
+      bufferedEndTrace({
         name: TraceName.OnboardingOAuthBYOAServerGetAuthTokens,
         data: { success: getAuthTokensSuccess },
       });
