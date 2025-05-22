@@ -33,10 +33,8 @@ import {
   ONBOARDING_PIN_EXTENSION_ROUTE,
 } from '../../../helpers/constants/routes';
 import {
-  getCurrentKeyring,
   getFirstTimeFlowType,
   getHDEntropyIndex,
-  getPasswordHint,
   getSocialLoginType,
 } from '../../../selectors';
 import {

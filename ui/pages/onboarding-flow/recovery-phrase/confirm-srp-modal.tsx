@@ -45,7 +45,7 @@ export default function ConfirmSrpModal({
   return (
     <Modal
       isOpen
-      onClose={() => {}}
+      onClose={onClose}
       className="confirm-srp-modal"
       data-testid="confirm-srp-modal"
     >

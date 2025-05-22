@@ -139,7 +139,6 @@ const mapStateToProps = (state, ownProps) => {
     initialBreadCrumbRoute,
     isAddressEntryPage,
     isPasswordChangePage,
-    isPasswordHintPage,
     isPopup,
     isSeedlessPasswordOutdated: getIsSeedlessPasswordOutdated(state),
     mostRecentOverviewPage: getMostRecentOverviewPage(state),

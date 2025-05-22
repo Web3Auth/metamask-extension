@@ -80,7 +80,6 @@ class SettingsPage extends PureComponent {
     initialBreadCrumbRoute: PropTypes.string,
     isAddressEntryPage: PropTypes.bool,
     isPasswordChangePage: PropTypes.bool,
-    isPasswordHintPage: PropTypes.bool,
     isPopup: PropTypes.bool,
     isSeedlessPasswordOutdated: PropTypes.bool,
     mostRecentOverviewPage: PropTypes.string.isRequired,
@@ -133,14 +132,13 @@ class SettingsPage extends PureComponent {
       currentPath,
       mostRecentOverviewPage,
       addNewNetwork,
-      isPasswordHintPage,
       isPasswordChangePage,
       isSeedlessPasswordOutdated,
     } = this.props;
 
     const { t } = this.context;
     const isPopup = getEnvironmentType() === ENVIRONMENT_TYPE_POPUP;
-    const isSearchHidden = isPasswordHintPage || isPasswordChangePage;
+    const isSearchHidden = isPasswordChangePage;
 
     return (
       <div
@@ -243,9 +241,9 @@ class SettingsPage extends PureComponent {
 
   renderSearch() {
     const { isSearchList, searchText, searchResults } = this.state;
-    const { isPasswordHintPage, isPasswordChangePage } = this.props;
+    const { isPasswordChangePage } = this.props;
 
-    if (isPasswordHintPage || isPasswordChangePage) {
+    if (isPasswordChangePage) {
       return null;
     }
 

@@ -136,7 +136,6 @@ import { isInternalAccountInPermittedAccountIds } from '../../shared/lib/multich
 import { SortCriteria } from '../components/app/assets/util/sort';
 import { NOTIFICATIONS_EXPIRATION_DELAY } from '../helpers/constants/notifications';
 import { getDismissSmartAccountSuggestionEnabled } from '../pages/confirmations/selectors/preferences';
-import { getKeccak256HashAsHexString } from '../helpers/utils/hash.utils';
 import * as actionConstants from './actionConstants';
 
 import {
