@@ -72,7 +72,6 @@ const log = createModuleLogger(sentryLogger, 'trace');
 
 const ID_DEFAULT = 'default';
 const OP_DEFAULT = 'custom';
-export const TRACES_CLEANUP_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
 const tracesByKey: Map<string, PendingTrace> = new Map();
 const durationsByName: { [name: string]: number } = {};
