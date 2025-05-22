@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -18,6 +18,8 @@ import {
   BlockSize,
   TextColor,
   IconColor,
+  Display,
+  FlexDirection,
 } from '../../../helpers/constants/design-system';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import { setSeedPhraseBackedUp } from '../../../store/actions';
@@ -69,9 +71,10 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
   const dispatch = useDispatch();
   const trackEvent = useContext(MetaMetricsContext);
   const hdEntropyIndex = useSelector(getHDEntropyIndex);
-  const splitSecretRecoveryPhrase = secretRecoveryPhrase
-    ? secretRecoveryPhrase.split(' ')
-    : [];
+  const splitSecretRecoveryPhrase = useMemo(
+    () => (secretRecoveryPhrase ? secretRecoveryPhrase.split(' ') : []),
+    [secretRecoveryPhrase],
+  );
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [matching, setMatching] = useState(false);
@@ -80,31 +83,34 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
   );
   const [answerSrp, setAnswerSrp] = useState('');
 
-  const resetQuizWords = () => {
+  const resetQuizWords = useCallback(() => {
     const newQuizWords = generateQuizWords(splitSecretRecoveryPhrase);
     setQuizWords(newQuizWords);
-  };
+  }, [splitSecretRecoveryPhrase]);
 
-  const handleQuizInput = (inputValue) => {
-    const isAnswered = inputValue.every((answer) => answer.word !== '');
-    if (isAnswered) {
-      const copySplitSrp = [...splitSecretRecoveryPhrase];
-      inputValue.forEach((answer) => {
-        copySplitSrp[answer.index] = answer.word;
-      });
-      setAnswerSrp(copySplitSrp.join(' '));
-    } else {
-      setAnswerSrp('');
-    }
-  };
+  const handleQuizInput = useCallback(
+    (inputValue) => {
+      const isNotAnswered = inputValue.some((answer) => !answer.word);
+      if (isNotAnswered) {
+        setAnswerSrp('');
+      } else {
+        const copySplitSrp = [...splitSecretRecoveryPhrase];
+        inputValue.forEach((answer) => {
+          copySplitSrp[answer.index] = answer.word;
+        });
+        setAnswerSrp(copySplitSrp.join(' '));
+      }
+    },
+    [splitSecretRecoveryPhrase],
+  );
 
-  const onContinue = () => {
+  const onContinue = useCallback(() => {
     const isMatching = answerSrp === secretRecoveryPhrase;
     setMatching(isMatching);
     setShowConfirmModal(true);
-  };
+  }, [answerSrp, secretRecoveryPhrase]);
 
-  const handleConfirmedPhrase = () => {
+  const handleConfirmedPhrase = useCallback(() => {
     dispatch(setSeedPhraseBackedUp(true));
     trackEvent({
       category: MetaMetricsEventCategory.Onboarding,
@@ -119,14 +125,18 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
     getPlatform() === PLATFORM_FIREFOX
       ? history.push(ONBOARDING_COMPLETION_ROUTE)
       : history.push(ONBOARDING_METAMETRICS);
-  };
+  }, [dispatch, hdEntropyIndex, history, trackEvent]);
 
   return (
-    <div
+    <Box
+      display={Display.Flex}
+      flexDirection={FlexDirection.Column}
+      justifyContent={JustifyContent.spaceBetween}
+      gap={6}
       className="recovery-phrase recovery-phrase__confirm"
       data-testid="confirm-recovery-phrase"
     >
-      <div className="recovery-phrase__content">
+      <Box>
         {showConfirmModal && (
           <ConfirmSrpModal
             isError={!matching}
@@ -176,7 +186,7 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
             setInputValue={handleQuizInput}
           />
         )}
-      </div>
+      </Box>
       <Box width={BlockSize.Full}>
         <Button
           variant={ButtonVariant.Primary}
@@ -190,7 +200,7 @@ export default function ConfirmRecoveryPhrase({ secretRecoveryPhrase = '' }) {
           {t('continue')}
         </Button>
       </Box>
-    </div>
+    </Box>
   );
 }
 

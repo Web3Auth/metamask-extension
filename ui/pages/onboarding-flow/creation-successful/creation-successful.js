@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { capitalize } from 'lodash';
@@ -16,7 +16,6 @@ import {
   BorderRadius,
   BlockSize,
   FontWeight,
-  TextColor,
 } from '../../../helpers/constants/design-system';
 import {
   Box,
@@ -32,13 +31,10 @@ import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
   ONBOARDING_PRIVACY_SETTINGS_ROUTE,
   ONBOARDING_PIN_EXTENSION_ROUTE,
-  ONBOARDING_PASSWORD_HINT,
 } from '../../../helpers/constants/routes';
 import {
-  getCurrentKeyring,
   getFirstTimeFlowType,
   getHDEntropyIndex,
-  getPasswordHint,
   getSocialLoginType,
 } from '../../../selectors';
 import {
@@ -57,7 +53,6 @@ export default function CreationSuccessful() {
   const trackEvent = useContext(MetaMetricsContext);
   const hdEntropyIndex = useSelector(getHDEntropyIndex);
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
-  const currentKeyring = useSelector(getCurrentKeyring);
   const seedPhraseBackedUp = useSelector(getSeedPhraseBackedUp);
   const userSocialLoginType = useSelector(getSocialLoginType);
   const learnMoreLink =
@@ -67,29 +62,27 @@ export default function CreationSuccessful() {
 
   const isBackupAndSyncEnabled = useSelector(selectIsBackupAndSyncEnabled);
 
-  const passwordHint = useSelector(getPasswordHint);
-
   const isWalletReady =
     firstTimeFlowType === FirstTimeFlowType.social ||
     firstTimeFlowType === FirstTimeFlowType.import ||
     seedPhraseBackedUp;
 
-  const renderTitle = () => {
+  const renderTitle = useMemo(() => {
     if (isWalletReady) {
       return t('yourWalletIsReady');
     }
 
     return t('yourWalletIsReadyRemind');
-  };
+  }, [firstTimeFlowType, seedPhraseBackedUp, t]);
 
-  const renderFoxPath = () => {
+  const renderFoxPath = useMemo(() => {
     if (isWalletReady) {
       return 'images/animations/fox/celebrating.lottie.json';
     }
 
     // TODO: Check figma teaching fox animation
     return 'images/animations/fox/celebrating.lottie.json';
-  };
+  }, [firstTimeFlowType, seedPhraseBackedUp]);
 
   const renderDetails1 = () => {
     if (firstTimeFlowType === FirstTimeFlowType.social) {
@@ -131,8 +124,16 @@ export default function CreationSuccessful() {
   };
 
   return (
-    <Box className="creation-successful" data-testid="wallet-ready">
-      <div className="creation-successful__content">
+    <Box
+      display={Display.Flex}
+      flexDirection={FlexDirection.Column}
+      justifyContent={JustifyContent.spaceBetween}
+      height={BlockSize.Full}
+      gap={6}
+      className="creation-successful"
+      data-testid="wallet-ready"
+    >
+      <Box>
         <Box
           display={Display.Flex}
           flexDirection={FlexDirection.Column}
@@ -148,7 +149,7 @@ export default function CreationSuccessful() {
             }}
             marginBottom={4}
           >
-            {renderTitle()}
+            {renderTitle}
           </Text>
           <Box
             width={BlockSize.Full}
@@ -161,7 +162,7 @@ export default function CreationSuccessful() {
               display={Display.Flex}
               style={{ width: '144px', height: '144px' }}
             >
-              <LottieAnimation path={renderFoxPath()} loop={false} autoplay />
+              <LottieAnimation path={renderFoxPath} loop autoplay />
             </Box>
           </Box>
           <Text variant={TextVariant.bodyMd} marginBottom={6}>
@@ -179,36 +180,6 @@ export default function CreationSuccessful() {
           className="creation-successful__settings-actions"
           gap={4}
         >
-          {currentKeyring && (
-            <ButtonBase
-              data-testid="password-hint-create"
-              borderRadius={BorderRadius.LG}
-              width={BlockSize.Full}
-              onClick={() => history.push(ONBOARDING_PASSWORD_HINT)}
-            >
-              <Box display={Display.Flex} alignItems={AlignItems.center}>
-                <Icon
-                  name={IconName.AddSquare}
-                  size={IconSize.Md}
-                  marginInlineEnd={3}
-                />
-                <Box>
-                  <Text variant={TextVariant.bodyMdMedium}>
-                    {t('passwordHintCreate')}
-                  </Text>
-                  {passwordHint && (
-                    <Text
-                      variant={TextVariant.bodySm}
-                      color={TextColor.textAlternative}
-                    >
-                      {passwordHint}
-                    </Text>
-                  )}
-                </Box>
-              </Box>
-              <Icon name={IconName.ArrowRight} size={IconSize.Sm} />
-            </ButtonBase>
-          )}
           <ButtonBase
             data-testid="manage-default-settings"
             borderRadius={BorderRadius.LG}
@@ -228,10 +199,9 @@ export default function CreationSuccessful() {
             <Icon name={IconName.ArrowRight} size={IconSize.Sm} />
           </ButtonBase>
         </Box>
-      </div>
+      </Box>
 
       <Box
-        className="creation-successful__actions"
         display={Display.Flex}
         flexDirection={FlexDirection.Column}
         justifyContent={JustifyContent.center}

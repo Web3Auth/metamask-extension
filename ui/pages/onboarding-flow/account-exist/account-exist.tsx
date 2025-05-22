@@ -46,7 +46,7 @@ export default function AccountExist() {
   const location = useLocation();
   const onboardingTraceCtx = location.state?.onboardingTraceCtx;
 
-  const onDone = async () => {
+  const onDone = () => {
     bufferedTrace({
       name: TraceName.OnboardingExistingSocialLogin,
       op: TraceOperation.OnboardingUserJourney,
@@ -80,8 +80,12 @@ export default function AccountExist() {
       data-testid="account-exist"
       display={Display.Flex}
       flexDirection={FlexDirection.Column}
+      justifyContent={JustifyContent.spaceBetween}
+      alignItems={AlignItems.center}
+      height={BlockSize.Full}
+      gap={6}
     >
-      <div className="account-exist__content">
+      <Box>
         <Box
           justifyContent={JustifyContent.flexStart}
           marginBottom={4}
@@ -124,17 +128,19 @@ export default function AccountExist() {
               src="images/account-status.png"
               width={276}
               height={276}
-              alt="Account already exists"
+              alt={t('accountAlreadyExistsTitle')}
+              style={{
+                alignSelf: 'center',
+              }}
             />
           </Box>
           <Text variant={TextVariant.bodyMd} marginBottom={6}>
             {t('accountAlreadyExistsLoginDescription', [userSocialLoginEmail])}
           </Text>
         </Box>
-      </div>
+      </Box>
 
       <Box
-        className="account-exist__actions"
         display={Display.Flex}
         flexDirection={FlexDirection.Column}
         justifyContent={JustifyContent.center}

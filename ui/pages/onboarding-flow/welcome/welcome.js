@@ -1,4 +1,11 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+} from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import {
@@ -10,11 +17,7 @@ import {
   ONBOARDING_ACCOUNT_NOT_FOUND,
   ONBOARDING_UNLOCK_ROUTE,
 } from '../../../helpers/constants/routes';
-import {
-  getCurrentKeyring,
-  getFirstTimeFlowType,
-  getShowTermsOfUse,
-} from '../../../selectors';
+import { getCurrentKeyring, getFirstTimeFlowType } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import { setFirstTimeFlowType, startOAuthLogin } from '../../../store/actions';
@@ -38,24 +41,20 @@ const WelcomePageState = {
   Login: 'Login',
 };
 
-export default function OnboardingWelcome() {
+export default function OnboardingWelcome({
+  pageState = WelcomePageState.Banner,
+  setPageState,
+}) {
   const dispatch = useDispatch();
   const history = useHistory();
   const currentKeyring = useSelector(getCurrentKeyring);
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
-  const showTermsOfUse = useSelector(getShowTermsOfUse);
   const [newAccountCreationInProgress, setNewAccountCreationInProgress] =
     useState(false);
 
-  // If the user has not agreed to the terms of use, we show the banner
-  // Otherwise, we show the login page
-  const [pageState, setPageState] = useState(
-    showTermsOfUse ? WelcomePageState.Banner : WelcomePageState.Login,
-  );
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const onboardingTraceCtxRef = useRef(null);
-  const socialLoginTraceCtxRef = useRef(null);
 
   // Don't allow users to come back to this screen after they
   // have already imported or created a wallet
@@ -86,7 +85,7 @@ export default function OnboardingWelcome() {
 
   const trackEvent = useContext(MetaMetricsContext);
 
-  const onCreateClick = async () => {
+  const onCreateClick = useCallback(async () => {
     setIsLoggingIn(true);
     setNewAccountCreationInProgress(true);
     dispatch(setFirstTimeFlowType(FirstTimeFlowType.create));
@@ -108,9 +107,9 @@ export default function OnboardingWelcome() {
       onboardingTraceCtx: onboardingTraceCtxRef.current,
     });
     ///: END:ONLY_INCLUDE_IF
-  };
+  }, [dispatch, history, trackEvent]);
 
-  const onImportClick = async () => {
+  const onImportClick = useCallback(async () => {
     setIsLoggingIn(true);
     await dispatch(setFirstTimeFlowType(FirstTimeFlowType.import));
     trackEvent({
@@ -131,121 +130,104 @@ export default function OnboardingWelcome() {
       onboardingTraceCtx: onboardingTraceCtxRef.current,
     });
     ///: END:ONLY_INCLUDE_IF
-  };
+  }, [dispatch, history, trackEvent]);
 
-  const onSocialLoginClick = async (socialConnectionType, loginOption) => {
-    setIsLoggingIn(true);
-    try {
-      setNewAccountCreationInProgress(true);
-      dispatch(setFirstTimeFlowType(FirstTimeFlowType.social));
+  const onSocialLoginClick = useCallback(
+    async (socialConnectionType, loginOption) => {
+      setIsLoggingIn(true);
+      try {
+        setNewAccountCreationInProgress(true);
+        dispatch(setFirstTimeFlowType(FirstTimeFlowType.social));
 
-      socialLoginTraceCtxRef.current = bufferedTrace({
-        name: TraceName.OnboardingSocialLoginAttempt,
-        op: TraceOperation.OnboardingUserJourney,
-        tags: { provider: socialConnectionType },
-        parentContext: onboardingTraceCtxRef.current,
-      });
+        bufferedTrace({
+          name: TraceName.OnboardingSocialLoginAttempt,
+          op: TraceOperation.OnboardingUserJourney,
+          tags: { provider: socialConnectionType },
+          parentContext: onboardingTraceCtxRef.current,
+        });
 
-      const isNewUser = await dispatch(startOAuthLogin(socialConnectionType));
+        const isNewUser = await dispatch(startOAuthLogin(socialConnectionType));
 
-      if (socialLoginTraceCtxRef.current) {
         bufferedEndTrace({ name: TraceName.OnboardingSocialLoginAttempt });
-        socialLoginTraceCtxRef.current = null;
-      }
 
-      // if user is not new user and login option is new, redirect to account exist page
-      if (loginOption === 'new' && !isNewUser) {
+        // if user is not new user and login option is new, redirect to account exist page
+        if (loginOption === 'new' && !isNewUser) {
+          bufferedTrace({
+            name: TraceName.OnboardingNewSocialAccountExists,
+            op: TraceOperation.OnboardingUserJourney,
+            parentContext: onboardingTraceCtxRef.current,
+          });
+          history.push(ONBOARDING_ACCOUNT_EXIST, {
+            onboardingTraceCtx: onboardingTraceCtxRef.current,
+          });
+          return;
+        } else if (loginOption === 'existing' && isNewUser) {
+          bufferedTrace({
+            name: TraceName.OnboardingExistingSocialAccountNotFound,
+            op: TraceOperation.OnboardingUserJourney,
+            parentContext: onboardingTraceCtxRef.current,
+          });
+          // if user is new user and login option is existing, redirect to account not found page
+          history.push(ONBOARDING_ACCOUNT_NOT_FOUND, {
+            onboardingTraceCtx: onboardingTraceCtxRef.current,
+          });
+          return;
+        }
+
+        if (!isNewUser) {
+          bufferedTrace({
+            name: TraceName.OnboardingExistingSocialLogin,
+            op: TraceOperation.OnboardingUserJourney,
+            parentContext: onboardingTraceCtxRef.current,
+          });
+          // redirect to login page
+          history.push(ONBOARDING_UNLOCK_ROUTE, {
+            onboardingTraceCtx: onboardingTraceCtxRef.current,
+          });
+          return;
+        }
+
+        trackEvent({
+          category: MetaMetricsEventCategory.Onboarding,
+          // TODO: add seedless onboarding event to MetaMetrics?
+          event: MetaMetricsEventName.OnboardingWalletCreationStarted,
+          properties: {
+            account_type: 'metamask',
+          },
+        });
+
         bufferedTrace({
-          name: TraceName.OnboardingNewSocialAccountExists,
+          name: TraceName.OnboardingNewSocialCreateWallet,
           op: TraceOperation.OnboardingUserJourney,
-          parentContext: socialLoginTraceCtxRef.current,
+          parentContext: onboardingTraceCtxRef.current,
         });
-        history.push(ONBOARDING_ACCOUNT_EXIST, {
-          onboardingTraceCtx: socialLoginTraceCtxRef.current,
+
+        ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+        history.push(ONBOARDING_CREATE_PASSWORD_ROUTE, {
+          onboardingTraceCtx: onboardingTraceCtxRef.current,
         });
-        return;
-      } else if (loginOption === 'existing' && isNewUser) {
-        bufferedTrace({
-          name: TraceName.OnboardingExistingSocialAccountNotFound,
-          op: TraceOperation.OnboardingUserJourney,
-          parentContext: socialLoginTraceCtxRef.current,
-        });
-        // if user is new user and login option is existing, redirect to account not found page
-        history.push(ONBOARDING_ACCOUNT_NOT_FOUND, {
-          onboardingTraceCtx: socialLoginTraceCtxRef.current,
-        });
-        return;
+        ///: END:ONLY_INCLUDE_IF
+      } finally {
+        setIsLoggingIn(false);
       }
+    },
+    [dispatch, history, trackEvent],
+  );
 
-      if (!isNewUser) {
-        bufferedTrace({
-          name: TraceName.OnboardingExistingSocialLogin,
-          op: TraceOperation.OnboardingUserJourney,
-          parentContext: socialLoginTraceCtxRef.current,
-        });
-        // redirect to login page
-        history.push(ONBOARDING_UNLOCK_ROUTE, {
-          onboardingTraceCtx: socialLoginTraceCtxRef.current,
-        });
-        return;
-      }
-
-      trackEvent({
-        category: MetaMetricsEventCategory.Onboarding,
-        // TODO: add seedless onboarding event to MetaMetrics?
-        event: MetaMetricsEventName.OnboardingWalletCreationStarted,
-        properties: {
-          account_type: 'metamask',
-        },
-      });
-
-      bufferedTrace({
-        name: TraceName.OnboardingNewSocialCreateWallet,
-        op: TraceOperation.OnboardingUserJourney,
-        parentContext: socialLoginTraceCtxRef.current,
-      });
-
-      ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-      history.push(ONBOARDING_CREATE_PASSWORD_ROUTE, {
-        onboardingTraceCtx: onboardingTraceCtxRef.current,
-      });
-      ///: END:ONLY_INCLUDE_IF
-    } finally {
-      setIsLoggingIn(false);
-    }
-  };
-
-  const handleLogin = (loginType, loginOption) => {
-    if (loginType === LOGIN_TYPE.SRP) {
-      if (loginOption === LOGIN_OPTION.NEW) {
-        onCreateClick();
+  const handleLogin = useCallback(
+    (loginType, loginOption) => {
+      if (loginType === LOGIN_TYPE.SRP) {
+        if (loginOption === LOGIN_OPTION.NEW) {
+          onCreateClick();
+        } else {
+          onImportClick();
+        }
       } else {
-        onImportClick();
+        onSocialLoginClick(loginType, loginOption);
       }
-    } else {
-      onSocialLoginClick(loginType, loginOption);
-    }
-  };
-
-  useEffect(() => {
-    const container = document.getElementById('app-content');
-    if (container) {
-      if (pageState === WelcomePageState.Banner) {
-        container.classList.remove('app-content--welcome-login');
-        container.classList.add('app-content--welcome-banner');
-      } else {
-        container.classList.remove('app-content--welcome-banner');
-        container.classList.add('app-content--welcome-login');
-      }
-    }
-
-    return () => {
-      if (container) {
-        container.classList.remove('app-content--welcome-banner');
-        container.classList.remove('app-content--welcome-login');
-      }
-    };
-  }, [pageState]);
+    },
+    [onCreateClick, onImportClick, onSocialLoginClick],
+  );
 
   return (
     <>
@@ -259,3 +241,8 @@ export default function OnboardingWelcome() {
     </>
   );
 }
+
+OnboardingWelcome.propTypes = {
+  pageState: PropTypes.oneOf(Object.values(WelcomePageState)).isRequired,
+  setPageState: PropTypes.func.isRequired,
+};

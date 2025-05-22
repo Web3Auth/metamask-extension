@@ -1,7 +1,6 @@
-import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
   AlignItems,
@@ -41,7 +40,15 @@ import { getPlatform } from '../../../../app/scripts/lib/util';
 import { PLATFORM_FIREFOX } from '../../../../shared/constants/app';
 import { TraceName, bufferedEndTrace } from '../../../../shared/lib/trace';
 
-export default function SkipSRPBackup({ onClose, secureYourWallet }) {
+type SkipSRPBackupProps = {
+  onClose: () => void;
+  secureYourWallet: () => void;
+};
+
+export default function SkipSRPBackup({
+  onClose,
+  secureYourWallet,
+}: SkipSRPBackupProps) {
   const [checked, setChecked] = useState(false);
   const t = useI18nContext();
   const dispatch = useDispatch();
@@ -49,7 +56,7 @@ export default function SkipSRPBackup({ onClose, secureYourWallet }) {
   const trackEvent = useContext(MetaMetricsContext);
   const history = useHistory();
 
-  async function onSkipSrpBackup() {
+  const onSkipSrpBackup = useCallback(async () => {
     await dispatch(setSeedPhraseBackedUp(false));
     trackEvent({
       category: MetaMetricsEventCategory.Onboarding,
@@ -66,7 +73,7 @@ export default function SkipSRPBackup({ onClose, secureYourWallet }) {
     } else {
       history.push(ONBOARDING_METAMETRICS);
     }
-  }
+  }, [dispatch, hdEntropyIndex, history, trackEvent]);
 
   return (
     <Modal
@@ -76,7 +83,7 @@ export default function SkipSRPBackup({ onClose, secureYourWallet }) {
       data-testid="skip-srp-backup-modal"
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent alignItems={AlignItems.center}>
         <ModalHeader onClose={onClose}>
           <Box textAlign={TextAlign.Center}>
             <Icon
@@ -131,7 +138,7 @@ export default function SkipSRPBackup({ onClose, secureYourWallet }) {
               {t('skipAccountSecuritySecureNow')}
             </Button>
             <Button
-              data-testid="skip-srp-backup"
+              data-testid="skip-srp-backup-button"
               size={ButtonSize.Lg}
               disabled={!checked}
               onClick={onSkipSrpBackup}
@@ -146,8 +153,3 @@ export default function SkipSRPBackup({ onClose, secureYourWallet }) {
     </Modal>
   );
 }
-
-SkipSRPBackup.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  secureYourWallet: PropTypes.func.isRequired,
-};
