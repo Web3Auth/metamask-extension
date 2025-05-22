@@ -53,7 +53,9 @@ export default function AccountExist() {
       tags: { source: 'account_status_redirect' },
       parentContext: onboardingTraceCtx,
     });
-    history.push(ONBOARDING_UNLOCK_ROUTE);
+    history.push(ONBOARDING_UNLOCK_ROUTE, {
+      onboardingTraceCtx,
+    });
   };
 
   const onLoginWithDifferentMethod = async () => {

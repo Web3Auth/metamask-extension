@@ -54,7 +54,9 @@ export default function AccountNotFound() {
       tags: { source: 'account_status_redirect' },
       parentContext: onboardingTraceCtx,
     });
-    history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
+    history.push(ONBOARDING_CREATE_PASSWORD_ROUTE, {
+      onboardingTraceCtx,
+    });
   };
 
   const onLoginWithDifferentMethod = async () => {

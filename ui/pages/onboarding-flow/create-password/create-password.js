@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
@@ -50,6 +50,12 @@ import PasswordForm from '../../../components/app/password-form/password-form';
 import { resetOAuthLoginState } from '../../../store/actions';
 import LoadingScreen from '../../../components/ui/loading-screen';
 ///: END:ONLY_INCLUDE_IF
+import {
+  bufferedTrace,
+  TraceName,
+  TraceOperation,
+  bufferedEndTrace,
+} from '../../../../shared/lib/trace';
 
 export default function CreatePassword({
   createNewAccount,
@@ -83,6 +89,9 @@ export default function CreatePassword({
     analyticsIframeQuery,
   )}`;
 
+  const location = useLocation();
+  const onboardingTraceCtx = location.state?.onboardingTraceCtx;
+
   useEffect(() => {
     if (currentKeyring && !newAccountCreationInProgress) {
       if (
@@ -104,6 +113,20 @@ export default function CreatePassword({
     firstTimeFlowType,
     newAccountCreationInProgress,
   ]);
+
+  useEffect(() => {
+    if (!onboardingTraceCtx) {
+      return undefined;
+    }
+    bufferedTrace({
+      name: TraceName.OnboardingPasswordSetupAttempt,
+      op: TraceOperation.OnboardingUserJourney,
+      parentContext: onboardingTraceCtx,
+    });
+    return () => {
+      bufferedEndTrace({ name: TraceName.OnboardingPasswordSetupAttempt });
+    };
+  }, [onboardingTraceCtx]);
 
   const handleBackClick = (e) => {
     e.preventDefault();
@@ -130,6 +153,10 @@ export default function CreatePassword({
       firstTimeFlowType === FirstTimeFlowType.import
     ) {
       await importWithRecoveryPhrase(password, secretRecoveryPhrase);
+
+      bufferedEndTrace({ name: TraceName.OnboardingExistingSrpImport });
+      bufferedEndTrace({ name: TraceName.OnboardingJourneyOverall });
+
       ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
       getPlatform() === PLATFORM_FIREFOX
         ? history.push(ONBOARDING_COMPLETION_ROUTE)
@@ -143,6 +170,8 @@ export default function CreatePassword({
           await createNewAccount(password);
         }
         if (firstTimeFlowType === FirstTimeFlowType.social) {
+          bufferedEndTrace({ name: TraceName.OnboardingNewSocialCreateWallet });
+          bufferedEndTrace({ name: TraceName.OnboardingJourneyOverall });
           ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
           history.push(ONBOARDING_METAMETRICS);
           ///: END:ONLY_INCLUDE_IF

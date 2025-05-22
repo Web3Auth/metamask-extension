@@ -36,6 +36,12 @@ import {
 } from '../../../shared/constants/metametrics';
 import { isFlask, isBeta } from '../../helpers/utils/build-types';
 import { SUPPORT_LINK } from '../../../shared/lib/ui-utils';
+import {
+  TraceName,
+  TraceOperation,
+  bufferedTrace,
+  bufferedEndTrace,
+} from '../../../shared/lib/trace';
 import { getCaretCoordinates } from './unlock-page.util';
 import ResetPasswordModal from './reset-password-modal';
 
@@ -94,6 +100,12 @@ export default class UnlockPage extends Component {
      */
     history: PropTypes.object.isRequired,
     /**
+     * Location object from react-router
+     */
+    location: PropTypes.shape({
+      state: PropTypes.object,
+    }),
+    /**
      * If isUnlocked is true will redirect to most recent route in history
      */
     isUnlocked: PropTypes.bool,
@@ -137,6 +149,8 @@ export default class UnlockPage extends Component {
 
   animationEventEmitter = new EventEmitter();
 
+  passwordLoginAttemptTraceCtx = null;
+
   UNSAFE_componentWillMount() {
     const { isUnlocked, history, isSeedlessPasswordOutdated } = this.props;
 
@@ -149,6 +163,25 @@ export default class UnlockPage extends Component {
       // first error if seedless password is outdated
       const { t } = this.context;
       this.setState({ error: t('passwordChangedRecently') });
+    }
+  }
+
+  componentDidMount() {
+    const { location } = this.props;
+    const { onboardingTraceCtx } = location?.state ?? {};
+    if (onboardingTraceCtx) {
+      this.passwordLoginAttemptTraceCtx = bufferedTrace({
+        name: TraceName.OnboardingPasswordLoginAttempt,
+        op: TraceOperation.OnboardingUserJourney,
+        parentContext: onboardingTraceCtx,
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.passwordLoginAttemptTraceCtx) {
+      bufferedEndTrace({ name: TraceName.OnboardingPasswordLoginAttempt });
+      this.passwordLoginAttemptTraceCtx = null;
     }
   }
 
@@ -180,6 +213,8 @@ export default class UnlockPage extends Component {
           isNewVisit: true,
         },
       );
+      bufferedEndTrace({ name: TraceName.OnboardingExistingSocialLogin });
+      bufferedEndTrace({ name: TraceName.OnboardingJourneyOverall });
     } catch (error) {
       await this.handleLoginError(error);
     } finally {

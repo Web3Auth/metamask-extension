@@ -39,6 +39,7 @@ import {
 // eslint-disable-next-line import/no-restricted-paths
 import { getPlatform } from '../../../../app/scripts/lib/util';
 import { PLATFORM_FIREFOX } from '../../../../shared/constants/app';
+import { TraceName, bufferedEndTrace } from '../../../../shared/lib/trace';
 
 export default function SkipSRPBackup({ onClose, secureYourWallet }) {
   const [checked, setChecked] = useState(false);
@@ -57,6 +58,8 @@ export default function SkipSRPBackup({ onClose, secureYourWallet }) {
         hd_entropy_index: hdEntropyIndex,
       },
     });
+    bufferedEndTrace({ name: TraceName.OnboardingNewSrpCreateWallet });
+    bufferedEndTrace({ name: TraceName.OnboardingJourneyOverall });
 
     if (getPlatform() === PLATFORM_FIREFOX) {
       history.push(ONBOARDING_COMPLETION_ROUTE);
