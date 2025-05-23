@@ -2206,9 +2206,6 @@
   "hideAdvancedDetails": {
     "message": "Απόκρυψη λεπτομερειών για προχωρημένους"
   },
-  "hideSeedPhrase": {
-    "message": "Απόκρυψη φράσης ανάκτησης"
-  },
   "hideSentitiveInfo": {
     "message": "Απόκρυψη ευαίσθητων πληροφοριών"
   },
@@ -4375,9 +4372,6 @@
   "revealSensitiveContent": {
     "message": "Αποκάλυψη ευαίσθητου περιεχομένου"
   },
-  "revealTheSeedPhrase": {
-    "message": "Αποκάλυψη φράσης ανάκτησης"
-  },
   "review": {
     "message": "Επανέλεγχος"
   },
@@ -4488,23 +4482,11 @@
   "seedPhraseEnterMissingWords": {
     "message": "Επιβεβαίωση της Μυστικής Φράσης Ανάκτησης"
   },
-  "seedPhraseIntroSidebarBulletOne": {
-    "message": "Γράψτε και αποθηκεύστε σε πολλά μυστικά μέρη"
-  },
-  "seedPhraseIntroSidebarBulletTwo": {
-    "message": "Αποθήκευση σε θυρίδα ασφαλείας"
-  },
   "seedPhraseIntroTitle": {
     "message": "Προστατεύστε το πορτοφόλι σας"
   },
   "seedPhraseReq": {
     "message": "Οι Μυστικές Φράσεις Ανάκτησης περέχουν 12, 15, 18, 21 ή 24 λέξεις"
-  },
-  "seedPhraseWriteDownDetails": {
-    "message": "Γράψτε αυτή τη Μυστική Φράση Ανάκτησης 12 λέξεων και αποθηκεύστε την σε ένα μέρος που εμπιστεύεστε και στο οποίο μόνο εσείς έχετε πρόσβαση."
-  },
-  "seedPhraseWriteDownHeader": {
-    "message": "Γράψτε τη Μυστική Φράση Ανάκτησης σας"
   },
   "select": {
     "message": "Επιλέξτε"
@@ -5828,9 +5810,6 @@
   },
   "time": {
     "message": "Ώρα"
-  },
-  "tips": {
-    "message": "Συμβουλές"
   },
   "tipsForUsingAWallet": {
     "message": "Συμβουλές για τη χρήση πορτοφολιού"
