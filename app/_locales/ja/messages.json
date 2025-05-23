@@ -1298,9 +1298,6 @@
   "createNewAccountHeader": {
     "message": "新しいアカウントの作成"
   },
-  "createNewWallet": {
-    "message": "新規ウォレットを作成"
-  },
   "createPassword": {
     "message": "パスワードを作成"
   },
@@ -2351,9 +2348,6 @@
   },
   "importAccountMsg": {
     "message": "インポートされたアカウントは、MetaMaskアカウントのシークレットリカバリーフレーズと関連付けられません。インポートされたアカウントの詳細を表示"
-  },
-  "importMyWallet": {
-    "message": "ウォレットをインポート"
   },
   "importNFT": {
     "message": "NFTをインポート"
@@ -3692,9 +3686,6 @@
   },
   "passwordNotLongEnough": {
     "message": "パスワードの長さが足りません"
-  },
-  "passwordSetupDetails": {
-    "message": "このパスワードは、このデバイスでのみMetaMaskウォレットのロックを解除します。MetaMaskはこのパスワードを復元できません。"
   },
   "passwordStrength": {
     "message": "パスワードの強度: $1",

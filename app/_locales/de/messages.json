@@ -1298,9 +1298,6 @@
   "createNewAccountHeader": {
     "message": "Neues Konto erstellen"
   },
-  "createNewWallet": {
-    "message": "Eine neue Wallet erstellen"
-  },
   "createPassword": {
     "message": "Passwort erstellen"
   },
@@ -2351,9 +2348,6 @@
   },
   "importAccountMsg": {
     "message": "Importierte Konten werden nicht mit der geheimen Wiederherstellungsphrase von MetaMask verknüpft. Erfahren Sie mehr über importierte Konten."
-  },
-  "importMyWallet": {
-    "message": "Meine Wallet importieren"
   },
   "importNFT": {
     "message": "NFT importieren"
@@ -3692,9 +3686,6 @@
   },
   "passwordNotLongEnough": {
     "message": "Passwort nicht lang genug"
-  },
-  "passwordSetupDetails": {
-    "message": "Dieses Passwort wird Ihre MetaMask-Wallet nur auf diesem Gerät entsperren. MetaMask kann dieses Passwort nicht wiederherstellen."
   },
   "passwordStrength": {
     "message": "Passwortstärke: $1",

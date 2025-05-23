@@ -1298,9 +1298,6 @@
   "createNewAccountHeader": {
     "message": "Crie uma conta"
   },
-  "createNewWallet": {
-    "message": "Criar uma nova carteira"
-  },
   "createPassword": {
     "message": "Criar senha"
   },
@@ -2351,9 +2348,6 @@
   },
   "importAccountMsg": {
     "message": "Contas importadas não serão associadas à sua Frase de Recuperação Secreta na MetaMask. Saiba mais sobre contas importadas"
-  },
-  "importMyWallet": {
-    "message": "Importar minha carteira"
   },
   "importNFT": {
     "message": "Importar NFT"
@@ -3692,9 +3686,6 @@
   },
   "passwordNotLongEnough": {
     "message": "A senha não é longa o suficiente"
-  },
-  "passwordSetupDetails": {
-    "message": "Essa senha desbloqueará sua carteira MetaMask apenas neste dispositivo. A MetaMask não é capaz de recuperar essa senha."
   },
   "passwordStrength": {
     "message": "Segurança da senha: $1",
