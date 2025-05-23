@@ -4476,12 +4476,6 @@
   "seeDetails": {
     "message": "Voir les détails"
   },
-  "seedPhraseConfirm": {
-    "message": "Confirmer la phrase secrète de récupération"
-  },
-  "seedPhraseEnterMissingWords": {
-    "message": "Confirmer la phrase secrète de récupération"
-  },
   "seedPhraseIntroTitle": {
     "message": "Sécuriser votre portefeuille"
   },

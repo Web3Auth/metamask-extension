@@ -4476,12 +4476,6 @@
   "seeDetails": {
     "message": "Ver detalhes"
   },
-  "seedPhraseConfirm": {
-    "message": "Confirmar Frase de Recuperação Secreta"
-  },
-  "seedPhraseEnterMissingWords": {
-    "message": "Confirmar Frase de Recuperação Secreta"
-  },
   "seedPhraseIntroTitle": {
     "message": "Proteja sua carteira"
   },

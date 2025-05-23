@@ -4476,12 +4476,6 @@
   "seeDetails": {
     "message": "См. подробности"
   },
-  "seedPhraseConfirm": {
-    "message": "Подтвердите секретную фразу для восстановления"
-  },
-  "seedPhraseEnterMissingWords": {
-    "message": "Подтвердите секретную фразу для восстановления"
-  },
   "seedPhraseIntroTitle": {
     "message": "Защитите свой кошелек"
   },

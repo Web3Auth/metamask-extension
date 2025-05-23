@@ -4476,12 +4476,6 @@
   "seeDetails": {
     "message": "Details anzeigen"
   },
-  "seedPhraseConfirm": {
-    "message": "Geheime Wiederherstellungsphrase bestätigen"
-  },
-  "seedPhraseEnterMissingWords": {
-    "message": "Geheime Wiederherstellungsphrase bestätigen"
-  },
   "seedPhraseIntroTitle": {
     "message": "Sichern Sie Ihre Wallet"
   },

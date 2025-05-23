@@ -4476,12 +4476,6 @@
   "seeDetails": {
     "message": "Δείτε λεπτομέρειες"
   },
-  "seedPhraseConfirm": {
-    "message": "Επιβεβαίωση της Μυστικής Φράσης Ανάκτησης"
-  },
-  "seedPhraseEnterMissingWords": {
-    "message": "Επιβεβαίωση της Μυστικής Φράσης Ανάκτησης"
-  },
   "seedPhraseIntroTitle": {
     "message": "Προστατεύστε το πορτοφόλι σας"
   },
