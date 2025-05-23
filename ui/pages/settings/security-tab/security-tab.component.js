@@ -107,6 +107,7 @@ export default class SecurityTab extends PureComponent {
     metaMetricsDataDeletionId: PropTypes.string,
     hdEntropyIndex: PropTypes.number,
     hasMultipleHdKeyrings: PropTypes.bool,
+    socialLoginEnabled: PropTypes.bool,
   };
 
   state = {
@@ -167,7 +168,7 @@ export default class SecurityTab extends PureComponent {
 
   renderSeedWords() {
     const { t } = this.context;
-    const { history, hasMultipleHdKeyrings } = this.props;
+    const { history, hasMultipleHdKeyrings, socialLoginEnabled } = this.props;
 
     return (
       <>
@@ -175,11 +176,13 @@ export default class SecurityTab extends PureComponent {
           ref={this.settingsRefs[1]}
           className="settings-page__security-tab-sub-header"
         >
-          {t('secretRecoveryPhrase')}
+          {t('securitySrpTitle')}
         </div>
         <div className="settings-page__content-padded">
           <div className="settings-page__content-description">
-            {t('securitySrpDescription')}
+            {socialLoginEnabled
+              ? t('securitySrpSocialLoginDescription')
+              : t('securitySrpDescription')}
           </div>
           <Button
             data-testid="reveal-seed-words"
@@ -206,7 +209,7 @@ export default class SecurityTab extends PureComponent {
                   location: 'Settings',
                 },
               });
-              if (hasMultipleHdKeyrings) {
+              if (hasMultipleHdKeyrings || socialLoginEnabled) {
                 history.push({
                   pathname: REVEAL_SRP_LIST_ROUTE,
                 });
@@ -215,7 +218,7 @@ export default class SecurityTab extends PureComponent {
               this.setState({ srpQuizModalVisible: true });
             }}
           >
-            {hasMultipleHdKeyrings
+            {hasMultipleHdKeyrings || socialLoginEnabled
               ? t('securitySrpWalletRecovery')
               : t('revealSeedWords')}
           </Button>
