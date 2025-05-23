@@ -34,7 +34,7 @@ export function getFirstTimeFlowTypeRouteAfterUnlock(state) {
   const { firstTimeFlowType } = state.metamask;
 
   if (firstTimeFlowType === FirstTimeFlowType.create) {
-    return ONBOARDING_CREATE_PASSWORD_ROUTE;
+    return ONBOARDING_METAMETRICS;
   } else if (firstTimeFlowType === FirstTimeFlowType.import) {
     return ONBOARDING_IMPORT_WITH_SRP_ROUTE;
   } else if (firstTimeFlowType === FirstTimeFlowType.restore) {

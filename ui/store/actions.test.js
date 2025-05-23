@@ -255,7 +255,9 @@ describe('Actions', () => {
         { type: 'HIDE_LOADING_INDICATION' },
       ];
 
-      await store.dispatch(actions.restoreSocialBackupAndGetSeedPhrase('password'));
+      await store.dispatch(
+        actions.restoreSocialBackupAndGetSeedPhrase('password'),
+      );
 
       expect(fetchAllSeedPhrasesStub.callCount).toStrictEqual(1);
       expect(createNewVaultAndRestoreStub.callCount).toStrictEqual(1);
@@ -286,7 +288,9 @@ describe('Actions', () => {
         { type: 'HIDE_LOADING_INDICATION' },
       ];
 
-      await store.dispatch(actions.restoreSocialBackupAndGetSeedPhrase('password'));
+      await store.dispatch(
+        actions.restoreSocialBackupAndGetSeedPhrase('password'),
+      );
 
       expect(fetchAllSeedPhrasesStub.callCount).toStrictEqual(1);
       expect(createNewVaultAndRestoreStub.callCount).toStrictEqual(0);
@@ -313,6 +317,30 @@ describe('Actions', () => {
       ).rejects.toThrow('error');
       console.log('store.getActions()', store.getActions());
       expect(store.getActions()).toStrictEqual(expectedActions);
+    });
+  });
+
+  describe('#changePassword', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should change the password for both seedless onboarding and keyring controller', async () => {
+      const store = mockStore();
+      const oldPassword = 'old-password';
+      const newPassword = 'new-password';
+
+      const changePasswordStub = background.changePassword.callsFake(
+        (_, __, cb) => cb(),
+      );
+
+      setBackgroundConnection(background);
+
+      await store.dispatch(actions.changePassword(newPassword, oldPassword));
+
+      expect(
+        changePasswordStub.calledOnceWith(newPassword, oldPassword),
+      ).toStrictEqual(true);
     });
   });
 
