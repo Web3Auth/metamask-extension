@@ -26,12 +26,12 @@ import {
 import SRPQuiz from '../../../components/app/srp-quiz-modal/SRPQuiz';
 import {
   Button,
-  ButtonSize,
   Icon,
   IconSize,
   IconName,
   Box,
   Text,
+  ButtonSize,
 } from '../../../components/component-library';
 import TextField from '../../../components/ui/text-field';
 import ToggleButton from '../../../components/ui/toggle-button';
@@ -177,10 +177,15 @@ export default class SecurityTab extends PureComponent {
           {t('secretRecoveryPhrase')}
         </div>
         <div className="settings-page__content-padded">
+          <div className="settings-page__content-description">
+            {t('securitySrpDescription')}
+          </div>
           <Button
             data-testid="reveal-seed-words"
             type="danger"
             size={ButtonSize.Lg}
+            block
+            marginTop={4}
             onClick={(event) => {
               event.preventDefault();
               this.context.trackEvent({
@@ -209,7 +214,9 @@ export default class SecurityTab extends PureComponent {
               this.setState({ srpQuizModalVisible: true });
             }}
           >
-            {t('revealSeedWords')}
+            {hasMultipleHdKeyrings
+              ? t('securitySrpWalletRecovery')
+              : t('revealSeedWords')}
           </Button>
           {this.state.srpQuizModalVisible && (
             <SRPQuiz

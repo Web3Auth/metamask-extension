@@ -3996,12 +3996,6 @@
   "password": {
     "message": "Password"
   },
-  "passwordToggleHide": {
-    "message": "Hide Password"
-  },
-  "passwordToggleShow": {
-    "message": "Show Password"
-  },
   "passwordNotLongEnough": {
     "message": "Password not long enough"
   },
@@ -4014,6 +4008,12 @@
   },
   "passwordTermsWarning": {
     "message": "MetaMask can’t recover this password."
+  },
+  "passwordToggleHide": {
+    "message": "Hide Password"
+  },
+  "passwordToggleShow": {
+    "message": "Show Password"
   },
   "passwordsDontMatch": {
     "message": "Passwords don't match"
@@ -4854,6 +4854,15 @@
   "securityProviderPoweredBy": {
     "message": "Powered by $1",
     "description": "The security provider that is providing data"
+  },
+  "securitySrpBackupSrp": {
+    "message": "Back up Secret Recovery Phrase"
+  },
+  "securitySrpDescription": {
+    "message": "Back up your Secret Recovery Phrase. Be sure to store your Secret Recovery Phrase in a safe place that only you can access and won’t forget."
+  },
+  "securitySrpWalletRecovery": {
+    "message": "Wallet recovery"
   },
   "seeAllPermissions": {
     "message": "See all permissions",
