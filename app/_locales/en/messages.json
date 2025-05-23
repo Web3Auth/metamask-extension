@@ -2086,6 +2086,9 @@
   "enterOptionalPassword": {
     "message": "Enter optional password"
   },
+  "enterPassword": {
+    "message": "Enter password"
+  },
   "enterPasswordContinue": {
     "message": "Enter password to continue"
   },
@@ -6622,9 +6625,6 @@
   },
   "unlock": {
     "message": "Unlock"
-  },
-  "unlockMessage": {
-    "message": "The decentralized web awaits"
   },
   "unpin": {
     "message": "Unpin"
