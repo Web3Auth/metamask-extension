@@ -1872,6 +1872,8 @@ export default class MetamaskController extends EventEmitter {
       this.smartTransactionsController,
     ];
 
+    const existingServices = [this.oauthService];
+
     /** @type {import('./controller-init/utils').InitFunctions} */
     const controllerInitFunctions = {
       ExecutionService: ExecutionServiceInit,
@@ -1912,6 +1914,7 @@ export default class MetamaskController extends EventEmitter {
       controllersByName,
     } = this.#initControllers({
       existingControllers,
+      existingServices,
       initFunctions: controllerInitFunctions,
       initState,
     });
@@ -8901,7 +8904,12 @@ export default class MetamaskController extends EventEmitter {
     return this.networkController.state.selectedNetworkClientId;
   }
 
-  #initControllers({ existingControllers, initFunctions, initState }) {
+  #initControllers({
+    existingControllers,
+    existingServices,
+    initFunctions,
+    initState,
+  }) {
     const initRequest = {
       getFlatState: this.getState.bind(this),
       getGlobalChainId: this.#getGlobalChainId.bind(this),
@@ -8930,6 +8938,7 @@ export default class MetamaskController extends EventEmitter {
     return initControllers({
       baseControllerMessenger: this.controllerMessenger,
       existingControllers,
+      existingServices,
       initFunctions,
       initRequest,
     });

@@ -17,6 +17,7 @@ import {
   MetaMetricsEventPayload,
 } from '../../../shared/constants/metametrics';
 import { Controller, ControllerFlatState } from './controller-list';
+import OAuthService from '../services/oauth/oauth-service';
 
 /** The supported controller names. */
 export type ControllerName = Controller['name'];
@@ -24,6 +25,12 @@ export type ControllerName = Controller['name'];
 /** All controller types by name. */
 export type ControllerByName = {
   [name in ControllerName]: Controller & { name: name };
+};
+
+export type ServiceName = OAuthService['name'];
+
+export type ServiceByName = {
+  [name in ServiceName]: OAuthService & { name: name };
 };
 
 /**
@@ -82,6 +89,14 @@ export type ControllerInitRequest<
   getController<Name extends ControllerName>(
     name: Name,
   ): ControllerByName[Name];
+
+  /**
+   * Retrieve a service instance by name.
+   * Throws an error if the service is not yet initialized.
+   *
+   * @param name - The name of the service to retrieve.
+   */
+  getService<Name extends ServiceName>(name: Name): ServiceByName[Name];
 
   /**
    * Retrieve the flat state for all controllers.

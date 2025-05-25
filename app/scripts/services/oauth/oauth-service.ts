@@ -11,6 +11,8 @@ import type {
 const audience = 'metamask';
 
 export default class OAuthService {
+  name = 'OAuthService';
+
   #env: OAuthLoginEnv;
 
   #webAuthenticator: WebAuthenticator;
