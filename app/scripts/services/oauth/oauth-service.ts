@@ -8,6 +8,8 @@ import type {
   WebAuthenticator,
 } from './types';
 
+const audience = 'metamask';
+
 export default class OAuthService {
   #env: OAuthLoginEnv;
 
@@ -71,6 +73,28 @@ export default class OAuthService {
     return loginResult;
   }
 
+  async getNewRefreshToken({
+    connection,
+    refreshToken,
+  }: {
+    connection: AuthConnection;
+    refreshToken: string;
+  }): Promise<{ idTokens: string[]; refreshToken: string }> {
+    const loginHandler = createLoginHandler(
+      connection,
+      '', // create handler for get refresh token function only, no need redirect URI
+      this.#env,
+    );
+
+    const refreshTokenData = await loginHandler.refreshAuthToken(refreshToken);
+    const idToken = refreshTokenData.jwt_tokens[audience];
+
+    return {
+      idTokens: [idToken],
+      refreshToken: refreshTokenData.refresh_token,
+    };
+  }
+
   /**
    * Handle the OAuth response from the social login provider and get the Jwt Token in exchange.
    *
@@ -106,7 +130,6 @@ export default class OAuthService {
     authCode: string,
   ): Promise<OAuthLoginResult> {
     const { authConnectionId, groupedAuthConnectionId } = this.#env;
-    const audience = 'metamask';
 
     const authTokenData = await loginHandler.getAuthIdToken(authCode);
     const idToken = authTokenData.jwt_tokens[audience];
@@ -119,6 +142,7 @@ export default class OAuthService {
       idTokens: [idToken],
       authConnection: loginHandler.authConnection,
       socialLoginEmail: userInfo.email,
+      refreshToken: authTokenData.refresh_token,
     };
   }
 

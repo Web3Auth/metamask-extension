@@ -59,6 +59,7 @@ export class GoogleLoginHandler extends BaseLoginHandler {
       redirect_uri: redirectUri,
       login_provider: this.authConnection,
       network: web3AuthNetwork,
+      access_type: 'offline', // This is used to get the refresh token
     };
 
     return JSON.stringify(requestData);

@@ -76,6 +76,25 @@ export abstract class BaseLoginHandler {
   abstract getUserInfo(idToken: string): Promise<OAuthUserInfo>;
 
   /**
+   * Refresh the JWT Token using the refresh token.
+   *
+   * @param refreshToken - The refresh token from the Web3Auth Authentication Server.
+   * @returns The JWT Token from the Web3Auth Authentication Server and new refresh token.
+   */
+  async refreshAuthToken(refreshToken: string): Promise<AuthTokenResponse> {
+    const { web3AuthNetwork } = this.options;
+    const requestData = {
+      client_id: this.options.oAuthClientId,
+      login_provider: this.authConnection,
+      network: web3AuthNetwork,
+      refresh_token: refreshToken,
+      grant_type: 'refresh_token', // specify refresh token flow
+    };
+    const res = await this.requestAuthToken(JSON.stringify(requestData));
+    return res;
+  }
+
+  /**
    * Make a request to the Web3Auth Authentication Server to get the JWT Token.
    *
    * @param requestData - The request data for the Web3Auth Authentication Server.
