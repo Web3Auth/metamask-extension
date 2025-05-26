@@ -86,28 +86,16 @@
     height: 24px;
   }
 
-  &__or {
-    position: relative;
+  &__plain-button {
+    height: 48px;
 
-    &::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 50%;
-      width: 100%;
-      height: 1px;
-      background-color: var(--color-border-muted);
+    &:hover {
+      background-color: var(--color-background-hover);
     }
-  }
 
-  &__or-text {
-    background-color: var(--color-background-default);
-    padding: 0 10px;
-    width: fit-content;
-    margin: auto;
-    position: relative;
-    z-index: 1;
-    text-transform: uppercase;
+    &:active {
+      background-color: var(--color-background-pressed);
+    }
   }
 
   &__buttons {
