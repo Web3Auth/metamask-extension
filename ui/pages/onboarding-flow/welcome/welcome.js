@@ -135,19 +135,9 @@ export default function OnboardingWelcome({
 
         // if user is not new user and login option is new, redirect to account exist page
         if (loginOption === 'new' && !isNewUser) {
-          bufferedTrace({
-            name: TraceName.OnboardingNewSocialAccountExists,
-            op: TraceOperation.OnboardingUserJourney,
-            parentContext: onboardingParentContext.current,
-          });
           history.push(ONBOARDING_ACCOUNT_EXIST);
           return;
         } else if (loginOption === 'existing' && isNewUser) {
-          bufferedTrace({
-            name: TraceName.OnboardingExistingSocialAccountNotFound,
-            op: TraceOperation.OnboardingUserJourney,
-            parentContext: onboardingParentContext.current,
-          });
           // if user is new user and login option is existing, redirect to account not found page
           history.push(ONBOARDING_ACCOUNT_NOT_FOUND);
           return;

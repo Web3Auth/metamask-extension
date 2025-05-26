@@ -68,13 +68,21 @@ export default function AccountNotFound() {
       // if the onboarding flow is not seedless, redirect to the welcome page
       history.push(ONBOARDING_WELCOME_ROUTE);
     }
-  }, [firstTimeFlowType, history]);
-
-  useEffect(() => {
-    bufferedEndTrace({
-      name: TraceName.OnboardingExistingSocialAccountNotFound,
-    });
-  }, []);
+    if (firstTimeFlowType === FirstTimeFlowType.social) {
+      bufferedTrace({
+        name: TraceName.OnboardingExistingSocialAccountNotFound,
+        op: TraceOperation.OnboardingUserJourney,
+        parentContext: onboardingParentContext.current,
+      });
+    }
+    return () => {
+      if (firstTimeFlowType === FirstTimeFlowType.social) {
+        bufferedEndTrace({
+          name: TraceName.OnboardingExistingSocialAccountNotFound,
+        });
+      }
+    };
+  }, [firstTimeFlowType, history, onboardingParentContext]);
 
   return (
     <Box

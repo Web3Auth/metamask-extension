@@ -66,11 +66,19 @@ export default function AccountExist() {
     if (firstTimeFlowType !== FirstTimeFlowType.social) {
       history.push(ONBOARDING_WELCOME_ROUTE);
     }
-  }, [firstTimeFlowType, history]);
-
-  useEffect(() => {
-    bufferedEndTrace({ name: TraceName.OnboardingNewSocialAccountExists });
-  }, []);
+    if (firstTimeFlowType === FirstTimeFlowType.social) {
+      bufferedTrace({
+        name: TraceName.OnboardingNewSocialAccountExists,
+        op: TraceOperation.OnboardingUserJourney,
+        parentContext: onboardingParentContext.current,
+      });
+    }
+    return () => {
+      if (firstTimeFlowType === FirstTimeFlowType.social) {
+        bufferedEndTrace({ name: TraceName.OnboardingNewSocialAccountExists });
+      }
+    };
+  }, [firstTimeFlowType, history, onboardingParentContext]);
 
   return (
     <Box
