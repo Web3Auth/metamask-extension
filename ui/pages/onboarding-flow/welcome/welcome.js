@@ -14,19 +14,12 @@ import {
 import { getCurrentKeyring, getFirstTimeFlowType } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
-import { useSentryTrace } from '../../../contexts/sentry-trace';
 import { setFirstTimeFlowType, startOAuthLogin } from '../../../store/actions';
 import LoadingScreen from '../../../components/ui/loading-screen';
 import {
   MetaMetricsEventCategory,
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
-import {
-  bufferedTrace,
-  bufferedEndTrace,
-  TraceName,
-  TraceOperation,
-} from '../../../../shared/lib/trace';
 import WelcomeLogin from './welcome-login';
 import WelcomeBanner from './welcome-banner';
 import { LOGIN_OPTION, LOGIN_TYPE } from './types';
@@ -48,7 +41,6 @@ export default function OnboardingWelcome({
     useState(false);
 
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const { onboardingParentContext } = useSentryTrace();
 
   // Don't allow users to come back to this screen after they
   // have already imported or created a wallet
@@ -69,7 +61,6 @@ export default function OnboardingWelcome({
     firstTimeFlowType,
     newAccountCreationInProgress,
   ]);
-
   const trackEvent = useContext(MetaMetricsContext);
 
   const onCreateClick = useCallback(async () => {
@@ -83,16 +74,11 @@ export default function OnboardingWelcome({
         account_type: 'metamask',
       },
     });
-    bufferedTrace({
-      name: TraceName.OnboardingNewSrpCreateWallet,
-      op: TraceOperation.OnboardingUserJourney,
-      parentContext: onboardingParentContext.current,
-    });
 
     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
     history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
     ///: END:ONLY_INCLUDE_IF
-  }, [dispatch, history, trackEvent, onboardingParentContext]);
+  }, [dispatch, history, trackEvent]);
 
   const onImportClick = useCallback(async () => {
     setIsLoggingIn(true);
@@ -104,16 +90,11 @@ export default function OnboardingWelcome({
         account_type: 'imported',
       },
     });
-    bufferedTrace({
-      name: TraceName.OnboardingExistingSrpImport,
-      op: TraceOperation.OnboardingUserJourney,
-      parentContext: onboardingParentContext.current,
-    });
 
     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
     history.push(ONBOARDING_IMPORT_WITH_SRP_ROUTE);
     ///: END:ONLY_INCLUDE_IF
-  }, [dispatch, history, trackEvent, onboardingParentContext]);
+  }, [dispatch, history, trackEvent]);
 
   const handleSocialLogin = useCallback(
     async (socialConnectionType) => {
@@ -144,31 +125,29 @@ export default function OnboardingWelcome({
           ///: END:ONLY_INCLUDE_IF
         } else {
           history.push(ONBOARDING_ACCOUNT_EXIST);
-          return;
-        } else if (loginOption === 'existing' && isNewUser) {
-          // if user is new user and login option is existing, redirect to account not found page
-          history.push(ONBOARDING_ACCOUNT_NOT_FOUND);
-          return;
         }
+      } finally {
+        setIsLoggingIn(false);
+      }
+    },
+    [dispatch, handleSocialLogin, trackEvent, history],
+  );
 
-        if (!isNewUser) {
-          // redirect to login page
-          history.push(ONBOARDING_UNLOCK_ROUTE);
-          return;
-        }
+  const onSocialLoginImportClick = useCallback(
+    async (socialConnectionType) => {
+      setIsLoggingIn(true);
+      dispatch(setFirstTimeFlowType(FirstTimeFlowType.socialImport));
+
+      try {
+        const isNewUser = await handleSocialLogin(socialConnectionType);
 
         trackEvent({
           category: MetaMetricsEventCategory.Onboarding,
+
           event: MetaMetricsEventName.OnboardingWalletCreationStarted,
           properties: {
             account_type: 'metamask',
           },
-        });
-
-        bufferedTrace({
-          name: TraceName.OnboardingNewSocialCreateWallet,
-          op: TraceOperation.OnboardingUserJourney,
-          parentContext: onboardingParentContext.current,
         });
 
         if (isNewUser) {

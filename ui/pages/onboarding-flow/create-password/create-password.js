@@ -53,13 +53,6 @@ import PasswordForm from '../../../components/app/password-form/password-form';
 import LoadingScreen from '../../../components/ui/loading-screen';
 import { resetOAuthLoginState } from '../../../store/actions';
 ///: END:ONLY_INCLUDE_IF
-import {
-  bufferedTrace,
-  TraceName,
-  TraceOperation,
-  bufferedEndTrace,
-} from '../../../../shared/lib/trace';
-import { useSentryTrace } from '../../../contexts/sentry-trace';
 
 export default function CreatePassword({
   createNewAccount,
@@ -93,8 +86,6 @@ export default function CreatePassword({
   const analyticsIframeUrl = `https://start.metamask.io/?${new URLSearchParams(
     analyticsIframeQuery,
   )}`;
-
-  const { onboardingParentContext } = useSentryTrace();
 
   useEffect(() => {
     if (currentKeyring && !newAccountCreationInProgress) {
@@ -143,9 +134,6 @@ export default function CreatePassword({
       firstTimeFlowType === FirstTimeFlowType.import
     ) {
       await importWithRecoveryPhrase(password, secretRecoveryPhrase);
-
-      bufferedEndTrace({ name: TraceName.OnboardingExistingSrpImport });
-      bufferedEndTrace({ name: TraceName.OnboardingJourneyOverall });
 
       ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
       getPlatform() === PLATFORM_FIREFOX
