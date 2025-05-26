@@ -4018,7 +4018,7 @@
     "message": "Your password was changed recently."
   },
   "passwordNotLongEnough": {
-    "message": " Password must have at least 8 characters"
+    "message": "Password not long enough"
   },
   "passwordStrength": {
     "message": "Password strength: $1",
@@ -4904,15 +4904,6 @@
   "securityMessageLinkForNetworks": {
     "message": "network scams and security risks"
   },
-<<<<<<< HEAD
-  "securityPasswordChange": {
-    "message": "Change password"
-  },
-  "securityPrivacyPath": {
-    "message": "Settings > Security & Privacy."
-  },
-=======
->>>>>>> origin/feat/seedless-password-sync-with-ui
   "securityProviderPoweredBy": {
     "message": "Powered by $1",
     "description": "The security provider that is providing data"

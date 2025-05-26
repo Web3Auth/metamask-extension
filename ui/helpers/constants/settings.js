@@ -210,6 +210,13 @@ const SETTINGS_CONSTANTS = [
   // securityAndPrivacy settingsRefs[3]
   {
     tabMessage: (t) => t('securityAndPrivacy'),
+    sectionMessage: (t) => t('securityChangePasswordChange'),
+    descriptionMessage: (t) => t('securityChangePasswordChange'),
+    route: SECURITY_PASSWORD_CHANGE_ROUTE,
+    icon: 'fa fa-lock',
+  },
+  {
+    tabMessage: (t) => t('securityAndPrivacy'),
     sectionMessage: (t) => t('usePhishingDetection'),
     descriptionMessage: (t) => t('usePhishingDetectionDescription'),
     route: `${SECURITY_ROUTE}#phishing-detection`,

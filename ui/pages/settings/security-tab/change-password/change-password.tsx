@@ -5,9 +5,7 @@ import { useHistory } from 'react-router-dom';
 import {
   Box,
   Button,
-  ButtonSize,
   FormTextField,
-  FormTextFieldSize,
   Text,
   TextFieldType,
 } from '../../../../components/component-library';
@@ -87,13 +85,6 @@ const ChangePassword = () => {
       console.error(error);
       setStep(ChangePasswordSteps.VerifyCurrentPassword);
     }
-  };
-
-  const onSubmitChangePasswordForm = () => {
-    if (!newPassword) {
-      return;
-    }
-    setShowChangePasswordWarning(true);
   };
 
   const onSubmitChangePasswordForm = () => {
