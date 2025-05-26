@@ -174,13 +174,6 @@ class UnlockPage extends Component {
     });
   }
 
-  componentWillUnmount() {
-    if (this.passwordLoginAttemptTraceCtx) {
-      bufferedEndTrace({ name: TraceName.OnboardingPasswordLoginAttempt });
-      this.passwordLoginAttemptTraceCtx = null;
-    }
-  }
-
   componentDidUpdate(prevProps) {
     if (
       !prevProps.isSeedlessPasswordOutdated &&
@@ -219,6 +212,10 @@ class UnlockPage extends Component {
           isNewVisit: true,
         },
       );
+      if (this.passwordLoginAttemptTraceCtx) {
+        bufferedEndTrace({ name: TraceName.OnboardingPasswordLoginAttempt });
+        this.passwordLoginAttemptTraceCtx = null;
+      }
       bufferedEndTrace({ name: TraceName.OnboardingExistingSocialLogin });
       bufferedEndTrace({ name: TraceName.OnboardingJourneyOverall });
     } catch (error) {
