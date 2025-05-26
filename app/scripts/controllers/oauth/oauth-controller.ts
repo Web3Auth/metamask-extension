@@ -82,6 +82,18 @@ export default class OAuthController extends BaseController<
         url: loginHandler.getAuthUrl(),
       });
       providerLoginSuccess = true;
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
+      bufferedTrace({
+        name: TraceName.OnboardingOAuthProviderLoginError,
+        op: TraceOperation.OnboardingError,
+        tags: { errorMessage },
+      });
+      bufferedEndTrace({ name: TraceName.OnboardingOAuthProviderLoginError });
+
+      throw error;
     } finally {
       bufferedEndTrace({
         name: TraceName.OnboardingOAuthProviderLogin,
@@ -107,6 +119,20 @@ export default class OAuthController extends BaseController<
       );
       getAuthTokensSuccess = true;
       return loginResult;
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
+      bufferedTrace({
+        name: TraceName.OnboardingOAuthBYOAServerGetAuthTokensError,
+        op: TraceOperation.OnboardingError,
+        tags: { errorMessage },
+      });
+      bufferedEndTrace({
+        name: TraceName.OnboardingOAuthBYOAServerGetAuthTokensError,
+      });
+
+      throw error;
     } finally {
       bufferedEndTrace({
         name: TraceName.OnboardingOAuthBYOAServerGetAuthTokens,

@@ -233,6 +233,17 @@ class UnlockPage extends Component {
     let errorReason;
     let isLocked = false;
 
+    // Check if we are in the onboarding flow
+    if (this.props.onboardingParentContext.current) {
+      bufferedTrace({
+        name: TraceName.OnboardingPasswordLoginError,
+        op: TraceOperation.OnboardingError,
+        tags: { errorMessage: message },
+        parentContext: this.props.onboardingParentContext.current,
+      });
+      bufferedEndTrace({ name: TraceName.OnboardingPasswordLoginError });
+    }
+
     switch (message) {
       case 'Incorrect password':
       case SeedlessOnboardingControllerError.IncorrectPassword:

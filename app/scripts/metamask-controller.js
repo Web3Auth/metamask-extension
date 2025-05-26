@@ -4906,6 +4906,20 @@ export default class MetamaskController extends EventEmitter {
           );
         isNewUser = newUser;
         seedlessAuthSuccess = true;
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+
+        bufferedTrace({
+          name: TraceName.OnboardingOAuthSeedlessAuthenticateError,
+          op: TraceOperation.OnboardingError,
+          tags: { errorMessage },
+        });
+        bufferedEndTrace({
+          name: TraceName.OnboardingOAuthSeedlessAuthenticateError,
+        });
+
+        throw error;
       } finally {
         bufferedEndTrace({
           name: TraceName.OnboardingOAuthSeedlessAuthenticate,

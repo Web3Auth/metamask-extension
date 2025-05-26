@@ -172,6 +172,21 @@ export default function OnboardingWelcome({
         ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
         history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
         ///: END:ONLY_INCLUDE_IF
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+
+        bufferedTrace({
+          name: TraceName.OnboardingSocialLoginError,
+          op: TraceOperation.OnboardingError,
+          tags: { provider: socialConnectionType, errorMessage },
+          parentContext: onboardingParentContext.current,
+        });
+        bufferedEndTrace({ name: TraceName.OnboardingSocialLoginError });
+        bufferedEndTrace({
+          name: TraceName.OnboardingSocialLoginAttempt,
+          data: { success: false },
+        });
       } finally {
         setIsLoggingIn(false);
       }

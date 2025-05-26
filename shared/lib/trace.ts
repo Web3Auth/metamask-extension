@@ -58,6 +58,11 @@ export enum TraceName {
   OnboardingOAuthProviderLogin = 'Onboarding - OAuth Provider Login',
   OnboardingOAuthBYOAServerGetAuthTokens = 'Onboarding - OAuth BYOA Server Get Auth Tokens',
   OnboardingOAuthSeedlessAuthenticate = 'Onboarding - OAuth Seedless Authenticate',
+  OnboardingSocialLoginError = 'Onboarding - Social Login Error',
+  OnboardingPasswordLoginError = 'Onboarding - Password Login Error',
+  OnboardingOAuthProviderLoginError = 'Onboarding - OAuth Provider Login Error',
+  OnboardingOAuthBYOAServerGetAuthTokensError = 'Onboarding - OAuth BYOA Server Get Auth Tokens Error',
+  OnboardingOAuthSeedlessAuthenticateError = 'Onboarding - OAuth Seedless Authenticate Error',
 }
 
 /**
@@ -66,6 +71,7 @@ export enum TraceName {
 export enum TraceOperation {
   OnboardingUserJourney = 'onboarding.user_journey',
   OnboardingSecurityOp = 'onboarding.security_operation',
+  OnboardingError = 'onboarding.error',
 }
 
 const log = createModuleLogger(sentryLogger, 'trace');
