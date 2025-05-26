@@ -1,6 +1,12 @@
 import { BaseController } from '@metamask/base-controller';
 import { AuthConnection } from '@metamask/seedless-onboarding-controller';
 import {
+  bufferedEndTrace,
+  bufferedTrace,
+  TraceName,
+  TraceOperation,
+} from '../../../../shared/lib/trace';
+import {
   controllerName,
   OAuthControllerMessenger,
   OAuthControllerOptions,
@@ -63,23 +69,50 @@ export default class OAuthController extends BaseController<
       this.#env,
     );
 
-    // launch the web auth flow to get the Authorization Code from the social login provider
-    const redirectUrlFromOAuth = await chrome.identity.launchWebAuthFlow({
-      interactive: true,
-      url: loginHandler.getAuthUrl(),
-    });
+    let providerLoginSuccess = false;
+    let redirectUrlFromOAuth = null;
+    try {
+      bufferedTrace({
+        name: TraceName.OnboardingOAuthProviderLogin,
+        op: TraceOperation.OnboardingSecurityOp,
+      });
+      // launch the web auth flow to get the Authorization Code from the social login provider
+      redirectUrlFromOAuth = await chrome.identity.launchWebAuthFlow({
+        interactive: true,
+        url: loginHandler.getAuthUrl(),
+      });
+      providerLoginSuccess = true;
+    } finally {
+      bufferedEndTrace({
+        name: TraceName.OnboardingOAuthProviderLogin,
+        data: { success: providerLoginSuccess },
+      });
+    }
 
     if (!redirectUrlFromOAuth) {
       console.error('[identity auth] redirectUrl is null');
       throw new Error('No redirect URL found');
     }
 
-    // handle the OAuth response from the social login provider and get the Jwt Token in exchange
-    const loginResult = await this.#handleOAuthResponse(
-      loginHandler,
-      redirectUrlFromOAuth,
-    );
-    return loginResult;
+    let getAuthTokensSuccess = false;
+    try {
+      bufferedTrace({
+        name: TraceName.OnboardingOAuthBYOAServerGetAuthTokens,
+        op: TraceOperation.OnboardingSecurityOp,
+      });
+      // handle the OAuth response from the social login provider and get the Jwt Token in exchange
+      const loginResult = await this.#handleOAuthResponse(
+        loginHandler,
+        redirectUrlFromOAuth,
+      );
+      getAuthTokensSuccess = true;
+      return loginResult;
+    } finally {
+      bufferedEndTrace({
+        name: TraceName.OnboardingOAuthBYOAServerGetAuthTokens,
+        data: { success: getAuthTokensSuccess },
+      });
+    }
   }
 
   /**

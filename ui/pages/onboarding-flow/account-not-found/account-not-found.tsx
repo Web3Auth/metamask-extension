@@ -31,6 +31,13 @@ import {
 import { getFirstTimeFlowType, getSocialLoginEmail } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { resetOAuthLoginState } from '../../../store/actions';
+import {
+  bufferedEndTrace,
+  bufferedTrace,
+  TraceName,
+  TraceOperation,
+} from '../../../../shared/lib/trace';
+import { useSentryTrace } from '../../../contexts/sentry-trace';
 
 export default function AccountNotFound() {
   const history = useHistory();
@@ -38,8 +45,15 @@ export default function AccountNotFound() {
   const t = useI18nContext();
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const userSocialLoginEmail = useSelector(getSocialLoginEmail);
+  const { onboardingParentContext } = useSentryTrace();
 
   const onCreateOne = () => {
+    bufferedTrace({
+      name: TraceName.OnboardingNewSocialCreateWallet,
+      op: TraceOperation.OnboardingUserJourney,
+      tags: { source: 'account_status_redirect' },
+      parentContext: onboardingParentContext.current,
+    });
     history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
   };
 
@@ -54,7 +68,21 @@ export default function AccountNotFound() {
       // if the onboarding flow is not seedless, redirect to the welcome page
       history.push(ONBOARDING_WELCOME_ROUTE);
     }
-  }, [firstTimeFlowType, history]);
+    if (firstTimeFlowType === FirstTimeFlowType.social) {
+      bufferedTrace({
+        name: TraceName.OnboardingExistingSocialAccountNotFound,
+        op: TraceOperation.OnboardingUserJourney,
+        parentContext: onboardingParentContext.current,
+      });
+    }
+    return () => {
+      if (firstTimeFlowType === FirstTimeFlowType.social) {
+        bufferedEndTrace({
+          name: TraceName.OnboardingExistingSocialAccountNotFound,
+        });
+      }
+    };
+  }, [firstTimeFlowType, history, onboardingParentContext]);
 
   return (
     <Box

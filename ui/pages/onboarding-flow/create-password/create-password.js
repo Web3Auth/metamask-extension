@@ -52,6 +52,13 @@ import PasswordForm from '../../../components/app/password-form/password-form';
 import { resetOAuthLoginState } from '../../../store/actions';
 import LoadingScreen from '../../../components/ui/loading-screen';
 ///: END:ONLY_INCLUDE_IF
+import {
+  bufferedTrace,
+  TraceName,
+  TraceOperation,
+  bufferedEndTrace,
+} from '../../../../shared/lib/trace';
+import { useSentryTrace } from '../../../contexts/sentry-trace';
 
 export default function CreatePassword({
   createNewAccount,
@@ -85,6 +92,8 @@ export default function CreatePassword({
     analyticsIframeQuery,
   )}`;
 
+  const { onboardingParentContext } = useSentryTrace();
+
   useEffect(() => {
     if (currentKeyring && !newAccountCreationInProgress) {
       if (
@@ -106,6 +115,17 @@ export default function CreatePassword({
     firstTimeFlowType,
     newAccountCreationInProgress,
   ]);
+
+  useEffect(() => {
+    bufferedTrace({
+      name: TraceName.OnboardingPasswordSetupAttempt,
+      op: TraceOperation.OnboardingUserJourney,
+      parentContext: onboardingParentContext.current,
+    });
+    return () => {
+      bufferedEndTrace({ name: TraceName.OnboardingPasswordSetupAttempt });
+    };
+  }, [onboardingParentContext]);
 
   const handleBackClick = (e) => {
     e.preventDefault();
@@ -132,6 +152,10 @@ export default function CreatePassword({
       firstTimeFlowType === FirstTimeFlowType.import
     ) {
       await importWithRecoveryPhrase(password, secretRecoveryPhrase);
+
+      bufferedEndTrace({ name: TraceName.OnboardingExistingSrpImport });
+      bufferedEndTrace({ name: TraceName.OnboardingJourneyOverall });
+
       ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
       getPlatform() === PLATFORM_FIREFOX
         ? history.push(ONBOARDING_COMPLETION_ROUTE)
@@ -145,6 +169,8 @@ export default function CreatePassword({
           await createNewAccount(password);
         }
         if (firstTimeFlowType === FirstTimeFlowType.social) {
+          bufferedEndTrace({ name: TraceName.OnboardingNewSocialCreateWallet });
+          bufferedEndTrace({ name: TraceName.OnboardingJourneyOverall });
           ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
           history.push(ONBOARDING_METAMETRICS);
           ///: END:ONLY_INCLUDE_IF
