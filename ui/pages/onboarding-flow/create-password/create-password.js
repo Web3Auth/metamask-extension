@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
   JustifyContent,
@@ -26,6 +26,7 @@ import {
   getCurrentKeyring,
   getMetaMetricsId,
   getParticipateInMetaMetrics,
+  isSocialLoginFlow,
 } from '../../../selectors';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
@@ -49,8 +50,8 @@ import { PLATFORM_FIREFOX } from '../../../../shared/constants/app';
 // eslint-disable-next-line import/no-restricted-paths
 import { getPlatform } from '../../../../app/scripts/lib/util';
 import PasswordForm from '../../../components/app/password-form/password-form';
-import { resetOAuthLoginState } from '../../../store/actions';
 import LoadingScreen from '../../../components/ui/loading-screen';
+import { resetOAuthLoginState } from '../../../store/actions';
 ///: END:ONLY_INCLUDE_IF
 import {
   bufferedTrace,
@@ -70,9 +71,10 @@ export default function CreatePassword({
   const [termsChecked, setTermsChecked] = useState(false);
   const [newAccountCreationInProgress, setNewAccountCreationInProgress] =
     useState(false);
-  const dispatch = useDispatch();
   const history = useHistory();
+  const dispatch = useDispatch();
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
+  const socialLoginFlow = useSelector(isSocialLoginFlow);
   const trackEvent = useContext(MetaMetricsContext);
   const currentKeyring = useSelector(getCurrentKeyring);
 
@@ -98,7 +100,7 @@ export default function CreatePassword({
     if (currentKeyring && !newAccountCreationInProgress) {
       if (
         firstTimeFlowType === FirstTimeFlowType.import ||
-        firstTimeFlowType === FirstTimeFlowType.social
+        firstTimeFlowType === FirstTimeFlowType.socialImport
       ) {
         ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
         history.replace(ONBOARDING_METAMETRICS);
@@ -116,19 +118,8 @@ export default function CreatePassword({
     newAccountCreationInProgress,
   ]);
 
-  useEffect(() => {
-    bufferedTrace({
-      name: TraceName.OnboardingPasswordSetupAttempt,
-      op: TraceOperation.OnboardingUserJourney,
-      parentContext: onboardingParentContext.current,
-    });
-    return () => {
-      bufferedEndTrace({ name: TraceName.OnboardingPasswordSetupAttempt });
-    };
-  }, [onboardingParentContext]);
-
-  const handleBackClick = (e) => {
-    e.preventDefault();
+  const handleBackClick = (event) => {
+    event.preventDefault();
     // reset the social login state
     dispatch(resetOAuthLoginState());
     history.goBack();
@@ -168,9 +159,7 @@ export default function CreatePassword({
           setNewAccountCreationInProgress(true);
           await createNewAccount(password);
         }
-        if (firstTimeFlowType === FirstTimeFlowType.social) {
-          bufferedEndTrace({ name: TraceName.OnboardingNewSocialCreateWallet });
-          bufferedEndTrace({ name: TraceName.OnboardingJourneyOverall });
+        if (socialLoginFlow) {
           ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
           history.push(ONBOARDING_METAMETRICS);
           ///: END:ONLY_INCLUDE_IF
@@ -222,6 +211,7 @@ export default function CreatePassword({
             color={IconColor.iconDefault}
             size={ButtonIconSize.Md}
             data-testid="create-password-back-button"
+            type="button"
             onClick={handleBackClick}
             ariaLabel="back"
           />
@@ -231,7 +221,7 @@ export default function CreatePassword({
           marginBottom={4}
           width={BlockSize.Full}
         >
-          {firstTimeFlowType !== FirstTimeFlowType.social && (
+          {!socialLoginFlow && (
             <Text
               variant={TextVariant.bodyMd}
               color={TextColor.textAlternative}

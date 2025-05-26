@@ -30,14 +30,7 @@ import {
 
 import { getFirstTimeFlowType, getSocialLoginEmail } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
-import { resetOAuthLoginState } from '../../../store/actions';
-import {
-  bufferedEndTrace,
-  bufferedTrace,
-  TraceName,
-  TraceOperation,
-} from '../../../../shared/lib/trace';
-import { useSentryTrace } from '../../../contexts/sentry-trace';
+import { setFirstTimeFlowType, resetOAuthLoginState } from '../../../store/actions';
 
 export default function AccountNotFound() {
   const history = useHistory();
@@ -45,15 +38,17 @@ export default function AccountNotFound() {
   const t = useI18nContext();
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const userSocialLoginEmail = useSelector(getSocialLoginEmail);
-  const { onboardingParentContext } = useSentryTrace();
 
-  const onCreateOne = () => {
-    bufferedTrace({
-      name: TraceName.OnboardingNewSocialCreateWallet,
-      op: TraceOperation.OnboardingUserJourney,
-      tags: { source: 'account_status_redirect' },
-      parentContext: onboardingParentContext.current,
-    });
+  const onBack = async (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.preventDefault();
+    await dispatch(resetOAuthLoginState());
+    history.goBack();
+  }
+
+  const onCreateWallet = () => {
+    dispatch(setFirstTimeFlowType(FirstTimeFlowType.socialCreate));
     history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
   };
 
@@ -64,25 +59,11 @@ export default function AccountNotFound() {
   };
 
   useEffect(() => {
-    if (firstTimeFlowType !== FirstTimeFlowType.social) {
-      // if the onboarding flow is not seedless, redirect to the welcome page
+    if (firstTimeFlowType !== FirstTimeFlowType.socialImport) {
+      // if the onboarding flow is not social import, redirect to the welcome page
       history.push(ONBOARDING_WELCOME_ROUTE);
     }
-    if (firstTimeFlowType === FirstTimeFlowType.social) {
-      bufferedTrace({
-        name: TraceName.OnboardingExistingSocialAccountNotFound,
-        op: TraceOperation.OnboardingUserJourney,
-        parentContext: onboardingParentContext.current,
-      });
-    }
-    return () => {
-      if (firstTimeFlowType === FirstTimeFlowType.social) {
-        bufferedEndTrace({
-          name: TraceName.OnboardingExistingSocialAccountNotFound,
-        });
-      }
-    };
-  }, [firstTimeFlowType, history, onboardingParentContext]);
+  }, [firstTimeFlowType, history]);
 
   return (
     <Box
@@ -106,7 +87,7 @@ export default function AccountNotFound() {
             color={IconColor.iconDefault}
             size={ButtonIconSize.Md}
             data-testid="create-password-back-button"
-            onClick={() => history.goBack()}
+            onClick={onBack}
             ariaLabel="back"
           />
         </Box>
@@ -163,7 +144,7 @@ export default function AccountNotFound() {
           variant={ButtonVariant.Primary}
           size={ButtonSize.Lg}
           width={BlockSize.Full}
-          onClick={onCreateOne}
+          onClick={onCreateWallet}
         >
           {t('accountNotFoundCreateOne')}
         </Button>

@@ -29,14 +29,7 @@ import {
 } from '../../../helpers/constants/routes';
 import { getFirstTimeFlowType, getSocialLoginEmail } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
-import { resetOAuthLoginState } from '../../../store/actions';
-import {
-  bufferedTrace,
-  bufferedEndTrace,
-  TraceName,
-  TraceOperation,
-} from '../../../../shared/lib/trace';
-import { useSentryTrace } from '../../../contexts/sentry-trace';
+import { setFirstTimeFlowType, resetOAuthLoginState } from '../../../store/actions';
 
 export default function AccountExist() {
   const history = useHistory();
@@ -44,15 +37,17 @@ export default function AccountExist() {
   const t = useI18nContext();
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const userSocialLoginEmail = useSelector(getSocialLoginEmail);
-  const { onboardingParentContext } = useSentryTrace();
 
-  const onDone = () => {
-    bufferedTrace({
-      name: TraceName.OnboardingExistingSocialLogin,
-      op: TraceOperation.OnboardingUserJourney,
-      tags: { source: 'account_status_redirect' },
-      parentContext: onboardingParentContext.current,
-    });
+  const onBack = async (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.preventDefault();
+    await dispatch(resetOAuthLoginState());
+    history.goBack();
+  }
+
+  const onLogin = () => {
+    dispatch(setFirstTimeFlowType(FirstTimeFlowType.socialImport));
     history.push(ONBOARDING_UNLOCK_ROUTE);
   };
 
@@ -63,22 +58,10 @@ export default function AccountExist() {
   };
 
   useEffect(() => {
-    if (firstTimeFlowType !== FirstTimeFlowType.social) {
+    if (firstTimeFlowType !== FirstTimeFlowType.socialCreate) {
       history.push(ONBOARDING_WELCOME_ROUTE);
     }
-    if (firstTimeFlowType === FirstTimeFlowType.social) {
-      bufferedTrace({
-        name: TraceName.OnboardingNewSocialAccountExists,
-        op: TraceOperation.OnboardingUserJourney,
-        parentContext: onboardingParentContext.current,
-      });
-    }
-    return () => {
-      if (firstTimeFlowType === FirstTimeFlowType.social) {
-        bufferedEndTrace({ name: TraceName.OnboardingNewSocialAccountExists });
-      }
-    };
-  }, [firstTimeFlowType, history, onboardingParentContext]);
+  }, [firstTimeFlowType, history]);
 
   return (
     <Box
@@ -102,7 +85,7 @@ export default function AccountExist() {
             color={IconColor.iconDefault}
             size={ButtonIconSize.Md}
             data-testid="create-password-back-button"
-            onClick={() => history.goBack()}
+            onClick={onBack}
             ariaLabel="back"
           />
         </Box>
@@ -159,7 +142,7 @@ export default function AccountExist() {
           variant={ButtonVariant.Primary}
           size={ButtonSize.Lg}
           width={BlockSize.Full}
-          onClick={onDone}
+          onClick={onLogin}
         >
           {t('accountAlreadyExistsLogin')}
         </Button>

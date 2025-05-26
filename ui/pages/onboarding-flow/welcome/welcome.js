@@ -115,26 +115,34 @@ export default function OnboardingWelcome({
     ///: END:ONLY_INCLUDE_IF
   }, [dispatch, history, trackEvent, onboardingParentContext]);
 
-  const onSocialLoginClick = useCallback(
-    async (socialConnectionType, loginOption) => {
+  const handleSocialLogin = useCallback(
+    async (socialConnectionType) => {
+      const isNewUser = await dispatch(startOAuthLogin(socialConnectionType));
+      return isNewUser;
+    },
+    [dispatch],
+  );
+
+  const onSocialLoginCreateClick = useCallback(
+    async (socialConnectionType) => {
       setIsLoggingIn(true);
+      setNewAccountCreationInProgress(true);
+      dispatch(setFirstTimeFlowType(FirstTimeFlowType.socialCreate));
+
       try {
-        setNewAccountCreationInProgress(true);
-        dispatch(setFirstTimeFlowType(FirstTimeFlowType.social));
-
-        bufferedTrace({
-          name: TraceName.OnboardingSocialLoginAttempt,
-          op: TraceOperation.OnboardingUserJourney,
-          tags: { provider: socialConnectionType },
-          parentContext: onboardingParentContext.current,
+        const isNewUser = await handleSocialLogin(socialConnectionType);
+        trackEvent({
+          category: MetaMetricsEventCategory.Onboarding,
+          event: MetaMetricsEventName.OnboardingWalletCreationStarted,
+          properties: {
+            account_type: 'metamask',
+          },
         });
-
-        const isNewUser = await dispatch(startOAuthLogin(socialConnectionType));
-
-        bufferedEndTrace({ name: TraceName.OnboardingSocialLoginAttempt });
-
-        // if user is not new user and login option is new, redirect to account exist page
-        if (loginOption === 'new' && !isNewUser) {
+        if (isNewUser) {
+          ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
+          history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
+          ///: END:ONLY_INCLUDE_IF
+        } else {
           history.push(ONBOARDING_ACCOUNT_EXIST);
           return;
         } else if (loginOption === 'existing' && isNewUser) {
@@ -144,11 +152,6 @@ export default function OnboardingWelcome({
         }
 
         if (!isNewUser) {
-          bufferedTrace({
-            name: TraceName.OnboardingExistingSocialLogin,
-            op: TraceOperation.OnboardingUserJourney,
-            parentContext: onboardingParentContext.current,
-          });
           // redirect to login page
           history.push(ONBOARDING_UNLOCK_ROUTE);
           return;
@@ -156,7 +159,6 @@ export default function OnboardingWelcome({
 
         trackEvent({
           category: MetaMetricsEventCategory.Onboarding,
-          // TODO: add seedless onboarding event to MetaMetrics?
           event: MetaMetricsEventName.OnboardingWalletCreationStarted,
           properties: {
             account_type: 'metamask',
@@ -169,29 +171,39 @@ export default function OnboardingWelcome({
           parentContext: onboardingParentContext.current,
         });
 
-        ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
-        history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
-        ///: END:ONLY_INCLUDE_IF
+        if (isNewUser) {
+          history.push(ONBOARDING_ACCOUNT_NOT_FOUND);
+        } else {
+          history.push(ONBOARDING_UNLOCK_ROUTE);
+        }
       } finally {
         setIsLoggingIn(false);
       }
     },
-    [dispatch, history, trackEvent, onboardingParentContext],
+    [dispatch, handleSocialLogin, trackEvent, history],
   );
 
   const handleLogin = useCallback(
-    (loginType, loginOption) => {
-      if (loginType === LOGIN_TYPE.SRP) {
-        if (loginOption === LOGIN_OPTION.NEW) {
-          onCreateClick();
-        } else {
-          onImportClick();
-        }
-      } else {
-        onSocialLoginClick(loginType, loginOption);
+    async (loginType, loginOption) => {
+      if (loginOption === LOGIN_OPTION.NEW && loginType === LOGIN_TYPE.SRP) {
+        onCreateClick();
+      } else if (loginOption === LOGIN_OPTION.NEW) {
+        await onSocialLoginCreateClick(loginType);
+      } else if (
+        loginOption === LOGIN_OPTION.EXISTING &&
+        loginType === LOGIN_TYPE.SRP
+      ) {
+        onImportClick();
+      } else if (loginOption === LOGIN_OPTION.EXISTING) {
+        await onSocialLoginImportClick(loginType);
       }
     },
-    [onCreateClick, onImportClick, onSocialLoginClick],
+    [
+      onCreateClick,
+      onImportClick,
+      onSocialLoginCreateClick,
+      onSocialLoginImportClick,
+    ],
   );
 
   return (

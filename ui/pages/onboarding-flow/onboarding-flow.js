@@ -157,7 +157,7 @@ export default function OnboardingFlow() {
 
   const handleCreateNewAccount = async (password) => {
     let newSecretRecoveryPhrase;
-    if (firstTimeFlowType === FirstTimeFlowType.social) {
+    if (firstTimeFlowType === FirstTimeFlowType.socialCreate) {
       newSecretRecoveryPhrase = await dispatch(
         createNewVaultAndSyncWithSocial(password),
       );
@@ -171,16 +171,10 @@ export default function OnboardingFlow() {
 
   const handleUnlock = async (password) => {
     let retrievedSecretRecoveryPhrase;
-    if (firstTimeFlowType === FirstTimeFlowType.social) {
+    if (firstTimeFlowType === FirstTimeFlowType.socialImport) {
       retrievedSecretRecoveryPhrase = await dispatch(
         restoreSocialBackupAndGetSeedPhrase(password),
       );
-
-      if (retrievedSecretRecoveryPhrase === null) {
-        // if the seed phrase is not found, ask user to setup the password and generate a new seed phrase
-        history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
-        return;
-      }
     } else {
       retrievedSecretRecoveryPhrase = await dispatch(
         unlockAndGetSeedPhrase(password),
@@ -246,6 +240,7 @@ export default function OnboardingFlow() {
         style={{
           maxWidth: isWelcomeAndUnlockPage ? 'none' : '446px',
           minHeight: isWelcomeAndUnlockPage ? 'auto' : '627px',
+          height: pathname === ONBOARDING_WELCOME_ROUTE ? '100%' : 'auto',
         }}
       >
         <Switch>

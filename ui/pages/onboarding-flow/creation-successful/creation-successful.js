@@ -16,6 +16,8 @@ import {
   BorderRadius,
   BlockSize,
   FontWeight,
+  TextColor,
+  IconColor,
 } from '../../../helpers/constants/design-system';
 import {
   Box,
@@ -36,6 +38,7 @@ import {
   getFirstTimeFlowType,
   getHDEntropyIndex,
   getSocialLoginType,
+  isSocialLoginFlow,
 } from '../../../selectors';
 import {
   MetaMetricsEventCategory,
@@ -44,8 +47,8 @@ import {
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import { selectIsBackupAndSyncEnabled } from '../../../selectors/identity/backup-and-sync';
 import { getSeedPhraseBackedUp } from '../../../ducks/metamask/metamask';
-import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { LottieAnimation } from '../../../components/component-library/lottie-animation';
+import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 
 export default function CreationSuccessful() {
   const history = useHistory();
@@ -55,37 +58,15 @@ export default function CreationSuccessful() {
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const seedPhraseBackedUp = useSelector(getSeedPhraseBackedUp);
   const userSocialLoginType = useSelector(getSocialLoginType);
+  const socialLoginFlow = useSelector(isSocialLoginFlow);
   const learnMoreLink =
     'https://support.metamask.io/hc/en-us/articles/360015489591-Basic-Safety-and-Security-Tips-for-MetaMask';
-  // const learnHowToKeepWordsSafe =
-  //   'https://community.metamask.io/t/what-is-a-secret-recovery-phrase-and-how-to-keep-your-crypto-wallet-secure/3440';
-
   const isBackupAndSyncEnabled = useSelector(selectIsBackupAndSyncEnabled);
-
   const isWalletReady =
-    firstTimeFlowType === FirstTimeFlowType.social ||
-    firstTimeFlowType === FirstTimeFlowType.import ||
-    seedPhraseBackedUp;
+    firstTimeFlowType === FirstTimeFlowType.import || seedPhraseBackedUp;
 
-  const renderTitle = useMemo(() => {
-    if (isWalletReady) {
-      return t('yourWalletIsReady');
-    }
-
-    return t('yourWalletIsReadyRemind');
-  }, [firstTimeFlowType, seedPhraseBackedUp, t]);
-
-  const renderFoxPath = useMemo(() => {
-    if (isWalletReady) {
-      return 'images/animations/fox/celebrating.lottie.json';
-    }
-
-    // TODO: Check figma teaching fox animation
-    return 'images/animations/fox/celebrating.lottie.json';
-  }, [firstTimeFlowType, seedPhraseBackedUp]);
-
-  const renderDetails1 = () => {
-    if (firstTimeFlowType === FirstTimeFlowType.social) {
+  const renderDetails1 = useMemo(() => {
+    if (userSocialLoginType) {
       return t('walletReadySocialDetails1', [capitalize(userSocialLoginType)]);
     }
 
@@ -94,10 +75,10 @@ export default function CreationSuccessful() {
     }
 
     return t('walletReadyLoseSrpRemind');
-  };
+  }, [isWalletReady, userSocialLoginType, t]);
 
-  const renderDetails2 = () => {
-    if (firstTimeFlowType === FirstTimeFlowType.social) {
+  const renderDetails2 = useMemo(() => {
+    if (userSocialLoginType) {
       return t('walletReadySocialDetails2');
     }
 
@@ -121,7 +102,24 @@ export default function CreationSuccessful() {
     }
 
     return t('walletReadyLearnRemind');
-  };
+  }, [isWalletReady, userSocialLoginType, t]);
+
+  const renderTitle = useMemo(() => {
+    if (socialLoginFlow || isWalletReady) {
+      return t('yourWalletIsReady');
+    }
+
+    return t('yourWalletIsReadyRemind');
+  }, [socialLoginFlow, isWalletReady, t]);
+
+  const renderFoxPath = useMemo(() => {
+    if (socialLoginFlow || isWalletReady) {
+      return 'images/animations/fox/celebrating.lottie.json';
+    }
+
+    // TODO: Check figma teaching fox animation
+    return 'images/animations/fox/celebrating.lottie.json';
+  }, [socialLoginFlow, isWalletReady]);
 
   return (
     <Box
@@ -165,11 +163,19 @@ export default function CreationSuccessful() {
               <LottieAnimation path={renderFoxPath} loop autoplay />
             </Box>
           </Box>
-          <Text variant={TextVariant.bodyMd} marginBottom={6}>
-            {renderDetails1()}
+          <Text
+            variant={TextVariant.bodyMd}
+            color={TextColor.textAlternative}
+            marginBottom={6}
+          >
+            {renderDetails1}
           </Text>
-          <Text variant={TextVariant.bodyMd} marginBottom={6}>
-            {renderDetails2()}
+          <Text
+            variant={TextVariant.bodyMd}
+            color={TextColor.textAlternative}
+            marginBottom={6}
+          >
+            {renderDetails2}
           </Text>
         </Box>
 
@@ -196,7 +202,11 @@ export default function CreationSuccessful() {
                 {t('manageDefaultSettings')}
               </Text>
             </Box>
-            <Icon name={IconName.ArrowRight} size={IconSize.Sm} />
+            <Icon
+              name={IconName.ArrowRight}
+              color={IconColor.iconAlternative}
+              size={IconSize.Sm}
+            />
           </ButtonBase>
         </Box>
       </Box>
