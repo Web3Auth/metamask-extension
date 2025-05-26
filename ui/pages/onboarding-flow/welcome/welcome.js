@@ -14,19 +14,12 @@ import {
 import { getCurrentKeyring, getFirstTimeFlowType } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
-import { useSentryTrace } from '../../../contexts/sentry-trace';
 import { setFirstTimeFlowType, startOAuthLogin } from '../../../store/actions';
 import LoadingScreen from '../../../components/ui/loading-screen';
 import {
   MetaMetricsEventCategory,
   MetaMetricsEventName,
 } from '../../../../shared/constants/metametrics';
-import {
-  bufferedTrace,
-  bufferedEndTrace,
-  TraceName,
-  TraceOperation,
-} from '../../../../shared/lib/trace';
 import WelcomeLogin from './welcome-login';
 import WelcomeBanner from './welcome-banner';
 import { LOGIN_OPTION, LOGIN_TYPE } from './types';
@@ -48,7 +41,6 @@ export default function OnboardingWelcome({
     useState(false);
 
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const { onboardingParentContext } = useSentryTrace();
 
   // Don't allow users to come back to this screen after they
   // have already imported or created a wallet
@@ -69,7 +61,6 @@ export default function OnboardingWelcome({
     firstTimeFlowType,
     newAccountCreationInProgress,
   ]);
-
   const trackEvent = useContext(MetaMetricsContext);
 
   const onCreateClick = useCallback(async () => {
@@ -83,16 +74,11 @@ export default function OnboardingWelcome({
         account_type: 'metamask',
       },
     });
-    bufferedTrace({
-      name: TraceName.OnboardingNewSrpCreateWallet,
-      op: TraceOperation.OnboardingUserJourney,
-      parentContext: onboardingParentContext.current,
-    });
 
     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
     history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
     ///: END:ONLY_INCLUDE_IF
-  }, [dispatch, history, trackEvent, onboardingParentContext]);
+  }, [dispatch, history, trackEvent]);
 
   const onImportClick = useCallback(async () => {
     setIsLoggingIn(true);
@@ -104,16 +90,11 @@ export default function OnboardingWelcome({
         account_type: 'imported',
       },
     });
-    bufferedTrace({
-      name: TraceName.OnboardingExistingSrpImport,
-      op: TraceOperation.OnboardingUserJourney,
-      parentContext: onboardingParentContext.current,
-    });
 
     ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
     history.push(ONBOARDING_IMPORT_WITH_SRP_ROUTE);
     ///: END:ONLY_INCLUDE_IF
-  }, [dispatch, history, trackEvent, onboardingParentContext]);
+  }, [dispatch, history, trackEvent]);
 
   const onSocialLoginClick = useCallback(
     async (socialConnectionType, loginOption) => {
@@ -122,16 +103,7 @@ export default function OnboardingWelcome({
         setNewAccountCreationInProgress(true);
         dispatch(setFirstTimeFlowType(FirstTimeFlowType.social));
 
-        bufferedTrace({
-          name: TraceName.OnboardingSocialLoginAttempt,
-          op: TraceOperation.OnboardingUserJourney,
-          tags: { provider: socialConnectionType },
-          parentContext: onboardingParentContext.current,
-        });
-
         const isNewUser = await dispatch(startOAuthLogin(socialConnectionType));
-
-        bufferedEndTrace({ name: TraceName.OnboardingSocialLoginAttempt });
 
         // if user is not new user and login option is new, redirect to account exist page
         if (loginOption === 'new' && !isNewUser) {
@@ -144,11 +116,6 @@ export default function OnboardingWelcome({
         }
 
         if (!isNewUser) {
-          bufferedTrace({
-            name: TraceName.OnboardingExistingSocialLogin,
-            op: TraceOperation.OnboardingUserJourney,
-            parentContext: onboardingParentContext.current,
-          });
           // redirect to login page
           history.push(ONBOARDING_UNLOCK_ROUTE);
           return;
@@ -163,12 +130,6 @@ export default function OnboardingWelcome({
           },
         });
 
-        bufferedTrace({
-          name: TraceName.OnboardingNewSocialCreateWallet,
-          op: TraceOperation.OnboardingUserJourney,
-          parentContext: onboardingParentContext.current,
-        });
-
         ///: BEGIN:ONLY_INCLUDE_IF(build-main,build-beta,build-flask)
         history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
         ///: END:ONLY_INCLUDE_IF
@@ -176,7 +137,7 @@ export default function OnboardingWelcome({
         setIsLoggingIn(false);
       }
     },
-    [dispatch, history, trackEvent, onboardingParentContext],
+    [dispatch, history, trackEvent],
   );
 
   const handleLogin = useCallback(
