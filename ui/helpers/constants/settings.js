@@ -200,6 +200,7 @@ const SETTINGS_CONSTANTS = [
     route: `${SECURITY_ROUTE}#reveal-secretrecovery`,
     icon: 'fa fa-lock',
   },
+  // securityAndPrivacy settingsRefs[2]
   {
     tabMessage: (t) => t('securityAndPrivacy'),
     sectionMessage: (t) => t('securityChangePasswordChange'),
@@ -208,13 +209,6 @@ const SETTINGS_CONSTANTS = [
     icon: 'fa fa-lock',
   },
   // securityAndPrivacy settingsRefs[3]
-  {
-    tabMessage: (t) => t('securityAndPrivacy'),
-    sectionMessage: (t) => t('securityChangePasswordChange'),
-    descriptionMessage: (t) => t('securityChangePasswordChange'),
-    route: SECURITY_PASSWORD_CHANGE_ROUTE,
-    icon: 'fa fa-lock',
-  },
   {
     tabMessage: (t) => t('securityAndPrivacy'),
     sectionMessage: (t) => t('usePhishingDetection'),
