@@ -6245,9 +6245,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@metamask/seedless-onboarding-controller@https://github.com/Web3Auth/core/raw/b918c778aaf6d19f550ba1947d8736cc64d14c04/packages/seedless-onboarding-controller/seedless-onboarding-controller.tgz":
+"@metamask/seedless-onboarding-controller@https://github.com/Web3Auth/core/raw/c536cd3d87a94f735ed4961a02aaf96f7a166081/packages/seedless-onboarding-controller/seedless-onboarding-controller.tgz":
   version: 0.0.0
-  resolution: "@metamask/seedless-onboarding-controller@https://github.com/Web3Auth/core/raw/b918c778aaf6d19f550ba1947d8736cc64d14c04/packages/seedless-onboarding-controller/seedless-onboarding-controller.tgz"
+  resolution: "@metamask/seedless-onboarding-controller@https://github.com/Web3Auth/core/raw/c536cd3d87a94f735ed4961a02aaf96f7a166081/packages/seedless-onboarding-controller/seedless-onboarding-controller.tgz"
   dependencies:
     "@metamask/auth-network-utils": "npm:^0.2.0"
     "@metamask/base-controller": "npm:^8.0.1"
@@ -6256,7 +6256,7 @@ __metadata:
     async-mutex: "npm:^0.5.0"
   peerDependencies:
     "@metamask/keyring-controller": ^21.0.0
-  checksum: 10/893bcdb0b313ef3934ef1a14ba10cb20e55cb832a2ad3e82dcd966aaa921f9a44684f418f240e187d109e4cd1b0075a54235e3a217bca0023b5b2526ae6673e9
+  checksum: 10/0eb38fb5578e4a8bd1c875804a74cf350880356a26f2112d4d3832dfdf4cef1023ddbb9f636f35ef78008cf32a534e10906b5bd2552b889ee61ac2cc7be410fe
   languageName: node
   linkType: hard
 
@@ -30016,7 +30016,7 @@ __metadata:
     "@metamask/rpc-errors": "npm:^7.0.0"
     "@metamask/safe-event-emitter": "npm:^3.1.1"
     "@metamask/scure-bip39": "npm:^2.0.3"
-    "@metamask/seedless-onboarding-controller": "https://github.com/Web3Auth/core/raw/b918c778aaf6d19f550ba1947d8736cc64d14c04/packages/seedless-onboarding-controller/seedless-onboarding-controller.tgz"
+    "@metamask/seedless-onboarding-controller": "https://github.com/Web3Auth/core/raw/c536cd3d87a94f735ed4961a02aaf96f7a166081/packages/seedless-onboarding-controller/seedless-onboarding-controller.tgz"
     "@metamask/selected-network-controller": "npm:^22.1.0"
     "@metamask/signature-controller": "npm:^27.1.0"
     "@metamask/smart-transactions-controller": "npm:^16.3.1"
