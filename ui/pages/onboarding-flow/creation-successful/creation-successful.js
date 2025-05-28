@@ -1,6 +1,7 @@
 import React, { useContext, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { capitalize } from 'lodash';
 import {
   Button,
   ButtonSize,
@@ -36,6 +37,7 @@ import {
 import {
   getFirstTimeFlowType,
   getHDEntropyIndex,
+  getSocialLoginType,
   isSocialLoginFlow,
 } from '../../../selectors';
 import {
@@ -46,6 +48,7 @@ import { MetaMetricsContext } from '../../../contexts/metametrics';
 import { selectIsBackupAndSyncEnabled } from '../../../selectors/identity/backup-and-sync';
 import { getSeedPhraseBackedUp } from '../../../ducks/metamask/metamask';
 import { LottieAnimation } from '../../../components/component-library/lottie-animation';
+import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 
 export default function CreationSuccessful() {
   const history = useHistory();
@@ -54,41 +57,31 @@ export default function CreationSuccessful() {
   const hdEntropyIndex = useSelector(getHDEntropyIndex);
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const seedPhraseBackedUp = useSelector(getSeedPhraseBackedUp);
+  const userSocialLoginType = useSelector(getSocialLoginType);
   const socialLoginFlow = useSelector(isSocialLoginFlow);
   const learnMoreLink =
     'https://support.metamask.io/hc/en-us/articles/360015489591-Basic-Safety-and-Security-Tips-for-MetaMask';
-
   const isBackupAndSyncEnabled = useSelector(selectIsBackupAndSyncEnabled);
-
   const isWalletReady =
     firstTimeFlowType === FirstTimeFlowType.import || seedPhraseBackedUp;
 
-  const renderTitle = useMemo(() => {
-    if (socialLoginFlow || seedPhraseBackedUp) {
-      return t('yourWalletIsReady');
-    }
-
-    return t('yourWalletIsReadyRemind');
-  }, [socialLoginFlow, seedPhraseBackedUp, t]);
-
-  const renderFoxPath = useMemo(() => {
-    if (socialLoginFlow || seedPhraseBackedUp) {
-      return 'images/animations/fox/celebrating.lottie.json';
-    }
-
-    // TODO: Check figma teaching fox animation
-    return 'images/animations/fox/celebrating.lottie.json';
-  }, [socialLoginFlow, isWalletReady]);
-
   const renderDetails1 = useMemo(() => {
+    if (userSocialLoginType) {
+      return t('walletReadySocialDetails1', [capitalize(userSocialLoginType)]);
+    }
+
     if (isWalletReady) {
       return t('walletReadyLoseSrp');
     }
 
     return t('walletReadyLoseSrpRemind');
-  }, [isWalletReady, t]);
+  }, [isWalletReady, userSocialLoginType, t]);
 
   const renderDetails2 = useMemo(() => {
+    if (userSocialLoginType) {
+      return t('walletReadySocialDetails2');
+    }
+
     if (isWalletReady) {
       return t('walletReadyLearn', [
         <ButtonLink
@@ -109,7 +102,24 @@ export default function CreationSuccessful() {
     }
 
     return t('walletReadyLearnRemind');
-  }, [isWalletReady, t]);
+  }, [isWalletReady, userSocialLoginType, t]);
+
+  const renderTitle = useMemo(() => {
+    if (socialLoginFlow || isWalletReady) {
+      return t('yourWalletIsReady');
+    }
+
+    return t('yourWalletIsReadyRemind');
+  }, [socialLoginFlow, isWalletReady, t]);
+
+  const renderFoxPath = useMemo(() => {
+    if (socialLoginFlow || isWalletReady) {
+      return 'images/animations/fox/celebrating.lottie.json';
+    }
+
+    // TODO: Check figma teaching fox animation
+    return 'images/animations/fox/celebrating.lottie.json';
+  }, [socialLoginFlow, isWalletReady]);
 
   return (
     <Box

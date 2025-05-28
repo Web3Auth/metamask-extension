@@ -29,7 +29,7 @@ import {
 } from '../../../helpers/constants/routes';
 import { getFirstTimeFlowType, getSocialLoginEmail } from '../../../selectors';
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
-import { setFirstTimeFlowType } from '../../../store/actions';
+import { setFirstTimeFlowType, resetOAuthLoginState } from '../../../store/actions';
 
 export default function AccountExist() {
   const history = useHistory();
@@ -38,9 +38,23 @@ export default function AccountExist() {
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const userSocialLoginEmail = useSelector(getSocialLoginEmail);
 
-  const onDone = () => {
+  const onBack = async (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.preventDefault();
+    await dispatch(resetOAuthLoginState());
+    history.goBack();
+  }
+
+  const onLogin = () => {
     dispatch(setFirstTimeFlowType(FirstTimeFlowType.socialImport));
     history.push(ONBOARDING_UNLOCK_ROUTE);
+  };
+
+  const onLoginWithDifferentMethod = async () => {
+    // clear the social login state
+    await dispatch(resetOAuthLoginState());
+    history.push(ONBOARDING_WELCOME_ROUTE);
   };
 
   useEffect(() => {
@@ -71,7 +85,7 @@ export default function AccountExist() {
             color={IconColor.iconDefault}
             size={ButtonIconSize.Md}
             data-testid="create-password-back-button"
-            onClick={() => history.goBack()}
+            onClick={onBack}
             ariaLabel="back"
           />
         </Box>
@@ -121,15 +135,25 @@ export default function AccountExist() {
         justifyContent={JustifyContent.center}
         alignItems={AlignItems.center}
         width={BlockSize.Full}
+        gap={2}
       >
         <Button
           data-testid="onboarding-complete-done"
           variant={ButtonVariant.Primary}
           size={ButtonSize.Lg}
           width={BlockSize.Full}
-          onClick={onDone}
+          onClick={onLogin}
         >
           {t('accountAlreadyExistsLogin')}
+        </Button>
+        <Button
+          data-testid="account-exist-login-with-different-method"
+          variant={ButtonVariant.Secondary}
+          size={ButtonSize.Lg}
+          width={BlockSize.Full}
+          onClick={onLoginWithDifferentMethod}
+        >
+          {t('useDifferentLoginMethod')}
         </Button>
       </Box>
     </Box>
