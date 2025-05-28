@@ -3021,6 +3021,37 @@
   "lockTimeInvalid": {
     "message": "Lock time must be a number between 0 and 10080"
   },
+  "loginErrorConnectTitle": {
+    "message": "Unable to connect"
+  },
+  "loginErrorConnectDescription": {
+    "message": "Your internet connection is unstable. Check your connection and try again."
+  },
+  "loginErrorConnectButton": {
+    "message": "Try again"
+  },
+  "loginErrorGenericTitle": {
+    "message": "Something went wrong"
+  },
+  "loginErrorGenericDescription": {
+    "message": "An error occurred while logging in. Try again and if the issue continues, contact $1.",
+    "description": "$1 is the key 'loginErrorGenericSupport'"
+  },
+  "loginErrorGenericSupport": {
+    "message": "Metamask Support"
+  },
+  "loginErrorGenericButton": {
+    "message": "Try again"
+  },
+  "loginErrorSessionExpiredTitle": {
+    "message": "Session has expired"
+  },
+  "loginErrorSessionExpiredDescription": {
+    "message": "Your session has expired. Please log in again to continue."
+  },
+  "loginErrorSessionExpiredButton": {
+    "message": "Log in"
+  },
   "logo": {
     "message": "$1 logo",
     "description": "$1 is the name of the ticker"
