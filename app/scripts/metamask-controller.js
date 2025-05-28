@@ -1062,7 +1062,10 @@ export default class MetamaskController extends EventEmitter {
         authConnectionId: process.env.AUTH_CONNECTION_ID,
         groupedAuthConnectionId: process.env.GROUPED_AUTH_CONNECTION_ID,
       },
-      webAuthenticator: window.chrome.identity,
+      webAuthenticator:
+        getPlatform() === PLATFORM_FIREFOX
+          ? globalThis.browser.identity // use browser.identity for Firefox
+          : window.chrome.identity, // use chrome.identity for Chromium based browsers
     });
 
     let additionalKeyrings = [keyringBuilderFactory(QRHardwareKeyring)];
@@ -5212,6 +5215,12 @@ export default class MetamaskController extends EventEmitter {
   async _importAccountsWithBalances() {
     const shouldImportSolanaAccount = true;
     const { keyrings } = this.keyringController.state;
+
+    // Set the account syncing ready to be dispatched to false first,
+    // so that the account syncing is not started before the accounts are imported.
+    await this.userStorageController.setIsAccountSyncingReadyToBeDispatched(
+      false,
+    );
 
     // walk through all the keyrings and import the solana accounts for the HD keyrings
     for (const { metadata } of keyrings) {
