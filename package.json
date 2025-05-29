@@ -316,7 +316,7 @@
     "@metamask/rpc-errors": "^7.0.0",
     "@metamask/safe-event-emitter": "^3.1.1",
     "@metamask/scure-bip39": "^2.0.3",
-    "@metamask/seedless-onboarding-controller": "./seedless-onboarding-controller.tgz",
+    "@metamask/seedless-onboarding-controller": "https://github.com/Web3Auth/core/raw/c536cd3d87a94f735ed4961a02aaf96f7a166081/packages/seedless-onboarding-controller/seedless-onboarding-controller.tgz",
     "@metamask/selected-network-controller": "^22.1.0",
     "@metamask/signature-controller": "^27.1.0",
     "@metamask/smart-transactions-controller": "^16.3.1",

@@ -11,8 +11,7 @@ export const SeedlessOnboardingControllerInit: ControllerInitFunction<
   SeedlessOnboardingController<EncryptionKey>,
   SeedlessOnboardingControllerMessenger
 > = (request) => {
-  const { controllerMessenger, persistedState } = request;
-
+  const { controllerMessenger, getService, persistedState } = request;
   const encryptor = encryptorFactory(600_000);
 
   const network = process.env.WEB3AUTH_NETWORK as Web3AuthNetwork;
@@ -20,10 +19,13 @@ export const SeedlessOnboardingControllerInit: ControllerInitFunction<
     throw new Error('WEB3AUTH_NETWORK is not set in the environment');
   }
 
+  const oauthService = getService('OAuthService');
+
   const controller = new SeedlessOnboardingController({
     messenger: controllerMessenger,
     state: persistedState.SeedlessOnboardingController,
     network,
+    getNewRefreshToken: oauthService.getNewRefreshToken.bind(oauthService),
     encryptor: {
       decrypt: (key, encryptedData) => encryptor.decrypt(key, encryptedData),
       decryptWithDetail: (key, encryptedData) =>

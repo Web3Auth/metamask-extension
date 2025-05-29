@@ -112,6 +112,11 @@ export type AuthTokenResponse = {
    * The key is the audience value and the value is the JWT Token.
    */
   jwt_tokens: Record<string, string>;
+  /**
+   * The refresh token issued from the Web3Auth Authentication Server.
+   * This is used to refresh the JWT Token.
+   */
+  refresh_token: string;
 };
 
 /**
@@ -134,6 +139,7 @@ export type OAuthLoginResult = {
   userId: string;
   idTokens: string[];
   socialLoginEmail: string;
+  refreshToken: string;
 };
 
 /**
