@@ -67,6 +67,7 @@ import {
 import { AccountOverview } from '../../components/multichain/account-overview';
 import { setEditedNetwork } from '../../store/actions';
 import { navigateToConfirmation } from '../confirmations/hooks/useConfirmationNavigation';
+import PasswordChangedModal from '../../components/app/password-changed-modal';
 ///: BEGIN:ONLY_INCLUDE_IF(build-beta)
 import BetaHomeFooter from './beta/beta-home-footer.component';
 ///: END:ONLY_INCLUDE_IF
@@ -169,6 +170,7 @@ export default class Home extends PureComponent {
     useExternalServices: PropTypes.bool,
     setBasicFunctionalityModalOpen: PropTypes.func,
     fetchBuyableChains: PropTypes.func.isRequired,
+    isSeedlessPasswordOutdated: PropTypes.bool,
   };
 
   state = {
@@ -793,6 +795,7 @@ export default class Home extends PureComponent {
       firstTimeFlowType,
       newNetworkAddedConfigurationId,
       showMultiRpcModal,
+      isSeedlessPasswordOutdated,
     } = this.props;
 
     if (forgottenPassword) {
@@ -830,6 +833,7 @@ export default class Home extends PureComponent {
           participateInMetaMetrics === true
             ? this.renderOnboardingPopover()
             : null}
+          {isSeedlessPasswordOutdated && <PasswordChangedModal />}
           {showMultiRpcEditModal && <MultiRpcEditModal />}
           {showWhatsNew ? <WhatsNewModal onClose={hideWhatsNewPopup} /> : null}
           {!showWhatsNew && showRecoveryPhraseReminder ? (
