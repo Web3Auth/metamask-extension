@@ -20,6 +20,7 @@ const mapStateToProps = (state) => {
   const {
     metamask: { isUnlocked, firstTimeFlow },
   } = state;
+
   return {
     isUnlocked,
     firstTimeFlow,
