@@ -52,6 +52,7 @@ const mapStateToProps = (state) => {
     use4ByteResolution,
     useExternalServices,
     useExternalNameSources,
+    socialLoginEmail,
   } = metamask;
 
   const networkConfigurations = getNetworkConfigurationsByChainId(state);
@@ -82,6 +83,7 @@ const mapStateToProps = (state) => {
     socialLoginEnabled: isSocialLoginFlow(state),
     socialLoginType: getSocialLoginType(state),
     seedPhraseBackedUp: getSeedPhraseBackedUp(state),
+    socialLoginEmail,
   };
 };
 

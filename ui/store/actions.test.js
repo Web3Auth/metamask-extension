@@ -243,8 +243,6 @@ describe('Actions', () => {
         background.createNewVaultAndRestore.callsFake((_, __, cb) =>
           cb(null, mockKeyringsMetadata),
         );
-      const updateBackupMetadataStateStub =
-        background.updateBackupMetadataState.callsFake((_, __, cb) => cb());
 
       setBackgroundConnection(background);
 
@@ -259,16 +257,10 @@ describe('Actions', () => {
 
       expect(fetchAllSeedPhrasesStub.callCount).toStrictEqual(1);
       expect(createNewVaultAndRestoreStub.callCount).toStrictEqual(1);
-      expect(
-        updateBackupMetadataStateStub.calledOnceWith(
-          mockKeyringsMetadata[0].id,
-          mockEncodedSeedPhrase,
-        ),
-      ).toStrictEqual(true);
       expect(store.getActions()).toStrictEqual(expectedActions);
     });
 
-    it('should not restore vault if no seed phrase is found', async () => {
+    it('should throw an error if no seed phrase is found', async () => {
       const store = mockStore();
 
       const fetchAllSeedPhrasesStub = background.fetchAllSeedPhrases.callsFake(
@@ -284,11 +276,12 @@ describe('Actions', () => {
       const expectedActions = [
         { type: 'SHOW_LOADING_INDICATION', payload: undefined },
         { type: 'HIDE_LOADING_INDICATION' },
+        { type: 'DISPLAY_WARNING', payload: 'No seed phrase found' },
       ];
 
-      await store.dispatch(
-        actions.restoreSocialBackupAndGetSeedPhrase('password'),
-      );
+      await expect(
+        store.dispatch(actions.restoreSocialBackupAndGetSeedPhrase('password')),
+      ).rejects.toThrow('No seed phrase found');
 
       expect(fetchAllSeedPhrasesStub.callCount).toStrictEqual(1);
       expect(createNewVaultAndRestoreStub.callCount).toStrictEqual(0);
@@ -306,8 +299,8 @@ describe('Actions', () => {
 
       const expectedActions = [
         { type: 'SHOW_LOADING_INDICATION', payload: undefined },
-        { type: 'DISPLAY_WARNING', payload: 'error' },
         { type: 'HIDE_LOADING_INDICATION' },
+        { type: 'DISPLAY_WARNING', payload: 'error' },
       ];
 
       await expect(
@@ -3234,7 +3227,7 @@ describe('Actions', () => {
       const store = mockStore();
       const importMnemonicToVaultStub = sinon
         .stub()
-        .callsFake((_, cb) => cb(null, {}));
+        .callsFake((_, __, cb) => cb(null, {}));
       background.getApi.returns({
         importMnemonicToVault: importMnemonicToVaultStub,
       });

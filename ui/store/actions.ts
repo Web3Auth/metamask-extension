@@ -259,7 +259,7 @@ export function createNewVaultAndSyncWithSocial(
 }
 
 /**
- * Fetches and restores the seed phrase from the metadata store and restore the vault using the seed phrase.
+ * Fetches and restores the seed phrase from the metadata store using the social login and restore the vault using the seed phrase.
  *
  * @param password - The password.
  * @returns The seed phrase.
@@ -271,45 +271,63 @@ export function restoreSocialBackupAndGetSeedPhrase(
     dispatch(showLoadingIndication());
 
     try {
-      // fetch all the backup seed phrases
-      const seedPhrases = await fetchAllSeedPhrases(password);
-      if (seedPhrases === null || seedPhrases.length === 0) {
-        return null;
+      // get the first seed phrase from the array, this is the oldest seed phrase
+      // and we will use it to create the initial vault
+      const [firstSeedPhrase, ...remainingSeedPhrases] =
+        await fetchAllSeedPhrases(password);
+      if (!firstSeedPhrase) {
+        throw new Error('No seed phrase found');
       }
 
       // get the first seed phrase from the array
-      const firstSeedPhrase = seedPhrases[seedPhrases.length - 1];
       const encodedSeedPhrase = Array.from(
         Buffer.from(firstSeedPhrase).values(),
       );
 
       // restore the vault using the seed phrase
-      const [firstKeyring] = await submitRequestToBackground<KeyringMetadata[]>(
-        'createNewVaultAndRestore',
-        [password, encodedSeedPhrase],
-      );
+      await submitRequestToBackground('createNewVaultAndRestore', [
+        password,
+        encodedSeedPhrase,
+      ]);
 
-      if (!firstKeyring) {
-        throw new Error('No keyring found');
+      // restore the remaining Mnemonics/SeedPhrases to the vault
+      if (remainingSeedPhrases.length > 0) {
+        await restoreSeedPhrasesToVault(remainingSeedPhrases);
       }
 
-      // update the backup metadata state for the seedless onboarding flow
-      await updateBackupMetadataState(
-        firstKeyring.metadata.id,
-        firstSeedPhrase,
-      );
-
       await forceUpdateMetamaskState(dispatch);
+      dispatch(hideLoadingIndication());
+
       return firstSeedPhrase;
     } catch (error) {
-      dispatch(displayWarning(error));
+      console.error('[restoreSocialBackupAndGetSeedPhrase] error', error);
+      dispatch(hideLoadingIndication());
+      dispatch(displayWarning(error.message));
+      throw error;
+    }
+  };
+}
+
+export function syncSeedPhrases(): ThunkAction<
+  void,
+  MetaMaskReduxState,
+  unknown,
+  AnyAction
+> {
+  return async (dispatch: MetaMaskReduxDispatch) => {
+    dispatch(showLoadingIndication());
+
+    try {
+      await submitRequestToBackground('syncSeedPhrases');
+    } catch (error) {
+      console.error('[syncSeedPhrases] error', error);
+      dispatch(displayWarning(error.message));
       throw error;
     } finally {
       dispatch(hideLoadingIndication());
     }
   };
 }
-
 /**
  * Changes the password of the currently unlocked account.
  *
@@ -452,6 +470,22 @@ export function importMnemonicToVault(
         return Promise.reject(err);
       });
   };
+}
+
+/**
+ * Restores/syncs multiple seed phrases from the social login flow to the keyring vault.
+ *
+ * @param seedPhrases - The seed phrases.
+ */
+export async function restoreSeedPhrasesToVault(
+  seedPhrases: Uint8Array[],
+): Promise<void> {
+  try {
+    await submitRequestToBackground('restoreSeedPhrasesToVault', [seedPhrases]);
+  } catch (error) {
+    console.error('[restoreSeedPhrasesToVault] error', error);
+    throw error;
+  }
 }
 
 export function generateNewMnemonicAndAddToVault(): ThunkAction<
