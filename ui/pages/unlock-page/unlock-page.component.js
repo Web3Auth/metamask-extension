@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { SeedlessOnboardingControllerError } from '@metamask/seedless-onboarding-controller';
+import { SeedlessOnboardingControllerErrorMessage } from '@metamask/seedless-onboarding-controller';
 import {
   Text,
   FormTextField,
@@ -91,12 +91,23 @@ export default class UnlockPage extends Component {
 
     if (isUnlocked) {
       history.push(DEFAULT_ROUTE);
+      return;
     }
 
     if (isSeedlessPasswordOutdated) {
       // first error if seedless password is outdated
       const { t } = this.context;
       this.setState({ error: t('passwordChangedRecently') });
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (
+      !prevProps.isSeedlessPasswordOutdated &&
+      prevProps.isSeedlessPasswordOutdated !==
+        this.props.isSeedlessPasswordOutdated
+    ) {
+      this.setState({ error: this.context.t('passwordChangedRecently') });
     }
   }
 
@@ -144,11 +155,11 @@ export default class UnlockPage extends Component {
 
     switch (message) {
       case 'Incorrect password':
-      case SeedlessOnboardingControllerError.IncorrectPassword:
+      case SeedlessOnboardingControllerErrorMessage.IncorrectPassword:
         finalErrorMessage = t('unlockPageIncorrectPassword');
         errorReason = 'incorrect_password';
         break;
-      case SeedlessOnboardingControllerError.TooManyLoginAttempts:
+      case SeedlessOnboardingControllerErrorMessage.TooManyLoginAttempts:
         isLocked = true;
 
         // TODO: check if we need to remove this

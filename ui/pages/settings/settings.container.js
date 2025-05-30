@@ -41,6 +41,7 @@ import { getProviderConfig } from '../../../shared/modules/selectors/networks';
 import { toggleNetworkMenu } from '../../store/actions';
 import { getSnapName } from '../../helpers/utils/util';
 import { decodeSnapIdFromPathname } from '../../helpers/utils/snaps';
+import { getIsSeedlessPasswordOutdated } from '../../ducks/metamask/metamask';
 import Settings from './settings.component';
 
 const ROUTES_TO_I18N_KEYS = {
@@ -58,7 +59,7 @@ const ROUTES_TO_I18N_KEYS = {
   [NETWORKS_FORM_ROUTE]: 'networks',
   [NETWORKS_ROUTE]: 'networks',
   [REVEAL_SRP_LIST_ROUTE]: 'srpRevealListTitle',
-  [SECURITY_PASSWORD_CHANGE_ROUTE]: 'securityPassword',
+  [SECURITY_PASSWORD_CHANGE_ROUTE]: 'securityPasswordChange',
   [SECURITY_ROUTE]: 'securityAndPrivacy',
 };
 
@@ -144,7 +145,9 @@ const mapStateToProps = (state, ownProps) => {
     initialBreadCrumbKey,
     initialBreadCrumbRoute,
     isAddressEntryPage,
+    isPasswordChangePage,
     isPopup,
+    isSeedlessPasswordOutdated: getIsSeedlessPasswordOutdated(state),
     mostRecentOverviewPage: getMostRecentOverviewPage(state),
     pathnameI18nKey,
     settingsPageSnaps,
