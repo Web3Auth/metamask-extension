@@ -77,7 +77,7 @@ export default function OnboardingWelcome({
     dispatch(setFirstTimeFlowType(FirstTimeFlowType.create));
     trackEvent({
       category: MetaMetricsEventCategory.Onboarding,
-      event: MetaMetricsEventName.OnboardingWalletCreationStarted,
+      event: MetaMetricsEventName.WalletSetupStarted,
       properties: {
         account_type: 'metamask',
       },
@@ -96,7 +96,7 @@ export default function OnboardingWelcome({
     await dispatch(setFirstTimeFlowType(FirstTimeFlowType.import));
     trackEvent({
       category: MetaMetricsEventCategory.Onboarding,
-      event: MetaMetricsEventName.OnboardingWalletImportStarted,
+      event: MetaMetricsEventName.WalletImportStarted,
       properties: {
         account_type: 'imported',
       },
@@ -156,9 +156,9 @@ export default function OnboardingWelcome({
         const isNewUser = await handleSocialLogin(socialConnectionType);
         trackEvent({
           category: MetaMetricsEventCategory.Onboarding,
-          event: MetaMetricsEventName.OnboardingWalletCreationStarted,
+          event: MetaMetricsEventName.WalletSetupStarted,
           properties: {
-            account_type: 'metamask',
+            account_type: `metamask_${socialConnectionType}`,
           },
         });
         if (isNewUser) {
@@ -199,9 +199,9 @@ export default function OnboardingWelcome({
 
         trackEvent({
           category: MetaMetricsEventCategory.Onboarding,
-          event: MetaMetricsEventName.OnboardingWalletCreationStarted,
+          event: MetaMetricsEventName.WalletImportStarted,
           properties: {
-            account_type: 'metamask',
+            account_type: `imported_${socialConnectionType}`,
           },
         });
 
