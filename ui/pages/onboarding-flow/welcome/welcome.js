@@ -20,6 +20,7 @@ import LoadingScreen from '../../../components/ui/loading-screen';
 import {
   MetaMetricsEventCategory,
   MetaMetricsEventName,
+  MetaMetricsEventAccountType,
 } from '../../../../shared/constants/metametrics';
 import {
   bufferedTrace,
@@ -79,7 +80,7 @@ export default function OnboardingWelcome({
       category: MetaMetricsEventCategory.Onboarding,
       event: MetaMetricsEventName.WalletSetupStarted,
       properties: {
-        account_type: 'metamask',
+        account_type: MetaMetricsEventAccountType.Default,
       },
     });
     bufferedTrace({
@@ -98,7 +99,7 @@ export default function OnboardingWelcome({
       category: MetaMetricsEventCategory.Onboarding,
       event: MetaMetricsEventName.WalletImportStarted,
       properties: {
-        account_type: 'imported',
+        account_type: MetaMetricsEventAccountType.Imported,
       },
     });
     bufferedTrace({
@@ -158,7 +159,7 @@ export default function OnboardingWelcome({
           category: MetaMetricsEventCategory.Onboarding,
           event: MetaMetricsEventName.WalletSetupStarted,
           properties: {
-            account_type: `metamask_${socialConnectionType}`,
+            account_type: `${MetaMetricsEventAccountType.Default}_${socialConnectionType}`,
           },
         });
         if (isNewUser) {
@@ -171,7 +172,9 @@ export default function OnboardingWelcome({
           history.push(ONBOARDING_CREATE_PASSWORD_ROUTE);
           ///: END:ONLY_INCLUDE_IF
         } else {
-          history.push(ONBOARDING_ACCOUNT_EXIST);
+          history.push(
+            `${ONBOARDING_ACCOUNT_EXIST}?socialConnectionType=${socialConnectionType}`,
+          );
         }
       } catch (error) {
         handleSocialLoginError(error, socialConnectionType);
@@ -201,12 +204,14 @@ export default function OnboardingWelcome({
           category: MetaMetricsEventCategory.Onboarding,
           event: MetaMetricsEventName.WalletImportStarted,
           properties: {
-            account_type: `imported_${socialConnectionType}`,
+            account_type: `${MetaMetricsEventAccountType.Imported}_${socialConnectionType}`,
           },
         });
 
         if (isNewUser) {
-          history.push(ONBOARDING_ACCOUNT_NOT_FOUND);
+          history.push(
+            `${ONBOARDING_ACCOUNT_NOT_FOUND}?socialConnectionType=${socialConnectionType}`,
+          );
         } else {
           bufferedTrace({
             name: TraceName.OnboardingExistingSocialLogin,

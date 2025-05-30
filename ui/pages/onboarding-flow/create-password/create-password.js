@@ -150,17 +150,16 @@ export default function CreatePassword({
       return;
     }
 
-    trackEvent({
-      category: MetaMetricsEventCategory.Onboarding,
-      event: MetaMetricsEventName.OnboardingWalletCreationAttempted,
-    });
-
     // If secretRecoveryPhrase is defined we are in import wallet flow
     if (
       secretRecoveryPhrase &&
       firstTimeFlowType === FirstTimeFlowType.import
     ) {
       try {
+        trackEvent({
+          category: MetaMetricsEventCategory.Onboarding,
+          event: MetaMetricsEventName.WalletImportAttempted,
+        });
         await importWithRecoveryPhrase(password, secretRecoveryPhrase);
 
         bufferedEndTrace({ name: TraceName.OnboardingExistingSrpImport });
@@ -169,13 +168,37 @@ export default function CreatePassword({
         getPlatform() === PLATFORM_FIREFOX
           ? history.push(ONBOARDING_COMPLETION_ROUTE)
           : history.push(ONBOARDING_METAMETRICS);
+
+        trackEvent({
+          category: MetaMetricsEventCategory.Onboarding,
+          event: MetaMetricsEventName.WalletImported,
+          properties: {
+            biometrics_enabled: false,
+          },
+        });
+        trackEvent({
+          category: MetaMetricsEventCategory.Onboarding,
+          event: MetaMetricsEventName.WalletSetupCompleted,
+          properties: {
+            wallet_setup_type: 'import',
+            new_wallet: false,
+          },
+        });
       } catch (error) {
+        trackEvent({
+          category: MetaMetricsEventCategory.Onboarding,
+          event: MetaMetricsEventName.WalletSetupFailure,
+        });
         handlePasswordSetupError(error);
         throw error;
       }
     } else {
       // Otherwise we are in create new wallet flow
       try {
+        trackEvent({
+          category: MetaMetricsEventCategory.Onboarding,
+          event: MetaMetricsEventName.WalletCreationAttempted,
+        });
         if (createNewAccount) {
           setNewAccountCreationInProgress(true);
           await createNewAccount(password);
@@ -187,7 +210,28 @@ export default function CreatePassword({
         } else {
           history.push(ONBOARDING_SECURE_YOUR_WALLET_ROUTE);
         }
+        trackEvent(
+          {
+            category: MetaMetricsEventCategory.Onboarding,
+            event: MetaMetricsEventName.WalletCreated,
+          },
+          {
+            biometrics_enabled: false,
+          },
+        );
+        trackEvent({
+          category: MetaMetricsEventCategory.Onboarding,
+          event: MetaMetricsEventName.WalletSetupCompleted,
+          properties: {
+            wallet_setup_type: 'new',
+            new_wallet: true,
+          },
+        });
       } catch (error) {
+        trackEvent({
+          category: MetaMetricsEventCategory.Onboarding,
+          event: MetaMetricsEventName.WalletSetupFailure,
+        });
         handlePasswordSetupError(error);
         throw error;
       }
