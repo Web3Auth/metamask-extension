@@ -45,6 +45,11 @@ export class GoogleLoginHandler extends BaseLoginHandler {
     return res;
   }
 
+  getRedirectUrlAuthCode(redirectUrl: string): string | null {
+    const url = new URL(redirectUrl);
+    return url.searchParams.get('code');
+  }
+
   /**
    * Generate the request body data to get the JWT Token from the Web3Auth Authentication Server.
    *

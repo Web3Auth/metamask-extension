@@ -133,7 +133,7 @@ export default class OAuthService {
     loginHandler: BaseLoginHandler,
     redirectUrl: string,
   ): Promise<OAuthLoginResult> {
-    const authCode = this.#getRedirectUrlAuthCode(redirectUrl);
+    const authCode = loginHandler.getRedirectUrlAuthCode(redirectUrl);
     if (!authCode) {
       throw new Error('No auth code found');
     }
@@ -167,10 +167,5 @@ export default class OAuthService {
       authConnection: loginHandler.authConnection,
       socialLoginEmail: userInfo.email,
     };
-  }
-
-  #getRedirectUrlAuthCode(redirectUrl: string): string | null {
-    const url = new URL(redirectUrl);
-    return url.searchParams.get('code');
   }
 }
