@@ -45,6 +45,7 @@ import {
   ButtonSize,
 } from '../../../components/component-library';
 import { discardBufferedTraces } from '../../../../shared/lib/trace';
+import { submitRequestToBackground } from '../../../store/background-connection';
 
 import { FirstTimeFlowType } from '../../../../shared/constants/onboarding';
 
@@ -86,6 +87,9 @@ export default function OnboardingMetametrics() {
           location: 'onboarding_metametrics',
         },
       });
+      // Flush buffered events when user opts in
+      await submitRequestToBackground('trackEventsAfterMetricsOptIn');
+      await submitRequestToBackground('clearEventsAfterMetricsOptIn');
     } finally {
       history.push(nextRouteByBrowser);
     }
@@ -94,6 +98,7 @@ export default function OnboardingMetametrics() {
   const onCancel = async () => {
     await dispatch(setParticipateInMetaMetrics(false));
     await dispatch(setDataCollectionForMarketing(false));
+    await submitRequestToBackground('clearEventsAfterMetricsOptIn');
     discardBufferedTraces();
     history.push(nextRouteByBrowser);
   };
