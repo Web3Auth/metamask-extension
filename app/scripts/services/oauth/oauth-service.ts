@@ -81,7 +81,7 @@ export default class OAuthService {
   }: {
     connection: AuthConnection;
     refreshToken: string;
-  }): Promise<{ idTokens: string[]; refreshToken: string }> {
+  }): Promise<{ idTokens: string[] }> {
     const loginHandler = createLoginHandler(
       connection,
       '', // create handler for get refresh token function only, no need redirect URI
@@ -93,7 +93,26 @@ export default class OAuthService {
 
     return {
       idTokens: [idToken],
-      refreshToken: refreshTokenData.refresh_token,
+    };
+  }
+
+  async revokeAndGetNewRefreshToken({
+    connection,
+    revokeToken,
+  }: {
+    connection: AuthConnection;
+    revokeToken: string;
+  }): Promise<{ newRevokeToken: string; newRefreshToken: string }> {
+    const loginHandler = createLoginHandler(
+      connection,
+      '', // create handler for get refresh token function only, no need redirect URI
+      this.#env,
+    );
+
+    const res = await loginHandler.revokeRefreshToken(revokeToken);
+    return {
+      newRefreshToken: res.refresh_token,
+      newRevokeToken: res.revoke_token,
     };
   }
 
@@ -145,6 +164,7 @@ export default class OAuthService {
       authConnection: loginHandler.authConnection,
       socialLoginEmail: userInfo.email,
       refreshToken: authTokenData.refresh_token,
+      revokeToken: authTokenData.revoke_token,
     };
   }
 

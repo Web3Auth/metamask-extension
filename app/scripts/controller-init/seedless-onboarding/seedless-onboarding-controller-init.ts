@@ -25,7 +25,9 @@ export const SeedlessOnboardingControllerInit: ControllerInitFunction<
     messenger: controllerMessenger,
     state: persistedState.SeedlessOnboardingController,
     network,
-    getNewRefreshToken: oauthService.getNewRefreshToken.bind(oauthService),
+    refreshJWTToken: oauthService.getNewRefreshToken.bind(oauthService),
+    revokeRefreshToken:
+      oauthService.revokeAndGetNewRefreshToken.bind(oauthService),
     encryptor: {
       decrypt: (key, encryptedData) => encryptor.decrypt(key, encryptedData),
       decryptWithDetail: (key, encryptedData) =>

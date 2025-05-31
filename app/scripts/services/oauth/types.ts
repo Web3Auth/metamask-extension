@@ -117,6 +117,11 @@ export type AuthTokenResponse = {
    * This is used to refresh the JWT Token.
    */
   refresh_token: string;
+  /**
+   * The revoke token issued from the Web3Auth Authentication Server.
+   * This is used to revoke the Refresh Token.
+   */
+  revoke_token: string;
 };
 
 /**
@@ -140,6 +145,7 @@ export type OAuthLoginResult = {
   idTokens: string[];
   socialLoginEmail: string;
   refreshToken: string;
+  revokeToken: string;
 };
 
 /**
