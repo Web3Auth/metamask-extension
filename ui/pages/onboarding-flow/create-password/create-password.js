@@ -143,6 +143,19 @@ export default function CreatePassword({
     console.error(error);
   };
 
+  const handleLearnMoreClick = (event) => {
+    event.stopPropagation();
+    trackEvent({
+      category: MetaMetricsEventCategory.Onboarding,
+      event: MetaMetricsEventName.ExternalLinkClicked,
+      properties: {
+        text: 'Learn More',
+        location: 'create_password',
+        url: ZENDESK_URLS.PASSWORD_AND_SRP_ARTICLE,
+      },
+    });
+  };
+
   const handleCreate = async (event) => {
     event?.preventDefault();
 
@@ -240,7 +253,7 @@ export default function CreatePassword({
 
   const createPasswordLink = (
     <a
-      onClick={(e) => e.stopPropagation()}
+      onClick={handleLearnMoreClick}
       key="create-password__link-text"
       href={ZENDESK_URLS.PASSWORD_AND_SRP_ARTICLE}
       target="_blank"
