@@ -754,6 +754,7 @@ export enum MetaMetricsEventName {
   SrpViewSrpText = 'Views SRP',
   SrpCopiedToClipboard = 'Copies SRP to clipboard',
   SrpToConfirmBackup = 'SRP Backup Confirm Displayed',
+  SrpDefinitionClicked = 'SRP Definition Clicked',
   StakingEntryPointClicked = 'Stake Button Clicked',
   SurveyToast = 'Survey Toast',
   SupportLinkClicked = 'Support Link Clicked',
