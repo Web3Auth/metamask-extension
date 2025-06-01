@@ -223,15 +223,13 @@ export default function CreatePassword({
         } else {
           history.push(ONBOARDING_SECURE_YOUR_WALLET_ROUTE);
         }
-        trackEvent(
-          {
-            category: MetaMetricsEventCategory.Onboarding,
-            event: MetaMetricsEventName.WalletCreated,
-          },
-          {
+        trackEvent({
+          category: MetaMetricsEventCategory.Onboarding,
+          event: MetaMetricsEventName.WalletCreated,
+          properties: {
             biometrics_enabled: false,
           },
-        );
+        });
         trackEvent({
           category: MetaMetricsEventCategory.Onboarding,
           event: MetaMetricsEventName.WalletSetupCompleted,
