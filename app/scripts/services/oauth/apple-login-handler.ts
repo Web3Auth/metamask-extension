@@ -1,5 +1,5 @@
 import { AuthConnection } from '@metamask/seedless-onboarding-controller';
-import { sha512 } from '@noble/hashes/sha2';
+import { sha256 } from '@noble/hashes/sha2';
 import { bytesToHex, remove0x } from '@metamask/utils';
 import { BaseLoginHandler } from './base-login-handler';
 import { AuthTokenResponse, LoginHandlerOptions, OAuthUserInfo } from './types';
@@ -56,7 +56,7 @@ export class AppleLoginHandler extends BaseLoginHandler {
   }
 
   #getHashedNonce(): string {
-    const hashBytes = sha512(this.nonce);
+    const hashBytes = sha256(this.nonce);
     return remove0x(bytesToHex(hashBytes));
   }
 
