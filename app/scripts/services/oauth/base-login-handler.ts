@@ -60,6 +60,14 @@ export abstract class BaseLoginHandler {
   abstract getAuthIdToken(code: string): Promise<AuthTokenResponse>;
 
   /**
+   * Get the authorization code from the redirect URL.
+   *
+   * @param redirectUrl - The redirect URL from the social login provider.
+   * @returns The authorization code from the redirect URL.
+   */
+  abstract getRedirectUrlAuthCode(redirectUrl: string): string | null;
+
+  /**
    * Generate the request body data to get the JWT Token from the Web3Auth Authentication Server.
    *
    * @param code - The authorization code from the social login provider.

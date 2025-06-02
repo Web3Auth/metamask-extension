@@ -1,4 +1,6 @@
 import { AuthConnection } from '@metamask/seedless-onboarding-controller';
+import { sha256 } from '@noble/hashes/sha2';
+import { bytesToHex, remove0x } from '@metamask/utils';
 import { BaseLoginHandler } from './base-login-handler';
 import { AuthTokenResponse, LoginHandlerOptions, OAuthUserInfo } from './types';
 
@@ -38,12 +40,14 @@ export class AppleLoginHandler extends BaseLoginHandler {
     authUrl.searchParams.set('response_type', 'code');
     authUrl.searchParams.set('redirect_uri', this.serverRedirectUri);
     authUrl.searchParams.set('response_mode', 'form_post');
-    authUrl.searchParams.set('nonce', this.nonce);
     authUrl.searchParams.set('prompt', this.prompt);
+    // required for custom flow where apple oauth will send post request to redirect_uri after client init authz
+    // ref: https://github.com/MetaMask/threatmodels/pull/38
     authUrl.searchParams.set(
       'state',
       JSON.stringify({
         client_redirect_back_uri: this.options.redirectUri,
+        code_challenge: this.#getHashedNonce(),
       }),
     );
     authUrl.searchParams.set('scope', this.#scope.join(' '));
@@ -51,28 +55,46 @@ export class AppleLoginHandler extends BaseLoginHandler {
     return authUrl.toString();
   }
 
+  #getHashedNonce(): string {
+    const hashBytes = sha256(this.nonce);
+    return remove0x(bytesToHex(hashBytes));
+  }
+
   /**
    * Get the JWT Token from the Web3Auth Authentication Server.
    *
-   * @param code - The Authorization Code from the social login provider.
+   * @param _state - The Authorization state from the social login provider.
    * @returns The JWT Token from the Web3Auth Authentication Server.
    */
-  async getAuthIdToken(code: string): Promise<AuthTokenResponse> {
-    const requestData = this.generateAuthTokenRequestData(code);
-    const res = await this.requestAuthToken(requestData);
+  async getAuthIdToken(_state?: string): Promise<AuthTokenResponse> {
+    const requestData = this.generateAuthTokenRequestData();
+    const res = await this.requestVerifyAuthToken(requestData);
     return res;
+  }
+
+  /**
+   * Get the state from the redirect URL.
+   * Apple doesn't support pkce so we use custom flow.
+   * ref: https://github.com/MetaMask/threatmodels/pull/38
+   *
+   * @param redirectUrl - The redirect URL from the social login provider.
+   * @returns The state from the redirect URL.
+   */
+  getRedirectUrlAuthCode(redirectUrl: string): string | null {
+    const url = new URL(redirectUrl);
+    const state = url.searchParams.get('state');
+    return state ? JSON.parse(state).code_challenge : null;
   }
 
   /**
    * Generate the request body data to get the JWT Token from the Web3Auth Authentication Server.
    *
-   * @param code - The Authorization Code from the social login provider.
    * @returns The request data for the Web3Auth Authentication Server.
    */
-  generateAuthTokenRequestData(code: string): string {
+  generateAuthTokenRequestData(): string {
     const { web3AuthNetwork } = this.options;
     const requestData = {
-      code,
+      code_verifier: this.nonce,
       client_id: this.options.oAuthClientId,
       redirect_uri: this.serverRedirectUri,
       login_provider: this.authConnection,
@@ -80,6 +102,24 @@ export class AppleLoginHandler extends BaseLoginHandler {
     };
 
     return JSON.stringify(requestData);
+  }
+
+  async requestVerifyAuthToken(
+    requestData: string,
+  ): Promise<AuthTokenResponse> {
+    const res = await fetch(
+      `${this.options.authServerUrl}/api/v1/oauth/callback/verify`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: requestData,
+      },
+    );
+
+    const data = await res.json();
+    return data;
   }
 
   /**
