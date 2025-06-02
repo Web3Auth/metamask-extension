@@ -47,7 +47,7 @@ export class AppleLoginHandler extends BaseLoginHandler {
       'state',
       JSON.stringify({
         client_redirect_back_uri: this.options.redirectUri,
-        hashed_nonce: this.#getHashedNonce(),
+        code_challenge: this.#getHashedNonce(),
       }),
     );
     authUrl.searchParams.set('scope', this.#scope.join(' '));
@@ -83,7 +83,7 @@ export class AppleLoginHandler extends BaseLoginHandler {
   getRedirectUrlAuthCode(redirectUrl: string): string | null {
     const url = new URL(redirectUrl);
     const state = url.searchParams.get('state');
-    return state ? JSON.parse(state).hashed_nonce : null;
+    return state ? JSON.parse(state).code_challenge : null;
   }
 
   /**
@@ -94,7 +94,7 @@ export class AppleLoginHandler extends BaseLoginHandler {
   generateAuthTokenRequestData(): string {
     const { web3AuthNetwork } = this.options;
     const requestData = {
-      state_nonce: this.nonce,
+      code_verifier: this.nonce,
       client_id: this.options.oAuthClientId,
       redirect_uri: this.serverRedirectUri,
       login_provider: this.authConnection,
