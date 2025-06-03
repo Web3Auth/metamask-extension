@@ -153,8 +153,26 @@ export default function OnboardingWelcome({
       setNewAccountCreationInProgress(true);
       dispatch(setFirstTimeFlowType(FirstTimeFlowType.socialCreate));
 
+      // Track wallet setup started for social login users
+      trackEvent({
+        category: MetaMetricsEventCategory.Onboarding,
+        event: MetaMetricsEventName.WalletRehydrationSelected,
+        properties: {
+          account_type: `${MetaMetricsEventAccountType.Default}_${socialConnectionType}`,
+        },
+      });
+
       try {
         const isNewUser = await handleSocialLogin(socialConnectionType);
+
+        // Track wallet setup completed for social login users
+        trackEvent({
+          category: MetaMetricsEventCategory.Onboarding,
+          event: MetaMetricsEventName.SocialLoginCompleted,
+          properties: {
+            account_type: `${MetaMetricsEventAccountType.Default}_${socialConnectionType}`,
+          },
+        });
         trackEvent({
           category: MetaMetricsEventCategory.Onboarding,
           event: MetaMetricsEventName.WalletSetupStarted,
@@ -202,7 +220,7 @@ export default function OnboardingWelcome({
         category: MetaMetricsEventCategory.Onboarding,
         event: MetaMetricsEventName.WalletRehydrationSelected,
         properties: {
-          account_type: socialConnectionType,
+          account_type: `${MetaMetricsEventAccountType.Imported}_${socialConnectionType}`,
         },
       });
 
@@ -214,7 +232,7 @@ export default function OnboardingWelcome({
           category: MetaMetricsEventCategory.Onboarding,
           event: MetaMetricsEventName.SocialLoginCompleted,
           properties: {
-            account_type: socialConnectionType,
+            account_type: `${MetaMetricsEventAccountType.Imported}_${socialConnectionType}`,
           },
         });
         trackEvent({
