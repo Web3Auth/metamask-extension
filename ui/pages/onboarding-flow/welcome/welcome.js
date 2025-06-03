@@ -200,7 +200,7 @@ export default function OnboardingWelcome({
       // Track wallet login selected for existing social login users
       trackEvent({
         category: MetaMetricsEventCategory.Onboarding,
-        event: MetaMetricsEventName.WalletLoginSelected,
+        event: MetaMetricsEventName.WalletRehydrationSelected,
         properties: {
           account_type: socialConnectionType,
         },
@@ -212,7 +212,7 @@ export default function OnboardingWelcome({
         // Track wallet login completed for existing social login users
         trackEvent({
           category: MetaMetricsEventCategory.Onboarding,
-          event: MetaMetricsEventName.WalletLoginCompleted,
+          event: MetaMetricsEventName.SocialLoginCompleted,
           properties: {
             account_type: socialConnectionType,
           },
