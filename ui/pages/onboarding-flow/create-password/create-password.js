@@ -242,6 +242,12 @@ export default function CreatePassword({
         trackEvent({
           category: MetaMetricsEventCategory.Onboarding,
           event: MetaMetricsEventName.WalletCreationAttempted,
+          properties: {
+            account_type: getAccountType(
+              MetaMetricsEventAccountType.Default,
+              socialLoginFlow && Boolean(socialLoginType),
+            ),
+          },
         });
         if (createNewAccount) {
           setNewAccountCreationInProgress(true);
