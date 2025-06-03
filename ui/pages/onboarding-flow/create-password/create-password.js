@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import zxcvbn from 'zxcvbn';
 import { useI18nContext } from '../../../hooks/useI18nContext';
 import {
   JustifyContent,
@@ -58,6 +59,7 @@ import {
   bufferedEndTrace,
 } from '../../../../shared/lib/trace';
 import { useSentryTrace } from '../../../contexts/sentry-trace';
+import { PASSWORD_MIN_LENGTH } from '../../../helpers/constants/common';
 
 export default function CreatePassword({
   createNewAccount,
@@ -168,6 +170,19 @@ export default function CreatePassword({
     return baseType;
   };
 
+  const getPasswordStrengthCategory = (passwordValue) => {
+    const isTooShort = passwordValue.length < PASSWORD_MIN_LENGTH;
+    const { score } = zxcvbn(passwordValue);
+
+    if (isTooShort || score < 3) {
+      return 'weak';
+    }
+    if (score === 3) {
+      return 'average';
+    }
+    return 'strong';
+  };
+
   const handleCreate = async (event) => {
     event?.preventDefault();
 
@@ -244,6 +259,7 @@ export default function CreatePassword({
           event: MetaMetricsEventName.WalletCreated,
           properties: {
             biometrics_enabled: false,
+            password_strength: getPasswordStrengthCategory(password),
           },
         });
         trackEvent({
