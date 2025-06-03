@@ -25,11 +25,13 @@ import {
   getMetaMetricsId,
   getParticipateInMetaMetrics,
   isSocialLoginFlow,
+  getSocialLoginType,
 } from '../../../selectors';
 import { MetaMetricsContext } from '../../../contexts/metametrics';
 import {
   MetaMetricsEventCategory,
   MetaMetricsEventName,
+  MetaMetricsEventAccountType,
 } from '../../../../shared/constants/metametrics';
 import {
   Box,
@@ -71,6 +73,7 @@ export default function CreatePassword({
   const dispatch = useDispatch();
   const firstTimeFlowType = useSelector(getFirstTimeFlowType);
   const socialLoginFlow = useSelector(isSocialLoginFlow);
+  const socialLoginType = useSelector(getSocialLoginType);
   const trackEvent = useContext(MetaMetricsContext);
   const currentKeyring = useSelector(getCurrentKeyring);
 
@@ -156,6 +159,15 @@ export default function CreatePassword({
     });
   };
 
+  // Helper function to determine account type for analytics
+  const getAccountType = (baseType, includesSocialLogin = false) => {
+    if (includesSocialLogin && socialLoginType) {
+      const socialProvider = String(socialLoginType).toLowerCase();
+      return `${baseType}_${socialProvider}`;
+    }
+    return baseType;
+  };
+
   const handleCreate = async (event) => {
     event?.preventDefault();
 
@@ -195,6 +207,10 @@ export default function CreatePassword({
           properties: {
             wallet_setup_type: 'import',
             new_wallet: false,
+            account_type: getAccountType(
+              MetaMetricsEventAccountType.Imported,
+              Boolean(socialLoginType),
+            ),
           },
         });
       } catch (error) {
@@ -236,6 +252,10 @@ export default function CreatePassword({
           properties: {
             wallet_setup_type: 'new',
             new_wallet: true,
+            account_type: getAccountType(
+              MetaMetricsEventAccountType.Default,
+              socialLoginFlow && Boolean(socialLoginType),
+            ),
           },
         });
       } catch (error) {
