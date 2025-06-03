@@ -172,6 +172,7 @@ class UnlockPage extends Component {
           properties: {
             account_type: 'social',
             biometrics: false,
+            failed_attempts: this.failed_attempts,
           },
         });
       }
@@ -217,6 +218,7 @@ class UnlockPage extends Component {
         event: MetaMetricsEventName.RehydrationPasswordFailed,
         properties: {
           account_type: 'social',
+          failed_attempts: this.failed_attempts,
         },
       });
     }
