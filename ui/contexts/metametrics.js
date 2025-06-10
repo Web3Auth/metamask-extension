@@ -23,7 +23,10 @@ import { PATH_NAME_MAP } from '../helpers/constants/routes';
 import { MetaMetricsContextProp } from '../../shared/constants/metametrics';
 import { useSegmentContext } from '../hooks/useSegmentContext';
 import { getParticipateInMetaMetrics } from '../selectors';
-import { submitRequestToBackground } from '../store/background-connection';
+import {
+  generateActionId,
+  submitRequestToBackground,
+} from '../store/background-connection';
 
 import { trackMetaMetricsEvent, trackMetaMetricsPage } from '../store/actions';
 
@@ -101,7 +104,7 @@ export function MetaMetricsProvider({ children }) {
       } else {
         // If metrics are not enabled, buffer the event
         await submitRequestToBackground('addEventBeforeMetricsOptIn', [
-          fullPayload,
+          { ...fullPayload, actionId: generateActionId() },
         ]);
       }
     },
