@@ -103,37 +103,11 @@ class StartOnboardingPage {
     console.log('Get started page is loaded');
   }
 
-  async createWalletWithSocialLogin(
-    authConnection = AuthConnection.Google,
-  ): Promise<void> {
+  async createWalletWithSrp(socialLoginEnabled = true): Promise<void> {
     await this.driver.clickElement(this.createWalletButton);
-
-    const socialLoginButton =
-      authConnection === AuthConnection.Google
-        ? this.onboardingGoogleButton
-        : this.onboardingAppleButton;
-
-    await this.driver.waitForSelector(socialLoginButton);
-    await this.driver.clickElement(socialLoginButton);
-  }
-
-  async importWalletWithSocialLogin(
-    authConnection = AuthConnection.Google,
-  ): Promise<void> {
-    await this.driver.clickElement(this.importWalletButton);
-
-    const socialLoginButton =
-      authConnection === AuthConnection.Google
-        ? this.onboardingGoogleButton
-        : this.onboardingAppleButton;
-
-    await this.driver.waitForSelector(socialLoginButton);
-    await this.driver.clickElement(socialLoginButton);
-  }
-
-  async createWalletWithSrp(): Promise<void> {
-    await this.driver.clickElement(this.createWalletButton);
-    await this.driver.clickElement(this.onboardingCreateWithSrpButton);
+    if (socialLoginEnabled) {
+      await this.driver.clickElement(this.onboardingCreateWithSrpButton);
+    }
   }
 
   async importWallet(): Promise<void> {

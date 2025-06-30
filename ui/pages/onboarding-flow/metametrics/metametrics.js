@@ -72,7 +72,6 @@ export default function OnboardingMetametrics() {
 
   const onConfirm = async (e) => {
     e.preventDefault();
-    console.log('onConfirm', nextRouteByBrowser);
     if (dataCollectionForMarketing === null) {
       await dispatch(setDataCollectionForMarketing(false));
     }
@@ -98,7 +97,6 @@ export default function OnboardingMetametrics() {
     } catch (error) {
       console.error('onConfirm::error', error);
     } finally {
-      console.log('onConfirm::beforeHistoryPush', nextRouteByBrowser);
       history.push(nextRouteByBrowser);
     }
   };

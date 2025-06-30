@@ -1100,15 +1100,13 @@ export default class MetamaskController extends EventEmitter {
       state: initState.OnboardingController,
     });
 
-    this.oauthService = getIsSeedlessOnboardingFeatureEnabled()
-      ? new OAuthService({
-        env: {
-          googleClientId: process.env.GOOGLE_CLIENT_ID,
-          appleClientId: process.env.APPLE_CLIENT_ID,
-        },
-        webAuthenticator: webAuthenticatorFactory(),
-      })
-      : null;
+    this.oauthService = new OAuthService({
+      env: {
+        googleClientId: process.env.GOOGLE_CLIENT_ID,
+        appleClientId: process.env.APPLE_CLIENT_ID,
+      },
+      webAuthenticator: webAuthenticatorFactory(),
+    });
 
     let additionalKeyrings = [keyringBuilderFactory(QRHardwareKeyring)];
 
@@ -1769,6 +1767,7 @@ export default class MetamaskController extends EventEmitter {
           deviceModel,
         };
       },
+      trace,
     });
 
     const isExternalNameSourcesEnabled = () =>
@@ -1934,10 +1933,10 @@ export default class MetamaskController extends EventEmitter {
       InstitutionalSnapController: InstitutionalSnapControllerInit,
       RateLimitController: RateLimitControllerInit,
       SnapsRegistry: SnapsRegistryInit,
+      CronjobController: CronjobControllerInit,
       SnapController: SnapControllerInit,
       SnapInsightsController: SnapInsightsControllerInit,
       SnapInterfaceController: SnapInterfaceControllerInit,
-      CronjobController: CronjobControllerInit,
       WebSocketService: WebSocketServiceInit,
       PPOMController: PPOMControllerInit,
       TransactionController: TransactionControllerInit,
@@ -1962,11 +1961,6 @@ export default class MetamaskController extends EventEmitter {
       AccountTreeController: AccountTreeControllerInit,
       SeedlessOnboardingController: SeedlessOnboardingControllerInit,
     };
-
-    if (getIsSeedlessOnboardingFeatureEnabled()) {
-      controllerInitFunctions.SeedlessOnboardingController =
-        SeedlessOnboardingControllerInit;
-    }
 
     const {
       controllerApi,
@@ -2021,13 +2015,12 @@ export default class MetamaskController extends EventEmitter {
     this.seedlessOnboardingController =
       controllersByName.SeedlessOnboardingController;
 
-    if (process.env.SEEDLESS_ONBOARDING_ENABLED) {
-      this.seedlessOnboardingController =
-        controllersByName.SeedlessOnboardingController;
-    }
+    this.seedlessOnboardingController =
+      controllersByName.SeedlessOnboardingController;
 
     this.notificationServicesController.init();
     this.snapController.init();
+    this.cronjobController.init();
 
     this.controllerMessenger.subscribe(
       'TransactionController:transactionStatusUpdated',
@@ -3416,7 +3409,7 @@ export default class MetamaskController extends EventEmitter {
       notificationServicesPushController,
     } = this;
 
-    let apis = {
+    return {
       // etc
       getState: this.getState.bind(this),
       setCurrentCurrency: currencyRateController.setCurrentCurrency.bind(
@@ -3807,6 +3800,21 @@ export default class MetamaskController extends EventEmitter {
       // EnsController
       tryReverseResolveAddress:
         ensController.reverseResolveAddress.bind(ensController),
+
+      // OAuthService
+      startOAuthLogin: this.oauthService.startOAuthLogin.bind(
+        this.oauthService,
+      ),
+
+      // SeedlessOnboardingController
+      authenticate: this.seedlessOnboardingController.authenticate.bind(
+        this.seedlessOnboardingController,
+      ),
+      resetOAuthLoginState: this.seedlessOnboardingController.clearState.bind(
+        this.seedlessOnboardingController,
+      ),
+      createSeedPhraseBackup: this.createSeedPhraseBackup.bind(this),
+      fetchAllSecretData: this.fetchAllSecretData.bind(this),
 
       // KeyringController
       setLocked: this.setLocked.bind(this),
@@ -4367,18 +4375,6 @@ export default class MetamaskController extends EventEmitter {
       isRelaySupported,
       requestSafeReload: this.requestSafeReload.bind(this),
     };
-
-    if (getIsSeedlessOnboardingFeatureEnabled()) {
-      apis = {
-        ...apis,
-        startOAuthLogin: this.startOAuthLogin.bind(this),
-        resetOAuthLoginState: this.resetOAuthLoginState.bind(this),
-        createSeedPhraseBackup: this.createSeedPhraseBackup.bind(this),
-        fetchAllSecretData: this.fetchAllSecretData.bind(this),
-      };
-    }
-
-    return apis;
   }
 
   rejectOriginPendingApprovals(origin) {
@@ -4664,40 +4660,6 @@ export default class MetamaskController extends EventEmitter {
       return details?.symbol;
     } catch (e) {
       return null;
-    }
-  }
-
-  /**
-   * Login with social login provider and get User Onboarding details.
-   *
-   * AuthenticationResult is an object that contains the temporary Auth token for next step of onboarding flow
-   * and user's onboarding status to indicate whether the user has already completed the seedless onboarding flow.
-   *
-   * @param {AuthConnection} authConnection - social login provider, `google` | `apple`
-   * @returns {Promise<boolean>} true if user has not completed the seedless onboarding flow, false otherwise
-   */
-  async startOAuthLogin(authConnection) {
-    const oauth2LoginResult = await this.oauthService.startOAuthLogin(
-      authConnection,
-    );
-
-    const { isNewUser } = await this.seedlessOnboardingController.authenticate(
-      oauth2LoginResult,
-    );
-
-    return isNewUser;
-  }
-
-  /**
-   * Resets the social login state and onboarding state.
-   */
-  resetOAuthLoginState() {
-    try {
-      this.seedlessOnboardingController.clearState();
-      this.onboardingController.setFirstTimeFlowType(null);
-    } catch (error) {
-      log.error('Error while resetting social login state', error);
-      throw error;
     }
   }
 
@@ -8213,6 +8175,7 @@ export default class MetamaskController extends EventEmitter {
       this.tokenBalancesController.stopAllPolling();
       this.appStateController.clearPollingTokens();
       this.accountTrackerController.stopAllPolling();
+      this.deFiPositionsController.stopAllPolling();
     } catch (error) {
       console.error(error);
     }

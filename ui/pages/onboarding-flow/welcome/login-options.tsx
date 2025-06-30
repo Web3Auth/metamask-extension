@@ -77,6 +77,8 @@ export default function LoginOptions({
   handleLogin: (loginType: LoginType) => void;
 }) {
   const t = useI18nContext();
+  // TODO: enable apple login once it's deployed securely.
+  const shouldDisableAppleLogin = true;
 
   const onLogin = useCallback(
     (loginType: LoginType) => {
@@ -143,6 +145,7 @@ export default function LoginOptions({
             data-testid="onboarding-apple-button"
             marginBottom={2}
             onClick={() => onLogin(LOGIN_TYPE.APPLE)}
+            disabled={shouldDisableAppleLogin}
           />
           <Box
             alignItems={AlignItems.center}
