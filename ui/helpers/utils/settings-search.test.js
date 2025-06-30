@@ -155,8 +155,8 @@ describe('Settings Search Utils', () => {
 
       expect(getSettingsRoutes()).toHaveLength(
         SETTINGS_CONSTANTS.length -
-          NUM_OF_ENV_FEATURE_FLAG_SETTINGS -
-          NUM_OF_HIDDEN_SETTINGS,
+        NUM_OF_ENV_FEATURE_FLAG_SETTINGS -
+        NUM_OF_HIDDEN_SETTINGS,
       );
     });
   });
@@ -183,7 +183,7 @@ describe('Settings Search Utils', () => {
     it('returns "Security & privacy" section count', () => {
       expect(
         getNumberOfSettingRoutesInTab(t, t('securityAndPrivacy')),
-      ).toStrictEqual(21);
+      ).toStrictEqual(22);
     });
 
     it('returns "Network" section count', () => {
