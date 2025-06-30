@@ -691,12 +691,12 @@ export default class MetamaskController extends EventEmitter {
         return process.env.IN_TEST
           ? {}
           : {
-            pollingInterval: 20 * SECOND,
-            // The retry timeout is pretty short by default, and if the endpoint is
-            // down, it will end up exhausting the max number of consecutive
-            // failures quickly.
-            retryTimeout: 20 * SECOND,
-          };
+              pollingInterval: 20 * SECOND,
+              // The retry timeout is pretty short by default, and if the endpoint is
+              // down, it will end up exhausting the max number of consecutive
+              // failures quickly.
+              retryTimeout: 20 * SECOND,
+            };
       },
       getRpcServiceOptions: (rpcEndpointUrl) => {
         const maxRetries = 4;
@@ -2849,12 +2849,12 @@ export default class MetamaskController extends EventEmitter {
 
           const previousSolanaAccountChangedNotificationsEnabled = Boolean(
             previousCaveatValue?.sessionProperties?.[
-            KnownSessionProperties.SolanaAccountChangedNotifications
+              KnownSessionProperties.SolanaAccountChangedNotifications
             ],
           );
           const currentSolanaAccountChangedNotificationsEnabled = Boolean(
             currentCaveatValue?.sessionProperties?.[
-            KnownSessionProperties.SolanaAccountChangedNotifications
+              KnownSessionProperties.SolanaAccountChangedNotifications
             ],
           );
 
@@ -2867,10 +2867,10 @@ export default class MetamaskController extends EventEmitter {
 
           const previousSolanaCaipAccountIds = previousCaveatValue
             ? getPermittedAccountsForScopes(previousCaveatValue, [
-              MultichainNetworks.SOLANA,
-              MultichainNetworks.SOLANA_DEVNET,
-              MultichainNetworks.SOLANA_TESTNET,
-            ])
+                MultichainNetworks.SOLANA,
+                MultichainNetworks.SOLANA_DEVNET,
+                MultichainNetworks.SOLANA_TESTNET,
+              ])
             : [];
           const previousNonUniqueSolanaHexAccountAddresses =
             previousSolanaCaipAccountIds.map((caipAccountId) => {
@@ -2887,10 +2887,10 @@ export default class MetamaskController extends EventEmitter {
 
           const currentSolanaCaipAccountIds = currentCaveatValue
             ? getPermittedAccountsForScopes(currentCaveatValue, [
-              MultichainNetworks.SOLANA,
-              MultichainNetworks.SOLANA_DEVNET,
-              MultichainNetworks.SOLANA_TESTNET,
-            ])
+                MultichainNetworks.SOLANA,
+                MultichainNetworks.SOLANA_DEVNET,
+                MultichainNetworks.SOLANA_TESTNET,
+              ])
             : [];
           const currentNonUniqueSolanaHexAccountAddresses =
             currentSolanaCaipAccountIds.map((caipAccountId) => {
@@ -3531,15 +3531,6 @@ export default class MetamaskController extends EventEmitter {
         getAccountsBySnapId(this.getSnapKeyring.bind(this), snapId),
       ///: END:ONLY_INCLUDE_IF
 
-      // seedless onboarding
-      startOAuthLogin: this.startOAuthLogin.bind(this),
-      resetOAuthLoginState: this.resetOAuthLoginState.bind(this),
-      createSeedPhraseBackup: this.createSeedPhraseBackup.bind(this),
-      fetchAllSecretData: this.fetchAllSecretData.bind(this),
-      changePassword: this.changePassword.bind(this),
-      restoreSeedPhrasesToVault: this.restoreSeedPhrasesToVault.bind(this),
-      syncSeedPhrases: this.syncSeedPhrases.bind(this),
-
       // hardware wallets
       connectHardware: this.connectHardware.bind(this),
       forgetDevice: this.forgetDevice.bind(this),
@@ -3815,6 +3806,9 @@ export default class MetamaskController extends EventEmitter {
       ),
       createSeedPhraseBackup: this.createSeedPhraseBackup.bind(this),
       fetchAllSecretData: this.fetchAllSecretData.bind(this),
+      changePassword: this.changePassword.bind(this),
+      restoreSeedPhrasesToVault: this.restoreSeedPhrasesToVault.bind(this),
+      syncSeedPhrases: this.syncSeedPhrases.bind(this),
 
       // KeyringController
       setLocked: this.setLocked.bind(this),
@@ -4664,6 +4658,40 @@ export default class MetamaskController extends EventEmitter {
   }
 
   /**
+   * Login with social login provider and get User Onboarding details.
+   *
+   * AuthenticationResult is an object that contains the temporary Auth token for next step of onboarding flow
+   * and user's onboarding status to indicate whether the user has already completed the seedless onboarding flow.
+   *
+   * @param {AuthConnection} authConnection - social login provider, `google` | `apple`
+   * @returns {Promise<boolean>} true if user has not completed the seedless onboarding flow, false otherwise
+   */
+  async startOAuthLogin(authConnection) {
+    const oauth2LoginResult = await this.oauthService.startOAuthLogin(
+      authConnection,
+    );
+
+    const { isNewUser } = await this.seedlessOnboardingController.authenticate(
+      oauth2LoginResult,
+    );
+
+    return isNewUser;
+  }
+
+  /**
+   * Resets the social login state and onboarding state.
+   */
+  resetOAuthLoginState() {
+    try {
+      this.seedlessOnboardingController.clearState();
+      this.onboardingController.setFirstTimeFlowType(null);
+    } catch (error) {
+      log.error('Error while resetting social login state', error);
+      throw error;
+    }
+  }
+
+  /**
    * Creates a PRIMARY seed phrase backup for the user.
    *
    * Generate Encryption Key from the password using the Threshold OPRF and encrypt the seed phrase with the key.
@@ -5012,8 +5040,7 @@ export default class MetamaskController extends EventEmitter {
   async createNewVaultAndRestore(password, encodedSeedPhrase) {
     const releaseLock = await this.createVaultMutex.acquire();
     try {
-      const { completedOnboarding, firstTimeFlowType } =
-        this.onboardingController.state;
+      const { completedOnboarding } = this.onboardingController.state;
 
       const seedPhraseAsBuffer = Buffer.from(encodedSeedPhrase);
 
@@ -5327,7 +5354,7 @@ export default class MetamaskController extends EventEmitter {
   async getBalance(address, provider) {
     const accounts =
       this.accountTrackerController.state.accountsByChainId[
-      this.#getGlobalChainId()
+        this.#getGlobalChainId()
       ];
     const cached = accounts?.[address];
 
@@ -5658,8 +5685,9 @@ export default class MetamaskController extends EventEmitter {
    * @returns string label
    */
   getAccountLabel(name, index, hdPathDescription) {
-    return `${name[0].toUpperCase()}${name.slice(1)} ${parseInt(index, 10) + 1
-      } ${hdPathDescription || ''}`.trim();
+    return `${name[0].toUpperCase()}${name.slice(1)} ${
+      parseInt(index, 10) + 1
+    } ${hdPathDescription || ''}`.trim();
   }
 
   /**
@@ -5846,7 +5874,7 @@ export default class MetamaskController extends EventEmitter {
 
     const accountsForCurrentChain =
       this.accountTrackerController.state.accountsByChainId[
-      this.#getGlobalChainId()
+        this.#getGlobalChainId()
       ];
 
     const accountTrackerCount = Object.keys(
@@ -6254,7 +6282,7 @@ export default class MetamaskController extends EventEmitter {
     }
     const solanaAccountsChangedNotifications =
       caip25Caveat.value.sessionProperties[
-      KnownSessionProperties.SolanaAccountChangedNotifications
+        KnownSessionProperties.SolanaAccountChangedNotifications
       ];
 
     const sessionScopes = getSessionScopes(caip25Caveat.value, {
@@ -8411,10 +8439,10 @@ export default class MetamaskController extends EventEmitter {
         params:
           newAccounts.length < 2
             ? // If the length is 1 or 0, the accounts are sorted by definition.
-            newAccounts
+              newAccounts
             : // If the length is 2 or greater, we have to execute
-            // `eth_accounts` vi this method.
-            this.getPermittedAccounts(origin),
+              // `eth_accounts` vi this method.
+              this.getPermittedAccounts(origin),
       },
       API_TYPE.EIP1193,
     );
@@ -8523,7 +8551,7 @@ export default class MetamaskController extends EventEmitter {
 
       const blockExplorerUrl =
         networkConfiguration?.blockExplorerUrls?.[
-        networkConfiguration?.defaultBlockExplorerUrlIndex
+          networkConfiguration?.defaultBlockExplorerUrlIndex
         ];
 
       rpcPrefs = { blockExplorerUrl };
@@ -8798,7 +8826,7 @@ export default class MetamaskController extends EventEmitter {
       DistributionType.Main;
     const environment =
       environmentMappingForRemoteFeatureFlag[
-      process.env.METAMASK_ENVIRONMENT
+        process.env.METAMASK_ENVIRONMENT
       ] || EnvironmentType.Development;
     return { distribution, environment };
   }
