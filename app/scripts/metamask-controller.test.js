@@ -693,6 +693,12 @@ describe('MetaMaskController', () => {
             'createToprfKeyAndBackupSeedPhrase',
           )
           .mockResolvedValueOnce();
+        const storeKeyringEncryptionKey = jest
+          .spyOn(
+            metamaskController.seedlessOnboardingController,
+            'storeKeyringEncryptionKey',
+          )
+          .mockResolvedValueOnce();
 
         const primaryKeyring =
           await metamaskController.createNewVaultAndKeychain(password);
@@ -703,7 +709,13 @@ describe('MetaMaskController', () => {
           primaryKeyring.metadata.id,
         );
 
+        const keyringEncryptionKey =
+          await metamaskController.keyringController.exportEncryptionKey();
+
         expect(createToprfKeyAndBackupSeedPhraseSpy).toHaveBeenCalled();
+        expect(storeKeyringEncryptionKey).toHaveBeenCalledWith(
+          keyringEncryptionKey,
+        );
       });
     });
 
